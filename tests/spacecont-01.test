@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Test if "scribeOptions: -spaceCont" is recognized
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:26 <foo> scribenick: foo
+13:28:36 <foo> bar: I just say
+13:28:46 <foo>  I say nothing
+13:28:56 <foo>  Better: I say nada
+13:29:06 <foo> baz: you say
+13:29:16 <foo> scribeOptions: -allowSpaceContinuation
+EOF
+
+perl scribe2.perl $TMP1 >$TMP2 || exit 1
+
+grep -E '<p class="phone .*"><cite>bar:</cite> I just say<br>' $TMP2 || exit 1
+grep -E '… I say nothing<br>' $TMP2 || exit 1
+grep -E '… Better: I say nada</p>' $TMP2 || exit 1
+grep -E '<p class="phone .*"><cite>baz:</cite> you say</p>' $TMP2 || exit 1
+exit 0

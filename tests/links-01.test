@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if URLs are correcly linked
+
+echo "<foo> ftp://example.org/test" | \
+  perl scribe2.perl | \
+  grep '<a href="ftp://example.org/test">ftp://example.org/test</a>'

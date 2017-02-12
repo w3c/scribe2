@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# Test if the scribenick is inferred corrected
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:36 <foo> bar: I just say
+13:28:46 <foo> ... I say nothing
+13:28:56 <bar>  Better: I say nada
+13:29:06 <foo> baz: you say
+13:29:16 <foo> bar: OK
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<link rel=stylesheet type="text/css" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+</head>
+
+<body>
+<header>
+<p></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<div id=links>
+</div>
+</header>
+
+<nav>
+<div id=attendees>
+<h2>Attendees</a></h2>
+<dl class=intro>
+<dt>Present</dt><dd></dd>
+<dt>Regrets</dt><dd></dd>
+<dt>Chair</dt><dd>- </dd>
+<dt>Scribe</dt><dd>foo</dd>
+</dl>
+</div>
+
+<div id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting Minutes</a>
+<ol>
+</ol>
+</li>
+<li><a href="#ActionSummary">Summary of Action Items</a></li>
+<li><a href="#ResolutionSummary">Summary of Resolutions</a></li>
+</ul>
+</div>
+</nav>
+
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class="phone s01"><cite>bar:</cite> I just say<br>
+… I say nothing</p>
+<p class=irc><cite>&lt;bar&gt;</cite>  Better: I say nada</p>
+<p class="phone s02"><cite>baz:</cite> you say</p>
+<p class="phone s01"><cite>bar:</cite> OK</p>
+</section>
+</div>
+
+<div id=ActionSummary>
+<h2>Summary of Action Items</a></h2>
+<ol>
+</ol>
+</div>
+
+<div id=ResolutionSummary>
+<h2>Summary of Resolutions</a></h2>
+<ol>
+</ol>
+</div>
+
+<address>Minutes formatted by Bert Bos's <a
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.htm"
+>scribe2.perl</a> version 0.0 (2017-02-05), a reimplementation
+of David Booth's <a
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribe2doc.htm"
+>scribe.perl</a>. See <a
+href="http://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>No scribenick or scribe found. Guessed: foo</p>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>Maybe present: bar, baz</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe2.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP4 $TMP5
+cmp -s $TMP4 $TMP5

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Test if topics are recognized
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Not a topic
+<foo>  Topic: First topic
+<bar> Topic: Second one
+<baz> Just a line
+EOF
+
+perl scribe2.perl $TMP1 >$TMP2 || exit 1
+grep -E '<li><a href=".*">First topic</a></li>' $TMP2 || exit 1
+grep -E '<li><a href=".*">Second one</a></li>' $TMP2 || exit 1
+grep -E '<li><a href=".*">Not a topic' $TMP2 && exit 1
+grep -E '<li><a href=".*">Just a line' $TMP2 && exit 1
+exit 0

@@ -1,0 +1,108 @@
+#!/bin/bash
+
+# Test the Mirc save-as text format
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<dbooth> Mike: Feature X would benefit users.
+<dbooth> ... and implementation would be easy.
+<dbooth> This is pretending to be a long
+ line that mIRC breaks in order to display,
+ but scribe.perl will re-join into a single line.
+<ericn> I agree.
+
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<link rel=stylesheet type="text/css" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+</head>
+
+<body>
+<header>
+<p></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<div id=links>
+</div>
+</header>
+
+<nav>
+<div id=attendees>
+<h2>Attendees</a></h2>
+<dl class=intro>
+<dt>Present</dt><dd></dd>
+<dt>Regrets</dt><dd></dd>
+<dt>Chair</dt><dd>- </dd>
+<dt>Scribe</dt><dd>dbooth</dd>
+</dl>
+</div>
+
+<div id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting Minutes</a>
+<ol>
+</ol>
+</li>
+<li><a href="#ActionSummary">Summary of Action Items</a></li>
+<li><a href="#ResolutionSummary">Summary of Resolutions</a></li>
+</ul>
+</div>
+</nav>
+
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class="phone s01"><cite>Mike:</cite> Feature X would benefit users.<br>
+… and implementation would be easy.</p>
+<p class=summary>This is pretending to be a long line that mIRC breaks in order to display, but scribe.perl will re-join into a single line.</p>
+<p class=irc><cite>&lt;ericn&gt;</cite> I agree.</p>
+</section>
+</div>
+
+<div id=ActionSummary>
+<h2>Summary of Action Items</a></h2>
+<ol>
+</ol>
+</div>
+
+<div id=ResolutionSummary>
+<h2>Summary of Resolutions</a></h2>
+<ol>
+</ol>
+</div>
+
+<address>Minutes formatted by Bert Bos's <a
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.htm"
+>scribe2.perl</a> version 0.0 (2017-02-05), a reimplementation
+of David Booth's <a
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribe2doc.htm"
+>scribe.perl</a>. See <a
+href="http://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+
+<div class=diagnostics>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe2.perl $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP4 $TMP5
+cmp -s $TMP4 $TMP5

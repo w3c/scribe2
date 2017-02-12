@@ -1,0 +1,175 @@
+#!/bin/bash
+
+# Test if Bert's IRSSI theme is recognized
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+--- Log opened Tue Jan 31 10:42:03 2017
+10:42           --> | Bert (bip@bip.bip.bip) has joined &weum
+10:42       «Users» | 9 nicks (1 ops, 0 halfops, 0 voices, 8 normal
+10:43       «Irssi» | Join to &weum was synced in 64 seconds
+10:45        «Quit» | bgidon (bgidon@team.cloak) has signed off (Ping timeout: 180 seconds)
+10:57           --> | phila (phila@team.cloak) has joined &weum
+11:02          Bert | trackbot, start telcon
+11:02             * | trackbot is preparing a teleconference.
+11:02           --> | RRSAgent (rrsagent@team.cloak) has joined &weum
+11:02      RRSAgent | logging to http://www.w3.org/2017/01/31-weum-irc
+11:02 @    trackbot | RRSAgent, make logs team
+11:02      RRSAgent | I have made the request, trackbot
+11:02 @    trackbot | Zakim, this will be WEUM
+11:02 @    trackbot | Meeting: W3C/ERCIM Teleconference
+11:02 @    trackbot | Date: 31 January 2017
+11:02         Zakim | ok, trackbot
+11:02          Bert | Chair:   Bert
+11:02          Bert | Regrets: Bernard, Daniel, EricE, Laurent, Rigo, Shadi
+11:02          Bert | Agenda:  https://www.w3.org/mid/1950452.hWqkf4ECRx@nyx
+11:02          Bert | clear    agenda
+11:02          Bert | agenda+  Scribe
+11:02             * | Zakim notes agenda cleared
+11:03             * | Zakim notes agendum 1 added
+11:03          Bert | agenda+  Reminder of good teleconferences
+11:03             * | Zakim notes agendum 2 added
+11:03          Bert | agenda+  Agenda
+11:03             * | Zakim notes agendum 3 added
+11:03          Bert | agenda+  Actions
+11:03             * | Zakim notes agendum 4 added
+11:03          Bert | agenda+  Two minutes round the table
+11:03             * | Zakim notes agendum 5 added
+11:03          Bert | agenda+  Business development
+11:03             * | Zakim notes agendum 6 added
+11:03          Bert | agenda+  Next mini-presentation
+11:03             * | Zakim notes agendum 7 added
+11:03          Bert | -> https://www.w3.org/2017/01/24-weum-minutes.html Last minutes
+11:07          Bert | regrets+ Richard, Ivan, Felix, Coralie
+11:09          Bert | Meeting canceled (too many regrets)
+11:09          Bert | trackbot, end meeting
+11:09             * | trackbot is ending a teleconference.
+11:09 @    trackbot | Zakim, list attendees
+11:09         Zakim | As of this point the attendees have been Bert, Ralph, Rigo, Coralie, Richard, Shadi, Phil, Dave
+11:10 @    trackbot | RRSAgent, please draft minutes
+11:10      RRSAgent | I have made the request to generate http://www.w3.org/2017/01/31-weum-minutes.html trackbot
+11:10 @    trackbot | RRSAgent, bye
+11:10      RRSAgent | I see no action items
+11:10           <-- | RRSAgent (rrsagent@team.cloak) has left &weum ()
+11:12       «Topic» | Bert sets topic for channel &weum to "WEUM 31 Jan canceled"
+--- Log closed Tue Jan 31 11:46:15 2017
+--- Log opened Tue Jan 31 12:02:27 2017
+12:02           --> | Bert (bip@bip.bip.bip) has joined &weum
+12:02       «Users» | 9 nicks (1 ops, 0 halfops, 0 voices, 8 normal
+12:03       «Irssi» | Join to &weum was synced in 65 seconds
+13:59           --> | shadi (shadi@team.cloak) has joined &weum
+14:37           --> | tidoust (fd@team.cloak) has joined &weum
+14:49        «Quit» | phila (phila@team.cloak) has signed off (Ping timeout: 180 seconds)
+14:50           --> | shadi_ (shadi@team.cloak) has joined &weum
+14:52           --> | phila (phila@team.cloak) has joined &weum
+14:56        «Quit» | shadi (shadi@team.cloak) has signed off (Ping timeout: 180 seconds)
+15:02        «Nick» | shadi_ is now known as shadi
+16:03        «Quit» | shadi (shadi@team.cloak) has signed off ("Leaving")
+16:55        «Quit» | caroline (cbaron@team.cloak) has signed off ("bb")
+17:01           --> | tidoust_ (fd@team.cloak) has joined &weum
+17:07        «Quit» | tidoust (fd@team.cloak) has signed off (Ping timeout: 180 seconds)
+17:54        «Quit» | phila (phila@team.cloak) has signed off ("Leaving")
+18:10           --> | caroline (cbaron@team.cloak) has joined &weum
+18:33        «Quit» | caroline (cbaron@team.cloak) has signed off (Ping timeout: 180 seconds)
+18:58        «Quit» | tidoust_ (fd@team.cloak) has signed off ("Leaving")
+18:59           --> | caroline (cbaron@team.cloak) has joined &weum
+19:22        «Quit» | caroline (cbaron@team.cloak) has signed off (Client closed connection)
+--- Log closed Tue Jan 31 20:35:19 2017
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>W3C/ERCIM Teleconference &ndash; 31 January 2017</title>
+<link rel=stylesheet type="text/css" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+</head>
+
+<body>
+<header>
+<p></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+W3C/ERCIM Teleconference</h1>
+<h2>31 January 2017</h2>
+
+<div id=links>
+<a href="https://www.w3.org/mid/1950452.hWqkf4ECRx@nyx">Agenda</a>
+<a href="http://www.w3.org/2017/01/31-weum-irc">IRC log</a>
+</div>
+</header>
+
+<nav>
+<div id=attendees>
+<h2>Attendees</a></h2>
+<dl class=intro>
+<dt>Present</dt><dd></dd>
+<dt>Regrets</dt><dd>+ Richard, Bernard, Coralie, Daniel, EricE, Felix, Ivan, Laurent, Rigo, Shadi</dd>
+<dt>Chair</dt><dd>Bert </dd>
+<dt>Scribe</dt><dd>bert</dd>
+</dl>
+</div>
+
+<div id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting Minutes</a>
+<ol>
+</ol>
+</li>
+<li><a href="#ActionSummary">Summary of Action Items</a></li>
+<li><a href="#ResolutionSummary">Summary of Resolutions</a></li>
+</ul>
+</div>
+</nav>
+
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class=summary><a href="https://www.w3.org/2017/01/24-weum-minutes.html">Last minutes</a></p>
+<p class=summary>Meeting canceled (too many regrets)</p>
+</section>
+</div>
+
+<div id=ActionSummary>
+<h2>Summary of Action Items</a></h2>
+<ol>
+</ol>
+</div>
+
+<div id=ResolutionSummary>
+<h2>Summary of Resolutions</a></h2>
+<ol>
+</ol>
+</div>
+
+<address>Minutes formatted by Bert Bos's <a
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.htm"
+>scribe2.perl</a> version 0.0 (2017-02-05), a reimplementation
+of David Booth's <a
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribe2doc.htm"
+>scribe.perl</a>. See <a
+href="http://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>No scribenick or scribe found. Guessed: bert</p>
+<p class=warning>Maybe present: </p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe2.perl --embed $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP4 $TMP5
+cmp -s $TMP4 $TMP5
