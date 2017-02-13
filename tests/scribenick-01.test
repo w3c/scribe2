@@ -28,7 +28,7 @@ cat >$TMP3 <<EOF
 
 <body>
 <header>
-<p><a href="http://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt=W3C border=0 height=48 width=72></a></p>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt=W3C border=0 height=48 width=72></a></p>
 
 <h1>&ndash; DRAFT &ndash;<br>
 (MEETING TITLE)</h1>
@@ -44,7 +44,7 @@ cat >$TMP3 <<EOF
 <dl class=intro>
 <dt>Present</dt><dd></dd>
 <dt>Regrets</dt><dd></dd>
-<dt>Chair</dt><dd>- </dd>
+<dt>Chair</dt><dd>-</dd>
 <dt>Scribe</dt><dd>foo</dd>
 </dl>
 </div>
@@ -85,12 +85,12 @@ cat >$TMP3 <<EOF
 </div>
 
 <address>Minutes formatted by Bert Bos's <a
-href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribedoc.html"
+href="https://dev.w3.org/2002/scribe2/scribedoc.html"
 >scribe.perl</a> version 0.0 (2017-02-05), a reimplementation
 of David Booth's <a
-href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribedoc.htm"
+href="https://dev.w3.org/2002/scribe/scribedoc.htm"
 >scribe.perl</a>. See <a
-href="http://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
 
 <div class=diagnostics>
 <h2>Diagnostics</h2>
