@@ -215,8 +215,12 @@ sub esc($$)
 
 # Main body
 
-my $version = '$Revision$' =~ s/\$Revision$//r;
-my $versiondate = '$Date$Date: //r =~ s/\$//r;
+my $version = '$Revision$'
+  =~ s/\$Revision: //r
+  =~ s/ \$//r;
+my $versiondate = '$Date$'
+  =~ s/\$Date: //r
+  =~ s/ \$//r;
 
 my $is_team = 0;		# If 1, use team style
 my $is_member = 0;		# If 1, use member style
@@ -759,10 +763,10 @@ $resolutions</ol>
 </div>
 
 <address>Minutes formatted by Bert Bos's <a
-href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.htm\"
+href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.html\"
 >scribe2.perl</a> version $version ($versiondate), a reimplementation
 of David Booth's <a
-href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribe2doc.htm\"
+href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a
 href=\"http://dev.w3.org/cvsweb/2002/scribe2/\">CVS log.</a></address>
 

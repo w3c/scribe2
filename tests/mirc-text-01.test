@@ -86,10 +86,10 @@ cat >$TMP3 <<EOF
 </div>
 
 <address>Minutes formatted by Bert Bos's <a
-href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.htm"
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.html"
 >scribe2.perl</a> version 0.0 (2017-02-05), a reimplementation
 of David Booth's <a
-href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribe2doc.htm"
+href="http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribedoc.htm"
 >scribe.perl</a>. See <a
 href="http://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
 
