@@ -699,7 +699,7 @@ my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url ? "<a href=\"$logging_url\">IRC log</a>\n" : "";
 my $present = esc(join(", ", sort values %present), 0);
 my $regrets = esc(join(", ", sort values %regrets), 0);
-my $scribes = esc(join(", ", values %scribes), 0);
+my $scribes = esc(join(", ", sort values %scribes), 0);
 my $diagnostics = !$embed_diagnostics ? "" :
   "<h2>Diagnostics<\/h2>\n" .
   join("", map {"<p class=warning>" . esc($_, 0) . "</p>\n"} @diagnostics);
