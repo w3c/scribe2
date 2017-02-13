@@ -692,7 +692,7 @@ my @stylesheets = $old_style & $is_team ?
 my $style = join("\n",
   map {"<link rel=stylesheet type=\"text/css\" href=\"$_\">"} @stylesheets);
 my $logo = !$is_fancy ?
-  '<a href="http://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" ' .
+  '<a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" ' .
   'alt=W3C border=0 height=48 width=72></a>' : '';
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url ? "<a href=\"$logging_url\">IRC log</a>\n" : "";
@@ -766,12 +766,12 @@ $resolutions</ol>
 </div>
 
 <address>Minutes formatted by Bert Bos's <a
-href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribedoc.html\"
+href=\"https://dev.w3.org/2002/scribe2/scribedoc.html\"
 >scribe.perl</a> version $version ($versiondate), a reimplementation
 of David Booth's <a
-href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribedoc.htm\"
+href=\"https://dev.w3.org/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a
-href=\"http://dev.w3.org/cvsweb/2002/scribe2/\">CVS log.</a></address>
+href=\"https://dev.w3.org/cvsweb/2002/scribe2/\">CVS log.</a></address>
 
 <div class=diagnostics>
 $diagnostics</div>
