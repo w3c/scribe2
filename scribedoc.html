@@ -29,8 +29,8 @@
       height=48 width=72></a></span>
 
    <div class=breadcrumb>
-    <a href="http://www.w3.org/Member/">Member</a> &#x2192; <a
-    href="http://www.w3.org/Guide/">The Art of Consensus</a> &#x2192;
+    <a href="https://www.w3.org/Member/">Member</a> &#x2192; <a
+    href="https://www.w3.org/Guide/">The Art of Consensus</a> &#x2192;
 
     <h1>Generate Meeting Minutes from an IRC Log</h1>
    </div>
@@ -69,7 +69,7 @@
 
   <h2 id=intro>Introduction</h2>
 	
-  <p><a href="http://dev.w3.org/cvsweb/%7Echeckout%7E/2002/scribe2/"
+  <p><a href="https://dev.w3.org/2002/scribe2/scribe.perl"
   >Scribe.perl</a> is a perl script for generating meeting minutes
   from an IRC, IM or other log file that follows some simple minuting
   conventions. It is easy to use and requires no installation. It was
@@ -84,8 +84,8 @@
   <h2 id="Quick_Start_Guide">Quick Start Guide</h2>
 
   <h3 id=invite>Step 1: Invite <a
-    href="http://www.w3.org/2002/03/RRSAgent" >RRSAgent</a> and <a
-    href="http://www.w3.org/2001/12/zakim-irc-bot.html" >Zakim
+    href="https://www.w3.org/2002/03/RRSAgent" >RRSAgent</a> and <a
+    href="https://www.w3.org/2001/12/zakim-irc-bot.html" >Zakim
     bot</a></h3>
 
   <p>Skip this step if you're not using W3C's IRC.
@@ -149,7 +149,7 @@
 
      <td class=help>Use "Topic: …" at the start of each agenda topic.
       Alternatively, you can use <a
-      href="http://www.w3.org/2001/12/zakim-irc-bot.html#agenda"
+      href="https://www.w3.org/2001/12/zakim-irc-bot.html#agenda"
       >Zakim bot's agenda control</a>, which is recognized by default.
       (See the -useZakimTopics option below.)
     <tr>
@@ -225,9 +225,9 @@
 	<td class="command">rrsagent, draft minutes</td>
 
 	<td class="help">Tell <a
-	href="http://www.w3.org/2002/03/RRSAgent#minutes"
+	href="https://www.w3.org/2002/03/RRSAgent#minutes"
 	>RRSAgent</a> <a
-	href="http://www.w3.org/2002/03/RRSAgent#minutes" >to generate
+	href="https://www.w3.org/2002/03/RRSAgent#minutes" >to generate
 	minutes</a> from the log as written so far, inheriting access
 	permissions from the log permissions. Note the location of the
 	generated minutes. Skip this step if you are not using
@@ -261,7 +261,7 @@ you are not using RRSAgent.
 	<td class="help">(Hint: If RRSAgent wrote the minutes to http://...foo-minutes, then the IRC log will be at http://...foo-irc.txt.)</td>
 </tr>
 <tr>
-	<td class="command">(<a href="http://dev.w3.org/cvsweb/%7Echeckout%7E/2002/scribe2/scribe.perl">Download scribe.perl</a>)</td>
+	<td class="command">(<a href="https://dev.w3.org/2002/scribe2/scribe.perl">Download scribe.perl</a>)</td>
 	<td class="help">No installation is needed, but you must have <a href="http://www.perl.com/download.csp">perl</a>.</td>
 </tr>
 <tr>
@@ -315,7 +315,7 @@ you are not using RRSAgent.
   <pre class="command">perl scribe.perl [options] &lt; log.txt &gt; minutes.html</pre>
 
   <p>It can also be <a
-    href="http://www.w3.org/2002/03/RRSAgent#minutes" >invoked by
+    href="https://www.w3.org/2002/03/RRSAgent#minutes" >invoked by
     RRSAgent</a> from IRC (provided you're using RRSAgent):</p>
 
   <pre class="command">rrsagent, draft minutes</pre>
@@ -811,7 +811,7 @@ Resolved: next-object does not wrap</pre>
   
   <h3 id="RRSAgent_Text_Format">RRSAgent_Text_Format (RECOMMENDED)</h3>
 	
-	<p>The plain text format (*.txt) produced by RRSAgent.  Hint: add ".txt" to the RRSAgent log URL to get the text version, such as: http://www.w3.org/2002/11/07-ws-arch-irc.txt .  The timestamps are ignored (except in guessing the input format), so you can safely edit the log and add lines without having to fake timestamps.  <a href="http://www.w3.org/2003/03/03-ws-desc-irc.txt">Example:</a></p>
+	<p>The plain text format (*.txt) produced by RRSAgent.  Hint: add ".txt" to the RRSAgent log URL to get the text version, such as: http://www.w3.org/2002/11/07-ws-arch-irc.txt .  The timestamps are ignored (except in guessing the input format), so you can safely edit the log and add lines without having to fake timestamps.  <a href="https://www.w3.org/2003/03/03-ws-desc-irc.txt">Example:</a></p>
 
 <pre class="command">20:41:27 &lt;dbooth&gt; Mike: Feature X would benefit users.
 20:41:37 &lt;dbooth&gt; ... and implementation would be easy.
@@ -820,7 +820,7 @@ Resolved: next-object does not wrap</pre>
 
 <h3 id="RRSAgent_HTML_Format">RRSAgent_HTML_Format</h3>
 
-<p>The HTML format (*.html) produced by RRSAgent.  This is the raw HTML code.  <a href="http://www.w3.org/2003/03/03-ws-desc-irc.html">Example:</a>
+<p>The HTML format (*.html) produced by RRSAgent.  This is the raw HTML code.  <a href="https://www.w3.org/2003/03/03-ws-desc-irc.html">Example:</a>
 </p>
 
 <pre class="command">
@@ -834,7 +834,7 @@ Resolved: next-object does not wrap</pre>
 
 	<h3 id="RRSAgent_Visible_HTML_Text_Paste_Format">RRSAgent_Visible_HTML_Text_Paste_Format</h3>
 	
-<p>This is for the format that is visible in the browser when RRSAgent's HTML is displayed.  I.e., when you display the *.html log in a browser, and then copy and paste the text from the browser window, only the displayed text is copied -- not the raw HTML tags.  <a href="http://lists.w3.org/Archives/Public/www-archive/2004Jan/att-0002/ExampleFormat-RRSAgent_Visible_HTML_Text_Paste_Format.txt">Example:</a>
+<p>This is for the format that is visible in the browser when RRSAgent's HTML is displayed.  I.e., when you display the *.html log in a browser, and then copy and paste the text from the browser window, only the displayed text is copied -- not the raw HTML tags.  <a href="https://lists.w3.org/Archives/Public/www-archive/2004Jan/att-0002/ExampleFormat-RRSAgent_Visible_HTML_Text_Paste_Format.txt">Example:</a>
 </p>
 <pre class="command">20:41:27 [dbooth]
      Mike: Feature X would benefit users.
@@ -878,7 +878,7 @@ Resolved: next-object does not wrap</pre>
 </pre>
 
 	<h3 id="XChat_Timestamped_Log_Format">XChat_Timestamped_Log_Format</h3>
-	<p>Timestamped log format produced by X-Chat.  <a href="http://lists.w3.org/Archives/Public/www-archive/2005Feb/0026.html">Example</a>:</p>
+	<p>Timestamped log format produced by X-Chat.  <a href="https://lists.w3.org/Archives/Public/www-archive/2005Feb/0026.html">Example</a>:</p>
 <pre class="command" id="body">
 **** BEGIN LOGGING AT Mon Feb 14 11:02:06 2005
 
@@ -895,7 +895,7 @@ Feb 14 11:02:26 *    Yves This is an off-the-record comment
 
 	<h3 id="Irssi_ISO8601_Log_Text_Format">Irssi_ISO8601_Log_Text_Format</h3>
 	
-	<p>The format produced by Irssi logging with <a href="http://www.w3.org/TR/NOTE-datetime">ISO8601 timestamp</a> prefixes.  Example:</p>
+	<p>The format produced by Irssi logging with <a href="https://www.w3.org/TR/NOTE-datetime">ISO8601 timestamp</a> prefixes.  Example:</p>
 
 <pre class="command">2003-12-18T15:27:21-0500 &lt;dbooth&gt; Mike: Feature X would benefit users.
 2003-12-18T15:27:36-0500 &lt;dbooth&gt; ... and implementation would be easy.
@@ -960,7 +960,8 @@ Eric agrees.
   <h2 id=changes>Differences from scribe.perl version 1</h2>
 
   <p>Scribe.perl version 2 accepts most of the same options as
-   version 1 and recognizes most of the same commands in the input.
+   <a href="https://dev.w3.org/2002/scribe/scribe.perl"
+   >version 1</a> and recognizes most of the same commands in the input.
    The following are different:
 
   <ul>
@@ -1034,9 +1035,10 @@ Eric agrees.
   <hr />
 
   <address><a href="mailto:bert@w3.org" >Bert Bos</a>, adapted from
-   original documentation by David Booth. Scribe.perl is available for
+   <a href="https://dev.w3.org/2002/scribe/scribedoc.html"
+   >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
-   href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
+   href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
    >W3C Software License</a>. $Date$</address>
  </body>
 </html>
