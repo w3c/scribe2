@@ -261,6 +261,7 @@ my %speakers;			# Unique ID for each speaker
 my $use_scribe = 0;		# 1 = interpret 'scribe:' as 'scribenick:'
 
 my $urlpat = '(?:[a-z]+://|mailto:[^ <@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^ <]+';
+# TODO: Allow (and ignore) the other options of old scribe.perl?
 my %options = ("team" => \$is_team,
 	       "member" => \$is_member,
 	       "fancy" => \$is_fancy,
@@ -505,7 +506,7 @@ for (my $i = 0; $i < @records; $i++) {
     # $records[$i]->{type} = 'o';	# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($records[$i]->{text} =~ /^ *chair *: *(.*?) *$/i) {
+  } elsif ($records[$i]->{text} =~ /^ *chairs? *: *(.*?) *$/i) {
     $chair = esc($1, 0);
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
