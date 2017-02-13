@@ -13,7 +13,7 @@ cat >$TMP1 <<EOF
 <baz> Just a line
 EOF
 
-perl scribe2.perl $TMP1 >$TMP2 || exit 1
+perl scribe.perl $TMP1 >$TMP2 || exit 1
 grep -E '<li><a href=".*">First topic</a></li>' $TMP2 || exit 1
 grep -E '<li><a href=".*">Second one</a></li>' $TMP2 || exit 1
 grep -E '<li><a href=".*">Not a topic' $TMP2 && exit 1

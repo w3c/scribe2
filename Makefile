@@ -16,7 +16,7 @@ FAIL := $(shell tput setaf 1)FAIL$(shell tput op)
 OK := $(shell tput setaf 2)OK$(shell tput op)
 NA := $(shell tput setaf 4)N/A$(shell tput op)
 
-%: %.test scribe2.perl
+%: %.test scribe.perl
 	@$(ECHO) -n $< ""
 	@$< >$*.log 2>&1; \
 	 case $$? in \

@@ -763,8 +763,8 @@ $resolutions</ol>
 </div>
 
 <address>Minutes formatted by Bert Bos's <a
-href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribe2doc.html\"
->scribe2.perl</a> version $version ($versiondate), a reimplementation
+href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe2/scribedoc.html\"
+>scribe.perl</a> version $version ($versiondate), a reimplementation
 of David Booth's <a
 href=\"http://dev.w3.org/cvsweb/~checkout~/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a

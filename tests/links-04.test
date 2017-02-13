@@ -3,5 +3,5 @@
 # Test if URLs are correcly linked
 
 echo "<foo> Try mailto:foo@example.org for me" | \
-  perl scribe2.perl | \
+  perl scribe.perl | \
   grep '<a href="mailto:foo@example.org">mailto:foo@example.org</a>'

@@ -12,7 +12,7 @@ dbooth: ... and implementation would be easy.
 ericn: I agree.
 EOF
 
-perl scribe2.perl $TMP1 >$TMP2 || exit 1
+perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 grep '<p class="phone s01"><cite>Mike:</cite> Feature X would benefit users.<br>' $TMP2 && \
   grep '… and implementation would be easy.</p>' $TMP2 && \

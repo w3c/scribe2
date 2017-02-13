@@ -3,5 +3,5 @@
 # Test if HTML delimiters are escaped
 
 echo "<foo> <img/> & <link>" | \
-  perl scribe2.perl | \
+  perl scribe.perl | \
   grep '&lt;img/&gt; &amp; &lt;link&gt;'

@@ -3,5 +3,5 @@
 # Test if incorrect URL syntax after "agenda:" gives a warning
 
 echo "<foo> Agenda: not-a-URL " | \
-  perl scribe2.perl 2>&1 | \
+  perl scribe.perl 2>&1 | \
   grep "* Found 'Agenda:' not followed by a URL: 'not-a-URL'."

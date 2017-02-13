@@ -15,7 +15,7 @@ cat >$TMP1 <<EOF
 13:29:16 <foo> scribeOptions: -allowSpaceContinuation
 EOF
 
-perl scribe2.perl $TMP1 >$TMP2 || exit 1
+perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 grep -E '<p class="phone .*"><cite>bar:</cite> I just say<br>' $TMP2 || exit 1
 grep -E '… I say nothing<br>' $TMP2 || exit 1

@@ -14,7 +14,7 @@ cat >$TMP1 <<EOF
 <foo>   ACTION foo to stop giving actions
 EOF
 
-perl scribe2.perl $TMP1 >$TMP2 || exit 1
+perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 grep '<li><a href="#x01">bar to do this</a></li>' $TMP2 || exit 1
 grep '<li><a href="#x02">baz: do the same</a></li>' $TMP2 || exit 1

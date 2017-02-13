@@ -3,5 +3,5 @@
 # Test if URLs are correcly linked
 
 echo "<foo> -> https://example.org/test example anchor" | \
-  perl scribe2.perl | \
+  perl scribe.perl | \
   grep '<a href="https://example.org/test">example anchor</a>'
