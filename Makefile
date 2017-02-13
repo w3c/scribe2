@@ -1,4 +1,4 @@
-all: regressionTests
+all: regressionTests samples
 
 # REGRESSION TESTS
 #
@@ -30,3 +30,18 @@ regressionTests: $(TESTS:.test=)
 	@$(ECHO) "$(OK)  " `grep OK $(RESULTS) | wc -l`
 	@$(ECHO) "$(FAIL)" `grep FAIL $(RESULTS) | wc -l`
 	@$(ECHO) "$(NA) " `grep N/A $(RESULTS) | wc -l`
+
+# SAMPLES
+#
+# Update the sample minutes whenever scribe.perl changes
+
+samples: sample-public.html sample-member.html sample-team.html \
+	sample-fancy.html
+sample-public.html: sample-public.txt scribe.perl
+	perl scribe.perl --final --embed $< >$@
+sample-member.html: sample-member.txt scribe.perl
+	perl scribe.perl --embed --member $< >$@
+sample-team.html: sample-team.txt scribe.perl
+	perl scribe.perl --embed --team $< >$@
+sample-fancy.html: sample-fancy.txt scribe.perl
+	perl scribe.perl --final --embed --fancy  $< >$@
