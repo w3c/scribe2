@@ -258,6 +258,7 @@ my $chair = '-';		# HTML-escaped name of meeting chair
 my $speaker;			# Current speaker
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my %speakers;			# Unique ID for each speaker
+my $use_scribe = 0;		# 1 = interpret 'scribe:' as 'scribenick:'
 
 my $urlpat = '(?:[a-z]+://|mailto:[^ <@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^ <]+';
 my %options = ("team" => \$is_team,
@@ -356,10 +357,11 @@ foreach my $p (@records) {
 #
 my ($s, %count);
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
-  $scribenick = $1 if $p->{text} =~ /^ *scribenick *: *([^ ]+) *$/;
-  $s = $1 if !defined $s && $p->{text}=~/^ *scribe *: *([^ ]+) *$/;
+  $scribenick = $1 if $p->{text} =~ /^ *scribenick *: *([^ ]+) *$/i;
+  $s = $1 if !defined $s && $p->{text}=~/^ *scribe *: *([^ ]+) *$/i;
   $count{lc $p->{speaker}}++ if $p->{type} eq 'i';
 }
+$use_scribe = 1 if !defined $scribenick;
 $scribenick = $s if !defined $scribenick;
 if (!defined $scribenick) {
   $scribenick = (sort {$count{$b} <=> $count{$a}} sort keys %count)[0];
@@ -405,12 +407,12 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($records[$i]->{text} =~ /^ *regrets *+:? *$/i) {
+  } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *$/i) {
     $regrets{lc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($records[$i]->{text} =~ /^ *regrets *+:? *(.*?) *$/i) {
+  } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *(.*?) *$/i) {
     $regrets{lc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
@@ -517,6 +519,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~ /^ *scribe *: *(.*?) *$/i) {
     $scribes{lc $1} = $1;		# Add to collected scribe list
     $records[$i]->{type} = 'o';		# Omit line from output
+    $scribenick = lc $1 if $use_scribe;
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *scribenick *: *([^ ]+) *$/i) {
@@ -688,7 +691,7 @@ my @stylesheets = $old_style & $is_team ?
 #
 my $style = join("\n",
   map {"<link rel=stylesheet type=\"text/css\" href=\"$_\">"} @stylesheets);
-my $logo = $is_team || $is_member ?
+my $logo = !$is_fancy ?
   '<a href="http://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" ' .
   'alt=W3C border=0 height=48 width=72></a>' : '';
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
