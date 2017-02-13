@@ -1,0 +1,231 @@
+12:49:27 <RRSAgent> RRSAgent has joined #webtv
+12:49:27 <RRSAgent> logging to http://www.w3.org/2014/04/02-webtv-irc
+12:49:33 <kaz> zakim, this will be webtv
+12:49:33 <Zakim> ok, kaz; I see UW_WebTVIG()9:00AM scheduled to start in 11 minutes
+12:49:57 <kaz> zakim, call kazuyuki-617
+12:49:57 <Zakim> ok, kaz; the call is being made
+12:50:13 <kaz> zakim, call kazuyuki-617
+12:50:13 <Zakim> ok, kaz; the call is being made
+12:50:14 <Zakim> UW_WebTVIG()9:00AM has now started
+12:50:16 <Zakim> +Kazuyuki
+12:58:30 <ddavis> ddavis has joined #webtv
+13:00:19 <kaz> zakim, who is here?
+13:00:19 <Zakim> On the phone I see Kazuyuki
+13:00:21 <Zakim> On IRC I see ddavis, RRSAgent, Zakim, kaz, aldafu, jcverdie, schuki, MarkS, timeless_, tobie__, trackbot
+13:00:25 <Zakim> + +49.303.aaaa
+13:00:39 <Zakim> +??P12
+13:00:41 <Zakim> +??P14
+13:00:52 <kaz> zakim, aaaa is Alex
+13:00:52 <Zakim> +Alex; got it
+13:00:56 <Zakim> -??P12
+13:00:57 <Zakim> -??P14
+13:01:04 <kaz> zakim, who is here?
+13:01:04 <Zakim> On the phone I see Kazuyuki, Alex
+13:01:06 <Zakim> On IRC I see ddavis, RRSAgent, Zakim, kaz, aldafu, jcverdie, schuki, MarkS, timeless_, tobie__, trackbot
+13:01:11 <gmandyam> gmandyam has joined #webtv
+13:01:16 <aldafu> aldafu=alex
+13:01:21 <Zakim> -Alex
+13:01:24 <Zakim> +??P12
+13:01:26 <ddavis> zakim, ??P12 is me
+13:01:27 <Zakim> +ddavis; got it
+13:01:30 <Zakim> +gmandyam
+13:01:35 <whyun> whyun has joined #webtv
+13:01:41 <Zakim> +Alex
+13:03:02 <kaz> zakim, Alex is aldafu
+13:03:02 <Zakim> +aldafu; got it
+13:03:21 <Zakim> +??P16
+13:03:55 <kaz> zakim, ??P16 is whyun
+13:03:55 <Zakim> +whyun; got it
+13:04:05 <kaz> zakim, who is here?
+13:04:05 <Zakim> On the phone I see Kazuyuki, ddavis, gmandyam, aldafu, whyun
+13:04:07 <Zakim> On IRC I see whyun, gmandyam, ddavis, RRSAgent, Zakim, kaz, aldafu, jcverdie, schuki, MarkS, timeless_, tobie__, trackbot
+13:04:18 <kaz> Present: Kaz, Daniel, Giri, Alexander, Wook
+13:04:59 <kaz> Agenda: http://lists.w3.org/Archives/Public/public-web-and-tv/2014Apr/0000.html
+13:05:13 <kaz> Meeting: Web and TV IG - Media APIs TF
+13:07:32 <Zakim> -Kazuyuki
+13:08:22 <Bin_Hu> Bin_Hu has joined #webtv
+13:08:35 <kaz> zakim, call kazuyuki-617
+13:08:35 <Zakim> ok, kaz; the call is being made
+13:08:37 <Zakim> +Kazuyuki
+13:09:19 <Zakim> + +1.650.946.aabb
+13:09:22 <Bin_Hu> Hi, sorry I am late
+13:09:33 <kaz> zakim, aabb is Bin
+13:09:33 <Zakim> +Bin; got it
+13:09:40 <Bin_Hu> zakim, aabb is me
+13:09:40 <Zakim> sorry, Bin_Hu, I do not recognize a party named 'aabb'
+13:09:45 <kaz> Present+ Bin
+13:09:55 <kaz> zakim, Bin is Bin_Hu
+13:09:55 <Zakim> +Bin_Hu; got it
+13:10:13 <kaz> Agenda: http://lists.w3.org/Archives/Public/public-web-and-tv/2014Apr/0000.html
+13:10:22 <kaz> zakim, who is here?
+13:10:22 <Zakim> On the phone I see Kazuyuki, ddavis, gmandyam, aldafu, whyun, Bin_Hu
+13:10:24 <Zakim> On IRC I see Bin_Hu, whyun, gmandyam, ddavis, RRSAgent, Zakim, kaz, aldafu, jcverdie, schuki, MarkS, timeless_, tobie__, trackbot
+13:11:06 <ddavis> Scribe: Daniel
+13:11:10 <ddavis> scribenick: ddavis
+13:12:03 <ddavis> Topic: Review action item and issues
+13:12:49 <ddavis> Kaz: There's been a problem with the tracker (access is blocked). The sysadmins are looking into it but it's not fixed yet.
+13:12:57 <kaz> -> http://www.w3.org/2014/02/19-webtv-minutes.html Feb. 19 minutes
+13:13:17 <ddavis> kaz: We can try to look at the action items recorded in the Feb 19 call minutes.
+13:14:26 <ddavis> Bin_Hu: We can close issue 187
+13:14:55 <jcverdie> jcverdie has joined #webtv
+13:14:56 <ddavis> Bin_Hu: Next is issue 189 - accessibility guidelines. This is also closed as I added a general requirement
+13:15:43 <ddavis> kaz: Daniel and I had actions to create wiki pages.
+13:16:19 <ddavis> kaz: Maybe mine was 184 and Daniel's was 185
+13:16:26 <aldafu> http://www.w3.org/2011/webtv/track/actions/open
+13:16:57 <ddavis> aldafu: I can see the action items.
+13:17:22 <ddavis> ddavis: It's visible if you log out (or open in another browser)
+13:17:34 <kaz> [ interesting situation... ]
+13:17:51 <ddavis> Bin_Hu: Issue 182: Discuss with jc, bin about the details of how to create the cg
+13:18:13 <ddavis> kaz: We discussed this and we can go ahead by proposing a new community group (CG)
+13:18:24 <ddavis> kaz: The question is who would be the chair and what would be the name of the group
+13:18:33 <ddavis> Bin_Hu: Can we close it?
+13:18:47 <kaz> close action 182
+13:18:51 <kaz> close action-182
+13:18:51 <trackbot> Error closing: could not connect to Tracker.  Please mail <sysreq@w3.org> with details about what happened.
+13:19:11 <CyrilRA> CyrilRA has joined #webtv
+13:20:13 <kaz> [ we'll cloe action 182, 184, 185, 187, 189 latter ]
+13:20:28 <ddavis> s/cloe/close/
+13:20:34 <ddavis> s/latter/later/
+13:21:26 <ddavis> Bin_Hu: Outstanding issues are 186 and 188 which are assigned to Giuseppe (not here) so we'll leave these open.
+13:22:00 <ddavis> Bin_Hu: So the wiki page Kaz created is just a place holder? No input or use cases yet?
+13:22:31 <kaz> -> https://www.w3.org/2011/webtv/wiki/New_Ideas new idea wiki
+13:22:41 <ddavis> kaz: right. I thought we could add one topic - audio fingerprinting - which was discussed on the mailing list a while ago.
+13:23:16 <ddavis> kaz: The page itself is a placeholder and I've added a template.
+13:23:36 <ddavis> Bin_Hu: Is this a standalone page?
+13:23:41 <ddavis> kaz: It's linked from the main page.
+13:23:52 <ddavis> kaz: If you prefer, I can link to it from the Media TF page.
+13:24:40 <ddavis> https://www.w3.org/2011/webtv/wiki/Media_APIs/Tuner_API
+13:24:58 <ddavis> ddavis: This page is linked to from the Media APIs TF page.
+13:25:23 <ddavis> Bin_Hu: Let's leave it there for now.
+13:26:08 <ddavis> Bin_Hu: Next is to look at and approve the gap analysis note.
+13:26:16 <ddavis> Bin_Hu: I asked Giuseppe to create a page which he has done.
+13:26:19 <kaz> -> http://webandtv.github.io/mediatf-notes/mediareq.html Media API requirements
+13:26:36 <kaz> i/Next is/topic: Media APIs requirements/
+13:26:56 <ddavis> Bin_Hu: We haven't seen any comments on the mailing list so can we approve this or do we need more time?
+13:26:59 <kaz> zakim, who is here?
+13:27:01 <Zakim> On the phone I see Kazuyuki, ddavis, gmandyam, aldafu, whyun, Bin_Hu
+13:27:01 <Zakim> On IRC I see CyrilRA, jcverdie, Bin_Hu, whyun, gmandyam, ddavis, RRSAgent, Zakim, kaz, aldafu, schuki, MarkS, timeless_, tobie__, trackbot
+13:27:05 <kaz> q+
+13:27:17 <kaz> ack k
+13:27:29 <ddavis> ddavis: We did have some feedback a while ago, I think?
+13:27:50 <ddavis> kaz: Maybe we can record our approval in this call and the see what the remaining people think through mail.
+13:28:08 <ddavis> Bin_Hu: Yes, if we approve it then allow another one or two weeks to see if there are further comments by mail.
+13:28:14 <ddavis> ddavis: +1
+13:28:53 <ddavis> Bin_Hu: So I'll write a mail to see what people on the mailing list think.
+13:29:02 <ddavis> ddavis: Any comments about this note?
+13:29:24 <ddavis> resolution: "Requirements from the Media API TF" note approved by meeting attendees.
+13:29:38 <kaz> rrsagent, make log public
+13:29:48 <kaz> rrsagent, draft minutes
+13:29:48 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/02-webtv-minutes.html kaz
+13:30:08 <ddavis> Bin_Hu: So I think we've finished the administrative bits.
+13:30:25 <kaz> s/resolution:/RESOLUTION:/
+13:30:26 <kaz> rrsagent, draft minutes
+13:30:26 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/02-webtv-minutes.html kaz
+13:30:38 <ddavis> Topic: 2nd iteration of use-cases/requirements
+13:30:58 <ddavis> Bin_Hu: In the coming schedule we have the end of this month (April) as the last chance to submit a use-case.
+13:31:09 <ddavis> Bin_Hu: We have no use-cases so I wonder if the schedule is too tight.
+13:31:26 <ddavis> Bin_Hu: Maybe we can adjust the date from end of April to end of May.
+13:31:48 <ddavis> ... Then we'll have another two conference calls before the end of June to finalise the list.
+13:32:43 <ddavis> ddavis: Maybe we can make it clearer to all people in the TV IG that we're looking for more use cases.
+13:33:10 <ddavis> Bin_Hu: Yes, the chairs told me they want to make the Media API calls open to more people in the group.
+13:33:56 <ddavis> Bin_Hu: So we can give more time and higher quality use cases.
+13:34:26 <ddavis> ddavis: It might be good to also clarify how to submit use cases (e.g. by email, through a web form, etc.)
+13:34:39 <ddavis> Bin_Hu: Ideally people should use the template that Kaz has maade.
+13:34:45 <ddavis> https://www.w3.org/2011/webtv/wiki/New_Ideas
+13:35:08 <ddavis> Bin_Hu: But if it's just a one-liner then we can add it for consideration in the conference call.
+13:35:24 <aldafu> s/maade/made/
+13:35:32 <kaz> rrsagent, draft minutes
+13:35:32 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/02-webtv-minutes.html kaz
+13:35:41 <ddavis> Bin_Hu: We can then decide whether to write a more detailed description of the use case or if it's out of scope.
+13:36:27 <ddavis> ACTION: Bin Hu to add information in the wiki about submitting use cases
+13:36:27 <trackbot> Created ACTION-190 - Hu to add information in the wiki about submitting use cases [on Bin Hu - due 2014-04-09].
+13:36:36 <kaz> zakim, who is noisy?
+13:36:47 <Zakim> kaz, listening for 10 seconds I heard sound from the following: ddavis (4%), aldafu (15%), whyun (9%), Bin_Hu (45%)
+13:36:48 <ddavis> ACTION: Bin Hu to send mail about submitting a new use case
+13:36:48 <trackbot> Error creating an ACTION: could not connect to Tracker.  Please mail <sysreq@w3.org> with details about what happened.
+13:36:49 <ddavis> zakim, mute me
+13:36:49 <Zakim> ddavis should now be muted
+13:36:59 <kaz> zakim, mute aldafu
+13:36:59 <Zakim> aldafu should now be muted
+13:37:14 <ddavis> zakim, who is noise?
+13:37:14 <Zakim> I don't understand your question, ddavis.
+13:37:18 <ddavis> zakim, who is noisy?
+13:37:21 <kaz> zakim, mute whyun
+13:37:22 <Zakim> whyun should now be muted
+13:37:29 <Zakim> ddavis, listening for 10 seconds I heard sound from the following: Bin_Hu (23%)
+13:37:34 <aldafu> i can
+13:38:05 <ddavis> zakim, unmute me
+13:38:05 <Zakim> ddavis should no longer be muted
+13:38:20 <ddavis> Bin_Hu: So we can accept use cases in two formats
+13:38:25 <kaz> zakim, unmute aldafu
+13:38:25 <Zakim> aldafu should no longer be muted
+13:38:40 <ddavis> Bin_Hu: And I'll change the deadline from end of April to end of May
+13:39:18 <ddavis> Topic: Possible "Tuner API" CG
+13:39:31 <ddavis> Bin_Hu: How many people do you need for a Community Group, Kaz?
+13:39:34 <ddavis> kaz: 5
+13:39:56 <ddavis> ... Theoretically you don't need a detailed charter but it's better to have a good description.
+13:40:15 <kaz> zakim, who is here?
+13:40:15 <Zakim> On the phone I see Kazuyuki, ddavis, gmandyam, aldafu, whyun (muted), Bin_Hu
+13:40:18 <Zakim> On IRC I see jcverdie, Bin_Hu, whyun, gmandyam, ddavis, RRSAgent, Zakim, kaz, aldafu, schuki, MarkS, timeless_, tobie__, trackbot
+13:40:18 <ddavis> aldafu: Can we see how many companies are interested already?
+13:40:37 <ddavis> Bin_Hu: It depends on the level of support.
+13:41:08 <gmandyam> q+
+13:41:13 <ddavis> Bin_Hu: AT&T and Opera seem to be interested. Maybe Qualcomm and ETRI as well.
+13:41:26 <kaz> ack g
+13:41:57 <ddavis> gmandyam: Qualcomm Innovation Center would be interested in this. One concern is that whatever comes out of this group could be too light to make it into tech such as HbbTV.
+13:42:24 <ddavis> gmandyam: Can we get some commitment from the other SDOs to support the output of this CG?
+13:42:32 <ddavis> kaz: So we should create the CG?
+13:42:52 <ddavis> gmandyam: Yes, but you don't have a lot of time.
+13:42:56 <kaz> s/we should create the CG?/we need a WG instead at some point?/
+13:43:14 <ddavis> s/light/late/
+13:43:35 <ddavis> gmandyam: HbbTV, for example, have progressed well with their own spec.
+13:43:50 <ddavis> Bin_Hu: We need to move quickly if we want it to be adopted.
+13:44:07 <kaz> q+ to suggest we ask HbbTV guys to join the CG
+13:44:10 <ddavis> aldafu: As I understand it, the HbbTV spec is based on the OIPF spec, right?
+13:44:22 <ddavis> gmandyam: Yes, but it also leverages some tech from W3C.
+13:44:33 <kaz> q?
+13:44:37 <ddavis> gmandyam: But the Tuner API is more specific so they may not be expecting much from W3C.
+13:44:59 <ddavis> aldafu: Mozilla also has an interest to bring Firefox OS to TV so they would need something like this.
+13:45:03 <kaz> ack k
+13:45:03 <Zakim> kaz, you wanted to suggest we ask HbbTV guys to join the CG
+13:45:30 <ddavis> kaz: I think we should invite HbbTV guys and other SDOs to the community group. It doesn't require W3C membership, by the way.
+13:45:40 <ddavis> Bin_Hu: That's a good idea.
+13:45:53 <ddavis> Bin_Hu: Who would be able to contact the HbbTV participants?
+13:46:04 <ddavis> aldafu: I can ask a colleague who's involved with this.
+13:46:53 <ddavis> kaz: So you could start with Louay and Stephan. We could also ask Jon Piesing.
+13:47:19 <ddavis> ddavis: For the record, they're already aware of our interest in this as it was discussed in the TV workshop.
+13:47:33 <ddavis> Bin_Hu: From our perspective, which company is willing to drive this?
+13:47:57 <ddavis> Bin_Hu: Or should we wait until the next call when we have a wider group of people involved?
+13:49:24 <ddavis> ddavis: We could send a mail quickly asking for people who are willing to drive it and then see if there are others in the next call when we can decide.
+13:49:47 <ddavis> ACTION: Bin Hu to send mail to TV IG asking for volunteers to drive the "Tuner API" initiative.
+13:49:47 <trackbot> Created ACTION-191 - Hu to send mail to tv ig asking for volunteers to drive the "tuner api" initiative. [on Bin Hu - due 2014-04-09].
+13:50:18 <ddavis> ddavis: We should make it clear that "Tuner API" is just a placeholder name - not decided yet.
+13:50:50 <ddavis> Bin_Hu: I think there are three issues: Name, Scope, Chair
+13:51:39 <ddavis> aldafu: Let me add some name ideas: TV Control API, TV Channel API, Channel Control API
+13:51:49 <ddavis> aldafu: I agree, Tuner API doesn't really make sense
+13:52:51 <ddavis> ddavis: Some people may not like having "TV" in the name, so that it's for the wider web and not TV specifically.
+13:53:13 <ddavis> Bin_Hu: Maybe "Channel Control API" is a more logical concept.
+13:53:42 <ddavis> kaz: Also "Media Selection" is possible
+13:54:17 <ddavis> Bin_Hu: Anything else to add?
+13:54:31 <skim13> skim13 has joined #webtv
+13:54:41 <ddavis> (silence)
+13:54:58 <ddavis> Bin_Hu: OK, we're done for today, ahead of schedule.
+13:55:37 <ddavis> Bin_Hu: The next meeting could be at a wider level for more participation hopefully.
+13:55:51 <ddavis> Bin_Hu: Thank you for your help and support. See you next time.
+13:55:53 <Zakim> -aldafu
+13:55:54 <Zakim> -Bin_Hu
+13:55:57 <Zakim> -Kazuyuki
+13:55:59 <Zakim> -whyun
+13:56:01 <Zakim> -gmandyam
+13:56:01 <Zakim> UW_WebTVIG()9:00AM has ended
+13:56:01 <Zakim> Attendees were Kazuyuki, +49.303.aaaa, ddavis, gmandyam, aldafu, whyun, +1.650.946.aabb, Bin_Hu
+13:56:08 <ddavis> rrsagent, generate minutes
+13:56:08 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/02-webtv-minutes.html ddavis
+13:56:25 <kaz> [ adjourned ]
+13:56:29 <ddavis> ACTION: Bin Hu to send mail about submitting a new use case
+13:56:29 <trackbot> Error creating an ACTION: could not connect to Tracker.  Please mail <sysreq@w3.org> with details about what happened.
+13:56:29 <kaz> rrsagent, draft minutes
+13:56:29 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/02-webtv-minutes.html kaz
+13:58:32 <skim13> skim13 has left #webtv
+15:59:57 <glenn> glenn has joined #webtv
+16:01:07 <Zakim> Zakim has left #webtv

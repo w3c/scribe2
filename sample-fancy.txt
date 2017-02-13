@@ -1,0 +1,306 @@
+14:45:51 <RRSAgent> RRSAgent has joined #wai-wcag
+14:45:51 <RRSAgent> logging to http://www.w3.org/2014/04/15-wai-wcag-irc
+14:45:53 <trackbot> RRSAgent, make logs public
+14:45:53 <Zakim> Zakim has joined #wai-wcag
+14:45:55 <trackbot> Zakim, this will be WAI_WCAG
+14:45:55 <Zakim> ok, trackbot; I see WAI_WCAG()11:00AM scheduled to start in 15 minutes
+14:45:56 <trackbot> Meeting: Web Content Accessibility Guidelines Working Group Teleconference
+14:45:56 <trackbot> Date: 15 April 2014
+14:46:03 <AWK> Chair: AWK
+14:46:09 <AWK> zakim, agenda?
+14:46:09 <Zakim> I see nothing on the agenda
+14:46:56 <AWK> Agenda+ Publication timeline update - Techniques in by May 15!
+14:47:12 <AWK> Agenda+ Survey on techniques and comments: https://www.w3.org/2002/09/wbs/35422/15thApril2014/
+14:47:20 <AWK> Survey on Task Force updates: https://www.w3.org/2002/09/wbs/35422/April14TFUpdates/
+14:47:35 <AWK> Agenda+ Survey on Task Force updates: https://www.w3.org/2002/09/wbs/35422/April14TFUpdates/
+14:47:45 <AWK> Agenda+ Comment and techniques status
+14:48:36 <AWK> Zakim, who is on the phone?
+14:48:36 <Zakim> WAI_WCAG()11:00AM has not yet started, AWK
+14:48:38 <Zakim> On IRC I see RRSAgent, AWK, GreggVan, MichaelC, trackbot, wilhelm
+14:56:33 <kathleen> kathleen has joined #wai-wcag
+14:59:15 <Zakim> WAI_WCAG()11:00AM has now started
+14:59:21 <Zakim> +AWK
+15:00:11 <Zakim> +??P20
+15:00:25 <Zakim> + +1.910.278.aaaa
+15:00:32 <Jon_avila> Jon_avila has joined #wai-wcag
+15:00:35 <kathleen> zakim, aaa is me
+15:00:36 <Zakim> sorry, kathleen, I do not recognize a party named 'aaa'
+15:00:39 <Ryladog> Ryladog has joined #wai-wcag
+15:00:43 <kathleen> zakim, aaaa is me
+15:00:45 <Zakim> +kathleen; got it
+15:00:50 <MichaelC> zakim, aaaa is Kathleen_Wahlbin
+15:00:51 <Zakim> sorry, MichaelC, I do not recognize a party named 'aaaa'
+15:00:55 <Zakim> +Katie_Haritos-Shea
+15:00:56 <Kathy> Kathy has joined #wai-wcag
+15:01:39 <Zakim> +David_MacDonald
+15:01:43 <Zakim> + +1.703.637.aabb
+15:01:51 <Jon_avila> zakim, I am aabb
+15:01:51 <Zakim> +Jon_avila; got it
+15:02:09 <Zakim> +[IPcaller]
+15:02:19 <MichaelC> zakim, IPcaller is Loretta_Guarino_Reid
+15:02:19 <Zakim> +Loretta_Guarino_Reid; got it
+15:02:24 <Zakim> +Kathy_Wahlbin
+15:02:24 <David> David has joined #wai-wcag
+15:02:46 <Zakim> +Marc_Johlic
+15:02:48 <AWK> Zakim, who is on the phone?
+15:02:48 <Zakim> On the phone I see AWK, Michael_Cooper, kathleen, Katie_Haritos-Shea, David_MacDonald, Jon_avila, Loretta_Guarino_Reid, Kathy_Wahlbin, Marc_Johlic
+15:02:58 <marcjohlic> marcjohlic has joined #wai-wcag
+15:04:38 <Zakim> +[IPcaller]
+15:04:51 <MichaelC> agenda: http://lists.w3.org/Archives/Public/w3c-wai-gl/2014AprJun/0024.html
+15:04:58 <MichaelC> regrets: Bruce_Bailey, Sailesh_Panchang
+15:05:04 <MichaelC> zakim, Ipcaller is Joshue_O_Connor
+15:05:04 <Zakim> +Joshue_O_Connor; got it
+15:05:13 <Joshue> Joshue has joined #wai-wcag
+15:05:37 <AWK> Scribe: David
+15:05:42 <Joshue> zakim, [IPcaller] is Joshue
+15:05:42 <Zakim> sorry, Joshue, I do not recognize a party named '[IPcaller]'
+15:05:50 <MichaelC> zakim, mute marc
+15:05:50 <Zakim> Marc_Johlic should now be muted
+15:05:51 <Joshue> zakim, who is on the phone
+15:05:51 <Zakim> I don't understand 'who is on the phone', Joshue
+15:05:56 <Joshue> zakim, who is on the phone?
+15:05:56 <Zakim> On the phone I see AWK, Michael_Cooper, kathleen, Katie_Haritos-Shea, David_MacDonald, Jon_avila, Loretta_Guarino_Reid, Kathy_Wahlbin, Marc_Johlic (muted), Joshue_O_Connor
+15:06:00 <David> Tewt
+15:06:04 <Joshue> zakim, mute me
+15:06:04 <Zakim> Joshue_O_Connor should now be muted
+15:06:04 <David> test
+15:06:06 <AWK> Zakim, take up item 1
+15:06:06 <Zakim> agendum 1. "Publication timeline update - Techniques in by May 15!" taken up [from AWK]
+15:07:01 <David> May 15 is the date to get techniques for November publication
+15:07:16 <AWK> Zakim, close item 1
+15:07:16 <Zakim> agendum 1, Publication timeline update - Techniques in by May 15!, closed
+15:07:18 <Zakim> I see 3 items remaining on the agenda; the next one is
+15:07:18 <Zakim> 2. Survey on techniques and comments: https://www.w3.org/2002/09/wbs/35422/15thApril2014/ [from AWK]
+15:07:23 <David> Six months apart is what we are going for
+15:07:35 <Loretta> Loretta has joined #WAI-WCAG
+15:07:57 <AWK> Zakim, take up next item
+15:07:57 <Zakim> agendum 2. "Survey on techniques and comments: https://www.w3.org/2002/09/wbs/35422/15thApril2014/" taken up [from AWK]
+15:08:13 <David> AWK: Survey
+15:08:39 <Joshue> zakim, queue?
+15:08:39 <Zakim> I see no one on the speaker queue
+15:08:59 <David> AWK: Draft proposal for techniques for dynamic content
+15:09:13 <Joshue> +q
+15:09:26 <Joshue> ack me
+15:09:28 <AWK> ack j
+15:10:59 <David> Joshue: This goes beyond SCR 21
+15:11:19 <Joshue> zakim, mute me
+15:11:19 <Zakim> Joshue_O_Connor should now be muted
+15:11:32 <Joshue> zakim, queue?
+15:11:32 <Zakim> I see no one on the speaker queue
+15:11:54 <David> AWK: goes through comments in survey with users
+15:12:15 <AWK> Regrets+ Bruce, Sailesh
+15:12:45 <Joshue> ack me
+15:13:58 <David> Joshue: People are using libraies these days... don't now how to address that in our techniques
+15:14:30 <David> AWK: JQUERY is used but we can't rely on it...
+15:14:54 <Loretta> q+
+15:15:46 <AWK> Ack l
+15:15:48 <Joshue> ack Lorea
+15:15:57 <AWK> Original comment that kicked this off: https://www.w3.org/2006/02/lc-comments-tracker/35422/WD-WCAG20-TECHS-20140107/2891
+15:16:02 <David_> David_ has joined #wai-wcag
+15:16:45 <Zakim> -David_MacDonald
+15:17:08 <Zakim> +David_MacDonald
+15:17:42 <David_> Loretta: We shouldn't stand behind a library.. don't endorse anything
+15:17:53 <David_> q+
+15:18:16 <AWK> ack d
+15:18:23 <David_> test
+15:18:52 <Joshue> DMcD: It's a difficult question, I hear what Josh is saying about real world development.
+15:19:08 <Joshue> DMcD: We do want to make sure what we put in works.
+15:19:40 <Joshue> DMcD: If we did identify widgets that worked well in JQuery for example, what would be the harm? We link to other resources like Juicy Studio etc.
+15:19:55 <Joshue> DMcD: We do need to acknowledge if people are doing things right.
+15:22:09 <Joshue> zakim, mute me
+15:22:09 <Zakim> Joshue_O_Connor should now be muted
+15:22:29 <David> Loretta: I have nightmare of GOV of Canada or otherw saying, you must you foo library
+15:22:40 <Zakim> +Gregg_Vanderheiden
+15:22:47 <David> David: Yes it is a real concern
+15:23:00 <Joshue> ack me
+15:24:07 <David> AWK: Original comment was form Wilco... we should address applicability of SCR 21, limit it to that now...
+15:24:31 <David> Josh: Yes let's limit to SCR 21
+15:24:56 <Joshue> http://www.w3.org/TR/WCAG20-TECHS/SCR21
+15:25:06 <David> Josh: Should we retire it
+15:26:06 <David> AWK: Wilco doen't think it aplies to 1.3.1 but it might apply to others such as meaningful sequence
+15:26:41 <Joshue> zakim, queue?
+15:26:41 <Zakim> I see no one on the speaker queue
+15:27:13 <David> AWK: it is so braod of a way of using technology, that is cannot be made consise?
+15:27:40 <David> Josh:
+15:28:03 <David> it could be a simpler techniue to cut down, and perhaps expand out to other applicability
+15:28:09 <David> q+
+15:28:14 <Joshue> ack Dav
+15:28:18 <AWK> ack d
+15:30:10 <David> David: GOV of Canada called me up and said document.write should not be discouraged
+15:31:48 <David> AWK: seems to discourage some practises rather than encouraging good practises
+15:32:07 <David> AWK: example hard to map to 1.3.1
+15:32:46 <David> AWK:if it was titled how to insert a heading into a oage maybe that work
+15:32:57 <Jon_avila> q?
+15:33:05 <Jon_avila> q+
+15:33:08 <David> Josh: yes agree, title of technique not accurate
+15:33:32 <AWK> ack j
+15:33:35 <Loretta> Someone might check with Cynthia Shelly on the history of this technique.
+15:33:49 <David> Josh: turning down volume on the don't in the technique could make it a lot more useful
+15:34:02 <Loretta> q+
+15:34:09 <David> Josh: can't we map to a conformance requirement
+15:34:28 <David> s/josh/john
+15:35:18 <Joshue> DMacD: I don't think we have ever mapped to a conformance requirement
+15:35:20 <AWK> ack lo
+15:35:33 <GreggVan> q+   we usually mention best practice (recommended)  but don’t usually talk about a bad practice unless it is an exception where it technically would meet but is really a bad idea.       A way to finesse this is to say this is better than than
+15:35:47 <David> LORETTA: We could map to a conformance criteria
+15:36:01 <GreggVan> Q+
+15:36:25 <David> Loretta: with this mapping to 4.1.1 is that you run risk of things like duplicate ids
+15:36:42 <Joshue> ACTION: Josh to ping Cynthia for some background on SCR21
+15:36:42 <trackbot> Created ACTION-253 - Ping cynthia for some background on scr21 [on Joshue O Connor - due 2014-04-22].
+15:36:48 <AWK> ack g
+15:37:36 <Joshue> +Q
+15:37:53 <David> Gregg: We try to talk about positives, but you can talk in a positive way about things to avoid... so you could say, "this is done in this way to avoid that.... but we usually try to say why
+15:38:25 <AWK> Techniques that refer to conformance requirements only currently for CR#1: http://www.w3.org/WAI/WCAG20/quickref/20140408/#conformance-reqs
+15:39:03 <Zakim> +James_Nurthen
+15:39:32 <Joshue> ack me
+15:39:51 <David> Gregg: wrt to wuestion about mapping to conformance criteria... usually it is in conjunction with a SC, but the things that are required are using SC within the conformance criteria, i think we can refer to them but we try tl map to a SC because the Conformance criteria are on the SCs
+15:40:58 <David> JOSH: +1 on AWK ... rewrite description, new title, relating to example with Form validation would be better
+15:41:12 <Joshue> zakim, queue?
+15:41:12 <Zakim> I see no one on the speaker queue
+15:41:17 <Loretta> THe Understanding doc for a conformance criterion with techniques: http://www.w3.org/TR/UNDERSTANDING-WCAG20/conformance.html#uc-conforming-alt-versions-head
+15:41:30 <jamesn> jamesn has joined #wai-wcag
+15:41:36 <David> AWK: wary to map to 4.1.1 but could write failure techniques on messing up dom
+15:41:40 <jamesn> rrsagent, make minutes
+15:41:40 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/15-wai-wcag-minutes.html jamesn
+15:42:34 <David> JOSH: scr21 doesn't say why it is wrong to do the things it discourages
+15:42:38 <jamesn> q+ to ask what is the problem with innerHTML?
+15:43:00 <Joshue> ack james
+15:43:00 <Zakim> jamesn, you wanted to ask what is the problem with innerHTML?
+15:43:02 <AWK> ack j
+15:43:18 <Jon_avila> q+
+15:43:24 <Jon_avila> q?
+15:43:24 <David> ACTION: David to connect with GOV of Canada regarding their objections to the discouraged parts of SCR21
+15:43:25 <trackbot> 'David' is an ambiguous username. Please try a different identifier, such as family name or username (e.g., dmacdona, dtodd2).
+15:44:00 <David> ACTION: dmacdonato connect with GOV of Canada regarding their objections to the discouraged parts of SCR21
+15:44:00 <trackbot> Error finding 'dmacdonato'. You can review and register nicknames at <http://www.w3.org/WAI/GL/track/users>.
+15:44:30 <David> ACTION:dmacdona : David to connect with GOV of Canada regarding their objections to the discouraged parts of SCR21
+15:45:04 <David> James: nothing wrong with document.write... it is just old and clunky
+15:45:34 <David> JAMES: it seems to be a tuotial on scripting... no our role
+15:46:05 <David> JAMES: some people might look to us
+15:46:33 <David> JAMES: i don't know where we can assign this
+15:47:16 <David> RESOLUTION: leave open David will get back to us re GOV of Canada
+15:47:35 <Joshue> zakim, agenda?
+15:47:35 <Zakim> I see 3 items remaining on the agenda:
+15:47:36 <Zakim> 2. Survey on techniques and comments: https://www.w3.org/2002/09/wbs/35422/15thApril2014/ [from AWK]
+15:47:36 <Zakim> 3. Survey on Task Force updates: https://www.w3.org/2002/09/wbs/35422/April14TFUpdates/ [from AWK]
+15:47:36 <Zakim> 4. Comment and techniques status [from AWK]
+15:48:08 <Joshue> zakim, mute me
+15:48:08 <Zakim> Joshue_O_Connor should now be muted
+15:48:11 <Jon_avila> q?
+15:48:48 <David> TOPIC: move h87 to a general technique
+15:49:02 <David> q+
+15:49:13 <AWK> ack j
+15:49:14 <Jon_avila> http://www.freedomscientific.com/fs_support/BulletinView.asp?QC=1165
+15:50:38 <David> John: put a tech support... 3rd paragraph explains why it was an issue prior to JAWS 8
+15:51:18 <David> the last few sentence about previous issue... requiring refresh
+15:51:28 <Jon_avila> q-
+15:51:28 <AWK> ack d
+15:51:56 <Joshue> DMacD: General Techs tend to get ignored.
+15:52:15 <Joshue> DMacD: They don't have the same profile. What do we do?
+15:52:27 <Joshue> zakim, queue?
+15:52:27 <Zakim> I see no one on the speaker queue
+15:53:13 <David> AWK: Yes we should work with EO on that
+15:53:34 <David> RESOLUTION:Accepted as proposed LC 2887
+15:54:02 <David> TOPIC: Comment LC-2892: Draft response
+15:56:15 <Joshue> ack me
+15:56:30 <David> AWK: second option is generally accepted.... We could remove the technique
+15:57:00 <Joshue> DMacD: But isn't it important to notify people of changes to the DOM?
+15:57:07 <Joshue> <gives example>
+15:57:33 <AWK> http://www.w3.org/TR/WCAG20-TECHS/F76.html
+15:57:46 <Joshue> AWK: This is about changing the userd context.
+15:57:50 <Joshue> s/userd/sers
+15:57:59 <Joshue> s/sers/users
+15:58:33 <Joshue> DMacD: But shouldn't it be required? Shouldn't we have a failure where they don't provide instructions for DOM changes?
+15:59:04 <Joshue> AWK: The only thing thats different here is the notion of where the user location is.
+15:59:22 <Joshue> AWK: Where can you put this, where it's not at a location that may be bypassed?
+15:59:39 <Joshue> DMacD: What about ARIA?
+16:00:04 <Joshue> AWK: Sure, but that's a different technique.
+16:00:40 <Joshue> DMacD: I'd like to think this over.
+16:01:03 <Joshue> AWK: This isn't about DOM changes, but changes in context.
+16:02:08 <David> JOHN: would like to have a failure for this DOM... rather have it more general than not at all
+16:02:36 <David> AWK: if success criteria says it do we need a failure
+16:02:56 <Jon_avila> q?
+16:02:56 <Joshue> +q
+16:03:29 <David> AWK: my gut is we could leave it ope, or remove it for now, and come back faiure techniques
+16:03:33 <Jon_avila> q+
+16:03:40 <Joshue> ack me
+16:03:46 <David> q+
+16:03:46 <AWK> ack jo
+16:04:28 <David> JOSH: should remove it
+16:04:36 <AWK> ack jon
+16:04:37 <Joshue>  ack jon
+16:05:11 <David> Jon: agree part of the title is not great... but if we remove failure we loose the test steps
+16:05:16 <Zakim> -Gregg_Vanderheiden
+16:05:38 <David> JON: if we remove this are there any failures with test steps
+16:05:58 <David> JOSH: i don't find test steps useful
+16:06:30 <David> JON: my preference would be to improve test steps
+16:07:19 <Joshue> DMacD: Sounds like we need a larger strategy.
+16:07:38 <Joshue> DMacD: We need to review the way people are doing things now.
+16:07:45 <AWK> ack da
+16:08:28 <Joshue> +q
+16:08:37 <Joshue> -q
+16:08:59 <David> JON: might be able with describedby to modify... maybe reinstate...
+16:09:00 <Joshue> +q
+16:09:36 <David> JON: would it be the same name or number
+16:09:44 <David> AWK: depends
+16:10:43 <David> JON: must weigh danger of leaving it with the what we lose if removed
+16:10:56 <David> AWK: Concerned it has a lot of problems
+16:11:21 <Joshue> ack me
+16:12:19 <Joshue> zakim, queue?
+16:12:19 <Zakim> I see no one on the speaker queue
+16:12:21 <David> ACTION: David and JON to look at rewriting technique in communication with AWK
+16:12:21 <trackbot> 'David' is an ambiguous username. Please try a different identifier, such as family name or username (e.g., dmacdona, dtodd2).
+16:13:03 <David> JAMES: may need mandatory training... should be allowed to replace it
+16:13:47 <David> AWK: leqve open until May 15, pending action by David and JON, but if we don't we will yank...
+16:14:04 <Zakim> -Joshue_O_Connor
+16:14:09 <Zakim> + +1.212.924.aacc
+16:15:04 <MichaelC> zakim, aacc is John_Kirkwood
+16:15:04 <Zakim> +John_Kirkwood; got it
+16:15:21 <David> RESOLUTION: dmacdona and JON to work on rewriting technique.... if done before May 15  it will be considered... if not drop it.
+16:16:06 <MichaelC> zakim, mute John_
+16:16:06 <Zakim> John_Kirkwood should now be muted
+16:16:19 <David> ACTION: dmacdona and jon to look at rewriting technique f76 in communication with AWK
+16:16:20 <trackbot> Created ACTION-254 - And jon to look at rewriting technique f76 in communication with awk [on David MacDonald - due 2014-04-22].
+16:16:52 <kathleen> q+
+16:17:06 <AWK> ack kath
+16:17:17 <David> Topic: The following is a proposed update to technique H30. The proposal is to add an example 7 to the technique: Example 7REOLUTION:
+16:20:20 <Jon_avila> q+
+16:20:31 <Jon_avila> q?
+16:20:34 <AWK> Ack j
+16:20:57 <AWK> JA: this aligns with the HTML spec
+16:21:06 <Jon_avila> q-
+16:21:33 <Kathy> +1
+16:23:19 <AWK> KW: Works in JAWS
+16:24:55 <AWK> DMD: reading ok with NVDA
+16:26:57 <Jon_avila> I have to drop off the call.
+16:27:02 <Zakim> -Jon_avila
+16:28:34 <David> RESOLUTION: Accepted as ammended H30 new example pending editorial changes
+16:30:40 <AWK> TOPIC: G141 edit
+16:32:17 <Zakim> -James_Nurthen
+16:33:46 <Zakim> -Michael_Cooper
+16:33:47 <Zakim> -kathleen
+16:33:47 <Zakim> -Loretta_Guarino_Reid
+16:33:49 <Zakim> -AWK
+16:33:49 <Zakim> -David_MacDonald
+16:33:50 <Zakim> -Kathy_Wahlbin
+16:33:57 <Zakim> -Katie_Haritos-Shea
+16:33:59 <Zakim> -John_Kirkwood
+16:34:05 <AWK> RESOLUTION: Accepted as proposed
+16:34:09 <David> RESOLUTION: accepted as proposed G141 change "would to could" in second paragraph of
+16:34:20 <David> the description
+16:34:27 <David> will do minutes
+16:35:04 <AWK> Anyone with Techniques questions can attend the techniques meeting Thursday at 4pm Eastern.
+16:35:13 <AWK> IRC channel #wcag-techs
+16:35:43 <David> Zakim, list attendees if everyone has not left
+16:35:43 <Zakim> I don't understand 'list attendees if everyone has not left', David
+16:36:00 <David> Zakim, list attendees
+16:36:00 <Zakim> As of this point the attendees have been AWK, Michael_Cooper, +1.910.278.aaaa, kathleen, Katie_Haritos-Shea, David_MacDonald, +1.703.637.aabb, Jon_avila, Loretta_Guarino_Reid,
+16:36:03 <Zakim> ... Kathy_Wahlbin, Marc_Johlic, Joshue_O_Connor, Gregg_Vanderheiden, James_Nurthen, +1.212.924.aacc, John_Kirkwood
+16:36:10 <David> zakim, bye
+16:36:10 <Zakim> leaving.  As of this point the attendees were AWK, Michael_Cooper, +1.910.278.aaaa, kathleen, Katie_Haritos-Shea, David_MacDonald, +1.703.637.aabb, Jon_avila, Loretta_Guarino_Reid,
+16:36:10 <Zakim> Zakim has left #wai-wcag
+16:36:13 <Zakim> ... Kathy_Wahlbin, Marc_Johlic, Joshue_O_Connor, Gregg_Vanderheiden, James_Nurthen, +1.212.924.aacc, John_Kirkwood
+16:36:22 <David> rrsagent, make log public
+16:36:32 <David> rrsagent, make minutes
+16:36:32 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/15-wai-wcag-minutes.html David
+18:05:23 <GreggVan> GreggVan has joined #WAI-WCAG

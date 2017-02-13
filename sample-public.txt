@@ -1,0 +1,108 @@
+14:59:27 <RRSAgent> RRSAgent has joined #forms
+14:59:27 <RRSAgent> logging to http://www.w3.org/2014/04/09-forms-irc
+14:59:29 <trackbot> RRSAgent, make logs public
+14:59:29 <Zakim> Zakim has joined #forms
+14:59:31 <trackbot> Zakim, this will be IA_XForms
+14:59:31 <Zakim> ok, trackbot; I see IA_XForms()11:00AM scheduled to start in 1 minute
+14:59:32 <trackbot> Meeting: Forms Working Group Teleconference
+14:59:32 <trackbot> Date: 09 April 2014
+14:59:36 <alain> alain has joined #forms
+14:59:44 <Steven_> Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0004
+14:59:54 <Steven_> Steven_ has changed the topic to: Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0004
+14:59:58 <Steven_> Chair: Steven
+15:00:03 <Steven_> rrsagent, make minutes
+15:00:03 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:01:17 <Steven_> Let's get that right...
+15:01:22 <Steven_> Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011
+15:01:29 <Steven_> Steven_ has changed the topic to: Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011
+15:02:58 <Zakim> IA_XForms()11:00AM has now started
+15:03:04 <Zakim> +??P15
+15:03:05 <Steven_> zakim, I am ?
+15:03:05 <Zakim> +Steven_; got it
+15:03:38 <Zakim> +[IPcaller]
+15:03:39 <alain> Zakim, I am [IPCaller]
+15:03:39 <Zakim> ok, alain, I now associate you with [IPcaller]
+15:04:20 <Zakim> +ebruchez
+15:05:20 <Steven_> Topic: Announcements etc
+15:05:40 <Steven_> Steven: Congratulations Erik, on Orbeon 4.5
+15:06:21 <Steven_> ... anything of interest for us?
+15:07:14 <Steven_> Erik: Apart from what I mentioned in the email, we do have <hint> on individual items (such as check boxes)
+15:08:04 <Steven_> ... which the spec doesn't support (yet)
+15:08:23 <Steven_> ... which I raised in another mail
+15:09:23 <Steven_> ... It is easy to do with radio buttons, but harder with drop downs.
+15:10:03 <Steven_> ... other improvements are in the support tools and so on.
+15:10:17 <Steven_> Topic: Inconsistent description of attributes on <label> etc.
+15:10:17 <Steven_> http://lists.w3.org/Archives/Public/public-forms/2014Apr/0009.html
+15:10:44 <Steven_> Erik: I just replied; UI Common is the right one.\
+15:11:08 <Steven_> Steven: I'll fix.
+15:11:25 <Steven_> ACTION: Steven to fix inconsistent text on attributes for <label> etc.
+15:11:25 <trackbot> Created ACTION-1971 - Fix inconsistent text on attributes for <label> etc. [on Steven Pemberton - due 2014-04-16].
+15:11:41 <Steven_> Topic: @label, @help, @hint, @alert
+15:11:41 <Steven_> http://lists.w3.org/Archives/Public/public-forms/2014Apr/0005.html
+15:12:21 <Steven_> Steven: In the absence of objections, I plan to implement.
+15:12:39 <Steven_> Erik: <select1 ref="..." label="Gender">
+15:12:39 <Steven_>     <item label="male">m</item>
+15:12:39 <Steven_>     <item label="female">f</item>
+15:12:39 <Steven_> </select>
+15:13:09 <Steven_> Steven: Looks like a big change compared with the others.
+15:13:42 <Steven_> Alain: Not difficult to implement.
+15:14:38 <Steven_> Erik: It is a bit of a departure. But it's just a syntax issue. But it is more light weight.
+15:14:59 <ebruchez> <item label="male" value="'m'"/>
+15:15:00 <Steven_> ... <item label="male" value="m"/>
+15:15:37 <Steven_> s/"m"/"'m'"/
+15:16:49 <Steven_> ... it's not difficult to specify. But do we like it?
+15:17:13 <Steven_> Steven: The only thing is that it allows this: <item><label>male</label>m</item>
+15:17:47 <Steven_> Erik: That wouldn't be allowed.
+15:17:55 <Steven_> Steven: Then I don;t think we should do it.
+15:17:59 <Steven_> s/;/'/
+15:18:02 <ebruchez> <item>foo<label>…</label>bar</item.
+15:18:51 <Steven_> Steven: Then I propose we don't do the 'value-less' <item>
+15:19:04 <Steven_> Topic: ACTION-1970 - Propose list of page access functions [on Erik
+15:19:04 <Steven_> Bruchez - due 2014-04-09].
+15:19:04 <Steven_> http://lists.w3.org/Archives/Public/public-forms/2014Apr/0000.html
+15:19:04 <Steven_> http://www.w3.org/2014/04/02-forms-minutes.html#action01]
+15:19:21 <Steven_> Erik: I still have to do that
+15:19:57 <Steven_> Topic: XML => XPath Data Model
+15:20:05 <Steven_> http://lists.w3.org/Archives/Public/public-forms/2014Apr/0012.html
+15:21:22 <Steven_> Steven: Earlier we say "Otherwise the body is parsed to give an XPath Data Model according to Creating instance data from external resources. "
+15:22:04 <Steven_> Erik: You're new text is probably fine.
+15:22:09 <Steven_> s/'re/r/
+15:23:14 <Steven_> ACTION: Steven to make submission XML => XPath Data model change
+15:23:14 <trackbot> Created ACTION-1972 - Make submission xml => xpath data model change [on Steven Pemberton - due 2014-04-16].
+15:23:43 <Steven_> Topic: error-type
+15:24:12 <Steven_> Steven: I made the changes as agreed on last week, the diff is available here: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0013.html
+15:24:23 <Steven_> ... please check to see you are OK with it.\
+15:24:43 <Steven_> [ADJOURN]
+15:24:46 <Zakim> -[IPcaller]
+15:24:48 <Zakim> -ebruchez
+15:24:49 <Zakim> -Steven_
+15:24:49 <Zakim> IA_XForms()11:00AM has ended
+15:24:49 <Zakim> Attendees were Steven_, [IPcaller], ebruchez
+15:24:52 <Steven_> rrsagent, make minutes
+15:24:52 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:24:57 <alain> alain has left #forms
+15:25:04 <Steven_> Present+Nick
+15:25:05 <Steven_> rrsagent, make minutes
+15:25:05 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:25:59 <Steven_> s;Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0004;Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011
+15:26:01 <Steven_> rrsagent, make minutes
+15:26:01 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:26:38 <Steven_> s;Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0004;Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011;
+15:26:40 <Steven_> rrsagent, make minutes
+15:26:40 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:27:59 <Steven_> s/Agenda: http:\/\/lists.w3.org\/Archives\/Public\/public-forms\/2014Apr\/0004/Agenda: http:\/\/lists.w3.org\/Archives\/Public\/public-forms\/2014Apr\/0011/
+15:28:02 <Steven_> rrsagent, make minutes
+15:28:02 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:28:39 <Steven_> s/0004/0011/
+15:28:41 <Steven_> rrsagent, make minutes
+15:28:41 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:29:32 <Steven_> s/0004/0011/G
+15:29:35 <Steven_> rrsagent, make minutes
+15:29:35 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:30:18 <Steven_> present+ Alain
+15:30:22 <Steven_> rrsagent, make minutes
+15:30:22 <RRSAgent> I have made the request to generate http://www.w3.org/2014/04/09-forms-minutes.html Steven_
+15:32:51 <ebruchez> ebruchez has joined #forms
+17:08:25 <Zakim> Zakim has left #forms
+18:24:58 <nvdbleek> nvdbleek has joined #forms
+19:50:11 <nvdbleek> nvdbleek has joined #forms
