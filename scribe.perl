@@ -731,7 +731,7 @@ $agenda$log$prev_meeting</div>
 <dl class=intro>
 <dt>Present</dt><dd>$present</dd>
 <dt>Regrets</dt><dd>$regrets</dd>
-<dt>Chair</dt><dd>$chair </dd>
+<dt>Chair</dt><dd>$chair</dd>
 <dt>Scribe</dt><dd>$scribes</dd>
 </dl>
 </div>
