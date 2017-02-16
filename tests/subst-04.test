@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Test s/// and i/// commands
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Original text
+<foo> Anchor text
+<foo> i|Anchor|s/Original/Changed/|
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+cat $TMP2
+
+# The s/// line must be inserted, but not treated as a command itself.
+grep 'Original text' $TMP2 || exit 1
+grep 's/Original/Changed/' $TMP2

@@ -8,9 +8,12 @@ TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
 <foo> Original text
-<foo> s/Final/Original/G
-<foo> s/Original/Final/G
 <foo> Original text
+<foo> s/Original/Intermediate
+<foo> s/Intermediate/Final/
+<foo> s/Original/Intermediate/g
+<foo> s/Intermediate/Final/G
+<foo> Intermediate text
 EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
@@ -18,4 +21,5 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 cat $TMP2
 
 grep 'Original text' $TMP2 && exit 1
-[[ $(grep -c 'Final text' $TMP2) == 2 ]]
+grep 'Intermediate text' $TMP2 && exit 1
+[[ $(grep -c 'Final text' $TMP2) == 3 ]]
