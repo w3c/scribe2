@@ -585,12 +585,19 @@ s|old|new</pre>
    processed in order, first to last. (I.e., each command works on the
    text that results after the previous command.)
 
-  <p>New may contain slashes and vertical bars. E.g., this works:
+  <p><var>New</var> may contain slashes and vertical bars. E.g., this works:
    <code>s/@@/http://example.org/path/</code>. But note that the last
    slash is taken as part of the command, not of the new string. To
    include a final slash, double it
    (<code>s/@@/http://example.org/path//</code> or use the alternative
    syntax: <code>s|@@|http://example.org/path/</code>.
+
+  <p>Backslashes are not special (unlike in Perl, e.g.) E.g.,
+   <code>s/and\/or/but</code> will try to replace ‘and\’ by ‘or/but’
+
+  <p>Successful substitutions are removed from the minutes.
+   Unsuccessful ones are left in the minutes, so they can be manually
+   edited.
 
   <pre class="command">s/old/new/g 
 s|old|new|g</pre>
