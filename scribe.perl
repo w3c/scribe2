@@ -577,7 +577,6 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($use_zakim &&
 	   $records[$i]->{text} =~ /^ *ag(g?)enda\s*\d*\s*[\+\-\=\?]/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($use_zakim &&
 	   $records[$i]->{text} =~ /^ *(next|close)\s+ag(g?)end(a|(um))\s*\Z/i){
@@ -596,15 +595,12 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *q\s*[\+\-\=\?]/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *queue\s*[\+\-\=\?]/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *clear\s+agenda\s*$/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif (lc($records[$i]->{speaker}) eq $scribenick &&
 	   ($records[$i]->{text} =~ /^([^ <:]+) *: *(.*)$/ ||
