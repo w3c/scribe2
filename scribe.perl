@@ -44,6 +44,7 @@
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
 # If type is 'r' (resolution), <text> is a resolution and <id> is a unique ID.
+# If type is 'c' (change), the record is a s/// or i/// not (yet) successful
 # If type is 'o' (omit), the record is to be ignored.
 
 use strict;
@@ -309,14 +310,26 @@ do {
 
 # Step 2: Process s/old/new/ and i/where/what/ commands.
 #
+# First mark all s/// and i/// lines as 'c', so that they don't get
+# changed by other s/// lines. Then loop over all lines again and
+# apply the substitutions and insertions. Successful s/// and i///
+# become of type 'o' (omit).
+#
+foreach (@records) {
+  $_->{type} = 'c' if
+      $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/;
+}
+
 for (my $i = 0; $i < @records; $i++) {
 
-  if ($records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
+  if ($records[$i]->{type} eq 'c' &&
+      $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
     my ($cmd, $old, $new, $global) = ($1, $3, $4, $5);
 
     if ($cmd eq 'i') {				# i/where/what/
       my $j = $i - 1;
-      $j-- until $j < 0 || $records[$j]->{text} =~ /\Q$old\E/;
+      $j-- until $j < 0 || ($records[$j]->{type} eq 'i' &&
+			    $records[$j]->{text} =~ /\Q$old\E/);
       if ($j >= 0) {
 	splice(@records, $j, 0,
 	       {type=>'i',id=>'',speaker=>$records[$i]->{speaker},text=>$new});
@@ -329,23 +342,22 @@ for (my $i = 0; $i < @records; $i++) {
 
     } elsif (! defined $global) {		# s/old/new/
       my $j = $i - 1;
-      $j-- until $j < 0 || $records[$j]->{text} =~ s/\Q$old\E/$new/;
-      if ($j >= 0) {
-	push(@diagnostics, 'Succeeded: ' . $records[$i]->{text});
-	$records[$i]->{type} = 'o';
-      } else {
-	push(@diagnostics, 'Failed: ' . $records[$i]->{text});
-      }
+      $j-- until $j < 0 || ($records[$j]->{type} eq 'i' &&
+			    $records[$j]->{text} =~ s/\Q$old\E/$new/);
+
+      push(@diagnostics,
+	   ($j >= 0 ? 'Succeeded: ' : 'Failed: ') . $records[$i]->{text});
+      $records[$i]->{type} = 'o' if $j >= 0; # Omit successful command
 
     } else {					# s/old/new/g or .../G
       my $n = 0;
-      $records[$_]->{text} =~ s/\Q$old\E/$new/ and $n++ for 0..$i-1;
-      if ($global eq 'G') {
-	$records[$_]->{text} =~ s/\Q$old\E/$new/ and $n++ for $i+1..@records-1;
+      for (0 .. ($global eq 'g' ? $i-1 : @records-1)) {
+	$records[$_]->{text} =~ s/\Q$old\E/$new/ and $n++ if
+	    $records[$_]->{type} eq 'i';
       }
       push(@diagnostics,
 	   ($n ? "Succeeded $n times: " : "Failed: ") . $records[$i]->{text});
-      $records[$i]->{type} = 'o';
+      $records[$i]->{type} = 'o' if $n; # Omit successful command
     }
   }
 }
@@ -658,6 +670,7 @@ my %linepat = (
   a => "<p class=action id=%2\$s><strong>Action:</strong> %3\$s</p>\n",
   d => "<p class=summary>%3\$s</p>\n",
   i => $scribeonly ? '' : "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  c => "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
   r => "<p class=resolution id=%2\$s><strong>Resolved:</strong> %3\$s</p>\n",
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
