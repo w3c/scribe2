@@ -466,12 +466,12 @@ for (my $i = 0; $i < @records; $i++) {
     }
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($records[$i]->{speaker} eq 'RRSAgent' &&
+  } elsif ($records[$i]->{speaker} =~ /^(?:RRS|BB)Agent$/ &&
 	   $records[$i]->{text} =~ / to generate ([^ #]+)/) {
     $minutes_url = $1;
     $records[$i]->{type} = 'o';		# Ignore this line
 
-  } elsif ($records[$i]->{speaker} eq 'RRSAgent' &&
+  } elsif ($records[$i]->{speaker} =~ /^(?:RRS|BB)Agent$/ &&
 	   $records[$i]->{text} =~ /(?:logging to|recorded in|See) ([^ #]+)/) {
     $logging_url = $1;
     $records[$i]->{type} = 'o';		# Ignore this line
@@ -480,7 +480,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore this line
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($records[$i]->{speaker} eq 'RRSAgent') {
+  } elsif ($records[$i]->{speaker} =~ /^(?:RRS|BB)Agent$/) {
     # Ignore RRSAgent's list of actions, etc.
     $records[$i]->{type} = 'o';		# Ignore this line
 
