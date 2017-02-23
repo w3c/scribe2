@@ -725,6 +725,7 @@ my $diagnostics = !$embed_diagnostics ? "" :
   join("", map {"<p class=warning>" . esc($_, 0) . "</p>\n"} @diagnostics);
 
 # And output the formatted HTML.
+# TODO: Add some nice icons for agenda, log and previous?
 #
 print "<!DOCTYPE html>
 <html lang=\"en\">
@@ -747,7 +748,7 @@ $agenda$log$prev_meeting</div>
 
 <nav>
 <div id=attendees>
-<h2>Attendees</a></h2>
+<h2>Attendees</h2>
 <dl class=intro>
 <dt>Present</dt><dd>$present</dd>
 <dt>Regrets</dt><dd>$regrets</dd>
@@ -775,13 +776,13 @@ $topics</ol>
 </div>
 
 <div id=ActionSummary>
-<h2>Summary of Action Items</a></h2>
+<h2>Summary of Action Items</h2>
 <ol>
 $actions</ol>
 </div>
 
 <div id=ResolutionSummary>
-<h2>Summary of Resolutions</a></h2>
+<h2>Summary of Resolutions</h2>
 <ol>
 $resolutions</ol>
 </div>
