@@ -472,7 +472,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore this line
 
   } elsif ($records[$i]->{speaker} =~ /^(?:RRS|BB)Agent$/ &&
-	   $records[$i]->{text} =~ /(?:logging to|recorded in|See) ([^ #]+)/) {
+	   $records[$i]->{text}=~ /(?:[Ll]ogging to|recorded in|See) ([^ #]+)/){
     $logging_url = $1;
     $records[$i]->{type} = 'o';		# Ignore this line
 
