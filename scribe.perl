@@ -476,7 +476,7 @@ for (my $i = 0; $i < @records; $i++) {
     $logging_url = $1;
     $records[$i]->{type} = 'o';		# Ignore this line
 
-  } elsif ($records[$i]->{text} =~ /^ *rrsagent,/i) {
+  } elsif ($records[$i]->{text} =~ /^ *(?:rrs|bb)agent,/i) {
     $records[$i]->{type} = 'o';		# Ignore this line
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
