@@ -271,6 +271,12 @@ my $speaker;			# Current speaker
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my %speakers;			# Unique ID for each speaker
 my $use_scribe = 0;		# 1 = interpret 'scribe:' as 'scribenick:'
+my $agenda_icon = '<img alt="Agenda" title="Agenda" ' .
+  'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
+my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
+  'src="https://www.w3.org/StyleSheets/scribe2/text-plain.png">';
+my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
+  'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 
 my $urlpat = '(?:[a-z]+://|mailto:[^ <@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^ <]+';
 # TODO: Allow (and ignore) the other options of old scribe.perl?
@@ -383,7 +389,8 @@ my ($s, %count);
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
   $scribenick = $1 if $p->{text} =~ /^ *scribenick *: *([^ ]+) *$/i;
   $s = $1 if !defined $s && $p->{text}=~/^ *scribe *: *([^ ]+) *$/i;
-  $count{lc $p->{speaker}}++ if $p->{type} eq 'i';
+  $count{lc $p->{speaker}}++
+    if $p->{type} eq 'i' && $p->{speaker} !~ /^(?:RRS|BB)Agent$/;
 }
 $use_scribe = 1 if !defined $scribenick;
 $scribenick = $s if !defined $scribenick;
@@ -505,7 +512,7 @@ for (my $i = 0; $i < @records; $i++) {
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *($urlpat) *$/i) {
-    $agenda = '<a href="' . esc($1, 0) . "\">Agenda</a>\n";
+    $agenda = '<a href="' . esc($1, 0) . "\">$agenda_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
@@ -520,7 +527,7 @@ for (my $i = 0; $i < @records; $i++) {
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *previous +meeting *: *($urlpat) *$/i){
-    $prev_meeting = '<a href="' . esc($1, 0) . "\">Previous</a>\n";
+    $prev_meeting = '<a href="' . esc($1, 0) . "\">$previous_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
@@ -716,7 +723,7 @@ my $logo = !$is_fancy ?
   '<a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" ' .
   'alt=W3C border=0 height=48 width=72></a>' : '';
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
-my $log = defined $logging_url ? "<a href=\"$logging_url\">IRC log</a>\n" : "";
+my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
 my $present = esc(join(", ", sort values %present), 0);
 my $regrets = esc(join(", ", sort values %regrets), 0);
 my $scribes = esc(join(", ", sort values %scribes), 0);
