@@ -53,6 +53,8 @@ use Getopt::Long qw(GetOptionsFromString);
 use 5.012;			# We use "each @ARRAY"
 use locale;			# Sort using current locale
 
+my $urlpat= '(?:[a-z]+://|mailto:[^ <@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^ \t<]+';
+
 # Command line options:
 my $is_team = 0;		# If 1, use team style
 my $is_member = 0;		# If 1, use member style
@@ -226,32 +228,40 @@ sub Plain_Text_Format($$)
 }
 
 
-# esc -- escape HTML delimiters (<>&"),  optionally handle emphasis marks (_*/)
-sub esc($$)
+# break_url -- apply -urlDisplay option to a URL
+sub break_url($)
 {
-  my ($s, $emphasis) = @_;
+  my ($s) = @_;
+  $s =~ s|/\b|/&zwnj;|g if $url_display eq 'break';
+  $s =~ s|^(.{5}).*(.{6})$|$1…$2| if $url_display eq 'shorten';
+  return $s;
+}
+
+
+# esc -- escape HTML delimiters (<>&"), optionally handle emphasis marks (_*/)
+sub esc($;$$$)
+{
+  my ($s, $emphasis, $make_links, $break_urls) = @_;
 
   $s =~ s/&/&amp;/g;
   $s =~ s/</&lt;/g;
   $s =~ s/>/&gt;/g;
   $s =~ s/"/&quot;/g;
+
+  if ($make_links) {		# Wrap Ralph-links and bare URLs in <a>
+    $s =~ s/-&gt; *($urlpat) +"([^"<]*)/<a href="$1">$2<\/a>/gi or
+	$s =~ s/-&gt; *($urlpat) +'([^'<]*)/<a href="$1">$2<\/a>/gi or
+	$s =~ s/-&gt; *($urlpat) +([^<]+)/<a href="$1">$2<\/a>/gi or
+	$s =~ s/\b($urlpat)/"<a href=\"$1\">".break_url($1)."<\/a>"/gie;
+  } elsif ($break_urls) {	# Shorten or break URLs
+    $s =~ s/($urlpat)/break_url($1)/gie;
+  }
   if ($emphasis) {
     $s =~ s{(^|\s)_([^\s_](?:[^_]*[^\s_])?)_(\s|$)}{$1<u>$2</u>$3}g;
     $s =~ s{(^|\s)/([^\s/](?:[^/]*[^\s/])?)/(\s|$)}{$1<em>$2</em>$3}g;
     $s =~ s{(^|\s)\*([^\s*](?:[^*]*[^\s*])?)\*(\s|$)}{$1<strong>$2</strong>$3}g;
   }
   return $s;
-}
-
-
-# make_link -- return an <a> element from a URL and an anchor
-sub make_link($$$)
-{
-  my ($url, $anchor, $break) = @_;
-
-  $anchor =~ s|/\b|/&zwnj;|g if $break && $url_display eq 'break';
-  $anchor =~ s|^(.{5}).*(.{6})$|$1…$2| if $break && $url_display eq 'shorten';
-  return "<a href=\"$url\">$anchor<\/a>";
 }
 
 
@@ -292,7 +302,6 @@ my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
 my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 
-my $urlpat = '(?:[a-z]+://|mailto:[^ <@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^ <]+';
 # TODO: Allow (and ignore) the other options of old scribe.perl?
 my %options = ("team" => \$is_team,
 	       "member" => \$is_member,
@@ -420,7 +429,7 @@ if (!defined $scribenick) {
   # If still undef, it means there are no lines at all...
   push(@diagnostics, "No scribenick or scribe found. Guessed: $scribenick");
 }
-$scribenicks{lc $scribenick} = esc($scribenick, 0) if defined $scribenick;
+$scribenicks{lc $scribenick} = esc($scribenick) if defined $scribenick;
 $scribenick = lc($scribenick // '');
 
 # Interpret each line. $scribenick is the current scribe in lowercase.
@@ -478,7 +487,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $topics .= "<li><a href=\"#$id\">" . esc($1, $emphasis) . "</a></li>\n";
+    $topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($dash_topics && $records[$i]->{text} =~ /^ *-- *$/) {
@@ -487,7 +496,7 @@ for (my $i = 0; $i < @records; $i++) {
 	$records[$i]->{type} = 't';
 	$records[$i]->{text} = $records[$j]->{text} =~ s/^ *(.*?) *$/$1/r;
 	$records[$i]->{id} = ++$id;	# Unique ID
-	$topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis) . "</a></li>\n";
+	$topics .= "<li><a href=\"#$id\">".esc($1,$emphasis,0,1)."</a></li>\n";
 	$records[$j]->{type} = 'o';
 	last;
       }
@@ -522,18 +531,18 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'a';		# Mark as action line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $actions .= "<li><a href=\"#$id\">" . esc($1, $emphasis) . "</a></li>\n";
+    $actions .= "<li><a href=\"#$id\">" . esc($1, $emphasis,0,1)."</a></li>\n";
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *resol(?:ved|ution) *: *(.*?) *$/i) {
     $records[$i]->{type} = 'r';		# Mark as resolution line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $resolutions .= "<li><a href=\"#$id\">".esc($1, $emphasis)."</a></li>\n";
+    $resolutions .= "<li><a href=\"#$id\">".esc($1,$emphasis,0,1)."</a></li>\n";
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *($urlpat) *$/i) {
-    $agenda = '<a href="' . esc($1, 0) . "\">$agenda_icon</a>\n";
+    $agenda = '<a href="' . esc($1) . "\">$agenda_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
@@ -543,12 +552,12 @@ for (my $i = 0; $i < @records; $i++) {
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *meeting *: *(.*?) *$/i) {
-    $meeting = esc($1, 0);
+    $meeting = esc($1);
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *previous +meeting *: *($urlpat) *$/i){
-    $prev_meeting = '<a href="' . esc($1, 0) . "\">$previous_icon</a>\n";
+    $prev_meeting = '<a href="' . esc($1) . "\">$previous_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
@@ -558,7 +567,7 @@ for (my $i = 0; $i < @records; $i++) {
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *chairs? *: *(.*?) *$/i) {
-    $chair = esc($1, 0);
+    $chair = esc($1);
     $records[$i]->{type} = 'o';		# Omit line from output
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
@@ -577,7 +586,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~ /^ *scribenick *: *([^ ]+) *$/i) {
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
     $scribenick = lc $1;
-    $scribenicks{lc $1} = esc($1, 0);	# Add to collected scribenicks list
+    $scribenicks{lc $1} = esc($1);	# Add to collected scribenicks list
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
@@ -585,7 +594,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $topics .= "<li><a href=\"#$id\">" . esc($1, $emphasis) . "</a></li>\n";
+    $topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   $records[$i]->{text} =~ /[^ ,]+, you wanted /) {
@@ -704,16 +713,9 @@ my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
-    esc($p->{speaker}, 0), $p->{id}, esc($p->{text}, $emphasis),
+    esc($p->{speaker}, 0), $p->{id}, esc($p->{text}, $emphasis, 1),
     $speakers{lc $p->{speaker}} // '';
   if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ s/\t/ /g;}
-
-  # Link Ralph-links and bare URLs
-  $line =~ s/-&gt; *($urlpat) +([^<]+)/make_link($1, $2, 0)/gie or
-    $line =~ s/-&gt; *($urlpat) +"([^"<]*)/make_link($1, $2, 0)/gie or
-    $line =~ s/-&gt; *($urlpat) +'([^'<]*)/make_link($1, $2, 0)/gie or
-    $line =~ s/\b($urlpat)/make_link($1, $1, 1)/gie;
-
   $minutes .= $line;
 }
 
@@ -745,12 +747,12 @@ my $logo = !$is_fancy ?
   'alt=W3C border=0 height=48 width=72></a>' : '';
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
-my $present = esc(join(", ", sort values %present), 0);
-my $regrets = esc(join(", ", sort values %regrets), 0);
-my $scribes = esc(join(", ", sort values %scribes), 0);
+my $present = esc(join(", ", sort values %present));
+my $regrets = esc(join(", ", sort values %regrets));
+my $scribes = esc(join(", ", sort values %scribes));
 my $diagnostics = !$embed_diagnostics ? "" :
   "<h2>Diagnostics<\/h2>\n" .
-  join("", map {"<p class=warning>" . esc($_, 0) . "</p>\n"} @diagnostics);
+  join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics);
 
 # And output the formatted HTML.
 #
