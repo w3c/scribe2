@@ -459,13 +459,14 @@ you are not using RRSAgent.
    <dt>-scribeOnly <dd>Only include what the scribe wrote. Discard IRC
     statements made by others.
 
-   <dt id=final>-final <dd>By default, scribe.perl includes
-    a ‘- DRAFT -’ header in the formatted output, to remind you that
-    the generated minutes still need manual editing. -final omits the
-    "- DRAFT -" header.
+   <dt id=final>-final <dt>-nodraft <dd>By default, scribe.perl
+    includes a ‘- DRAFT -’ header in the formatted output, to remind
+    you that the generated minutes still need manual editing.
+    <code>-final</code> (or <code>-nodraft</code>) omits the "- DRAFT
+    -" header.
 
-   <dt>-nofinal <dd>[DEFAULT] Include a ‘- DRAFT -’ header.
-    
+   <dt>-nofinal <dt>-draft <dd>[DEFAULT] Include a ‘- DRAFT -’ header.
+
    <dt>-embedDiagnostics <dd>Embed scribe.perl's
     diagnostic output into the generated minutes. This is most useful
     when scribe.perl is run as part of an automated process that
@@ -509,6 +510,17 @@ you are not using RRSAgent.
     <i>italic</i> and <b>even bold.</b>.’ Highlighted phrases must be
     surrounded by spaces to be recognized (or be at the edge of the
     line).
+
+   <dt>-urlDisplay break <dd>[DEFAULT] Scribe.perl will ensure that
+    long URLs can be broken at the end of a line, even in browsers
+    that normally do not break URLs. This is done by inserting
+    invisible &amp;zwnj; characters after most slashes (/).
+
+    <dt>-urlDisplay shorten <dd>Long URLs are shortened by displaying
+    just the first and the last few characters, like this:
+    ‘http:…c.html’.
+
+   <dt>-urlDisplay full <dd>Long URLs are displayed as they are.
   </dl>
 
   <h3 id="options_template">Template Options</h3>
@@ -999,10 +1011,6 @@ Eric agrees.
    <li>
     <p>The ‘-tidy’ option is not supported. Scribe.perl version 2
      always generates valid HTML (HTML5, currently).
-
-   <li>
-    <p>The ‘-draft’ option has been replaced by ‘-nofinal’ (see <a
-     href="#final" >-final</a>). Note that ‘-nofinal’ is the default.
 
    <li>
     <p>The ‘-trustRRSAgent’ option is not supported. When RSSAgent is
