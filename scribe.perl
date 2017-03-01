@@ -53,6 +53,25 @@ use Getopt::Long qw(GetOptionsFromString);
 use 5.012;			# We use "each @ARRAY"
 use locale;			# Sort using current locale
 
+# Command line options:
+my $is_team = 0;		# If 1, use team style
+my $is_member = 0;		# If 1, use member style
+my $is_fancy = 0;		# If 1, use the fancy style
+my $embed_diagnostics = 0;	# If 1, put warnings in the HTML, not on STDERR
+my $implicitcont = 0;		# If 1, lines without '…' are continuations, too
+my $spacecont = 0;		# If 1, initial space may replace '…'
+my $keeplines = 1;		# If 1, put <br> between continuation lines
+my $final = 0;                  # If 1, don't include "DRAFT" warning in minutes
+my $scribenick;			# Nick of the current scribe in lowercase
+my $dash_topics = 0;		# If 1, "--" means the next line is a topic
+my $use_zakim = 1;		# If 1, treat conversations with Zakim specially
+my $scribeonly = 0;		# If 1, omit IRC comments by others
+my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things 
+my $old_style = 0;		# If 1, use the old (pre-2017) style sheets
+my $url_display = 'break';	# How to display in-your-face URLs
+# TODO: option --inputFormat
+
+
 # Each parser takes a reference to an array of text lines (newlines
 # included) and a reference to an array of records. It returns 0
 # (failed to parse) or 1 (success) and it appends successfully parsed
@@ -225,6 +244,17 @@ sub esc($$)
 }
 
 
+# make_link -- return an <a> element from a URL and an anchor
+sub make_link($$$)
+{
+  my ($url, $anchor, $break) = @_;
+
+  $anchor =~ s|/\b|/&zwnj;|g if $break && $url_display eq 'break';
+  $anchor =~ s|^(.{5}).*(.{6})$|$1…$2| if $break && $url_display eq 'shorten';
+  return "<a href=\"$url\">$anchor<\/a>";
+}
+
+
 # Main body
 
 my $version = '$Revision$'
@@ -233,22 +263,6 @@ my $version = '$Revision$'
 my $versiondate = '$Date$'
   =~ s/\$Date: //r
   =~ s/ \$//r;
-
-my $is_team = 0;		# If 1, use team style
-my $is_member = 0;		# If 1, use member style
-my $is_fancy = 0;		# If 1, use the fancy style
-my $embed_diagnostics = 0;	# If 1, put warnings in the HTML, not on STDERR
-my $implicitcont = 0;		# If 1, lines without '…' are continuations, too
-my $spacecont = 0;		# If 1, initial space may replace '…'
-my $keeplines = 1;		# If 1, put <br> between continuation lines
-my $final = 0;                  # If 1, don't include "DRAFT" warning in minutes
-my $scribenick;			# Nick of the current scribe in lowercase
-my $dash_topics = 0;		# If 1, "--" means the next line is a topic
-my $use_zakim = 1;		# If 1, treat conversations with Zakim specially
-my $scribeonly = 0;		# If 1, omit IRC comments by others
-my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things 
-my $old_style = 0;		# If 1, use the old (pre-2017) style sheets
-# TODO: option --inputFormat
 
 my @diagnostics;		# Collected warnings and other info
 my %scribes;			# List of scribes
@@ -287,7 +301,11 @@ my %options = ("team" => \$is_team,
 	       "implicitContinuations!" => \$implicitcont,
 	       "allowSpaceContinuation!" => \$spacecont,
 	       "keepLines!" => \$keeplines,
+	       "urlDisplay=s" => sub {
+		 if ($_[1] =~ /^(?:break|shorten|full$)/i) {$url_display=$_[1]}
+		 else {die "--urlDisplay must be break, shorten or full\n"}},
 	       "final!" => \$final,
+	       "draft!" => sub {$final = ! $_[1]},
 	       "scribenick=s" => \$scribenick,
 	       "dashTopics!" => \$dash_topics,
 	       "useZakimTopics!" => \$use_zakim,
@@ -320,6 +338,9 @@ do {
 # changed by other s/// lines. Then loop over all lines again and
 # apply the substitutions and insertions. Successful s/// and i///
 # become of type 'o' (omit).
+#
+# TODO: Add a command ('oops'? 'undo'? 'ignore'? u///g?) to remove an
+# incorrect s///g, because s|s/.../.../g|| doesn't remove it.
 #
 foreach (@records) {
   $_->{type} = 'c' if
@@ -688,10 +709,10 @@ foreach my $p (@records) {
   if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ s/\t/ /g;}
 
   # Link Ralph-links and bare URLs
-  $line =~ s/-&gt; *($urlpat) +([^<]+)/<a href="$1">$2<\/a>/gi or
-    $line =~ s/-&gt; *($urlpat) +"([^"<]*)/<a href="$1">$2<\/a>/gi or
-    $line =~ s/-&gt; *($urlpat) +'([^'<]*)/<a href="$1">$2<\/a>/gi or
-    $line =~ s/\b($urlpat)/<a href="$1">$1<\/a>/gi;
+  $line =~ s/-&gt; *($urlpat) +([^<]+)/make_link($1, $2, 0)/gie or
+    $line =~ s/-&gt; *($urlpat) +"([^"<]*)/make_link($1, $2, 0)/gie or
+    $line =~ s/-&gt; *($urlpat) +'([^'<]*)/make_link($1, $2, 0)/gie or
+    $line =~ s/\b($urlpat)/make_link($1, $1, 1)/gie;
 
   $minutes .= $line;
 }
@@ -732,7 +753,6 @@ my $diagnostics = !$embed_diagnostics ? "" :
   join("", map {"<p class=warning>" . esc($_, 0) . "</p>\n"} @diagnostics);
 
 # And output the formatted HTML.
-# TODO: Add some nice icons for agenda, log and previous?
 #
 print "<!DOCTYPE html>
 <html lang=\"en\">
