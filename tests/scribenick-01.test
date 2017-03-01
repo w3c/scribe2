@@ -40,7 +40,7 @@ cat >$TMP3 <<EOF
 
 <nav>
 <div id=attendees>
-<h2>Attendees</a></h2>
+<h2>Attendees</h2>
 <dl class=intro>
 <dt>Present</dt><dd></dd>
 <dt>Regrets</dt><dd></dd>
@@ -73,13 +73,13 @@ cat >$TMP3 <<EOF
 </div>
 
 <div id=ActionSummary>
-<h2>Summary of Action Items</a></h2>
+<h2>Summary of Action Items</h2>
 <ol>
 </ol>
 </div>
 
 <div id=ResolutionSummary>
-<h2>Summary of Resolutions</a></h2>
+<h2>Summary of Resolutions</h2>
 <ol>
 </ol>
 </div>
@@ -108,4 +108,3 @@ grep -v version $TMP2 >$TMP4	# Omit version number
 grep -v version $TMP3 >$TMP5
 
 diff -u $TMP4 $TMP5
-cmp -s $TMP4 $TMP5

@@ -101,14 +101,14 @@ W3C/ERCIM Teleconference</h1>
 <h2>31 January 2017</h2>
 
 <div id=links>
-<a href="https://www.w3.org/mid/1950452.hWqkf4ECRx@nyx">Agenda</a>
-<a href="http://www.w3.org/2017/01/31-weum-irc">IRC log</a>
+<a href="https://www.w3.org/mid/1950452.hWqkf4ECRx@nyx"><img alt="Agenda" title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="http://www.w3.org/2017/01/31-weum-irc"><img alt="IRC log" title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
 </div>
 </header>
 
 <nav>
 <div id=attendees>
-<h2>Attendees</a></h2>
+<h2>Attendees</h2>
 <dl class=intro>
 <dt>Present</dt><dd></dd>
 <dt>Regrets</dt><dd>Bernard, Coralie, Daniel, EricE, Felix, Ivan, Laurent, Richard, Rigo, Shadi</dd>
@@ -138,13 +138,13 @@ W3C/ERCIM Teleconference</h1>
 </div>
 
 <div id=ActionSummary>
-<h2>Summary of Action Items</a></h2>
+<h2>Summary of Action Items</h2>
 <ol>
 </ol>
 </div>
 
 <div id=ResolutionSummary>
-<h2>Summary of Resolutions</a></h2>
+<h2>Summary of Resolutions</h2>
 <ol>
 </ol>
 </div>

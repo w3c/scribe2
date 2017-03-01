@@ -3,5 +3,5 @@
 # Test if URLs are correcly linked
 
 echo "<foo> ftp://example.org/test" | \
-  perl scribe.perl | \
+  perl scribe.perl --urldisplay=full | \
   grep '<a href="ftp://example.org/test">ftp://example.org/test</a>'
