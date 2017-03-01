@@ -6,7 +6,7 @@ all: regressionTests samples
 # with status code 0 (test succeeded), 2 (test not applicable) or any
 # other code (test failed). Any output is captured in a log file.
 
-TESTS := $(wildcard tests/*.test)
+TESTS := $(sort $(wildcard tests/*.test))
 RESULTS := $(TESTS:.test=.result)
 
 ECHO=/bin/echo
