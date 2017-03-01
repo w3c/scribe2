@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# --nofinal does not remove the '- DRAFT -'
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Agenda: https://www.example.org/a/long/path
+<foo> ScribeNick: foo
+EOF
+
+perl scribe.perl --nofinal <$TMP1 >$TMP2 || exit 1
+grep 'DRAFT' $TMP2

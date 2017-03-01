@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# --urlDisplay option 'break' is default
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Agenda: https://www.example.org/a/long/path
+<foo> ScribeNick: foo
+EOF
+
+perl scribe.perl --urlDisplay=break <$TMP1 >$TMP2 || exit 1
+perl scribe.perl <$TMP1 >$TMP3 || exit 1
+
+diff -u $TMP2 $TMP3
+cmp -s $TMP2 $TMP3

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# --urlDisplay option requires an argument
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Agenda: https://www.example.org/a/long/path
+<foo> ScribeNick: foo
+EOF
+
+perl scribe.perl --urlDisplay=foo <$TMP1 >$TMP2 2>$TMP3 || exit 1
+
+grep -e '--urlDisplay must be break, shorten or full' $TMP3 || exit 1
