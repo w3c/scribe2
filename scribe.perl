@@ -630,10 +630,10 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($use_zakim && $records[$i]->{text} =~ /^ *q\s*[\+\-\=\?]/i) {
+  } elsif ($use_zakim && $records[$i]->{text} =~ /^ *q(?:ueue)?\s*[-+=?]/i){
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
 
-  } elsif ($use_zakim && $records[$i]->{text} =~ /^ *queue\s*[\+\-\=\?]/i) {
+  } elsif ($use_zakim && $records[$i]->{text} =~ /^ *[-+=?]\s*q(?:ueue)?\b/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *clear\s+agenda\s*$/i) {
