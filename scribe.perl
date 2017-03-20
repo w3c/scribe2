@@ -443,6 +443,9 @@ for (my $i = 0; $i < @records; $i++) {
   if ($records[$i]->{type} eq 'o') {
     # This record was already processed
 
+  } elsif ($records[$i]->{text} =~ /^\s*$/) {
+    $records[$i]->{type} = 'o';		# Omit empty line
+
   } elsif ($records[$i]->{text} =~ /^ *present *: *(.*?) *$/i) {
     %present = map { lc($_) => $_ } split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
