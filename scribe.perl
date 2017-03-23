@@ -775,7 +775,7 @@ $style
 <h2>$date</h2>
 
 <div id=links>
-$agenda$log$prev_meeting</div>
+$prev_meeting$agenda$log</div>
 </header>
 
 <nav>
