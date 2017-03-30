@@ -325,11 +325,7 @@ my %options = ("team" => \$is_team,
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
 
-if ($ENV{"SCRIBEOPTIONS"}) {
-  my ($ret, $args) = GetOptionsFromString($ENV{"SCRIBEOPTIONS"}, %options);
-  push(@diagnostics, 'Unknown options in environment variable SCRIBEOPTIONS: ' .
-       join(' ', @$args)) if !$ret;
-}
+GetOptionsFromString($ENV{"SCRIBEOPTIONS"}, %options) if $ENV{"SCRIBEOPTIONS"};
 GetOptions(%options);
 
 # Step 1: Read all lines into a temporary array and parse them into
@@ -404,8 +400,10 @@ for (my $i = 0; $i < @records; $i++) {
 #
 foreach my $p (@records) {
   if ($p->{text} =~ /^ *scribeoptions *: *(.*?) *$/i) {
+    Getopt::Long::Configure("pass_through");
     my ($ret, $args) = GetOptionsFromString($1, %options);
-    push(@diagnostics, 'Unknown options: ' . join(' ', @$args)) if !$ret;
+    push(@diagnostics, 'Unknown option in scribeoptions: ' . join(' ', @$args))
+	if scalar @$args;
     $p->{type} = 'o';			# Omit line from output
   }
 }
