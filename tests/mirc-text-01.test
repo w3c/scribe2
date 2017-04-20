@@ -58,8 +58,6 @@ cat >$TMP3 <<EOF
 <ol>
 </ol>
 </li>
-<li><a href="#ActionSummary">Summary of Action Items</a></li>
-<li><a href="#ResolutionSummary">Summary of Resolutions</a></li>
 </ul>
 </div>
 </nav>
@@ -73,17 +71,6 @@ cat >$TMP3 <<EOF
 </section>
 </div>
 
-<div id=ActionSummary>
-<h2>Summary of Action Items</h2>
-<ol>
-</ol>
-</div>
-
-<div id=ResolutionSummary>
-<h2>Summary of Resolutions</h2>
-<ol>
-</ol>
-</div>
 
 <address>Minutes formatted by Bert Bos's <a
 href="https://dev.w3.org/2002/scribe2/scribedoc.html"
