@@ -748,6 +748,17 @@ my $diagnostics = !$embed_diagnostics ? "" :
   "<h2>Diagnostics<\/h2>\n" .
   join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics);
 
+my $actiontoc = !$actions ? '' :
+    "<li><a href=\"#ActionSummary\">Summary of Action Items</a></li>\n";
+$actions = "\n<div id=ActionSummary>\n<h2>Summary of Action Items</h2>
+<ol>\n$actions</ol>\n</div>\n" if $actions;
+
+my $resolutiontoc = !$resolutions ? '' :
+    "<li><a href=\"#ResolutionSummary\">Summary of Resolutions</a></li>\n";
+$resolutions = "\n<div id=ResolutionSummary>\n<h2>Summary of Resolutions</h2>
+<ol>\n$resolutions</ol>\n</div>\n" if $resolutions;
+
+
 # And output the formatted HTML.
 #
 print "<!DOCTYPE html>
@@ -787,9 +798,7 @@ $prev_meeting$agenda$log</div>
 <ol>
 $topics</ol>
 </li>
-<li><a href=\"#ActionSummary\">Summary of Action Items</a></li>
-<li><a href=\"#ResolutionSummary\">Summary of Resolutions</a></li>
-</ul>
+$actiontoc$resolutiontoc</ul>
 </div>
 </nav>
 
@@ -797,18 +806,7 @@ $topics</ol>
 <h2>Meeting Minutes</h2>
 <section>$minutes</section>
 </div>
-
-<div id=ActionSummary>
-<h2>Summary of Action Items</h2>
-<ol>
-$actions</ol>
-</div>
-
-<div id=ResolutionSummary>
-<h2>Summary of Resolutions</h2>
-<ol>
-$resolutions</ol>
-</div>
+$actions$resolutions
 
 <address>Minutes formatted by Bert Bos's <a
 href=\"https://dev.w3.org/2002/scribe2/scribedoc.html\"
