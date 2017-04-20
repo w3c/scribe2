@@ -418,7 +418,7 @@ while (!defined $scribenick && (my ($i,$p) = each @records)) {
   $scribenick = $1 if $p->{text} =~ /^ *scribenick *: *([^ ]+) *$/i;
   $s = $1 if !defined $s && $p->{text}=~/^ *scribe *: *([^ ]+) *$/i;
   $count{lc $p->{speaker}}++
-    if $p->{type} eq 'i' && $p->{speaker} !~ /^(?:RRS|BB)Agent$/;
+    if $p->{type} eq 'i' && $p->{speaker} ne 'RRSAgent';
 }
 $use_scribe = 1 if !defined $scribenick;
 $scribenick = $s if !defined $scribenick;
@@ -447,42 +447,34 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~ /^ *present *: *(.*?) *$/i) {
     %present = map { lc($_) => $_ } split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *present *\+:? *$/i) {
     $present{lc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *present *\+:? *(.*?) *$/i) {
     $present{lc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *present *-:? *(.*?) *$/i) {
     delete $present{lc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *: *(.*?) *$/i) {
     %regrets = map { lc($_) => $_ } split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *$/i) {
     $regrets{lc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *(.*?) *$/i) {
     $regrets{lc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *-:? *(.*?) *$/i) {
     delete $regrets{lc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
   } elsif ($records[$i]->{text} =~ /^ *topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
@@ -504,21 +496,21 @@ for (my $i = 0; $i < @records; $i++) {
     }
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($records[$i]->{speaker} =~ /^(?:RRS|BB)Agent$/ &&
+  } elsif ($records[$i]->{speaker} eq 'RRSAgent' &&
 	   $records[$i]->{text} =~ / to generate ([^ #]+)/) {
     $minutes_url = $1;
     $records[$i]->{type} = 'o';		# Ignore this line
 
-  } elsif ($records[$i]->{speaker} =~ /^(?:RRS|BB)Agent$/ &&
+  } elsif ($records[$i]->{speaker} eq 'RRSAgent' &&
 	   $records[$i]->{text}=~ /(?:[Ll]ogging to|recorded in|See) ([^ #]+)/){
     $logging_url = $1;
     $records[$i]->{type} = 'o';		# Ignore this line
 
-  } elsif ($records[$i]->{text} =~ /^ *(?:rrs|bb)agent,/i) {
+  } elsif ($records[$i]->{text} =~ /^ *rrsagent,/i) {
     $records[$i]->{type} = 'o';		# Ignore this line
     $speaker = undef if lc($records[$i]->{speaker}) eq $scribenick;
 
-  } elsif ($records[$i]->{speaker} =~ /^(?:RRS|BB)Agent$/) {
+  } elsif ($records[$i]->{speaker} =~ /^RRSAgent$/) {
     # Ignore RRSAgent's list of actions, etc.
     $records[$i]->{type} = 'o';		# Ignore this line
 
@@ -651,8 +643,9 @@ for (my $i = 0; $i < @records; $i++) {
     $speaker = $1;			# Remember for use in continuation lines
 
   } elsif (lc($records[$i]->{speaker}) eq $scribenick && defined $speaker &&
-	   ($implicitcont || $records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*)$/
-	    || ($spacecont && $records[$i]->{text} =~ /^ +(.*)$/))) {
+	   (($implicitcont && $records[$i]->{text} =~ /^ *(.*?) *$/) ||
+	    ($spacecont && $records[$i]->{text} =~ /^ +(.*?) *$/) ||
+	    $records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/)) {
     $records[$i]->{speaker} = $speaker; # Same speaker as previously
     $records[$i]->{type} = 's';		# Mark as scribe line
     my $j = $i - 1; $j-- while $j > 0 && $records[$j]->{type} eq 'o';
@@ -662,7 +655,7 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$j]->{type} = 'o';	# Omit previous line from output
     } else {
       # Cannot concatenate with previous line, remove "..." instead.
-      $records[$i]->{text} =~ s/^ *(?:\.\.\.*|…)? *//;
+      $records[$i]->{text} = $1;
     }
 
   } elsif (lc($records[$i]->{speaker}) eq $scribenick) {
