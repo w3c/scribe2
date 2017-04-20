@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Test if "-allowSpaceCont" picks up the right speaker after
+# intervening lines from others.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:26 <foo> scribenick: foo
+13:28:36 <foo> bar: I just say
+13:28:46 <foo>  I say nothing
+13:28:56 <baz> Hi!
+13:28:56 <baz> Hi, foo!
+13:28:58 <foo>  Better: I say nada
+13:29:06 <foo> baz: you say
+13:29:16 <foo> scribeOptions: -allowSpaceContinuation
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+grep -E '<p class="phone .*"><cite>bar:</cite> Better: I say nada</p>' $TMP2 \
+  || exit 1
+exit 0
