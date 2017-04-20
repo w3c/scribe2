@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test if "scribeOptions: -spaceCont" is recognized
+# Test if "scribeOptions: -allowSpaceCont" is recognized
 
 trap 'rm $TMP1 $TMP2' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
