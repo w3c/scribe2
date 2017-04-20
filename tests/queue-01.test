@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test that queues command are ignored
+# Test that queue commands are ignored
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
@@ -47,4 +47,4 @@ EOF
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 sed -n -e '/id=meeting/,/<\/div>/p' $TMP2 >$TMP3
 
-diff -u $TMP3 $TMP4
+diff -u $TMP4 $TMP3
