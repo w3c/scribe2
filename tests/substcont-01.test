@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Test continuation after a s/../../ command by the scribe
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Joe: Original text
+<foo> s/Original/Final/G
+<foo> ... And more
+EOF
+
+cat >$TMP3 <<EOF
+<section><p class="phone s01"><cite>Joe:</cite> Final text<br>
+… And more</p>
+</section>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+sed -n -e '/<section>/,/<\/section>/p' $TMP2 >$TMP4
+
+diff -u $TMP3 $TMP4
