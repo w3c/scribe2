@@ -5,6 +5,13 @@
 # See scribe2doc.html for the manual.
 # This is a rewrite of David Booth's scribe.perl
 #
+# TODO: Allow concurrent scribes? ("scribenick: adam, eve")
+#
+# TODO: "--logo <url>" option? and "--nologo" option?
+#
+# TODO: Omit failed s/// commands? (But maybe they failed on purpose
+# and should not be removed?)
+#
 # Copyright © 2017 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -658,6 +665,11 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{text} = $1;
     }
 
+  } elsif (lc($records[$i]->{speaker}) eq $scribenick &&
+	   $records[$i]->{type} eq 'c') {
+    # It's a failed s/// command by the speaker. Do not undef $speaker
+    $records[$i]->{type} = 'd';		# Mark as descriptive text
+    
   } elsif (lc($records[$i]->{speaker}) eq $scribenick) {
     $records[$i]->{type} = 'd';		# Mark as descriptive text
     $speaker = undef;			# No continuation line expected
