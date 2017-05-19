@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if Ralph-links containing quotes are correcly linked
+
+echo '<foo> -> https://example.org/test   an "example" anchor' | \
+  perl scribe.perl | \
+  grep '<a href="https://example.org/test">an &quot;example&quot; anchor</a>'
