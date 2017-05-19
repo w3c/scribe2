@@ -376,7 +376,7 @@ you are not using RRSAgent.
 
   <p>instead of
 
-  <pre class="command">Topic: Review of Action Items</pre>
+  <pre class="command">&lt;Philippe&gt Topic: Review of Action Items</pre>
 
 
   <h4 id="implicitContinuations">-implicitContinuations</h4>
@@ -511,7 +511,8 @@ you are not using RRSAgent.
     surrounded by spaces to be recognized (or be at the edge of the
     line).
 
-   <dt>-urlDisplay break <dd>[DEFAULT] Scribe.perl will ensure that
+   <dt id=urldisplay>-urlDisplay break <dd>[DEFAULT] Scribe.perl will
+    ensure that
     long URLs can be broken at the end of a line, even in browsers
     that normally do not break URLs. This is done by inserting
     invisible &amp;zwnj; characters after most slashes (/).
@@ -745,6 +746,27 @@ Resolved: next-object does not wrap</pre>
    minutes. This is mostly for use internally by scribe.perl.
   -->
   
+  <h3 id="links">Embedding links</h3>
+
+  <p>Scribe.perl automatically recognizes most URLs
+  (<code>http://…</code>, <code>mailto:…</code>, etc.) and turns them
+  into links. See the command line option <a
+  href="#urldisplay"><code>-urlDisplay</code></a> for different ways
+  to format URLs.
+
+  <p>In addition, scribe.perl recognizes so-called ‘Ralph links’,
+  which allow to specify anchor text and look like this:
+
+<pre class=command>
+&lt;dbooth&gt; -&gt; https://www.example.org/ns/w2 wall 2
+&lt;dbooth&gt; -&gt; https://www.example.org/ns/w2 "wall 2"
+&lt;dbooth&gt; -&gt; https://www.example.org/ns/w2 'wall 2'
+</pre>
+
+  <p>All three forms above create the link <a
+  href="https://www.example.org/ns/w2">wall 2</a>. The quotes are
+  optional and leading and trailing white space is ignored.
+
   <h2 id="editing_the_log">Manually Editing the Log</h2>
 
   <p>In addition to the "realtime" <a href="#correcting_mistakes"
@@ -875,7 +897,7 @@ Resolved: next-object does not wrap</pre>
 
 	<h3 id="Mirc_Text_Format">Mirc_Text_Format</h3>
 	
-<p>	The format produced by mIRC when you do Buffer--&gt;Save As.  Example:
+<p>	The format produced by mIRC when you do Buffer&rarr;Save As.  Example:
 </p>	
 <pre class="command">
 &lt;dbooth&gt; Mike: Feature X would benefit users.
