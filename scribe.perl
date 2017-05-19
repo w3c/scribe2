@@ -256,7 +256,7 @@ sub esc($;$$$)
   $s =~ s/"/&quot;/g;
 
   if ($make_links) {		# Wrap Ralph-links and bare URLs in <a>
-    $s =~ s/-&gt; *($urlpat) +(&quot;|'|)(.*)\g2\s*$/<a href="$1">$3<\/a>/gi or
+    $s =~ s/-&gt; *($urlpat) +(&quot;|'|)(.*?)\g2\s*$/<a href="$1">$3<\/a>/gi or
 	$s =~ s/\b($urlpat)/"<a href=\"$1\">".break_url($1)."<\/a>"/gie;
   } elsif ($break_urls) {	# Shorten or break URLs
     $s =~ s/($urlpat)/break_url($1)/gie;
