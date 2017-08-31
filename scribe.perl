@@ -308,9 +308,9 @@ my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 
 # TODO: Allow (and ignore) the other options of old scribe.perl?
-my %options = ("team" => \$is_team,
-	       "member" => \$is_member,
-	       "fancy" => \$is_fancy,
+my %options = ("team" => sub {$is_team = 1; $is_member = $is_fancy = 0},
+	       "member" => sub {$is_member = 1; $is_team = $is_fancy = 0},
+	       "fancy" => sub {$is_fancy = 1; $is_team = $is_member = 0},
 	       "embedDiagnostics!" => \$embed_diagnostics,
 	       "implicitContinuations!" => \$implicitcont,
 	       "allowSpaceContinuation!" => \$spacecont,
