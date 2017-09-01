@@ -53,6 +53,7 @@
 # If type is 'r' (resolution), <text> is a resolution and <id> is a unique ID.
 # If type is 'c' (change), the record is a s/// or i/// not (yet) successful
 # If type is 'o' (omit), the record is to be ignored.
+# If type is 'n' (named anchor), the record is a target anchor.
 
 use strict;
 use warnings;
@@ -300,6 +301,7 @@ my $speaker;			# Current speaker
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my %speakers;			# Unique ID for each speaker
 my $use_scribe = 0;		# 1 = interpret 'scribe:' as 'scribenick:'
+my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my $agenda_icon = '<img alt="Agenda" title="Agenda" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
 my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
@@ -637,6 +639,20 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *clear\s+agenda\s*$/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
 
+  } elsif ($records[$i]->{text} =~ /^\s*namedanchorhere\s*:\s*(.*?)\s*$/i) {
+    my $a = $1 =~ s/\s/_/gr;
+    if ($a =~ /^$/) {
+      push(@diagnostics, "Empty named anchor ignored.");
+    } elsif ($a =~ /^x[0-9][0-9]+$/) {
+      push(@diagnostics, "Named anchor ".$a." ignored. (\"xNN\" is reserved.)");
+    } elsif (exists $namedanchors{$a}) {
+      push(@diagnostics, "Duplicate named anchor \"".$a."\" ignored.");
+    } else {
+      $records[$i]->{type} = 'n';
+      $records[$i]->{id} = $a;
+      $namedanchors{$a} = 1;
+    }
+
   } elsif (lc($records[$i]->{speaker}) eq $scribenick &&
 	   ($records[$i]->{text} =~ /^([^ <:]+) *: *(.*)$/ ||
 	    (!$spacecont && $records[$i]->{text} =~ /^ *([^ <:]+) *: *(.*)$/))&&
@@ -644,7 +660,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 's';		# Mark as scribe line
     $records[$i]->{speaker} = $1;
     $records[$i]->{text} = $2;
-    $speakers{lc $1} = ++$speakerid if !defined $speakers{lc $1};
+    $speakers{lc $1} = ++$speakerid if !exists $speakers{lc $1};
     $speaker = $1;			# Remember for use in continuation lines
 
   } elsif (lc($records[$i]->{speaker}) eq $scribenick && defined $speaker &&
@@ -711,13 +727,14 @@ my %linepat = (
   o => '',
   r => "<p class=resolution id=%2\$s><strong>Resolved:</strong> %3\$s</p>\n",
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
+  n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
   t => "</section>\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
 my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
-    esc($p->{speaker}, 0), $p->{id}, esc($p->{text}, $emphasis, 1),
+    esc($p->{speaker}, 0), esc($p->{id}), esc($p->{text}, $emphasis, 1),
     $speakers{lc $p->{speaker}} // '';
   if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ s/\t/ /g;}
   $minutes .= $line;
