@@ -737,14 +737,16 @@ Resolved: next-object does not wrap</pre>
   <p>Specify options inline, as if they had been written on the
   command line like:
 
-  <pre class="command">perl scribe.perl -dashTopics -embedDiagnostics</pre>	
+  <code>perl scribe.perl -dashTopics -embedDiagnostics</code>. Can be
+  used multiple times and the options are added to previous ones.
 
-  <!--
   <pre class="command">NamedAnchorHere: foo</pre>
 
-  <p>Cause a named anchor foo to be generated at this point in the
-   minutes. This is mostly for use internally by scribe.perl.
-  -->
+  <p>Cause a named anchor ‘foo’ to be generated at this point in the
+  minutes. Leading and trailing spaces are ignored and other spaces
+  are converted to underlines (‘_’). The name can be anything, except
+  ‘xNN’, where N is a digit, because those are reserved for
+  scribe.perl's internal use.
   
   <h3 id="links">Embedding links</h3>
 
@@ -1059,9 +1061,6 @@ Eric agrees.
     <p>The ‘Log:’ command is not supported. It was rarely needed,
      because the URL of the IRC log, if any, can usually be inferred
      from the messages by RRSAgent.
-
-   <li>
-    <p>The ‘NamedAnchorHere:’ command is not supported.
 
    <li>
     <p>The ‘-emphasis’ option is new.
