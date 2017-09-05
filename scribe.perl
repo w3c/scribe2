@@ -736,7 +736,7 @@ foreach my $p (@records) {
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
     esc($p->{speaker}, 0), esc($p->{id}), esc($p->{text}, $emphasis, 1),
     $speakers{lc $p->{speaker}} // '';
-  if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ s/\t/ /g;}
+  if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ tr/\t/ /;}
   $minutes .= $line;
 }
 
