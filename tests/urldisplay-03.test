@@ -16,4 +16,3 @@ perl scribe.perl --urlDisplay=break <$TMP1 >$TMP2 || exit 1
 perl scribe.perl <$TMP1 >$TMP3 || exit 1
 
 diff -u $TMP2 $TMP3
-cmp -s $TMP2 $TMP3

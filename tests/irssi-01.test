@@ -159,4 +159,3 @@ grep -v version $TMP2 >$TMP4	# Omit version number
 grep -v version $TMP3 >$TMP5
 
 diff -u $TMP5 $TMP4
-cmp -s $TMP5 $TMP4

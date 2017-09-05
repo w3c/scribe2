@@ -37,4 +37,3 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
 
 diff -u $TMP3 $TMP4
-cmp -s $TMP3 $TMP4
