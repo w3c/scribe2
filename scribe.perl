@@ -12,6 +12,19 @@
 # TODO: Omit failed s/// commands? (But maybe they failed on purpose
 # and should not be removed?)
 #
+# TODO: A way for the scribe to make personal remarks. If Anna is scribe,
+#   <Bob> +1
+#   <Anna> +1
+# Bob's "+1" is formatted as a remark by Bob, but Anna's is taken as a
+# summary of the discussion, not attributed to Anna. Maybe the scribe
+# can start text with a special symbol to indicate that it's the
+# person, not the scribe, who is speaking?
+#   <Anna> \+1
+#   <Anna> // +1
+#   <Anna> : +1
+#   <Anna> //me +1 (suggested by Bill McCoy)
+#   <Anna> <Anna> +1 (suggested by Ralph Swick)
+#
 # Copyright © 2017 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -652,6 +665,11 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{id} = $a;
       $namedanchors{$a} = 1;
     }
+
+  } elsif (lc($records[$i]->{speaker}) eq $scribenick &&
+	   $records[$i]->{text} =~ /^\s*<$scribenick>/i) {
+    # Ralph's escape for a scribe's personal remarks: "<mynick> my opinion"
+    $records[$i]->{text} =~ s/^\s*<$scribenick> ?//i;
 
   } elsif (lc($records[$i]->{speaker}) eq $scribenick &&
 	   ($records[$i]->{text} =~ /^([^ <:]+) *: *(.*)$/ ||

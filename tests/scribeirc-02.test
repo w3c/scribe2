@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# The scribe's IRC remarks must start with the exact scribenick
+# (case-insensitive), i.e., "Ralph", not "won".
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/scribeirc-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/scribeirc-XXXXXX` || exit 1
+
+cat >$TMP1 <<-EOF
+	<Ralph> scribenick: ralph
+	<Ralph> Bill: We wonn!
+	<Bob> Yay!
+	<Ralph> <won> +1
+	EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+grep '<p class=summary>&lt;won&gt; +1</p>' $TMP2 || exit 1

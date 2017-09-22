@@ -95,15 +95,19 @@
     <tr>
      <th>IRC Command
      <th>Explanation
+     <th>Who?
     <tr>
      <td class=command>/invite rrsagent
      <td class=help>calls RRSAagent to the your IRC channel
+     <td>anybody
     <tr>
      <td class=command>/invite zakim
      <td class=help>calls Zakim to your IRC channel
+     <td>anybody
     <tr>
-     <td class=command>zakim, this will be ws_arch<
+     <td class=command>zakim, this will be ws_arch
      <td class=help>ws_arch will be your meeting name
+     <td>anybody
   </table>
 
   <h3 id=start-meeting>Step 2: Start the meeting:</h3>
@@ -113,6 +117,7 @@
     <tr>
      <th>IRC Command
      <th>Explanation
+     <th>Who?
     <tr>
      <td class=command>Scribe: David Booth
 
@@ -121,6 +126,8 @@
       will be used instead if Scribe is not specified. If there are
       multiple scribes: Issue this command and the ScribeNick: command
       whenever the scribe name changes.
+
+     <td>anybody
     <tr>
      <td class=command>ScribeNick: dbooth
 
@@ -128,12 +135,16 @@
       ScribeNick will be guessed if neither Scribe nor ScribeNick are
       specified. If there are multiple scribes: Issue this command and
       the Scribe: command whenever the scribe nickname changes.
+
+     <td>anybody
     <tr>
      <td class=command>Meeting: WS Arch Teleconference
      <td class=help>Record meeting title
+     <td>anybody
     <tr>
      <td class=command>Chair: Mike
      <td class=help>Record who chaired
+     <td>anybody
   </table>
 
 
@@ -144,6 +155,7 @@
     <tr>
      <th>IRC Command
      <th>Explanation
+     <th>Who?
     <tr>
      <td class=command>Topic: Debate on Feature X
 
@@ -152,43 +164,60 @@
       href="https://www.w3.org/2001/12/zakim-irc-bot.html#agenda"
       >Zakim bot's agenda control</a>, which is recognized by default.
       (See the -useZakimTopics option below.)
+
+     <td>anybody
     <tr>
      <td class=command>Mike: Feature X is great
 
      <td class=help>Record what Mike said.
+
+     <td>scribe
     <tr>
      <td class=command>… and easy to implement.
 
      <td class=help>Mike's statement continues. Use either three
       periods or the ellipsis character ‘…’. (Some IRC clients
       automatically replace the former with the latter.)
+
+     <td>scribe
     <tr>
      <td class=command>General agreement.
 
      <td class=help>A description or summary, not attributed to a
       particular speaker.
+      Only works when the scribe writes this.
+
+     <td>scribe
     <tr>
      <td class=command>ACTION: Frank to order lunch
      <td class=help>Record new action.
+     <td>anybody
     <tr>
      <td class=command>RESOLUTION: Accept Frank's proposal
 
      <td class=help>Indicate how an issue or topic was resolved.
       ‘RESOLVED’ is an alias for ‘RESOLUTION’.
+
+     <td>anybody
     <tr>
      <td class=command>s/Mary/Marie/
 
      <td class=help>Change most recent occurrence of ‘Mary’ to
       ‘Marie’. The old string is a literal string, not a regex.
       Alternate syntax: s|Mary|Marie|
+
+     <td>anybody
     <tr>
      <td class=command>s/Mary/Marie/g
      <td class=help>Change all previous occurrences of "Mary" to "Marie".
+     <td>anybody
     <tr>
      <td class=command>s/Mary/Marie/G
 
      <td class=help>Change all previous and future occurrences of
       ‘Mary’ to ‘Marie’ (within this document).
+
+     <td>anybody
     <tr>
      <td class=command>i/Time to vote/Topic: Vote on Feature Y
 
@@ -196,6 +225,16 @@
       the line containing the literal string ‘Time to vote’ (not a
       regex). Alternate syntax: i|Time to vote|Topic: Vote on Feature
       Y
+
+     <td>anybody
+    <tr id=scribeirc>
+     <td class=command>&lt;dbooth&gt; :-)
+
+     <td class=help>When dbooth is scribe and wants to add a remark on
+      IRC as himself, rather than in his role of scribe, he can start
+      the remark with his nick in angle brackets.
+
+     <td>scribe
   </table>
 
   <h3 id=finish-meeting>Step 4: Finish the meeting</h3>
@@ -205,6 +244,7 @@
     <tr>
 	<th>IRC Command</th>
 	<th>Explanation</th>
+	<th>Who?
 </tr>
 <tr>
 	<td class="command">zakim, bye</td>
@@ -213,6 +253,7 @@
 	of attendees. Use ‘Present: ...’ (described below) instead if
 	you aren't using zakim bot.
 
+	<td>anybody
 <tr>
 	<td class="command">rrsagent, make log public</td>
 
@@ -221,6 +262,7 @@
 	are queued and it may be a minute or so before they take
 	effect.
 
+	<td>anybody
 <tr>
 	<td class="command">rrsagent, draft minutes</td>
 
@@ -233,9 +275,11 @@
 	generated minutes. Skip this step if you are not using
 	RRSAgent.
 
+	<td>anybody
 <tr>
 	<td class="command">rrsagent, bye</td>
 	<td class="help">Dismiss RRSAgent (if used).</td>
+	<td>anybody
 </tr>
 <tr>
 	<td class="command">(Download and edit the generated minutes)</td>
@@ -243,6 +287,7 @@
 	<td class="help">If you're using RRSAgent, then just edit the
 	generated minutes and you are done.
 
+	<td>anybody
 </table>
 
 <p>Continue to Step 5 if you wish to run scribe.perl manually or if
@@ -456,8 +501,8 @@ you are not using RRSAgent.
   <p>These options control the output format.</p>	
 
   <dl>
-   <dt>-scribeOnly <dd>Only include what the scribe wrote. Discard IRC
-    statements made by others.
+   <dt>-scribeOnly <dd>Only include what the scribe wrote. Discard any
+   statements made on IRC.
 
    <dt id=final>-final <dt>-nodraft <dd>By default, scribe.perl
     includes a ‘- DRAFT -’ header in the formatted output, to remind
@@ -506,7 +551,8 @@ you are not using RRSAgent.
     highlighting’. In particular, underscores (‘_…_’) will cause
     underlining, slashes (‘/…/’) italics and asterisks (‘*…*’) bold.
     E.g., ‘<code>This is _underlined_ and /italic/ and *even
-    bold.*</code>’ leads to ‘This is <u>underlined</u> and
+    bold.*</code>’ leads to ‘This is <span style="text-decoration:
+    underline">underlined</span> and
     <i>italic</i> and <b>even bold.</b>.’ Highlighted phrases must be
     surrounded by spaces to be recognized (or be at the edge of the
     line).
@@ -893,7 +939,7 @@ Resolved: next-object does not wrap</pre>
 <pre class="command">
 [19:35] &lt;Zakim&gt; Steven should now be muted
 [19:36] &lt;ph&gt; http://lists.w3.org/Archives/Member/w3c-html-cg/2004JanMar/0038.html
-[19:36] * Zakim hears Steven&apos;s hand up
+[19:36] * Zakim hears Steven's hand up
 [19:36] * Zakim sees Steven on the speaker queue
 </pre>
 
@@ -1025,7 +1071,7 @@ Eric agrees.
      options, instead of the other way round.
      
    <li>
-    <p>The <a hred="#keeplines" >‘-keeplines’</a> option (and its
+    <p>The <a href="#keeplines" >‘-keeplines’</a> option (and its
      inverse ‘-nokeeplines’) is new.
 
    <li>
@@ -1064,11 +1110,16 @@ Eric agrees.
 
    <li>
     <p>The ‘-emphasis’ option is new.
+
+   <li>
+    <p>The scribe can make IRC statements as himself by prefixing his
+     text with his own nick in angle brackets (see <a
+     href="#scribeirc" >example above</a>).
   </ul>
 
   <!--    No addition of [recorded in ....] after an action. -->
 
-  <hr />
+  <hr>
 
   <address><a href="mailto:bert@w3.org" >Bert Bos</a>, adapted from
    <a href="https://dev.w3.org/2002/scribe/scribedoc.htm"
