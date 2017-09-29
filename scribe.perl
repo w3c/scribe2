@@ -23,7 +23,7 @@
 #   <Anna> // +1
 #   <Anna> : +1
 #   <Anna> //me +1 (suggested by Bill McCoy)
-#   <Anna> <Anna> +1 (suggested by Ralph Swick)
+#   <Anna> <Anna> +1 (suggested by Ralph Swick, currently supported)
 #
 # Copyright © 2017 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
@@ -758,29 +758,77 @@ foreach my $p (@records) {
   $minutes .= $line;
 }
 
+# my @stylesheets = $old_style & $is_team ?
+#   ("https://www.w3.org/StyleSheets/base.css",
+#    "https://www.w3.org/StyleSheets/team.css",
+#    "https://www.w3.org/StyleSheets/team-minutes.css",
+#    "https://www.w3.org/2004/02/minutes-style.css") :
+#   $old_style && $is_member ?
+#   ("https://www.w3.org/StyleSheets/base.css",
+#    "https://www.w3.org/StyleSheets/member.css",
+#    "https://www.w3.org/StyleSheets/member-minutes.css",
+#    "https://www.w3.org/2004/02/minutes-style.css") :
+#   $old_style ?
+#   ("https://www.w3.org/StyleSheets/base.css",
+#    "https://www.w3.org/StyleSheets/public.css",
+#    "https://www.w3.org/2004/02/minutes-style.css") :
+#   $is_team ? ("https://www.w3.org/StyleSheets/scribe2/team.css") :
+#   $is_member ? ("https://www.w3.org/StyleSheets/scribe2/member.css") :
+#   !$is_fancy ? ("https://www.w3.org/StyleSheets/scribe2/public.css") :
+#   ("https://www.w3.org/StyleSheets/scribe2/fancy.css");
+
+# Style sheets: 0 = default, 1 = alternate (= alternative).
+#
 my @stylesheets = $old_style & $is_team ?
-  ("https://www.w3.org/StyleSheets/base.css",
-   "https://www.w3.org/StyleSheets/team.css",
-   "https://www.w3.org/StyleSheets/team-minutes.css",
-   "https://www.w3.org/2004/02/minutes-style.css") :
+  ([0, "Default", "https://www.w3.org/StyleSheets/base.css"],
+   [0, "Default", "https://www.w3.org/StyleSheets/team.css"],
+   [0, "Default", "https://www.w3.org/StyleSheets/team-minutes.css"],
+   [0, "Default", "https://www.w3.org/2004/02/minutes-style.css"],
+   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/team.css"]) :
   $old_style && $is_member ?
-  ("https://www.w3.org/StyleSheets/base.css",
-   "https://www.w3.org/StyleSheets/member.css",
-   "https://www.w3.org/StyleSheets/member-minutes.css",
-   "https://www.w3.org/2004/02/minutes-style.css") :
+  ([0, "Default", "https://www.w3.org/StyleSheets/base.css"],
+   [0, "Default", "https://www.w3.org/StyleSheets/member.css"],
+   [0, "Default", "https://www.w3.org/StyleSheets/member-minutes.css"],
+   [0, "Default", "https://www.w3.org/2004/02/minutes-style.css"],
+   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/member.css"]) :
   $old_style ?
-  ("https://www.w3.org/StyleSheets/base.css",
-   "https://www.w3.org/StyleSheets/public.css",
-   "https://www.w3.org/2004/02/minutes-style.css") :
-  $is_team ? ("https://www.w3.org/StyleSheets/scribe2/team.css") :
-  $is_member ? ("https://www.w3.org/StyleSheets/scribe2/member.css") :
-  !$is_fancy ? ("https://www.w3.org/StyleSheets/scribe2/public.css") :
-  ("https://www.w3.org/StyleSheets/scribe2/fancy.css");
+  ([0, "Default", "https://www.w3.org/StyleSheets/base.css"],
+   [0, "Default", "https://www.w3.org/StyleSheets/public.css"],
+   [0, "Default", "https://www.w3.org/2004/02/minutes-style.css"],
+   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/public.css"],
+   [1, "Fancy", "https://www.w3.org/StyleSheets/scribe2/fancy.css"]) :
+  $is_team ?
+  ([0, "Default", "https://www.w3.org/StyleSheets/scribe2/team.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/team.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/team-minutes.css"],
+   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"]) :
+  $is_member ?
+  ([0, "Default", "https://www.w3.org/StyleSheets/scribe2/member.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/member.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/member-minutes.css"],
+   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"]) :
+  !$is_fancy ?
+  ([0, "Default", "https://www.w3.org/StyleSheets/scribe2/public.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/public.css"],
+   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"],
+   [1, "Fancy", "https://www.w3.org/StyleSheets/scribe2/fancy.css"]) :
+  ([0, "Fancy", "https://www.w3.org/StyleSheets/scribe2/fancy.css"],
+   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/public.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
+   [1, "Old style", "https://www.w3.org/StyleSheets/public.css"],
+   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"]);
 
 # Format some of the variables used in the template below
 #
+# my $style = join("\n",
+#   map {"<link rel=stylesheet type=\"text/css\" href=\"$_\">"} @stylesheets);
 my $style = join("\n",
-  map {"<link rel=stylesheet type=\"text/css\" href=\"$_\">"} @stylesheets);
+  map {"<link rel=\"" . ($_->[0] ? "alternate " : "") . "stylesheet\" " .
+    "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
+
 my $logo = !$is_fancy ?
   '<a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" ' .
   'alt=W3C border=0 height=48 width=72></a>' : '';
