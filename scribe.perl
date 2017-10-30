@@ -124,6 +124,8 @@ sub RRSAgent_text_format($$)
       # Ignore lines like "<jfm> jfm has joined #foo"
     } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    } elsif (/^\s*$/) {
+      # Ignore empty lines
     } else {
       return 0;			# Unknown format, give up
     }
@@ -146,6 +148,8 @@ sub Bip_Format($$)
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
     } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d > ([^ :]+): (.*)$/) {
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    } elsif (/^\s*$/) {
+      # Ignore empty lines
     } else {
       return 0;			# Unrecognized line, return failure
     }
@@ -188,6 +192,8 @@ sub Yahoo_IM_Format($$)
   foreach (@$lines_ref) {
     if (/^([^ :]+): (.*)$/) {
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    } elsif (/^\s*$/) {
+      # Ignore empty lines
     } else {
       return 0;
     }
@@ -207,6 +213,7 @@ sub Bert_IRSSI_Format($)
     next if /^[][0-9:]+\s*«Quit» \| (\S+).* has signed off/;
     next if /^[][0-9:]+\s*«[^»]+» \|/; # IRSSI comment about users, topic, etc.
     next if /^[][0-9:]+\s*\* \|/;      # Skip a /me command
+    next if /^\s*$/;		       # Skip empty line
     if (/^[][0-9:]+[\s@+%]*(\S+) \| (.*)/) {
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
     } else {
