@@ -453,11 +453,9 @@ if (!defined $scribenick) {
 %curscribes = map {$_ => 1} split(/ *, */, lc($scribenick));
 $scribenicks{$_} = esc($_) foreach split(/ *, */, $scribenick);
 
-# Interpret each line. $scribenick is the current scribe in lowercase.
+# Interpret each line. %curscribes is the current set of scribes in lowercase.
 # $speaker is the current speaker, for use in continuation lines.
-# $speaker is set to foo whenever the scribe writes "foo: ..." and set
-# to undef when the scribe writes something that is not a continuation
-# line.
+# $speaker is set to foo whenever the scribe writes "foo: ...".
 #
 for (my $i = 0; $i < @records; $i++) {
 
@@ -504,7 +502,6 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
     $topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($dash_topics && $records[$i]->{text} =~ /^ *-- *$/) {
     for (my $j = $i + 1; $j < @records; $j++) {
@@ -517,7 +514,6 @@ for (my $i = 0; $i < @records; $i++) {
 	last;
       }
     }
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{speaker} eq 'RRSAgent' &&
 	   $records[$i]->{text} =~ / to generate ([^ #]+)/) {
@@ -531,7 +527,6 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($records[$i]->{text} =~ /^ *rrsagent,/i) {
     $records[$i]->{type} = 'o';		# Ignore this line
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{speaker} =~ /^RRSAgent$/) {
     # Ignore RRSAgent's list of actions, etc.
@@ -539,7 +534,6 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($records[$i]->{text} =~ /^ *trackbot,/i) {
     $records[$i]->{type} = 'o';		# Ignore commands to trackbot
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *action *: *(.*?) *$/i ||
 	   $records[$i]->{text} =~ /^ *action +(\w+ *:.*?) *$/i ||
@@ -548,63 +542,52 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
     $actions .= "<li><a href=\"#$id\">" . esc($1, $emphasis,0,1)."</a></li>\n";
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *resol(?:ved|ution) *: *(.*?) *$/i) {
     $records[$i]->{type} = 'r';		# Mark as resolution line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
     $resolutions .= "<li><a href=\"#$id\">".esc($1,$emphasis,0,1)."</a></li>\n";
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *($urlpat) *$/i) {
     $agenda = '<a href="' . esc($1) . "\">$agenda_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *(.*?) *$/i) {
     push(@diagnostics, "Found 'Agenda:' not followed by a URL: '$1'.");
     # $records[$i]->{type} = 'o';	# Omit line from output
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *meeting *: *(.*?) *$/i) {
     $meeting = esc($1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *previous +meeting *: *($urlpat) *$/i){
     $prev_meeting = '<a href="' . esc($1) . "\">$previous_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *previous +meeting *: *(.*?) *$/i) {
     push(@diagnostics,"Found 'Previous meeting:' not followed by a URL: '$1'.");
     # $records[$i]->{type} = 'o';	# Omit line from output
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *chairs? *: *(.*?) *$/i) {
     $chair = esc($1);
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *date *: *(\d+ \w+ \d+)/i) {
     # TODO: warn about unrecognized or impossible dates
     $date = $1;
     $records[$i]->{type} = 'o';		# Omit line from output
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($records[$i]->{text} =~ /^ *scribe *: *(.*?) *$/i) {
-    $scribes{lc $1} = $1;		# Add to collected scribe list
+    my $s = $1;
+    $scribes{lc $s} = $s;		# Add to collected scribe list
     $records[$i]->{type} = 'o';		# Omit line from output
-    $scribenick = $1 if $use_scribe;
-    %curscribes = map {$_ => 1} split(/ *, */, lc($scribenick)) if $use_scribe;
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
+    %curscribes = map {$_ => 1} split(/ *, */, lc($s)) if $use_scribe;
 
   } elsif ($records[$i]->{text} =~ /^ *scribenick *: *(.*[^ ]) *$/i) {
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
-    $scribenick = $1;
-    %curscribes = map {$_ => 1} split(/ *, */, lc($scribenick));
-    $scribenicks{$_} = esc($_) foreach split(/ *, */, $scribenick);
+    my $s = $1;
+    %curscribes = map {$_ => 1} split(/ *, */, lc($s));
+    $scribenicks{$_} = esc($_) foreach split(/ *, */, $s);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
@@ -623,11 +606,9 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *zakim,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *ack \w/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($use_zakim &&
 	   $records[$i]->{text} =~ /^ *ag(g?)enda\s*\d*\s*[\+\-\=\?]/i) {
@@ -636,17 +617,14 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($use_zakim &&
 	   $records[$i]->{text} =~ /^ *(next|close)\s+ag(g?)end(a|(um))\s*\Z/i){
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($use_zakim &&
 	   $records[$i]->{text} =~ /^ *open\s+ag(g?)end(a|(um))\s+\d+\Z/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($use_zakim &&
 	   $records[$i]->{text} =~ /^ *take\s+up\s+ag(g?)end(a|(um))\s+\d+\Z/i){
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-    $speaker = undef if is_cur_scribe($records[$i]->{speaker}, \%curscribes);
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *q(?:ueue)?\s*[-+=?]/i){
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
@@ -705,7 +683,7 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   $records[$i]->{type} eq 'c') {
-    # It's a failed s/// command by the speaker. Do not undef $speaker
+    # It's a failed s/// command by the speaker.
     $records[$i]->{type} = 'd';		# Mark as descriptive text
     
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
