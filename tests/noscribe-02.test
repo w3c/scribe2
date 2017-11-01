@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Test the "scribenick: *" feature.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<Ben> Joe: I agree.
+<Joe> Ben: me too.
+<Ann> Joe and Ben agree.
+EOF
+
+cat >$TMP4 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class="phone s01"><cite>Joe:</cite> I agree.</p>
+<p class="phone s02"><cite>Ben:</cite> me too.</p>
+<p class=summary>Joe and Ben agree.</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl --scribenick=* $TMP1 >$TMP2
+sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+diff -u $TMP3 $TMP4

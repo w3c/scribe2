@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Test multiple concurrent scribes
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<Ann> scribenick: Ben ,Joe   ,   Dina
+<Ben> Joe: I agree.
+<Joe> Ben: me too.
+<Ann> Joe and Ben agree.
+EOF
+
+cat >$TMP4 <<EOF
+<dt>Scribe</dt><dd>Ben, Dina, Joe</dd>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+grep '<dt>Scribe' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3
