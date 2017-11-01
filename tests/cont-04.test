@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Test that continuation lines are *not* recognized after the scribe
+# writes a summary line.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribe: foo
+<foo> Pete: Something else
+<foo> .. I wanted to say.
+<foo> ... Very important
+<foo> More talking
+<foo> ... This isn't a continuation.
+<bar> present+ bar
+<baz> q?
+EOF
+
+cat >$TMP4 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class="phone s01"><cite>Pete:</cite> Something else<br>
+… I wanted to say.<br>
+… Very important</p>
+<p class=summary>More talking</p>
+<p class=summary>... This isn't a continuation.</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# Extract just the minutes
+sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
