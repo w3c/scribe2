@@ -709,9 +709,9 @@ if (!defined $date && defined $minutes_url &&
 
 # If no present list was found, put a guess in the diagnostics.
 if (!%present) {
-  my %speakers;
-  foreach (@records) {if ($_->{type} eq 's') {$speakers{$_->{speaker}} = 1;}}
-  push(@diagnostics, "Maybe present: " . join(", ", sort keys %speakers));
+  my %a;
+  for (@records) {if ($_->{type} eq 's') {$a{lc $_->{speaker}} = $_->{speaker}}}
+  push(@diagnostics, "Maybe present: " . join(", ", map($a{$_}, sort keys %a)));
 }
 
 # Step 4. Convert records to HTML and then fill a template.
