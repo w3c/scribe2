@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Test continuation lines of multiple concurrent scribes
+# Test continuation lines of multiple concurrent scribes.
+# Ben is scribing what Joe says, so his "..." means Joe.
+# And Joe is scribing Ben, so his "..." means Ben.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
