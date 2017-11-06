@@ -35,7 +35,7 @@ cat >$TMP1 <<EOF
 14:59:11 <Harpo> Abbott: Who
 14:59:12 <Harpo> Costello: The fellow playin' second base
 14:59:12 <Harpo> s/second base/first base/
-16:00:00 <Zakim> Leaving.  As of this point the attendees were Abbott, Costello, Harpo
+16:00:01 <Abbott> Present: Abbott, Costello, Harpo
 16:00:01 <Abbott> rrsagent, make minutes
 
 EOF
@@ -71,7 +71,7 @@ Public Minutes Teleconference</h1>
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
-<dt>Present</dt><dd></dd>
+<dt>Present</dt><dd>Abbott, Costello, Harpo</dd>
 <dt>Regrets</dt><dd></dd>
 <dt>Chair</dt><dd>Abbott</dd>
 <dt>Scribe</dt><dd>Harpo</dd>
@@ -123,7 +123,6 @@ href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
 <h2>Diagnostics</h2>
 <p class=warning>Succeeded: s/second base/first base/</p>
 <p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
-<p class=warning>Maybe present: Abbott, Costello</p>
 </div>
 </body>
 </html>
