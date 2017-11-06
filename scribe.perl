@@ -10,6 +10,20 @@
 # TODO: Omit failed s/// commands? (But maybe they failed on purpose
 # and should not be removed?)
 #
+# TODO: option --inputFormat to select the format, rather than try
+# each parser in turn.
+#
+# TODO: Allow (and ignore) the unused options of old scribe.perl?
+#
+# TODO: Add a command ('oops'? 'undo'? 'ignore'? u///g?) to remove an
+# incorrect s///g, because s|s/.../.../g|| doesn't remove it.
+#
+# TODO: Warn about unrecognized or impossible dates after "Date: ..."
+#
+# TODO: A streaming mode (using --inputFormat) that formats each line
+# as soon as it is read? (s/// and i//// will not work. ScribeNick is
+# not retroactive. Broken lines, as in Mirc logs, are not recombined.)
+#
 # Copyright © 2017 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -59,7 +73,7 @@ use Getopt::Long qw(GetOptionsFromString);
 use 5.012;			# We use "each @ARRAY"
 use locale;			# Sort using current locale
 
-my $urlpat= '(?:[a-z]+://|mailto:[^ <@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^ \t<]+';
+my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
 
 # Command line options:
 my $is_team = 0;		# If 1, use team style
@@ -77,7 +91,6 @@ my $scribeonly = 0;		# If 1, omit IRC comments by others
 my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things 
 my $old_style = 0;		# If 1, use the old (pre-2017) style sheets
 my $url_display = 'break';	# How to display in-your-face URLs
-# TODO: option --inputFormat
 
 
 # Each parser takes a reference to an array of text lines (newlines
@@ -324,7 +337,6 @@ my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
 my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 
-# TODO: Allow (and ignore) the other options of old scribe.perl?
 my %options = ("team" => sub {$is_team = 1; $is_member = $is_fancy = 0},
 	       "member" => sub {$is_member = 1; $is_team = $is_fancy = 0},
 	       "fancy" => sub {$is_fancy = 1; $is_team = $is_member = 0},
@@ -365,9 +377,6 @@ do {
 # changed by other s/// lines. Then loop over all lines again and
 # apply the substitutions and insertions. Successful s/// and i///
 # become of type 'o' (omit).
-#
-# TODO: Add a command ('oops'? 'undo'? 'ignore'? u///g?) to remove an
-# incorrect s///g, because s|s/.../.../g|| doesn't remove it.
 #
 foreach (@records) {
   $_->{type} = 'c' if
@@ -451,7 +460,7 @@ if (!defined $scribenick) {
   push(@diagnostics, "No scribenick or scribe found. Guessed: $scribenick");
 }
 %curscribes = map {$_ => 1} split(/ *, */, lc($scribenick));
-$scribenicks{$_} = esc($_) foreach split(/ *, */, $scribenick);
+$scribenicks{lc $_} = $_ foreach split(/ *, */, $scribenick);
 
 # Interpret each line. %curscribes is the current set of scribes in lowercase.
 # $speaker is the current speaker, for use in continuation lines.
@@ -574,7 +583,6 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *date *: *(\d+ \w+ \d+)/i) {
-    # TODO: warn about unrecognized or impossible dates
     $date = $1;
     $records[$i]->{type} = 'o';		# Omit line from output
 
@@ -587,7 +595,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~ /^ *scribenick *: *(.*[^ ]) *$/i) {
     my $s = $1;
     %curscribes = map {$_ => 1} split(/ *, */, lc($s));
-    $scribenicks{$_} = esc($_) foreach split(/ *, */, $s);
+    $scribenicks{lc $_} = $_ foreach split(/ *, */, $s);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
@@ -640,12 +648,14 @@ for (my $i = 0; $i < @records; $i++) {
     if ($a =~ /^$/) {
       push(@diagnostics, "Empty named anchor ignored.");
     } elsif ($a =~ /^x[0-9][0-9]+$/) {
-      push(@diagnostics, "Named anchor ".$a." ignored. (\"xNN\" is reserved.)");
+      push(@diagnostics, "Named anchor \"$a\" ignored. (\"xNN\" is reserved.)");
+    } elsif ($a =~ /^(?:(?:Action|Resolution)Summary|links|attendees|toc|meeting)$/) {
+      push(@diagnostics, "Named anchor \"$a\" ignored. (The name is reserved.)");
     } elsif (exists $namedanchors{$a}) {
-      push(@diagnostics, "Duplicate named anchor \"".$a."\" ignored.");
+      push(@diagnostics, "Duplicate named anchor \"$a\" ignored.");
     } else {
       $records[$i]->{type} = 'n';
-      $records[$i]->{id} = $a;
+      $records[$i]->{id} = esc($a);
       $namedanchors{$a} = 1;
     }
 
@@ -736,7 +746,7 @@ my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
-    esc($p->{speaker}, 0), esc($p->{id}), esc($p->{text}, $emphasis, 1),
+    esc($p->{speaker}, 0), $p->{id}, esc($p->{text}, $emphasis, 1),
     $speakers{lc $p->{speaker}} // '';
   if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ tr/\t/ /;}
   $minutes .= $line;
