@@ -289,12 +289,12 @@ sub esc($;$$$)
 }
 
 
-# is_cur_scribe -- true if $speaker is in %$curscribes_ref
+# is_cur_scribe -- true if $nick is in %$curscribes_ref
 sub is_cur_scribe($$)
 {
-  my ($speaker, $curscribes_ref) = @_;
+  my ($nick, $curscribes_ref) = @_;
 
-  return $$curscribes_ref{lc($speaker)} || $$curscribes_ref{'*'};
+  return $$curscribes_ref{lc($nick)} || $$curscribes_ref{'*'};
 }
   
 
@@ -324,7 +324,7 @@ my $id = 'x00';			# Generates unique IDs
 my $topics = '';		# HTML-formatted table of contents
 my $agenda = '';		# HTML-formatted link to an agenda
 my $chair = '-';		# HTML-escaped name of meeting chair
-my $speaker;			# Current speaker
+my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my %speakers;			# Unique ID for each speaker
 my $use_scribe = 0;		# 1 = interpret 'scribe:' as 'scribenick:'
@@ -463,8 +463,8 @@ if (!defined $scribenick) {
 $scribenicks{lc $_} = $_ foreach split(/ *, */, $scribenick);
 
 # Interpret each line. %curscribes is the current set of scribes in lowercase.
-# $speaker is the current speaker, for use in continuation lines.
-# $speaker is set to foo whenever the scribe writes "foo: ...".
+# $lastspeaker is the current speaker, for use in continuation lines.
+# $lastspeaker is set to foo whenever the scribe writes "foo: ...".
 #
 for (my $i = 0; $i < @records; $i++) {
 
@@ -669,20 +669,21 @@ for (my $i = 0; $i < @records; $i++) {
 	    (!$spacecont && $records[$i]->{text} =~ /^ *([^ <:]+) *: *(.*)$/))&&
 	   $records[$i]->{text} !~ /^ *$urlpat/i) {	# ... and not a URL
     $records[$i]->{type} = 's';		# Mark as scribe line
+    $lastspeaker{$records[$i]->{speaker}} = $1; # For any continuation lines
     $records[$i]->{speaker} = $1;
     $records[$i]->{text} = $2;
     $speakers{lc $1} = ++$speakerid if !exists $speakers{lc $1};
-    $speaker = $1;			# Remember for use in continuation lines
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   defined $speaker &&
+	   defined $lastspeaker{$records[$i]->{speaker}} &&
 	   (($implicitcont && $records[$i]->{text} =~ /^ *(.*?) *$/) ||
 	    ($spacecont && $records[$i]->{text} =~ /^ +(.*?) *$/) ||
 	    $records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/)) {
-    $records[$i]->{speaker} = $speaker; # Same speaker as previously
+    $records[$i]->{speaker} = $lastspeaker{$records[$i]->{speaker}};
     $records[$i]->{type} = 's';		# Mark as scribe line
     my $j = $i - 1; $j-- while $j > 0 && $records[$j]->{type} eq 'o';
-    if ($j >= 0 && $records[$j]->{type} eq 's') {
+    if ($j >= 0 && $records[$j]->{type} eq 's' &&
+	$records[$j]->{speaker} eq $records[$i]->{speaker}) {
       # Concatenate previous and current line and remove previous line
       $records[$i]->{text} = $records[$j]->{text} . "\t" . $1;
       $records[$j]->{type} = 'o';	# Omit previous line from output
@@ -698,7 +699,7 @@ for (my $i = 0; $i < @records; $i++) {
     
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
     $records[$i]->{type} = 'd';		# Mark as descriptive text
-    $speaker = undef;			# No continuation line expected
+    $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
   }
 }
 
