@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Test if the scribe name is escaped correctly.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribenick: foo
+<foo> scribe: F&E "OO" Smith
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<link rel="stylesheet" type="text/css" title="Default" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<div id=links>
+</div>
+</header>
+
+<nav>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd></dd>
+<dt>Regrets</dt><dd></dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>F&amp;E &quot;OO&quot; Smith</dd>
+</dl>
+</div>
+
+<div id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting Minutes</a>
+<ol>
+</ol>
+</li>
+</ul>
+</div>
+</nav>
+
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section></section>
+</div>
+
+
+<address>Minutes formatted by Bert Bos's <a
+href="https://dev.w3.org/2002/scribe2/scribedoc.html"
+>scribe.perl</a> version 2.35 (2017/11/06 00:28:38), a reimplementation
+of David Booth's <a
+href="https://dev.w3.org/2002/scribe/scribedoc.htm"
+>scribe.perl</a>. See <a
+href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>Maybe present: </p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP4 $TMP5

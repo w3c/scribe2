@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Test if the scribenick is escaped correctly.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribenick: A&B
+<foo> Hi, A&B!
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+grep '<dt>Scribe</dt><dd>A&amp;B</dd>' $TMP2
