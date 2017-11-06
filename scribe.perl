@@ -742,25 +742,6 @@ foreach my $p (@records) {
   $minutes .= $line;
 }
 
-# my @stylesheets = $old_style & $is_team ?
-#   ("https://www.w3.org/StyleSheets/base.css",
-#    "https://www.w3.org/StyleSheets/team.css",
-#    "https://www.w3.org/StyleSheets/team-minutes.css",
-#    "https://www.w3.org/2004/02/minutes-style.css") :
-#   $old_style && $is_member ?
-#   ("https://www.w3.org/StyleSheets/base.css",
-#    "https://www.w3.org/StyleSheets/member.css",
-#    "https://www.w3.org/StyleSheets/member-minutes.css",
-#    "https://www.w3.org/2004/02/minutes-style.css") :
-#   $old_style ?
-#   ("https://www.w3.org/StyleSheets/base.css",
-#    "https://www.w3.org/StyleSheets/public.css",
-#    "https://www.w3.org/2004/02/minutes-style.css") :
-#   $is_team ? ("https://www.w3.org/StyleSheets/scribe2/team.css") :
-#   $is_member ? ("https://www.w3.org/StyleSheets/scribe2/member.css") :
-#   !$is_fancy ? ("https://www.w3.org/StyleSheets/scribe2/public.css") :
-#   ("https://www.w3.org/StyleSheets/scribe2/fancy.css");
-
 # Style sheets: 0 = default, 1 = alternate (= alternative).
 #
 my @stylesheets = $old_style & $is_team ?
@@ -807,8 +788,6 @@ my @stylesheets = $old_style & $is_team ?
 
 # Format some of the variables used in the template below
 #
-# my $style = join("\n",
-#   map {"<link rel=stylesheet type=\"text/css\" href=\"$_\">"} @stylesheets);
 my $style = join("\n",
   map {"<link rel=\"" . ($_->[0] ? "alternate " : "") . "stylesheet\" " .
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
