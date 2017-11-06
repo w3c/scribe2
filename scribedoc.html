@@ -699,11 +699,11 @@ i|locationString|lineToInsert|
   <pre class="command">Meeting: Baking Club</pre>
 
   <p>Use "Baking Club" as the title of the meeting minutes. If used
-   mutliple times, only the last one has effect.
+   multiple times, only the last one has effect.
 
   <pre class="command">Chair: Jonathan</pre>
 
-  <p>Jonathan was the meeting chair. If used mutliple times, only the
+  <p>Jonathan was the meeting chair. If used multiple times, only the
    last one has effect.
 
   <pre class="command">Scribe: Mary</pre>
@@ -746,7 +746,7 @@ i|locationString|lineToInsert|
 
   <pre class="command">Agenda: http://www.example.com/agenda.html</pre>
 
-  <p>Specify the agenda URL (optional). If used mutliple times, only
+  <p>Specify the agenda URL (optional). If used multiple times, only
    the last one has effect.
 	
   <pre class="command">Present: Jonathan, Mary, Barbara, Steve</pre>
@@ -773,7 +773,7 @@ i|locationString|lineToInsert|
 	
   <pre class="command">ACTION: Frank, Mary and Kate to propose solution for issue 42
 action Ann: publish report 17
-Action Fred to do somthing</pre>
+Action Fred to do something</pre>
 
   <p>Three ways to give an action item: ‘action:’, ‘action name:’ and
    ‘action name to’. (Other bots, such as Tracker, may require that
@@ -866,20 +866,10 @@ Resolved: next-object does not wrap</pre>
    <li><a href="#RRSAgent_Text_Format" >RRSAgent_Text_Format</a>
     (RECOMMENDED)
 
-   <li><a href="#RRSAgent_HTML_Format" >RRSAgent_HTML_Format</a>
-    
-   <li><a href="#RRSAgent_Visible_HTML_Text_Paste_Format"
-     >RRSAgent_Visible_HTML</a>
-
-   <li><a href="#RRSAgent_Visible_HTML_Text_Paste_Format"
-     >Text_Paste_Format</a>
-
    <li><a href="scribedoc.htm#Mirc_Timestamped_Log_Format"
      >Mirc_Timestamped_Log_Format</a>
 
    <li><a href="#Mirc_Text_Format" >Mirc_Text_Format</a>
-
-   <li><a href="#Normalized_Format" >Normalized_Format</a>
 
    <li><a href="#XChat_Timestamped_Log_Format"
      >XChat_Timestamped_Log_Format</a>
@@ -895,25 +885,17 @@ Resolved: next-object does not wrap</pre>
   </ul>
 	
   <p>Scribe.perl guesses which format you have used by trying each in
-   turn until it finds one one that matches. <!-- If necessary, you
-   can specify the input format explicitly using the -inputFormat
-   option and specifying the name of the format such as "-inputFormat
-   RRSAgent_Text_Format". The names of the formats are actually the
-   perl function names used in the code. -->
+   turn until it finds one one that matches.
 
   <p>If you have a log format that is not recognized:
 
   <ol>
    <li>Try doing global search/replace in a text editor, to convert it
     into a recognized format, such as <a
-    href="scribedoc.htm#Normalized_Format" >Normalized_Format</a>; or
+    href="#Mirc_Text_Format" >Mirc_Text_Format</a>; or
 
    <li>Write a parser for it and add it to scribe.perl.
   </ol>
-
-
-
-
   
   <h3 id="RRSAgent_Text_Format">RRSAgent_Text_Format (RECOMMENDED)</h3>
 	
@@ -922,31 +904,6 @@ Resolved: next-object does not wrap</pre>
 <pre class="command">20:41:27 &lt;dbooth&gt; Mike: Feature X would benefit users.
 20:41:37 &lt;dbooth&gt; ... and implementation would be easy.
 20:41:47 &lt;ericn&gt; I agree.
-</pre>
-
-<h3 id="RRSAgent_HTML_Format">RRSAgent_HTML_Format</h3>
-
-<p>The HTML format (*.html) produced by RRSAgent.  This is the raw HTML code.  <a href="https://www.w3.org/2003/03/03-ws-desc-irc.html">Example:</a>
-</p>
-
-<pre class="command">
-&lt;dt id=&quot;T20-41-27&quot;&gt;20:41:27 [dbooth]&lt;/dt&gt;
-	&lt;dd&gt;Mike: Feature X would benefit users. &lt;/dd&gt;
-&lt;dt id=&quot;T20-41-37&quot;&gt;20:41:37 [dbooth]&lt;/dt&gt;
-	&lt;dd&gt;... and implementation would be easy. &lt;/dd&gt;
-&lt;dt id=&quot;T20-41-37&quot;&gt;20:41:47 [ericn]&lt;/dt&gt;
-	&lt;dd&gt;I agree. &lt;/dd&gt;
-</pre>
-
-	<h3 id="RRSAgent_Visible_HTML_Text_Paste_Format">RRSAgent_Visible_HTML_Text_Paste_Format</h3>
-	
-<p>This is for the format that is visible in the browser when RRSAgent's HTML is displayed.  I.e., when you display the *.html log in a browser, and then copy and paste the text from the browser window, only the displayed text is copied -- not the raw HTML tags.  <a href="https://lists.w3.org/Archives/Public/www-archive/2004Jan/att-0002/ExampleFormat-RRSAgent_Visible_HTML_Text_Paste_Format.txt">Example:</a>
-</p>
-<pre class="command">20:41:27 [dbooth]
-     Mike: Feature X would benefit users.
-20:41:37 [dbooth]
-     ... and implementation would be easy.20:41:47 [ericn]
-     I agree.
 </pre>
 
 	<h3 id="Mirc_Timestamped_Log_Format">Mirc_Timestamped_Log_Format</h3>
@@ -970,16 +927,6 @@ Resolved: next-object does not wrap</pre>
 &lt;dbooth&gt; This is pretending to be a long
  line that mIRC breaks in order to display,
  but scribe.perl will re-join into a single line.
-&lt;ericn&gt; I agree.
-</pre>
-
-	<h3 id="Normalized_Format">Normalized_Format</h3>
-	
-	<p>This is the format used internally by scribe.perl.  Scribe.perl converts all other formats to this format before processing.   Superficially it looks similar to the Mirc_Text_Format, except that Mirc_Text_Format may contain broken lines that still need to be rejoined back into single, long lines.  Example:
-</p>
-<pre class="command">&lt;dbooth&gt; Mike: Feature X would benefit users.
-&lt;dbooth&gt; ... and implementation would be easy.
-&lt;dbooth&gt; This is pretending to be a long line that mIRC breaks in order to display, but scribe.perl will re-join into a single line.
 &lt;ericn&gt; I agree.
 </pre>
 
@@ -1102,7 +1049,7 @@ Eric agrees.
    <li>
     <p>The ‘-trustRRSAgent’ option is not supported. When RSSAgent is
      dismissed, it summarizes the actions and resolutions it has
-     seenn, but scribe.perl version 2 does not use them.
+     seen, but scribe.perl version 2 does not use them.
 
    <li>
     <p>The ‘-plain’, ‘-public’ and ‘-mit’ options are not supported.
@@ -1132,6 +1079,10 @@ Eric agrees.
     <p>The scribe can make IRC statements as himself by prefixing his
      text with his own nick in angle brackets (see <a
      href="#scribeirc" >example above</a>).
+
+   <li>
+    <p>The ScribeNick command accepts multiple names (separated by
+    commas), and also accepts <a href="#noscribe">‘*’</a>
   </ul>
 
   <!--    No addition of [recorded in ....] after an action. -->
