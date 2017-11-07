@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Test if Zakim's queue reminder is recognized
+
+cat >$TMP1 <<EOF
+21:13:46 <Zakim> MikeSmith, you wanted to point out that the decision about whether to copy specs at all is ultimately a WG decision, not some kind of unchangeable external
+21:13:49 <Zakim> ... requirement
+EOF
+
+cat >$TMP4 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class=irc><cite>&lt;Zakim&gt;</cite> MikeSmith, you wanted to point out that the decision about whether to copy specs at all is ultimately a WG decision, not some kind of unchangeable external requirement</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+
+# Extract just the minutes
+sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3

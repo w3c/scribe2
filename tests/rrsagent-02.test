@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Test if Zakim's list of attendees is recognized
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+16:00:00 <Zakim> Leaving.  As of this point the attendees were Abbott, Costello, Harpo,
+16:00:00 <Zakim> ... Jose
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+
+grep '<dt>Present</dt><dd>Abbott, Costello, Harpo, Jose</dd>' $TMP2
