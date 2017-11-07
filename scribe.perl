@@ -829,9 +829,10 @@ my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
 my $present = esc(join(", ", map($present{$_}, sort keys %present)));
 my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets)));
 my $scribes = esc(join(", ", map($scribes{$_}, sort keys %scribes)));
-my $diagnostics = !$embed_diagnostics ? "" :
-  "<h2>Diagnostics<\/h2>\n" .
-  join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics);
+my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
+  "<div class=diagnostics>\n<h2>Diagnostics<\/h2>\n" .
+  join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics) .
+  "</div>\n";
 
 my $actiontoc = !$actions ? '' :
     "<li><a href=\"#ActionSummary\">Summary of Action Items</a></li>\n";
@@ -901,9 +902,7 @@ href=\"https://dev.w3.org/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a
 href=\"https://dev.w3.org/cvsweb/2002/scribe2/\">CVS log.</a></address>
 
-<div class=diagnostics>
-$diagnostics</div>
-</body>
+$diagnostics</body>
 </html>
 ";
 
