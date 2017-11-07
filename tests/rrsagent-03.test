@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Test RRSAgent log format and Zakim attendees list
+
+set -u -e -o pipefail
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+16:52:13 <RRSAgent> RRSAgent has joined #eo
+16:52:13 <RRSAgent> logging to http://www.w3.org/2017/10/25-eo-irc
+16:52:15 <trackbot> RRSAgent, make logs world
+16:52:18 <trackbot> Meeting: Education and Outreach Working Group Teleconference
+16:52:18 <trackbot> Date: 25 October 2017
+17:04:20 <Laura> Laura has joined #eo
+17:06:59 <shawn> scribe: Shawn
+17:07:35 <shawn> present: James, Alicia, Eric, Laura, Norah, Charlotte, Sharron, Shawn
+17:13:06 <shawn> oops, /me forgot to scribe :-(
+17:13:37 <shawn> For UT at TPAC, static image of home page ideas
+17:14:19 <James> James has joined #eo
+17:16:51 <James> Present+ James
+17:18:20 <shawn> informal UT - ask "What do you knwo about accessibility?" and then "What do you want to know about accessibility?" and then let them try to find their answers
+17:19:44 <shawn> goodies to lure them and thank them
+17:21:36 <shawn> Charlotte: W3C Developer site work well there because less stuff and just one audience.
+17:21:46 <shawn> ... good visual treatment of the site map
+17:22:16 <shawn> +1 to we have lots of different audiences
+17:23:03 <James> James has joined #eo
+17:23:45 <shawn> Eric: from last meeting, not just the learning resources, also clear that we are doing the standards work
+17:24:20 <shawn> https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page
+17:27:30 <Sharron> Sharron has joined #eo
+17:41:51 <yatil> q+ to say tagging
+17:42:08 <yatil> q+ to say good direction
+17:45:15 <yatil> ack me
+17:45:15 <Zakim> yatil, you wanted to say tagging and to say good direction
+17:56:04 <shawn> https://www.nngroup.com/articles/audience-based-navigation/
+17:59:10 <shawn> ah, but that is navigation, not alt info in home page
+18:27:26 <shawn> trackbot, end meeting
+18:27:26 <trackbot> Zakim, list attendees
+18:27:26 <Zakim> As of this point the attendees have been James, Alicia, Eric, Laura, Norah, Charlotte, Sharron, Shawn
+18:27:34 <trackbot> RRSAgent, please draft minutes
+18:27:34 <RRSAgent> I have made the request to generate http://www.w3.org/2017/10/25-eo-minutes.html trackbot
+EOF
+
+# Look at both "present" commands and Zakim lists:
+perl scribe.perl $TMP1 | egrep '^<dt>Present' >$TMP2
+
+# Look only at "present" commands:
+perl scribe.perl -nousezakim $TMP1 | egrep '^<dt>Present' >$TMP3
+
+diff -u $TMP2 $TMP3

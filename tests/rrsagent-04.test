@@ -1,0 +1,129 @@
+#!/bin/bash
+
+# Test RRSAgent log format
+
+set -u -e -o pipefail
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX`
+TMP2=`mktemp /tmp/topics-XXXXXX`
+TMP3=`mktemp /tmp/topics-XXXXXX`
+TMP4=`mktemp /tmp/topics-XXXXXX`
+
+cat >$TMP1 <<EOF
+16:52:13 <RRSAgent> RRSAgent has joined #eo
+16:52:13 <RRSAgent> logging to http://www.w3.org/2017/10/25-eo-irc
+16:52:15 <trackbot> RRSAgent, make logs world
+16:52:18 <trackbot> Meeting: Education and Outreach Working Group Teleconference
+16:52:18 <trackbot> Date: 25 October 2017
+17:04:20 <Laura> Laura has joined #eo
+17:06:59 <shawn> scribe: Shawn
+17:07:35 <shawn> present: James, Alicia, Eric, Laura, Norah, Charlotte, Sharron, Shawn
+17:13:06 <shawn> oops, /me forgot to scribe :-(
+17:13:37 <shawn> For UT at TPAC, static image of home page ideas
+17:14:19 <James> James has joined #eo
+17:16:51 <James> Present+ James
+17:18:20 <shawn> informal UT - ask "What do you knwo about accessibility?" and then "What do you want to know about accessibility?" and then let them try to find their answers
+17:19:44 <shawn> goodies to lure them and thank them
+17:21:36 <shawn> Charlotte: W3C Developer site work well there because less stuff and just one audience.
+17:21:46 <shawn> ... good visual treatment of the site map
+17:22:16 <shawn> +1 to we have lots of different audiences
+17:23:03 <James> James has joined #eo
+17:23:45 <shawn> Eric: from last meeting, not just the learning resources, also clear that we are doing the standards work
+17:24:20 <shawn> https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page
+17:27:30 <Sharron> Sharron has joined #eo
+17:41:51 <yatil> q+ to say tagging
+17:42:08 <yatil> q+ to say good direction
+17:45:15 <yatil> ack me
+17:45:15 <Zakim> yatil, you wanted to say tagging and to say good direction
+17:56:04 <shawn> https://www.nngroup.com/articles/audience-based-navigation/
+17:59:10 <shawn> ah, but that is navigation, not alt info in home page
+18:27:26 <shawn> trackbot, end meeting
+18:27:26 <trackbot> Zakim, list attendees
+18:27:26 <Zakim> As of this point the attendees have been James, Alicia, Eric, Laura, Norah, Charlotte, Sharron, Shawn
+18:27:34 <trackbot> RRSAgent, please draft minutes
+18:27:34 <RRSAgent> I have made the request to generate http://www.w3.org/2017/10/25-eo-minutes.html trackbot
+EOF
+
+cat >$TMP2 <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>Education and Outreach Working Group Teleconference &ndash; 25 October 2017</title>
+<link rel="stylesheet" type="text/css" title="Default" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>Education and Outreach Working Group Teleconference</h1>
+<h2>25 October 2017</h2>
+
+<div id=links>
+<a href="http://www.w3.org/2017/10/25-eo-irc"><img alt="IRC log" title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</div>
+</header>
+
+<nav>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>Alicia, Charlotte, Eric, James, Laura, Norah, Sharron, Shawn</dd>
+<dt>Regrets</dt><dd></dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>Shawn</dd>
+</dl>
+</div>
+
+<div id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting Minutes</a>
+<ol>
+</ol>
+</li>
+</ul>
+</div>
+</nav>
+
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class=summary>oops, /me forgot to scribe :-(</p>
+<p class=summary>For UT at TPAC, static image of home page ideas</p>
+<p class=summary>informal UT - ask &quot;What do you knwo about accessibility?&quot; and then &quot;What do you want to know about accessibility?&quot; and then let them try to find their answers</p>
+<p class=summary>goodies to lure them and thank them</p>
+<p class="phone s01"><cite>Charlotte:</cite> W3C Developer site work well there because less stuff and just one audience.<br>
+… good visual treatment of the site map</p>
+<p class=summary>+1 to we have lots of different audiences</p>
+<p class="phone s02"><cite>Eric:</cite> from last meeting, not just the learning resources, also clear that we are doing the standards work</p>
+<p class=summary><a href="https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page">https://&zwnj;www.w3.org/&zwnj;WAI/&zwnj;EO/&zwnj;wiki/&zwnj;Redesign_-_October_Revisions#Home_page</a></p>
+<p class=irc><cite>&lt;Zakim&gt;</cite> yatil, you wanted to say tagging and to say good direction</p>
+<p class=summary><a href="https://www.nngroup.com/articles/audience-based-navigation/">https://&zwnj;www.nngroup.com/&zwnj;articles/&zwnj;audience-based-navigation/</a></p>
+<p class=summary>ah, but that is navigation, not alt info in home page</p>
+</section>
+</div>
+
+
+<address>Minutes formatted by Bert Bos's <a
+href="https://dev.w3.org/2002/scribe2/scribedoc.html"
+>scribe.perl</a> version 2.38 (2017/11/07 01:26:47), a reimplementation
+of David Booth's <a
+href="https://dev.w3.org/2002/scribe/scribedoc.htm"
+>scribe.perl</a>. See <a
+href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+
+</body>
+</html>
+EOF
+
+perl scribe.perl -embed -final $TMP1 | grep -v version >$TMP3
+
+grep -v version $TMP2 >$TMP4
+
+diff -u $TMP4 $TMP3
