@@ -606,6 +606,24 @@ for (my $i = 0; $i < @records; $i++) {
     $topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
+	   $records[$i]->{text} =~ /the attendees (?:were|have been) (.*?),?$/){
+    $present{lc $_} = $_ foreach split(/, */, $1);
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
+	   $records[$i]->{text} =~ /^\.\.\. (.*?),?$/) {
+    my $s = $1;				# See what this is a continuation of
+    my $j = $i;
+    $j-- while $j >= 0 && ($records[$j]->{text} =~ /^\.\.\. / ||
+			   $records[$j]->{speaker} ne 'Zakim');
+    if ($j >= 0 && $records[$j]->{text} =~ /the attendees (?:were|have been) /){
+      $present{lc $_} = $_ foreach split(/, */, $s);
+    } elsif ($j >= 0 && $records[$j]->{text} =~ /, you wanted /) {
+      $records[$j]->{text} .= ' ' . $s;
+    }
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   $records[$i]->{text} =~ /[^ ,]+, you wanted /) {
     # Leave Zakim's lines of the form: "Jim, you wanted to ..."
 
