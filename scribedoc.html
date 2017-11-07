@@ -252,7 +252,8 @@
 	<td class="command">zakim, bye</td>
 
 	<td class="help">Dismiss zakim bot, which will generate a list
-	of attendees. Use ‘Present: ...’ (described below) instead if
+	of attendees. Use <a href="#present">‘Present: ...’ (described
+	below)</a> instead if
 	you aren't using zakim bot.
 
 	<td>anybody
@@ -476,7 +477,8 @@ you are not using RRSAgent.
 
   <h4 id="useZakimTopics">-useZakimTopics</h4>
 
-  <p>[Default] Recognize when Zakim bot is used to manage the agenda.
+  <p>[Default] Recognize when Zakim bot is used to manage the agenda
+   and the list of attendees.
    Specifically, treat Zakim statements like:
 
   <pre class="command">&lt;Zakim&gt; agendum 2. &quot;UTF16 PR issue&quot; taken up [from MSMscribe]</pre>
@@ -485,9 +487,15 @@ you are not using RRSAgent.
 
   <pre class="command">&lt;scribe&gt; Topic: UTF16 PR issue</pre>
 
+  <p>and use Zakim's lines such as ‘As of this point the attendees
+  were…’ as an additional source of names for the presence list.
+
   <h4 id="noUseZakimTopics">-noUseZakimTopics</h4>
 
   <p>Turn off the -useZakimTopics option.
+  This also causes commands for Zakim (‘next agendum’, ‘q+’, ‘zakim,
+  list participants’, etc.) and Zakim's answers to be treated as
+  normal text for the minutes, rather than skipped.
 
   <!--
   <h4 id="inputFormat">-inputFormat NameOfFormat</h4>
@@ -749,7 +757,7 @@ i|locationString|lineToInsert|
   <p>Specify the agenda URL (optional). If used multiple times, only
    the last one has effect.
 	
-  <pre class="command">Present: Jonathan, Mary, Barbara, Steve</pre>
+  <pre class="command" id=present>Present: Jonathan, Mary, Barbara, Steve</pre>
 
   <p>Indicate who was present.
 	
@@ -777,7 +785,7 @@ Action Fred to do something</pre>
 
   <p>Three ways to give an action item: ‘action:’, ‘action name:’ and
    ‘action name to’. (Other bots, such as Tracker, may require that
-   only of these syntaxes is used.)
+   only one of these syntaxes is used.)
 	
   <pre class="command">RESOLUTION: Issue 42 closed as duplicate of issue 21
 Resolved: next-object does not wrap</pre>
@@ -807,9 +815,12 @@ Resolved: next-object does not wrap</pre>
 
   <p>Cause a named anchor ‘foo’ to be generated at this point in the
   minutes. Leading and trailing spaces are ignored and other spaces
-  are converted to underlines (‘_’). The name can be anything, except
+  are converted to underlines (‘_’). The name can be almost anything, except
   ‘xNN’, where N is a digit, because those are reserved for
   scribe.perl's internal use.
+  A few other words (toc, meeting, attendees, links,
+  resolutionsummary, and actionsummary) are also forbidden, because
+  scribe.perl uses them itself.
   
   <h3 id="links">Embedding links</h3>
 
