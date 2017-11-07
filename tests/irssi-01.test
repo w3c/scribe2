@@ -114,7 +114,7 @@ W3C/ERCIM Teleconference</h1>
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
-<dt>Present</dt><dd></dd>
+<dt>Present</dt><dd>Bert, Coralie, Dave, Phil, Ralph, Richard, Rigo, Shadi</dd>
 <dt>Regrets</dt><dd>Bernard, Coralie, Daniel, EricE, Felix, Ivan, Laurent, Richard, Rigo, Shadi</dd>
 <dt>Chair</dt><dd>Bert</dd>
 <dt>Scribe</dt><dd>bert</dd>
@@ -151,7 +151,6 @@ href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
 <div class=diagnostics>
 <h2>Diagnostics</h2>
 <p class=warning>No scribenick or scribe found. Guessed: bert</p>
-<p class=warning>Maybe present: </p>
 </div>
 </body>
 </html>
