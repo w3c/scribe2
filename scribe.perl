@@ -69,7 +69,8 @@
 
 use strict;
 use warnings;
-use Getopt::Long qw(GetOptionsFromString);
+use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
+use Pod::Usage;
 use 5.012;			# We use "each @ARRAY"
 use locale;			# Sort using current locale
 
@@ -300,7 +301,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $version = '$Revision$'
+$main::VERSION = '$Revision$'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
 my $versiondate = '$Date$'
@@ -360,7 +361,7 @@ my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
 
 GetOptionsFromString($ENV{"SCRIBEOPTIONS"}, %options) if $ENV{"SCRIBEOPTIONS"};
-GetOptions(%options);
+GetOptions(%options) or pod2usage(2);
 
 # Step 1: Read all lines into a temporary array and parse them into
 # records, trying each parser in turn until one succeeds.
@@ -512,7 +513,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{id} = ++$id;		# Unique ID
     $topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
 
-  } elsif ($dash_topics && $records[$i]->{text} =~ /^ *-- *$/) {
+  } elsif ($dash_topics && $records[$i]->{text} =~ /^ *-+ *$/) {
     for (my $j = $i + 1; $j < @records; $j++) {
       if ($records[$j]->{speaker} eq $records[$i]->{speaker}) {
 	$records[$i]->{type} = 't';
@@ -759,7 +760,7 @@ my %linepat = (
   r => "<p class=resolution id=%2\$s><strong>Resolved:</strong> %3\$s</p>\n",
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  t => "</section>\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
+  t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
 my $minutes = '';
 foreach my $p (@records) {
@@ -896,7 +897,7 @@ $actions$resolutions
 
 <address>Minutes formatted by Bert Bos's <a
 href=\"https://dev.w3.org/2002/scribe2/scribedoc.html\"
->scribe.perl</a> version $version ($versiondate), a reimplementation
+>scribe.perl</a> version $main::VERSION ($versiondate), a reimplementation
 of David Booth's <a
 href=\"https://dev.w3.org/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a
@@ -907,3 +908,40 @@ $diagnostics</body>
 ";
 
 print STDERR map("* $_\n", @diagnostics) if !$embed_diagnostics;
+
+__END__
+
+=head1 NAME
+
+scribe.perl - Turn an IRC log of a meeting into minutes in HTML
+
+=head1 SYNOPSIS
+
+scribe.perl [options] [file ...]
+
+  Options:
+  --help		Brief help message
+  --team		Use team style
+  --member		Use member style
+  --fancy		Use fancy style
+  --embedDiagnostics	Put diagnostics in the minutes instead of on stderr
+  --implicitContinuations	Continuation lines do not need `...'
+  --allowSpaceContinuation	Allow initial space as well as `...'
+  --keepLines		Do not rewrap lines (default)
+  --urlDisplay=break	Allow URLs to break at slashes (default)
+  --urlDisplay=shorten	Shorten URLs by omitting the middle part
+  --urlDisplay=full	Do not shorten or break URLs
+  --final		Omit the word `DRAFT' from the minutes
+  --draft		Include the word `DRAFT' in the minutes (default)
+  --scribenick		Initial list of scribe nicks, comma-separated
+  --dashTopics		Allow a line of dashes to start a new topic
+  --useZakimTopics	Parse Zakim's lines for agenda topics (default)
+  --scribeOnly		Omit all text that is not written by a scribe
+  --emphasis		Allow inline styles: _underline_ /italics/ *bold*
+  --oldStyle		Use the style of scribe.perl version 1
+  --minutes=I<URL>	Used to guess a date if the URL contains YYYY/MM/DD
+
+You can use single dash (-) or double (--). Options are
+case-insensitive and can be abbreviated. Some options can be negated
+with `no' (e.g., --nokeeplines). For the full manual see
+L<https://dev.w3.org/2002/scribe2/scribedoc.html>
