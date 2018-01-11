@@ -22,6 +22,7 @@ cat >$TMP4 <<EOF
 <h2>Meeting Minutes</h2>
 <section><p class=summary>Original text</p>
 </section>
+
 <section>
 <h3 id=x01>Second topic</h3>
 <p class=summary>Another inserted line</p>
