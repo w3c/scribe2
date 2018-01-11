@@ -134,7 +134,10 @@
      <td class=help>dbooth is the IRC nickname of the scribe. The
       ScribeNick will be guessed if neither Scribe nor ScribeNick are
       specified. If there are multiple scribes: Issue this command and
-      the Scribe: command whenever the scribe nickname changes.
+      the Scribe: command whenever the scribe nickname changes. Or
+      give a comma-separated list of nicknames to indicate that <a
+      href="#multple">multiple scribes</a> are active at the same
+      time.
 
      <td>anybody
     <tr>
@@ -163,7 +166,7 @@
       Alternatively, you can use <a
       href="https://www.w3.org/2001/12/zakim-irc-bot.html#agenda"
       >Zakim bot's agenda control</a>, which is recognized by default.
-      (See the -useZakimTopics option below.)
+      (See the <a href="#useZakimTopics">-useZakimTopics option</a> below.)
 
      <td>anybody
     <tr>
@@ -629,6 +632,11 @@ you are not using RRSAgent.
    scribe.perl looks at it to guess the meeting date if it isn't given
    explicitly. In particular, scribe.perl checks if the URL happens to
    contain a pattern of the form yyyy/mm/dd.
+
+   <dt>-help <dd>Show a brief summary of command line options.
+
+   <dt>-version <dd>Show the version numbers of scribe.perl and of
+   perl itself.
   </dl>
 
   <h2 id="one_time_commands">Commands</h2>
@@ -1095,7 +1103,11 @@ Eric agrees.
     <p>The ScribeNick command accepts <a href="#multiple">multiple
     names</a> (separated by commas), and also accepts <a
     href="#noscribe">‘*’</a>
-  </ul>
+
+   <li>
+    <p>The '-philippe' and '-plh' options are not supported. Use
+    '-dashTopics' instead.
+   </ul>
 
   <!--    No addition of [recorded in ....] after an action. -->
 
