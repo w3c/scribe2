@@ -24,7 +24,7 @@
 # as soon as it is read? (s/// and i//// will not work. ScribeNick is
 # not retroactive. Broken lines, as in Mirc logs, are not recombined.)
 #
-# Copyright © 2017 World Wide Web Consortium, (Massachusetts Institute
+# Copyright © 2017-2018 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
 # work is distributed under the W3C® Software License[1] in the hope
@@ -47,7 +47,7 @@
 #
 # 2) Process "s/old/new/" and "i/where/what/" commands.
 #
-# 3) Each line is interpreted, looking for topics, present & regrets,
+# 3) Each record is interpreted, looking for topics, present & regrets,
 # actions, resolutions, scribes, statements or summaries minuted by
 # the scribes, and remarks by other people on IRC. Each record is
 # modifed and classified accordingly.
@@ -716,6 +716,11 @@ for (my $i = 0; $i < @records; $i++) {
     # It's a failed s/// command by the speaker.
     $records[$i]->{type} = 'd';		# Mark as descriptive text
     
+  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
+	   $records[$i]->{text} =~ /^ *-> *$urlpat/i) {
+    # If the scribe used a Ralph-link (-> url ...), still allow continuations
+    $records[$i]->{type} = 'd';		# Mark as descriptive text
+
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
     $records[$i]->{type} = 'd';		# Mark as descriptive text
     $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
