@@ -1,0 +1,97 @@
+#!/bin/bash
+
+# Test the Mirc save-as text format when the log has been saved with
+# CRLF line endings.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<dbooth> Mike: Feature X would benefit users.
+<dbooth> ... and implementation would be easy.
+<dbooth> This is pretending to be a long
+ line that mIRC breaks in order to display,
+ but scribe.perl will re-join into a single line.
+<ericn> I agree.
+
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<link rel="stylesheet" type="text/css" title="Default" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<div id=links>
+</div>
+</header>
+
+<nav>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd></dd>
+<dt>Regrets</dt><dd></dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>dbooth</dd>
+</dl>
+</div>
+
+<div id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting Minutes</a>
+<ol>
+</ol>
+</li>
+</ul>
+</div>
+</nav>
+
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section><p class="phone s01"><cite>Mike:</cite> Feature X would benefit users.<br>
+… and implementation would be easy.</p>
+<p class=summary>This is pretending to be a long line that mIRC breaks in order to display, but scribe.perl will re-join into a single line.</p>
+<p class=irc><cite>&lt;ericn&gt;</cite> I agree.</p>
+</section>
+</div>
+
+
+<address>Minutes formatted by Bert Bos's <a
+href="https://dev.w3.org/2002/scribe2/scribedoc.html"
+>scribe.perl</a> version 0.0 (2017-02-05), a reimplementation
+of David Booth's <a
+href="https://dev.w3.org/2002/scribe/scribedoc.htm"
+>scribe.perl</a>. See <a
+href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+
+</body>
+</html>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4

@@ -1,0 +1,137 @@
+#!/bin/bash
+
+# Test if input with CRLF line endings is handled correctly.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+14:50:46 <RRSAgent> RRSAgent has joined #public-minutes
+14:50:46 <RRSAgent> logging to http://www.w3.org/2014/06/w3c-test-fixtures/public-minutes
+14:50:48 <trackbot> RRSAgent, make logs public
+14:50:48 <Zakim> Zakim has joined #forms
+14:50:50 <trackbot> Zakim, this will be public-minutes
+14:50:51 <trackbot> Meeting: Public Minutes Teleconference
+14:51:00 <Zakim> Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Jun/0008
+14:51:27 <Zakim> Chair: Abbott
+14:51:28 <Zakim> Scribe: Harpo
+14:58:51 <Zakim> Public-Minutes()11:00AM has now started
+14:58:53 <Abbott> Topic: "Who's on First"
+14:59:01 <Harpo> Abbott: Strange as it may seem, they give ball players nowadays very peculiar names.
+14:59:02 <Harpo> Costello: Funny names?
+14:59:03 <Harpo> Abbott: Nicknames, nicknames. Now, on the St. Louis team we have Who's on first, What's on second, I Don't Know is on third--
+14:59:04 <Harpo> Costello: That's what I want to find out. I want you to tell me the names of the fellows on the St. Louis team.
+14:59:05 <Harpo> Abbott: I'm telling you. Who's on first, What's on second, I Don't Know is on third--
+14:59:06 <Harpo> Costello: You know the fellows' names?
+14:59:07 <Harpo> Abbott: Yes.
+14:59:08 <Harpo> Costello: Well, then who's playing first?
+14:59:09 <Harpo> Abbott: Yes.
+14:59:10 <Harpo> Costello: I mean the fellow's name on first base.
+14:59:11 <Harpo> Abbott: Who
+14:59:12 <Harpo> Costello: The fellow playin' second base
+14:59:12 <Harpo> s/second base/first base/
+16:00:01 <Abbott> Present: Abbott, Costello, Harpo
+16:00:01 <Abbott> rrsagent, make minutes
+
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>Public Minutes Teleconference &ndash; </title>
+<link rel="stylesheet" type="text/css" title="Default" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="Old style" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+Public Minutes Teleconference</h1>
+<h2></h2>
+
+<div id=links>
+<a href="http://lists.w3.org/Archives/Public/public-forms/2014Jun/0008"><img alt="Agenda" title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="http://www.w3.org/2014/06/w3c-test-fixtures/public-minutes"><img alt="IRC log" title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</div>
+</header>
+
+<nav>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>Abbott, Costello, Harpo</dd>
+<dt>Regrets</dt><dd></dd>
+<dt>Chair</dt><dd>Abbott</dd>
+<dt>Scribe</dt><dd>Harpo</dd>
+</dl>
+</div>
+
+<div id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting Minutes</a>
+<ol>
+<li><a href="#x01">&quot;Who's on First&quot;</a></li>
+</ol>
+</li>
+</ul>
+</div>
+</nav>
+
+<div id=meeting class=meeting>
+<h2>Meeting Minutes</h2>
+<section></section>
+
+<section>
+<h3 id=x01>&quot;Who's on First&quot;</h3>
+<p class="phone s01"><cite>Abbott:</cite> Strange as it may seem, they give ball players nowadays very peculiar names.</p>
+<p class="phone s02"><cite>Costello:</cite> Funny names?</p>
+<p class="phone s01"><cite>Abbott:</cite> Nicknames, nicknames. Now, on the St. Louis team we have Who's on first, What's on second, I Don't Know is on third--</p>
+<p class="phone s02"><cite>Costello:</cite> That's what I want to find out. I want you to tell me the names of the fellows on the St. Louis team.</p>
+<p class="phone s01"><cite>Abbott:</cite> I'm telling you. Who's on first, What's on second, I Don't Know is on third--</p>
+<p class="phone s02"><cite>Costello:</cite> You know the fellows' names?</p>
+<p class="phone s01"><cite>Abbott:</cite> Yes.</p>
+<p class="phone s02"><cite>Costello:</cite> Well, then who's playing first?</p>
+<p class="phone s01"><cite>Abbott:</cite> Yes.</p>
+<p class="phone s02"><cite>Costello:</cite> I mean the fellow's name on first base.</p>
+<p class="phone s01"><cite>Abbott:</cite> Who</p>
+<p class="phone s02"><cite>Costello:</cite> The fellow playin' first base</p>
+</section>
+</div>
+
+
+<address>Minutes formatted by Bert Bos's <a
+href="https://dev.w3.org/2002/scribe2/scribedoc.html"
+>scribe.perl</a> version 2.30 (2017/09/29 22:24:05), a reimplementation
+of David Booth's <a
+href="https://dev.w3.org/2002/scribe/scribedoc.htm"
+>scribe.perl</a>. See <a
+href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Succeeded: s/second base/first base/</p>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl --embed $TMP1 >$TMP2 || exit 1
+
+# Omit version number:
+grep -v version $TMP2 >$TMP4
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4
