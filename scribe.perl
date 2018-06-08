@@ -365,9 +365,10 @@ GetOptions(%options) or pod2usage(2);
 
 # Step 1: Read all lines into a temporary array and parse them into
 # records, trying each parser in turn until one succeeds.
+# Remove any CR, in case the file was saved under Windows.
 #
 do {
-  my @input = <>;
+  my @input = map s/\r$//r, <>;
   do {@records = (); last if &$_(\@input, \@records);} foreach (@parsers);
   push(@diagnostics,'Input has an unknown format (or is empty).') if !@records;
 };
