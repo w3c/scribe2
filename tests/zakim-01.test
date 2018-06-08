@@ -2,6 +2,12 @@
 
 # Test if Zakim's queue reminder is recognized
 
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/zakim-XXXXXX` || exit 1
+
 cat >$TMP1 <<EOF
 21:13:46 <Zakim> MikeSmith, you wanted to point out that the decision about whether to copy specs at all is ultimately a WG decision, not some kind of unchangeable external
 21:13:49 <Zakim> ... requirement
