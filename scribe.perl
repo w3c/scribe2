@@ -24,6 +24,11 @@
 # as soon as it is read? (s/// and i//// will not work. ScribeNick is
 # not retroactive. Broken lines, as in Mirc logs, are not recombined.)
 #
+# TODO: Add a "next meeting" command that adds a link at the top of
+# the minutes. Like "previous meeting", it could accept a URL. But it
+# could also accept a date or a period: "next meeting: 7 Aug", "next
+# meeting: 2 weeks".
+#
 # Copyright © 2017-2018 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -50,7 +55,7 @@
 # 3) Each record is interpreted, looking for topics, present & regrets,
 # actions, resolutions, scribes, statements or summaries minuted by
 # the scribes, and remarks by other people on IRC. Each record is
-# modifed and classified accordingly.
+# modified and classified accordingly.
 #
 # 4) The array of records is converted to an HTML fragment and that
 # fragment, together with the collected topics, actions, etc. are
