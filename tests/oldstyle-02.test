@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# -oldstyle makes the old style sheets the default
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Agenda: https://www.example.org/a/long/path
+<foo> ScribeNick: foo
+<foo> scribeoptions: -old
+<foo> scribeoptions: -member
+<foo> This is the old member style.
+EOF
+
+perl scribe.perl <$TMP1 >$TMP2 || exit 1
+
+grep -E '<link rel="stylesheet".*/StyleSheets/base.css">' $TMP2 && \
+grep -E '<link rel="stylesheet".*/StyleSheets/member.css">' $TMP2 && \
+grep -E '<link rel="stylesheet".*/StyleSheets/member-minutes.css">' $TMP2 && \
+grep -E '<link rel="stylesheet".*/2004/02/minutes-style.css">' $TMP2
