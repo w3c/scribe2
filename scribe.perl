@@ -5,8 +5,6 @@
 # See scribe2doc.html for the manual.
 # This is a rewrite of David Booth's scribe.perl
 #
-# TODO: "--logo <url>" option? and "--nologo" option?
-#
 # TODO: Omit failed s/// commands? (But maybe they failed on purpose
 # and should not be removed?)
 #
@@ -28,6 +26,9 @@
 # the minutes. Like "previous meeting", it could accept a URL. But it
 # could also accept a date or a period: "next meeting: 7 Aug", "next
 # meeting: 2 weeks".
+#
+# TODO: Format trackbot's output specially: created an action/issue,
+# info about an action/issue, etc.
 #
 # Copyright © 2017-2018 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
@@ -68,6 +69,7 @@
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
 # If type is 'r' (resolution), <text> is a resolution and <id> is a unique ID.
+# if type is 'u' (issue), <speaker> is a #, <text> is an issue, <id> a unique ID.
 # If type is 'c' (change), the record is a s/// or i/// not (yet) successful
 # If type is 'o' (omit), the record is to be ignored.
 # If type is 'n' (named anchor), the record is a target anchor.
@@ -97,6 +99,7 @@ my $scribeonly = 0;		# If 1, omit IRC comments by others
 my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things 
 my $old_style = 0;		# If 1, use the old (pre-2017) style sheets
 my $url_display = 'break';	# How to display in-your-face URLs
+my $logo;			# undef = W3C logo; string = HTML fragment
 
 
 # Each parser takes a reference to an array of text lines (newlines
@@ -318,8 +321,9 @@ my %scribes;			# List of scribes
 my %scribenicks;		# List of scribenicks (used if %scribes empty)
 my @records;			# Array of parsed lines
 my $date;			# Date of the meeting
-my $actions = '';		# HTML-formatted list of actions
+my $actions = '';		# HTML-formatted list of links to actions
 my $resolutions = '';		# HTML-formatted list of links to resolutions
+my $issues = '';		# HTML-formatted list of links to issues
 my $meeting = "(MEETING TITLE)"; # Name of the meeting (HTML-escaped)
 my $prev_meeting = '';		# HTML-formatted link to previous meeting
 my %present;			# List of participants
@@ -361,6 +365,7 @@ my %options = ("team" => sub {$is_team = 1; $is_member = $is_fancy = 0},
 	       "scribeOnly!" => \$scribeonly,
 	       "emphasis!", \$emphasis,
 	       "oldStyle!" => \$old_style,
+	       "logo:s" => \$logo,
 	       "minutes=s" => \$minutes_url);
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
@@ -564,6 +569,20 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
     $resolutions .= "<li><a href=\"#$id\">".esc($1,$emphasis,0,1)."</a></li>\n";
+
+  } elsif ($records[$i]->{text} =~ /^ *issue *: *(.*?) *$/i) {
+    $records[$i]->{type} = 'u';		# Mark as issue line
+    $records[$i]->{speaker} = 'Issue';
+    $records[$i]->{text} = $1;
+    $records[$i]->{id} = ++$id;		# Unique ID
+    # It's a new issue. Add it to the list.
+    $issues .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
+
+  } elsif ($records[$i]->{text} =~ /^ *(issue-\d+) *: *(.*?) *$/i) {
+    $records[$i]->{type} = 'u';		# Mark as issue line
+    $records[$i]->{speaker} = $1;
+    $records[$i]->{text} = $2;
+    $records[$i]->{id} = ++$id;		# Unique ID
 
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *($urlpat) *$/i) {
     $agenda = '<a href="' . esc($1) . "\">$agenda_icon</a>\n";
@@ -771,6 +790,7 @@ my %linepat = (
   r => "<p class=resolution id=%2\$s><strong>Resolved:</strong> %3\$s</p>\n",
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
+  u => "<p class=issue id=%2\$s><strong>%1\$s:</strong> %3\$s</p>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
 my $minutes = '';
@@ -833,9 +853,10 @@ my $style = join("\n",
   map {"<link rel=\"" . ($_->[0] ? "alternate " : "") . "stylesheet\" " .
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
 
-my $logo = !$is_fancy ?
-  '<a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" ' .
-  'alt=W3C border=0 height=48 width=72></a>' : '';
+$logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
+$logo = '' if !defined $logo && $is_fancy;
+$logo = '<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w' .
+  "3c_home\" alt=W3C border=0 height=48 width=72></a></p>\n\n" if !defined $logo;
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
 my $present = esc(join(", ", map($present{$_}, sort keys %present)));
@@ -856,6 +877,10 @@ my $resolutiontoc = !$resolutions ? '' :
 $resolutions = "\n<div id=ResolutionSummary>\n<h2>Summary of Resolutions</h2>
 <ol>\n$resolutions</ol>\n</div>\n" if $resolutions;
 
+my $issuetoc = !$issues ? '' :
+    "<li><a href=\"#IssueSummary\">Summary of Issues</a></li>\n";
+$issues = "\n<div id=IssueSummary>\n<h2>Summary of Issues</h2>
+<ol>\n$issues</ol>\n</div>\n" if $issues;
 
 # And output the formatted HTML.
 #
@@ -869,9 +894,7 @@ $style
 
 <body>
 <header>
-<p>$logo</p>
-
-<h1>$draft$meeting</h1>
+$logo<h1>$draft$meeting</h1>
 <h2>$date</h2>
 
 <div id=links>
@@ -896,7 +919,7 @@ $prev_meeting$agenda$log</div>
 <ol>
 $topics</ol>
 </li>
-$actiontoc$resolutiontoc</ul>
+$actiontoc$resolutiontoc$issuetoc</ul>
 </div>
 </nav>
 
@@ -904,7 +927,7 @@ $actiontoc$resolutiontoc</ul>
 <h2>Meeting Minutes</h2>
 <section>$minutes</section>
 </div>
-$actions$resolutions
+$actions$resolutions$issues
 
 <address>Minutes formatted by Bert Bos's <a
 href=\"https://dev.w3.org/2002/scribe2/scribedoc.html\"
@@ -951,6 +974,7 @@ scribe.perl [options] [file ...]
   --emphasis		Allow inline styles: _underline_ /italics/ *bold*
   --oldStyle		Use the style of scribe.perl version 1
   --minutes=I<URL>	Used to guess a date if the URL contains YYYY/MM/DD
+  --logo=I<markup>	Replace the W3C link and logo with this HTML markup
 
 You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
