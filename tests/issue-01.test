@@ -16,8 +16,6 @@ EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
-cat $TMP2
-
 ok=true
 
 # Two new issues in the summary:
