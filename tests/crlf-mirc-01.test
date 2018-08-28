@@ -59,7 +59,7 @@ cat >$TMP3 <<EOF
 <div id=toc>
 <h2>Contents</h2>
 <ul>
-<li><a href="#meeting">Meeting Minutes</a>
+<li><a href="#meeting">Meeting minutes</a>
 <ol>
 </ol>
 </li>
@@ -68,7 +68,7 @@ cat >$TMP3 <<EOF
 </nav>
 
 <div id=meeting class=meeting>
-<h2>Meeting Minutes</h2>
+<h2>Meeting minutes</h2>
 <section><p class="phone s01"><cite>Mike:</cite> Feature X would benefit users.<br>
 … and implementation would be easy.</p>
 <p class=summary>This is pretending to be a long line that mIRC breaks in order to display, but scribe.perl will re-join into a single line.</p>

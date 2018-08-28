@@ -19,7 +19,7 @@ EOF
 
 cat >$TMP4 <<EOF
 <div id=meeting class=meeting>
-<h2>Meeting Minutes</h2>
+<h2>Meeting minutes</h2>
 <section><p class=summary>Original text</p>
 </section>
 

@@ -36,7 +36,7 @@ EOF
 
 cat >$TMP4 <<EOF
 <div id=meeting class=meeting>
-<h2>Meeting Minutes</h2>
+<h2>Meeting minutes</h2>
 <section><p class=summary>First line</p>
 <p class=summary>+queuing is not ignored</p>
 <p class=summary>?quoi is not ignored</p>

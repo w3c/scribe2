@@ -22,7 +22,7 @@ EOF
 
 cat >$TMP4 <<EOF
 <div id=meeting class=meeting>
-<h2>Meeting Minutes</h2>
+<h2>Meeting minutes</h2>
 <section><p class="phone s01"><cite>Pete:</cite> Something else</p>
 <p class=anchor id="Right_&quot;Here&quot;!"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
 <p class="phone s01"><cite>Pete:</cite> I wanted to say.<br>

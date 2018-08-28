@@ -15,7 +15,7 @@ EOF
 
 cat >$TMP4 <<EOF
 <div id=meeting class=meeting>
-<h2>Meeting Minutes</h2>
+<h2>Meeting minutes</h2>
 <section><p class=irc><cite>&lt;Zakim&gt;</cite> MikeSmith, you wanted to point out that the decision about whether to copy specs at all is ultimately a WG decision, not some kind of unchangeable external requirement</p>
 </section>
 </div>
