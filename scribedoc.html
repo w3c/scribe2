@@ -77,7 +77,7 @@
   in other environments. (For use in other environments, see the <a
   href="#input_formats" >Input Formats</a> section.)
 
-  <p>This manual documents scribe.perl version 2. See below for the <a
+  <p>This manual documents scribe.perl version 2.45. See below for the <a
    href="#changes" >differences with version 1.</a>
 
 
@@ -594,19 +594,22 @@ you are not using RRSAgent.
    <dt>-team <dd>Use the style sheet for team-only minutes, rather
     than the style sheet for public minutes.
 
-   <dt id=oldStyle>-oldStyle <dd>Use the pre-2017 style sheet for
-    public minutes. This option can also be combined with
-    <code>-team</code> and <code>-member</code>, to get the pre-2017
-    team style sheet, resp. member style sheet.
-
    <dt id=fancy>-fancy <dd> Omit the W3C logo from the output and use
     a style sheet that makes the output look very different.
 
-   <dt id=logo>-logo <em>markup</em> <dd>Replace the link to W3C and
+   <dt id=oldStyle>-oldStyle <dd>Use the 2004 style sheets for public
+    minutes. Or, if combined with <code>-team</code> or
+    <code>-member</code>, use the 2004 style for team, resp. member
+    minutes.
+
+   <dt>-style <var>URL</var> <dd>Use the given style sheet. The usual
+    member, team or public styles become alternative styles instead.
+
+   <dt id=logo>-logo <var>markup</var> <dd>Replace the link to W3C and
     the W3C logo by the given markup. I.e., the usual <code>&lt;a
     href="https://www.w3.org/">&lt;img
     src="https://www.w3.org/Icons/w3c_home\" alt=W3C border=0
-    height=48 width=72>&lt;/a></code> is replaced by <em>markup</em>.
+    height=48 width=72>&lt;/a></code> is replaced by <var>markup</var>.
     To suppress the logo, use <code>-logo=""</code>.
   </dl>
 
@@ -621,7 +624,7 @@ you are not using RRSAgent.
     be used multiple times to indicate multiple scribes.</dd>
    -->
 
-   <dt id=scribenick-option>-scribeNick <em>nickName</em>
+   <dt id=scribenick-option>-scribeNick <var>nickName</var>
     <dd>Indicate the IRC nickname of the scribe, which is used to
     figure out which lines were written by the scribe. This scribenick
     will be used for the first lines of the log, until the first
