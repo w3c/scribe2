@@ -855,18 +855,18 @@ my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
   "</div>\n";
 
 my $actiontoc = !$actions ? '' :
-    "<li><a href=\"#ActionSummary\">Summary of Action Items</a></li>\n";
-$actions = "\n<div id=ActionSummary>\n<h2>Summary of Action Items</h2>
+    "<li><a href=\"#ActionSummary\">Summary of action items</a></li>\n";
+$actions = "\n<div id=ActionSummary>\n<h2>Summary of action items</h2>
 <ol>\n$actions</ol>\n</div>\n" if $actions;
 
 my $resolutiontoc = !$resolutions ? '' :
-    "<li><a href=\"#ResolutionSummary\">Summary of Resolutions</a></li>\n";
-$resolutions = "\n<div id=ResolutionSummary>\n<h2>Summary of Resolutions</h2>
+    "<li><a href=\"#ResolutionSummary\">Summary of resolutions</a></li>\n";
+$resolutions = "\n<div id=ResolutionSummary>\n<h2>Summary of resolutions</h2>
 <ol>\n$resolutions</ol>\n</div>\n" if $resolutions;
 
 my $issuetoc = !$issues ? '' :
-    "<li><a href=\"#IssueSummary\">Summary of Issues</a></li>\n";
-$issues = "\n<div id=IssueSummary>\n<h2>Summary of Issues</h2>
+    "<li><a href=\"#IssueSummary\">Summary of issues</a></li>\n";
+$issues = "\n<div id=IssueSummary>\n<h2>Summary of issues</h2>
 <ol>\n$issues</ol>\n</div>\n" if $issues;
 
 # And output the formatted HTML.
@@ -902,7 +902,7 @@ $prev_meeting$agenda$log</div>
 <div id=toc>
 <h2>Contents</h2>
 <ul>
-<li><a href=\"#meeting\">Meeting Minutes</a>
+<li><a href=\"#meeting\">Meeting minutes</a>
 <ol>
 $topics</ol>
 </li>
@@ -911,7 +911,7 @@ $actiontoc$resolutiontoc$issuetoc</ul>
 </nav>
 
 <div id=meeting class=meeting>
-<h2>Meeting Minutes</h2>
+<h2>Meeting minutes</h2>
 <section>$minutes</section>
 </div>
 $actions$resolutions$issues
