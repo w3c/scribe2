@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Test that the -logo option in "scribeoptions" removes the W3C logo.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/logo-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/logo-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Here is some text.
+<foo> It doesn't really matter.
+<foo> scribeoptions: -logo ''
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+cat $TMP2
+
+# Check that there is no W3C logo:
+grep -F "//www.w3.org/Icons/w3c" $TMP2
+test $? != 0 || exit 1

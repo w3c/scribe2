@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Test that the --logo option adds the given logo
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/logo-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/logo-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Here is some text.
+<foo> It doesn't really matter.
+EOF
+
+logo='<a href="http://example.org/"><img src="example" alt="Example"></a>'
+
+perl scribe.perl --logo="$logo" $TMP1 >$TMP2 || exit 1
+
+# Check that there is no W3C logo:
+grep -F "//www.w3.org/Icons/w3c" $TMP2 && exit 1
+
+# Check that there is the "Example" logo:
+grep -F "$logo" $TMP2 || exit 1
