@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# -style sets the default style sheet
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Agenda: https://www.example.org/a/long/path
+<foo> ScribeNick: foo
+<foo> scribeoptions: -team
+<foo> scribeoptions: -old
+<foo> This is the old style.
+EOF
+
+perl scribe.perl -style http://example.org/css  <$TMP1 >$TMP2 || exit 1
+
+grep -E '<link rel="stylesheet".*"http://example.org/css">' $TMP2 && \
+grep -E '<link rel="alternate stylesheet".*/StyleSheets/base.css">' $TMP2 && \
+grep -E '<link rel="alternate stylesheet".*/StyleSheets/team.css">' $TMP2 && \
+grep -E '<link rel="alternate stylesheet".*eSheets/team-minutes.css">' $TMP2 && \
+grep -E '<link rel="alternate stylesheet".*/2004/02/minutes-style.css">' $TMP2
