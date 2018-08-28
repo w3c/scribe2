@@ -36,8 +36,6 @@ EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
-cp $TMP2 tmp.html
-
 # Extract just the minutes
 sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
 
