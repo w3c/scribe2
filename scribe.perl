@@ -84,9 +84,7 @@ use locale;			# Sort using current locale
 my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
 
 # Command line options:
-my $is_team = 0;		# If 1, use team style
-my $is_member = 0;		# If 1, use member style
-my $is_fancy = 0;		# If 1, use the fancy style
+my $styleset = 'public';	# Or 'team', 'member' or 'fancy'
 my $embed_diagnostics = 0;	# If 1, put warnings in the HTML, not on STDERR
 my $implicitcont = 0;		# If 1, lines without '…' are continuations, too
 my $spacecont = 0;		# If 1, initial space may replace '…'
@@ -100,6 +98,7 @@ my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things
 my $old_style = 0;		# If 1, use the old (pre-2017) style sheets
 my $url_display = 'break';	# How to display in-your-face URLs
 my $logo;			# undef = W3C logo; string = HTML fragment
+my $stylesheet;			# URL of style sheet, undef = use defaults
 
 
 # Each parser takes a reference to an array of text lines (newlines
@@ -347,9 +346,9 @@ my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
 my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 
-my %options = ("team" => sub {$is_team = 1; $is_member = $is_fancy = 0},
-	       "member" => sub {$is_member = 1; $is_team = $is_fancy = 0},
-	       "fancy" => sub {$is_fancy = 1; $is_team = $is_member = 0},
+my %options = ("team" => sub {$styleset = 'team'},
+	       "member" => sub {$styleset = 'member'},
+	       "fancy" => sub {$styleset = 'fancy'},
 	       "embedDiagnostics!" => \$embed_diagnostics,
 	       "implicitContinuations!" => \$implicitcont,
 	       "allowSpaceContinuation!" => \$spacecont,
@@ -365,6 +364,7 @@ my %options = ("team" => sub {$is_team = 1; $is_member = $is_fancy = 0},
 	       "scribeOnly!" => \$scribeonly,
 	       "emphasis!", \$emphasis,
 	       "oldStyle!" => \$old_style,
+	       "stylesheet:s" => \$stylesheet,
 	       "logo:s" => \$logo,
 	       "minutes=s" => \$minutes_url);
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
@@ -803,49 +803,36 @@ foreach my $p (@records) {
   $minutes .= $line;
 }
 
-# Style sheets: 0 = default, 1 = alternate (= alternative).
+# @stylesheets is an array of triples [alt, title, url], where alt = 0
+# means this is the default style, not 0 means an "alternate" style.
 #
-my @stylesheets = $old_style & $is_team ?
-  ([0, "Default", "https://www.w3.org/StyleSheets/base.css"],
-   [0, "Default", "https://www.w3.org/StyleSheets/team.css"],
-   [0, "Default", "https://www.w3.org/StyleSheets/team-minutes.css"],
-   [0, "Default", "https://www.w3.org/2004/02/minutes-style.css"],
-   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/team.css"]) :
-  $old_style && $is_member ?
-  ([0, "Default", "https://www.w3.org/StyleSheets/base.css"],
-   [0, "Default", "https://www.w3.org/StyleSheets/member.css"],
-   [0, "Default", "https://www.w3.org/StyleSheets/member-minutes.css"],
-   [0, "Default", "https://www.w3.org/2004/02/minutes-style.css"],
-   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/member.css"]) :
-  $old_style ?
-  ([0, "Default", "https://www.w3.org/StyleSheets/base.css"],
-   [0, "Default", "https://www.w3.org/StyleSheets/public.css"],
-   [0, "Default", "https://www.w3.org/2004/02/minutes-style.css"],
-   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/public.css"],
-   [1, "Fancy", "https://www.w3.org/StyleSheets/scribe2/fancy.css"]) :
-  $is_team ?
-  ([0, "Default", "https://www.w3.org/StyleSheets/scribe2/team.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/team.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/team-minutes.css"],
-   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"]) :
-  $is_member ?
-  ([0, "Default", "https://www.w3.org/StyleSheets/scribe2/member.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/member.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/member-minutes.css"],
-   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"]) :
-  !$is_fancy ?
-  ([0, "Default", "https://www.w3.org/StyleSheets/scribe2/public.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/public.css"],
-   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"],
-   [1, "Fancy", "https://www.w3.org/StyleSheets/scribe2/fancy.css"]) :
-  ([0, "Fancy", "https://www.w3.org/StyleSheets/scribe2/fancy.css"],
-   [1, "New style", "https://www.w3.org/StyleSheets/scribe2/public.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/base.css"],
-   [1, "Old style", "https://www.w3.org/StyleSheets/public.css"],
-   [1, "Old style", "https://www.w3.org/2004/02/minutes-style.css"]);
+my $alt = 0;
+my $w3 = 'https://www.w3.org';
+my @stylesheets = ();
+push @stylesheets, [$alt++, "Default", $stylesheet] if defined $stylesheet;
+if ($styleset eq 'team') {
+  push @stylesheets,
+      [$alt + $old_style, "2018", "$w3/StyleSheets/scribe2/team.css"],
+      [$alt + !$old_style, "2004", "$w3/StyleSheets/base.css"],
+      [$alt + !$old_style, "2004", "$w3/StyleSheets/team.css"],
+      [$alt + !$old_style, "2004", "$w3/StyleSheets/team-minutes.css"],
+      [$alt + !$old_style, "2004", "$w3/2004/02/minutes-style.css"];
+} elsif ($styleset eq 'member') {
+  push @stylesheets,
+      [$alt + $old_style, "2018", "$w3/StyleSheets/scribe2/member.css"],
+      [$alt + !$old_style, "2004", "$w3/StyleSheets/base.css"],
+      [$alt + !$old_style, "2004", "$w3/StyleSheets/member.css"],
+      [$alt + !$old_style, "2004", "$w3/StyleSheets/member-minutes.css"],
+      [$alt + !$old_style, "2004", "$w3/2004/02/minutes-style.css"];
+} else {			# 'public' or 'fancy'
+  my $f = $styleset eq 'fancy';
+  push @stylesheets,
+      [$alt + $old_style + $f, "2018", "$w3/StyleSheets/scribe2/public.css"],
+      [$alt + !$old_style + $f, "2004", "$w3/StyleSheets/base.css"],
+      [$alt + !$old_style + $f, "2004", "$w3/StyleSheets/public.css"],
+      [$alt + !$old_style + $f, "2004", "$w3/2004/02/minutes-style.css"],
+      [$alt + !$f, "Fancy", "$w3/StyleSheets/scribe2/fancy.css"];
+}
 
 # Format some of the variables used in the template below
 #
@@ -854,7 +841,7 @@ my $style = join("\n",
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
 
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
-$logo = '' if !defined $logo && $is_fancy;
+$logo = '' if !defined $logo && ($styleset eq 'fancy');
 $logo = '<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w' .
   "3c_home\" alt=W3C border=0 height=48 width=72></a></p>\n\n" if !defined $logo;
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
@@ -953,7 +940,6 @@ scribe.perl - Turn an IRC log of a meeting into minutes in HTML
 
 scribe.perl [options] [file ...]
 
-  Options:
   --help		Brief help message
   --team		Use team style
   --member		Use member style
@@ -973,8 +959,9 @@ scribe.perl [options] [file ...]
   --scribeOnly		Omit all text that is not written by a scribe
   --emphasis		Allow inline styles: _underline_ /italics/ *bold*
   --oldStyle		Use the style of scribe.perl version 1
-  --minutes=I<URL>	Used to guess a date if the URL contains YYYY/MM/DD
-  --logo=I<markup>	Replace the W3C link and logo with this HTML markup
+  --minutes=URL		Used to guess a date if the URL contains YYYY/MM/DD
+  --logo=markup		Replace the W3C link and logo with this HTML markup
+  --stylesheet=URL	Use this style sheet instead of the default
 
 You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
