@@ -26,7 +26,7 @@ cat >$TMP3 <<EOF
 <head>
 <meta charset=utf-8>
 <title>(MEETING TITLE) &ndash; </title>
- <meta name=viewport content="width=device-width">
+<meta name=viewport content="width=device-width">
 <link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
 <link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
 <link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
