@@ -872,10 +872,11 @@ $issues = "\n<div id=IssueSummary>\n<h2>Summary of issues</h2>
 # And output the formatted HTML.
 #
 print "<!DOCTYPE html>
-<html lang=\"en\">
+<html lang=en>
 <head>
 <meta charset=utf-8>
 <title>$meeting &ndash; $date</title>
+<meta name=viewport content=\"width=device-width\">
 $style
 </head>
 
