@@ -16,10 +16,11 @@ EOF
 
 cat >$TMP3 <<EOF
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 <head>
 <meta charset=utf-8>
 <title>(MEETING TITLE) &ndash; </title>
+<meta name=viewport content="width=device-width">
 <link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
 <link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
 <link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
@@ -89,4 +90,4 @@ perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
 grep -v version $TMP2 >$TMP4	# Omit version number
 grep -v version $TMP3 >$TMP5
 
-diff -u $TMP4 $TMP5
+diff -u $TMP5 $TMP4
