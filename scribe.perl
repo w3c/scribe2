@@ -917,7 +917,7 @@ $actiontoc$resolutiontoc$issuetoc</ul>
 </div>
 $actions$resolutions$issues
 
-<address>Minutes formatted by Bert Bos's <a
+<address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
 href=\"https://dev.w3.org/2002/scribe2/scribedoc.html\"
 >scribe.perl</a> version $main::VERSION ($versiondate), a reimplementation
 of David Booth's <a
