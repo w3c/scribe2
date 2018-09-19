@@ -30,6 +30,10 @@
 # TODO: Format trackbot's output specially: created an action/issue,
 # info about an action/issue, etc.
 #
+# TODO: If trackbot assigns a number ("ISSUE-3") to an issue, use that
+# number instead of the generic "Issue". Also use it in the
+# #IssueSummary.
+#
 # Copyright © 2017-2018 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -69,7 +73,8 @@
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
 # If type is 'r' (resolution), <text> is a resolution and <id> is a unique ID.
-# if type is 'u' (issue), <speaker> is a #, <text> is an issue, <id> a unique ID.
+# if type is 'u' (issue), <text> is an issue, <id> a unique ID.
+# If type is 'U' (issue-update), <text> is "(issue-#) text", <id> a unique ID.
 # If type is 'c' (change), the record is a s/// or i/// not (yet) successful
 # If type is 'o' (omit), the record is to be ignored.
 # If type is 'n' (named anchor), the record is a target anchor.
@@ -320,9 +325,6 @@ my %scribes;			# List of scribes
 my %scribenicks;		# List of scribenicks (used if %scribes empty)
 my @records;			# Array of parsed lines
 my $date;			# Date of the meeting
-my $actions = '';		# HTML-formatted list of links to actions
-my $resolutions = '';		# HTML-formatted list of links to resolutions
-my $issues = '';		# HTML-formatted list of links to issues
 my $meeting = "(MEETING TITLE)"; # Name of the meeting (HTML-escaped)
 my $prev_meeting = '';		# HTML-formatted link to previous meeting
 my %present;			# List of participants
@@ -330,7 +332,6 @@ my %regrets;			# List of regrets
 my $minutes_url;		# URL of the minutes according to RRSAgent
 my $logging_url;		# URL of the log according to RRSAgent
 my $id = 'x00';			# Generates unique IDs
-my $topics = '';		# HTML-formatted table of contents
 my $agenda = '';		# HTML-formatted link to an agenda
 my $chair = '-';		# HTML-escaped name of meeting chair
 my %lastspeaker;		# Current speaker (separate for each scribe)
@@ -522,7 +523,6 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
 
   } elsif ($dash_topics && $records[$i]->{text} =~ /^ *-+ *$/) {
     for (my $j = $i + 1; $j < @records; $j++) {
@@ -530,7 +530,6 @@ for (my $i = 0; $i < @records; $i++) {
 	$records[$i]->{type} = 't';
 	$records[$i]->{text} = $records[$j]->{text} =~ s/^ *(.*?) *$/$1/r;
 	$records[$i]->{id} = ++$id;	# Unique ID
-	$topics .= "<li><a href=\"#$id\">".esc($1,$emphasis,0,1)."</a></li>\n";
 	$records[$j]->{type} = 'o';
 	last;
       }
@@ -557,31 +556,25 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore commands to trackbot
 
   } elsif ($records[$i]->{text} =~ /^ *action *: *(.*?) *$/i ||
-	   $records[$i]->{text} =~ /^ *action +(\w+ *:.*?) *$/i ||
+	   $records[$i]->{text} =~ /^ *action +(\pL\w* *:.*?) *$/i ||
 	   $records[$i]->{text} =~ /^ *action +([^ ]+ +to\b.*?) *$/i) {
     $records[$i]->{type} = 'a';		# Mark as action line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $actions .= "<li><a href=\"#$id\">" . esc($1, $emphasis,0,1)."</a></li>\n";
 
   } elsif ($records[$i]->{text} =~ /^ *resol(?:ved|ution) *: *(.*?) *$/i) {
     $records[$i]->{type} = 'r';		# Mark as resolution line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $resolutions .= "<li><a href=\"#$id\">".esc($1,$emphasis,0,1)."</a></li>\n";
 
   } elsif ($records[$i]->{text} =~ /^ *issue *: *(.*?) *$/i) {
     $records[$i]->{type} = 'u';		# Mark as issue line
-    $records[$i]->{speaker} = 'Issue';
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    # It's a new issue. Add it to the list.
-    $issues .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
 
   } elsif ($records[$i]->{text} =~ /^ *(issue-\d+) *: *(.*?) *$/i) {
-    $records[$i]->{type} = 'u';		# Mark as issue line
-    $records[$i]->{speaker} = $1;
-    $records[$i]->{text} = $2;
+    $records[$i]->{type} = 'U';		# Mark as "updated issue"
+    $records[$i]->{text} = "(" . uc($1). ") " . $2;
     $records[$i]->{id} = ++$id;		# Unique ID
 
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *($urlpat) *$/i) {
@@ -629,7 +622,6 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
-    $topics .= "<li><a href=\"#$id\">" . esc($1,$emphasis,0,1) . "</a></li>\n";
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   $records[$i]->{text} =~ /the attendees (?:were|have been) (.*?),?$/){
@@ -736,6 +728,20 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{text} = $1;
     }
 
+  } elsif ($records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/) {
+    # Is this a continuation of an action/resolution/issue/topic?
+    my ($s, $j, $speaker) = ($1, $i - 1, $records[$i]->{speaker});
+    $j-- while $j > 0 && ($records[$j]->{type} eq 'o' ||
+			  $records[$j]->{speaker} ne $speaker);
+    if ($j >= 0 && $records[$j]->{type} =~ /[artuU]/) {
+      $records[$j]->{text} .= "\t" . $s;
+      $records[$i]->{type} = 'o';	# Omit this line from output
+    } elsif (is_cur_scribe($speaker, \%curscribes)) {
+      # Not a continuation of anything, but it is by the scribe.
+      $records[$i]->{type} = 'd';		# Mark as descriptive text
+      $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
+    }
+    
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   $records[$i]->{type} eq 'c') {
     # It's a failed s/// command by the speaker.
@@ -790,14 +796,15 @@ my %linepat = (
   r => "<p class=resolution id=%2\$s><strong>Resolved:</strong> %3\$s</p>\n",
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  u => "<p class=issue id=%2\$s><strong>%1\$s:</strong> %3\$s</p>\n",
+  u => "<p class=issue id=%2\$s><strong>Issue:</strong> %3\$s</p>\n",
+  U => "<p class=issue-update id=%2\$s><strong>Issue:</strong> %3\$s</p>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
 my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
-    esc($p->{speaker}, 0), $p->{id}, esc($p->{text}, $emphasis, 1),
+    esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1),
     $speakers{lc $p->{speaker}} // '';
   if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ tr/\t/ /;}
   $minutes .= $line;
@@ -854,20 +861,47 @@ my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
   join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics) .
   "</div>\n";
 
+# Collect lists of actions, resolutions and issues from the @records.
+# Wrap each list in a <div> and add a corresponding item in the ToC
+# (unless the list is empty).
+#
+my $actions = join("",
+		   map("<li><a href=\"#" . $_->{id} . "\">" .
+		       esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+		       grep($_->{type} eq 'a', @records)));
 my $actiontoc = !$actions ? '' :
     "<li><a href=\"#ActionSummary\">Summary of action items</a></li>\n";
 $actions = "\n<div id=ActionSummary>\n<h2>Summary of action items</h2>
 <ol>\n$actions</ol>\n</div>\n" if $actions;
+if ($keeplines) {$actions =~ s/\t/<br>\n… /g;} else {$actions =~ tr/\t/ /;}
 
+my $resolutions = join("",
+		       map("<li><a href=\"#" . $_->{id} . "\">" .
+			   esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+			   grep($_->{type} eq 'r', @records)));
 my $resolutiontoc = !$resolutions ? '' :
     "<li><a href=\"#ResolutionSummary\">Summary of resolutions</a></li>\n";
 $resolutions = "\n<div id=ResolutionSummary>\n<h2>Summary of resolutions</h2>
 <ol>\n$resolutions</ol>\n</div>\n" if $resolutions;
+if ($keeplines) {$resolutions =~ s/\t/<br>\n… /g;} else {$resolutions =~ tr/\t/ /;}
 
+my $issues = join("",
+		  map("<li><a href=\"#" . $_->{id} . "\">" .
+		      esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+		      grep($_->{type} eq 'u', @records)));
 my $issuetoc = !$issues ? '' :
     "<li><a href=\"#IssueSummary\">Summary of issues</a></li>\n";
 $issues = "\n<div id=IssueSummary>\n<h2>Summary of issues</h2>
 <ol>\n$issues</ol>\n</div>\n" if $issues;
+if ($keeplines) {$issues =~ s/\t/<br>\n… /g;} else {$issues =~ tr/\t/ /;}
+
+# Collect topics (records with type 't') for the ToC.
+#
+my $topics = join("",
+		  map("<li><a href=\"#" . $_->{id} . "\">" .
+		      esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+		      grep($_->{type} eq 't', @records)));
+if ($keeplines) {$topics =~ s/\t/<br>\n… /g;} else {$topics =~ tr/\t/ /;}
 
 # And output the formatted HTML.
 #
