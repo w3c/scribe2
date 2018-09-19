@@ -148,6 +148,13 @@
      <td class=command>Chair: Mike
      <td class=help>Record who chaired
      <td>anybody
+    <tr>
+     <td class=command>Previous meeting: http://example.org/20180918
+
+     <td class=help>If you want a link to the previous meeting at the
+     top of the minutes.
+
+     <td>anybody
   </table>
 
 
@@ -196,10 +203,22 @@
      <td class=help>Record new action.
      <td>anybody
     <tr>
+     <td class=command>Issue: Is it proven that 1+1=2?
+     <td class=help>Record new issue.
+     <td>anybody
+    <tr>
      <td class=command>RESOLUTION: Accept Frank's proposal
 
      <td class=help>Indicate how an issue or topic was resolved.
       ‘RESOLVED’ is an alias for ‘RESOLUTION’.
+
+     <td>anybody
+    <tr>
+     <td class=command>… with Pete's modified text
+
+     <td class=help>Resolutions can be more than one line long. This
+     line is added to the resolution in the previous line. (Such
+     continuation lines also work for topics, issues and actions.)
 
      <td>anybody
     <tr>
@@ -455,6 +474,10 @@ you are not using RRSAgent.
 &lt;dbooth&gt; to come to the aid of their party.
 &lt;dbooth&gt; (Group agrees)</pre>
 
+  <p>This option <em>only</em> applies to text assigned to a speaker.
+   To continue topics, resolutions, actions or issues on the next
+   line, you must still use ‘...’ or ‘…’.
+
   <h4 id=allowSpaceContinuations>-allowSpaceContinuations /
   -noallowSpaceContinuations</h4>
 
@@ -477,6 +500,10 @@ you are not using RRSAgent.
    5th OK? Silence. Jen: maybe’)
 
   <p>The default is <code>-noallowSpaceContinuations</code>.
+
+  <p>This option <em>only</em> applies to text assigned to a speaker.
+   To continue topics, resolutions, actions or issues on the next
+   line, you must still use ‘...’ or ‘…’.
 
   <h4 id="useZakimTopics">-useZakimTopics</h4>
 
