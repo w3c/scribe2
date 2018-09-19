@@ -31,11 +31,11 @@ test $? != 0 || ok=false
 # All four mentions of issues marked-up:
 grep '<p class=issue id=x01><strong>Issue:</strong> Use 1 or 2?</p>' \
      $TMP2 || ok=false
-grep '<p class=issue id=x02><strong>ISSUE-1:</strong> Or: 3.</p>' \
+grep '<p class=issue-update id=x02><strong>Issue:</strong> (ISSUE-1) Or: 3.</p>' \
      $TMP2 || ok=false
 grep '<p class=issue id=x03><strong>Issue:</strong> Is issue-1 OK?</p>' \
      $TMP2 || ok=false
-grep '<p class=issue id=x04><strong>issue-1:</strong> Needs rewording.</p>' \
+grep '<p class=issue-update id=x04><strong>Issue:</strong> (ISSUE-1) Needs rewording.</p>' \
      $TMP2 || ok=false
 
 $ok
