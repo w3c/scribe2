@@ -83,7 +83,7 @@ use strict;
 use warnings;
 use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
-use 5.012;			# We use "each @ARRAY"
+use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
 use locale;			# Sort using current locale
 
 my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
@@ -267,6 +267,14 @@ sub Plain_Text_Format($$)
 }
 
 
+# fc_uniq -- return the list of case-insensitively distinct strings in a list
+sub fc_uniq(@)
+{
+  my %seen;
+  return grep {!$seen{fc $_}++} @_;
+}
+
+
 # break_url -- apply -urlDisplay option to a URL
 sub break_url($)
 {
@@ -307,7 +315,7 @@ sub is_cur_scribe($$)
 {
   my ($nick, $curscribes_ref) = @_;
 
-  return $$curscribes_ref{lc($nick)} || $$curscribes_ref{'*'};
+  return $$curscribes_ref{fc($nick)} || $$curscribes_ref{'*'};
 }
   
 
@@ -461,7 +469,7 @@ my ($s, %count);
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
   $scribenick = $1 if $p->{text} =~ /^ *scribenick *: *(.*[^ ]) *$/i;
   $s = $1 if !defined $s && $p->{text}=~/^ *scribe *: *([^ ]+) *$/i;
-  $count{lc $p->{speaker}}++
+  $count{fc $p->{speaker}}++
     if $p->{type} eq 'i' && $p->{speaker} ne 'RRSAgent';
 }
 $use_scribe = 1 if !defined $scribenick;
@@ -472,8 +480,8 @@ if (!defined $scribenick) {
   $scribenick = '*' if !defined $scribenick;
   push(@diagnostics, "No scribenick or scribe found. Guessed: $scribenick");
 }
-%curscribes = map {$_ => 1} split(/ *, */, lc($scribenick));
-$scribenicks{lc $_} = $_ foreach split(/ *, */, $scribenick);
+%curscribes = map {$_ => 1} split(/ *, */, fc($scribenick));
+$scribenicks{fc $_} = $_ foreach split(/ *, */, $scribenick);
 
 # Interpret each line. %curscribes is the current set of scribes in lowercase.
 # $lastspeaker is the current speaker, for use in continuation lines.
@@ -488,35 +496,35 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit empty line
 
   } elsif ($records[$i]->{text} =~ /^ *present *: *(.*?) *$/i) {
-    %present = map { lc($_) => $_ } split(/ *, */, $1);
+    %present = map { fc($_) => $_ } split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *present *\+:? *$/i) {
-    $present{lc $records[$i]->{speaker}} = $records[$i]->{speaker};
+    $present{fc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *present *\+:? *(.*?) *$/i) {
-    $present{lc $_} = $_ foreach split(/ *, */, $1);
+    $present{fc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *present *-:? *(.*?) *$/i) {
-    delete $present{lc $_} foreach split(/ *, */, $1);
+    delete $present{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *: *(.*?) *$/i) {
-    %regrets = map { lc($_) => $_ } split(/ *, */, $1);
+    %regrets = map { fc($_) => $_ } split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *$/i) {
-    $regrets{lc $records[$i]->{speaker}} = $records[$i]->{speaker};
+    $regrets{fc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *(.*?) *$/i) {
-    $regrets{lc $_} = $_ foreach split(/ *, */, $1);
+    $regrets{fc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *regrets *-:? *(.*?) *$/i) {
-    delete $regrets{lc $_} foreach split(/ *, */, $1);
+    delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *topic *: *(.*?) *$/i) {
@@ -607,14 +615,14 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($records[$i]->{text} =~ /^ *scribe *: *(.*?) *$/i) {
     my $s = $1;
-    $scribes{lc $s} = $s;		# Add to collected scribe list
+    $scribes{fc $s} = $s;		# Add to collected scribe list
     $records[$i]->{type} = 'o';		# Omit line from output
-    %curscribes = map {$_ => 1} split(/ *, */, lc($s)) if $use_scribe;
+    %curscribes = map {$_ => 1} split(/ *, */, fc($s)) if $use_scribe;
 
   } elsif ($records[$i]->{text} =~ /^ *scribenick *: *(.*[^ ]) *$/i) {
     my $s = $1;
-    %curscribes = map {$_ => 1} split(/ *, */, lc($s));
-    $scribenicks{lc $_} = $_ foreach split(/ *, */, $s);
+    %curscribes = map {$_ => 1} split(/ *, */, fc($s));
+    $scribenicks{fc $_} = $_ foreach split(/ *, */, $s);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
@@ -625,7 +633,7 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   $records[$i]->{text} =~ /the attendees (?:were|have been) (.*?),?$/){
-    $present{lc $_} = $_ foreach split(/, */, $1);
+    $present{fc $_} = $_ foreach split(/, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
@@ -635,7 +643,7 @@ for (my $i = 0; $i < @records; $i++) {
     $j-- while $j >= 0 && ($records[$j]->{text} =~ /^\.\.\. / ||
 			   $records[$j]->{speaker} ne 'Zakim');
     if ($j >= 0 && $records[$j]->{text} =~ /the attendees (?:were|have been) /){
-      $present{lc $_} = $_ foreach split(/, */, $s);
+      $present{fc $_} = $_ foreach split(/, */, $s);
     } elsif ($j >= 0 && $records[$j]->{text} =~ /, you wanted /) {
       $records[$j]->{text} .= ' ' . $s;
     }
@@ -708,7 +716,7 @@ for (my $i = 0; $i < @records; $i++) {
     $lastspeaker{$records[$i]->{speaker}} = $1; # For any continuation lines
     $records[$i]->{speaker} = $1;
     $records[$i]->{text} = $2;
-    $speakers{lc $1} = ++$speakerid if !exists $speakers{lc $1};
+    $speakers{fc $1} = ++$speakerid if !exists $speakers{fc $1};
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   defined $lastspeaker{$records[$i]->{speaker}} &&
@@ -773,12 +781,11 @@ if (!defined $date && defined $minutes_url &&
 # If there were no explicit "scribe:" commands, use the scribenicks instead.
 %scribes = %scribenicks if !%scribes;
 
-# If no present list was found, put a guess in the diagnostics.
-if (!%present) {
-  my %a;
-  for (@records) {if ($_->{type} eq 's') {$a{lc $_->{speaker}} = $_->{speaker}}}
-  push(@diagnostics, "Maybe present: " . join(", ", map($a{$_}, sort keys %a)));
-}
+# Add a list of speakers that do not appear in %present, if any.
+my @also = grep !exists($present{fc $_}),
+    fc_uniq(map $_->{speaker}, grep $_->{type} eq 's', @records);
+push @diagnostics, "Maybe present: " .
+    join(", ", sort {fc($a) cmp fc($b)} @also) if @also;
 
 # Step 4. Convert records to HTML and then fill a template.
 #
@@ -805,7 +812,7 @@ foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
     esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1),
-    $speakers{lc $p->{speaker}} // '';
+    $speakers{fc $p->{speaker}} // '';
   if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ tr/\t/ /;}
   $minutes .= $line;
 }
