@@ -34,7 +34,10 @@
 # number instead of the generic "Issue". Also use it in the
 # #IssueSummary.
 #
-# Copyright © 2017-2018 World Wide Web Consortium, (Massachusetts Institute
+# TODO: When guessing who was scribe, exclude (a configurable set of)
+# 'bots.
+#
+# Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
 # work is distributed under the W3C® Software License[1] in the hope
