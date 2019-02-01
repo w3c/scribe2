@@ -305,7 +305,8 @@ sub esc($;$$$)
     # 1a) An unquoted Ralph link: ... -> URL ANCHOR
     # 2) A Xueyuan link: ANCHOR -> URL
     # 3) A bare URL: ... URL ...
-    $s =~ s/-&gt; *($urlpat) +(&quot;|'|)(.*?)\g2\s*$/<a href="$1">$3<\/a>/gi or
+    $s =~ s/-&gt; *($urlpat) +(&quot;|')(.*?)\g2/<a href="$1">$3<\/a>/gi or
+	$s =~ s/-&gt; *($urlpat) +(.*?) *$/<a href="$1">$2<\/a>/gi or
 	$s =~ s/ *(.*?) *-&gt; *($urlpat) *$/<a href="$2">$1<\/a>/gi or
 	$s =~ s/\b($urlpat)/"<a href=\"$1\">".break_url($1)."<\/a>"/gie;
   } elsif ($break_urls) {	# Shorten or break URLs
