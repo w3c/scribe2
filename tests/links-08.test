@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test if Ralph-links containing quotes are correcly linked
+# Test if Ralph-links containing quotes are correctly linked
 
 echo '<foo> -> https://example.org/test   an "example" anchor  ' | \
   perl scribe.perl | \

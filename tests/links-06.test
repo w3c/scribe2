@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test if Ralph-links with unpaired quotes are correcly linked
+# Test if Ralph-links with unpaired quotes are correctly linked
 
 echo "<foo> -> https://example.org/test 't is an anchor" | \
   perl scribe.perl | \

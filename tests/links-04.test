@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test if URLs are correcly linked
+# Test if URLs are correctly linked
 
 echo "<foo> Try mailto:foo@example.org for me" | \
   perl scribe.perl | \
