@@ -27,15 +27,9 @@
 # could also accept a date or a period: "next meeting: 7 Aug", "next
 # meeting: 2 weeks".
 #
-# TODO: Format trackbot's output specially: created an action/issue,
-# info about an action/issue, etc.
-#
 # TODO: If trackbot assigns a number ("ISSUE-3") to an issue, use that
 # number instead of the generic "Issue". Also use it in the
 # #IssueSummary.
-#
-# TODO: When guessing who was scribe, exclude (a configurable set of)
-# 'bots.
 #
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
@@ -81,6 +75,8 @@
 # If type is 'c' (change), the record is a s/// or i/// not (yet) successful
 # If type is 'o' (omit), the record is to be ignored.
 # If type is 'n' (named anchor), the record is a target anchor.
+# If type is 'b' ('bot), the record is info from trackbot.
+# If type is 'B' ('bot), <text> is info from trackbot about an issue <id>.
 
 use strict;
 use warnings;
@@ -365,6 +361,9 @@ my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/text-plain.png">';
 my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
+my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
+	    fc('trackbot') => 1,
+	    fc('Zakim') => 1);
 
 my %options = ("team" => sub {$styleset = 'team'},
 	       "member" => sub {$styleset = 'member'},
@@ -481,7 +480,7 @@ while (!defined $scribenick && (my ($i,$p) = each @records)) {
   $scribenick = $1 if $p->{text} =~ /^ *scribenick *: *(.*[^ ]) *$/i;
   $s = $1 if !defined $s && $p->{text}=~/^ *scribe *: *([^ ]+) *$/i;
   $count{fc $p->{speaker}}++
-    if $p->{type} eq 'i' && $p->{speaker} ne 'RRSAgent';
+    if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
 }
 $use_scribe = 1 if !defined $scribenick;
 $scribenick = $s if !defined $scribenick;
@@ -571,9 +570,6 @@ for (my $i = 0; $i < @records; $i++) {
     # Ignore RRSAgent's list of actions, etc.
     $records[$i]->{type} = 'o';		# Ignore this line
 
-  } elsif ($records[$i]->{text} =~ /^ *trackbot,/i) {
-    $records[$i]->{type} = 'o';		# Ignore commands to trackbot
-
   } elsif ($records[$i]->{text} =~ /^ *action *: *(.*?) *$/i ||
 	   $records[$i]->{text} =~ /^ *action +(\pL\w* *:.*?) *$/i ||
 	   $records[$i]->{text} =~ /^ *action +([^ ]+ +to\b.*?) *$/i) {
@@ -650,7 +646,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   $records[$i]->{text} =~ /^\.\.\. (.*?),?$/) {
     my $s = $1;				# See what this is a continuation of
-    my $j = $i;
+    my $j = $i - 1;
     $j-- while $j >= 0 && ($records[$j]->{text} =~ /^\.\.\. / ||
 			   $records[$j]->{speaker} ne 'Zakim');
     if ($j >= 0 && $records[$j]->{text} =~ /the attendees (?:were|have been) /){
@@ -697,6 +693,31 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($use_zakim && $records[$i]->{text} =~ /^ *clear\s+agenda\s*$/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
+
+  } elsif ($records[$i]->{text} =~
+	   /^ *trackbot *, *(?:(?:dis)?associate|bye|start|end|status)\b/i) {
+    $records[$i]->{type} = 'o';		# Ignore some commands to trackbot
+
+  } elsif ($records[$i]->{speaker} eq 'trackbot' &&
+	   $records[$i]->{text} =~ /^([a-zA-Z]+-[0-9]+) -- (.*)$/) {
+    $records[$i]->{type} = 'B';		# A structured response from trackbot
+    $records[$i]->{id} = $2;
+    $records[$i]->{text} = $1;
+
+  } elsif ($records[$i]->{speaker} eq 'trackbot' &&
+	   $records[$i]->{text} =~ /^$urlpat$/) {
+    my $j = $i - 1;			# A URL response from trackbot
+    $j-- while $j >= 0 && ($records[$j]->{type} eq 'o' ||
+			   $records[$j]->{speaker} ne 'trackbot');
+    if ($j < 0) {			# URL belongs to nothing?
+      $records[$i]->{type} = 'b';
+    } else {				# Make previous line into a link
+      $records[$j]->{text} = '->'.$records[$i]->{text}.' '.$records[$j]->{text};
+      $records[$i]->{type} = 'o';
+    }
+
+  } elsif ($records[$i]->{speaker} eq 'trackbot') {
+    $records[$i]->{type} = 'b'		# A response from trackbot
 
   } elsif ($records[$i]->{text} =~ /^\s*namedanchorhere\s*:\s*(.*?)\s*$/i) {
     my $a = $1 =~ s/\s/_/gr;
@@ -807,6 +828,8 @@ push @diagnostics, "Maybe present: " .
 #
 my %linepat = (
   a => "<p class=action id=%2\$s><strong>Action:</strong> %3\$s</p>\n",
+  b => "<p class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  B => "<p class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
   d => "<p class=summary>%3\$s</p>\n",
   i => $scribeonly ? '' : "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   c => "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
