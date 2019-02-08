@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Test if known bots are skipped when the scribenick is inferred.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+10:04:02 <RRSAgent> RRSAgent has joined #dpvcg
+13:20:30 <bar> action-33?
+13:20:31 <trackbot> action-33 -- Harsh to Summarize -- due 2018-11-13 -- OPEN
+13:20:32 <trackbot> https://www.w3.org/community/dpvcg/track/actions/33
+13:20:33 <bar> close action-35
+13:20:34 <trackbot> Closed action-35.
+15:07:14 <Zakim> Zakim has joined #dpvcg
+17:17:57 <Zakim> Zakim has left #dpvcg
+17:17:58 <RRSAgent> RRSAgent has joined #dpvcg
+17:18:15 <RRSAgent> I have made the request to generate https://www.w3.org/2019/01/08-dpvcg-minutes.html Bert
+EOF
+
+perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
+
+
+if ! grep 'No scribenick or scribe found. Guessed: bar' $TMP2; then
+  echo "Expected \"Guessed: bar\" but found:"
+  grep 'No scribenick or scribe found. Guessed:' $TMP2
+  exit 1
+fi
