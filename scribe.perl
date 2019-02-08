@@ -31,6 +31,9 @@
 # number instead of the generic "Issue". Also use it in the
 # #IssueSummary.
 #
+# TODO: An option to omit the special handling of W3C's bots
+# (currently zakim, rrsagent and trackbot).
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -302,8 +305,8 @@ sub esc($;$$$)
     # 2) A Xueyuan link: ANCHOR -> URL
     # 3) A bare URL: ... URL ...
     $s =~ s/-&gt; *($urlpat) +(&quot;|')(.*?)\g2/<a href="$1">$3<\/a>/gi or
-	$s =~ s/-&gt; *($urlpat) +(.*?) *$/<a href="$1">$2<\/a>/gi or
-	$s =~ s/ *(.*?) *-&gt; *($urlpat) *$/<a href="$2">$1<\/a>/gi or
+	$s =~ s/-&gt; *($urlpat) +([^ ].*?) *$/<a href="$1">$2<\/a>/gi or
+	$s =~ s/^ *([^ ].*?) *-&gt; *($urlpat) *$/<a href="$2">$1<\/a>/gi or
 	$s =~ s/\b($urlpat)/"<a href=\"$1\">".break_url($1)."<\/a>"/gie;
   } elsif ($break_urls) {	# Shorten or break URLs
     $s =~ s/($urlpat)/break_url($1)/gie;
