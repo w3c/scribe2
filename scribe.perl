@@ -89,6 +89,8 @@ use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
 use locale;			# Sort using current locale
 
 my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
+# $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
+my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 
 # Command line options:
 my $styleset = 'public';	# Or 'team', 'member' or 'fancy'
@@ -340,7 +342,6 @@ my $versiondate = '$Date$'
 
 my @diagnostics;		# Collected warnings and other info
 my %scribes;			# List of scribes
-my %scribenicks;		# List of scribenicks (used if %scribes empty)
 my @records;			# Array of parsed lines
 my $date;			# Date of the meeting
 my $meeting = "(MEETING TITLE)"; # Name of the meeting (HTML-escaped)
@@ -355,7 +356,6 @@ my $chair = '-';		# HTML-escaped name of meeting chair
 my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my %speakers;			# Unique ID for each speaker
-my $use_scribe = 0;		# 1 = interpret 'scribe:' as 'scribenick:'
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
 my $agenda_icon = '<img alt="Agenda" title="Agenda" ' .
@@ -473,28 +473,34 @@ foreach my $p (@records) {
   }
 }
 
-# Now initialize $scribenick (if it wasn't given as a command line
-# option), so it can be applied to the first lines. If no scribenick
-# found, look for a scribe command instead. And if there is none, take
-# as scribe the person who wrote the most lines.
+# The first scribe/scribenick command is also assumed to apply to the
+# lines that come before it, so search for that first command (unless
+# --scribenick was given on the command line). If no command is found,
+# assume the person who typed most was the scribe. And if nobody typed
+# anything, set the scribe to '*'.
 #
-my ($s, %count);
+my %count;
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
-  $scribenick = $1 if $p->{text} =~ /^ *scribenick *: *(.*[^ ]) *$/i;
-  $s = $1 if !defined $s && $p->{text}=~/^ *scribe *: *([^ ]+) *$/i;
-  $count{fc $p->{speaker}}++
-    if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
+  if ($p->{text} =~ /^ *scribe(?:nick)? * \+:? *$/i) {
+    $scribenick = $p->{speaker};
+  } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?::|\+:?) *([^ ].*?) *$/i) {
+    $scribenick = $1;
+  } else {
+    $count{fc $p->{speaker}}++ if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
+  }
 }
-$use_scribe = 1 if !defined $scribenick;
-$scribenick = $s if !defined $scribenick;
 if (!defined $scribenick) {
   $scribenick = (sort {$count{$b} <=> $count{$a}} sort keys %count)[0];
   # If still undef, it means there are no lines at all...
   $scribenick = '*' if !defined $scribenick;
   push(@diagnostics, "No scribenick or scribe found. Guessed: $scribenick");
 }
-%curscribes = map {$_ => 1} split(/ *, */, fc($scribenick));
-$scribenicks{fc $_} = $_ foreach split(/ *, */, $scribenick);
+foreach (split(/ *, */, $scribenick)) {
+  if (/^$scribepat$/ or /^(.+)$/) {
+    $scribes{fc $1} = $2 // $1;
+    $curscribes{fc $1} = 1;
+  }
+}
 
 # Interpret each line. %curscribes is the current set of scribes in lowercase.
 # $lastspeaker is the current speaker, for use in continuation lines.
@@ -524,19 +530,19 @@ for (my $i = 0; $i < @records; $i++) {
     delete $present{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif ($records[$i]->{text} =~ /^ *regrets *: *(.*?) *$/i) {
+  } elsif ($records[$i]->{text} =~ /^ *regrets? *: *(.*?) *$/i) {
     %regrets = map { fc($_) => $_ } split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *$/i) {
+  } elsif ($records[$i]->{text} =~ /^ *regrets? *\+:? *$/i) {
     $regrets{fc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif ($records[$i]->{text} =~ /^ *regrets *\+:? *(.*?) *$/i) {
+  } elsif ($records[$i]->{text} =~ /^ *regrets? *\+:? *(.*?) *$/i) {
     $regrets{fc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif ($records[$i]->{text} =~ /^ *regrets *-:? *(.*?) *$/i) {
+  } elsif ($records[$i]->{text} =~ /^ *regrets? *-:? *(.*?) *$/i) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
@@ -623,19 +629,37 @@ for (my $i = 0; $i < @records; $i++) {
     $date = $1;
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif ($records[$i]->{text} =~ /^ *scribe *: *(.*?) *$/i) {
-    my $s = $1;
-    $scribes{fc $s} = $s;		# Add to collected scribe list
-    $records[$i]->{type} = 'o';		# Omit line from output
-    %curscribes = map {$_ => 1} split(/ *, */, fc($s)) if $use_scribe;
-
-  } elsif ($records[$i]->{text} =~ /^ *scribenick *: *(.*[^ ]) *$/i) {
-    my $s = $1;
-    %curscribes = map {$_ => 1} split(/ *, */, fc($s));
-    $scribenicks{fc $_} = $_ foreach split(/ *, */, $s);
+  } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *-:? *$/i) {
+    delete $curscribes{fc $records[$i]->{speaker}}; # Remove speaker as scribe
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
+  } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *\+:? *$/i) {
+    $curscribes{fc $records[$i]->{speaker}} = 1; # Add speaker as scribe
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *: *$/i) {
+    push(@diagnostics, "Ignored empty command \"$records[$i]->{text}\"");
+
+  } elsif ($records[$i]->{text} =~
+	   /^ *scribe(?:nick)? *(:|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
+    %curscribes = () if $1 eq ':';	# Reset scribe nicks
+    foreach (split(/ *, */, $2)) {
+      /^$scribepat$/;			# Split into nick and name
+      $scribes{fc $1} = $2//$1 if !$scribes{fc $1}; # Add to collected names
+      $curscribes{fc $1} = 1;		# Add to current scribe nicks
+    }
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($records[$i]->{text} =~ /^ *scribe *: *([^ ].*?) *$/i) {
+    # Probably an old-fashioned scribe command without a nick
+    $scribes{fc $1} = $1;		# Add to collected scribe list
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *-:? *([^ ].*)? *$/i) {
+    foreach (split(/ *, */, $1)) {delete $curscribes{fc $1} if /^([^ ]+)/}
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+ } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   $records[$i]->{text} =~ /^agendum \d+\. "(.*)" taken up/) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
@@ -814,7 +838,7 @@ if (!defined $date && defined $minutes_url &&
 }
 
 # If there were no explicit "scribe:" commands, use the scribenicks instead.
-%scribes = %scribenicks if !%scribes;
+# %scribes = %scribenicks if !%scribes;
 
 # Add a list of speakers that do not appear in %present, if any.
 my @also = grep !exists($present{fc $_}),
@@ -897,9 +921,9 @@ $logo = '<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w' 
   "3c_home\" alt=W3C border=0 height=48 width=72></a></p>\n\n" if !defined $logo;
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
-my $present = esc(join(", ", map($present{$_}, sort keys %present)));
-my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets)));
-my $scribes = esc(join(", ", map($scribes{$_}, sort keys %scribes)));
+my $present = esc(join(", ", sort values %present));
+my $regrets = esc(join(", ", sort values %regrets));
+my $scribes = esc(join(", ", sort values %scribes));
 my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
   "<div class=diagnostics>\n<h2>Diagnostics<\/h2>\n" .
   join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics) .
