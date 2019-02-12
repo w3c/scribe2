@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Test if warnings are given for empty scribe commands.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:36 <foo> bar: I just say
+13:28:46 <foo> scribe:    
+13:28:56 <bar> scribenick  :   
+13:29:06 <foo> baz: you say
+13:29:16 <foo> bar: OK
+EOF
+
+perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
+
+cat $TMP2
+
+grep 'Ignored empty command &quot;scribe:' $TMP2 || exit 1
+grep 'Ignored empty command &quot;scribenick  :' $TMP2 || exit 1

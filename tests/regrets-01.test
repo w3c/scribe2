@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Test is the different forms of regret/regrets are recognized.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/regrets-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/regrets-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Regrets: Do, Not, Consider, This, Line
+<foo> Regrets : Adam, Eve
+<foo> regret + Jupiter
+<foo> regrets +Apollo, Venus
+<foo> REGRET-Apollo
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+
+cat $TMP2
+
+if ! grep '<dt>Regrets</dt><dd>Adam, Eve, Jupiter, Venus</dd>' $TMP2; then
+  echo "Expected \"Adam, Eve, Jupiter, Venus\", but found"
+  grep '<dt>Regrets' $TMP2
+  exit 1
+fi

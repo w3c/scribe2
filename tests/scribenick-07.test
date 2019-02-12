@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Test the extended scribe/scribenick commands.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> The meeting starts.
+<bar> Rob: I'm here.
+<foo> scribe: foo = John Smith Sr., bar=Jonathan
+<foo> Rob: Or am I?
+<bar> The meeting ends.
+<bar> scribenick- bar
+<bar> I'm not scribe now!
+<bar> scribenick+ bar
+<bar> I'm scribe again!
+<foo> I'm scribe, too.
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+
+if ! fgrep '<dt>Scribe</dt><dd>John Smith Sr., Jonathan</dd>' $TMP2; then
+  echo 'Expected "John Smith Sr., Jonathan" but found:'
+  fgrep '<dt>Scribe' $TMP2
+  exit 1
+fi

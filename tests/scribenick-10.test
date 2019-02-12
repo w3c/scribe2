@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# It is possible to end up with no scribe after "scribe-".
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> The meeting starts.
+<bar> Rob: I'm here.
+<foo> scribe: foo = John Smith Sr., bar = John Smith Jr.
+<foo> Rob: Or am I?
+<bar> The meeting ends.
+<bar> scribenick- bar
+<bar> I'm not scribe now!
+<bar> scribenick -foo
+<bar> No more scribes!
+<foo> Indeed!
+EOF
+
+cat >$TMP2 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class=summary>The meeting starts.</p>
+<p class="phone s01"><cite>Rob:</cite> I'm here.</p>
+<p class="phone s01"><cite>Rob:</cite> Or am I?</p>
+<p class=summary>The meeting ends.</p>
+<p class=irc><cite>&lt;bar&gt;</cite> I'm not scribe now!</p>
+<p class=irc><cite>&lt;bar&gt;</cite> No more scribes!</p>
+<p class=irc><cite>&lt;foo&gt;</cite> Indeed!</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl $TMP1 | sed -n -e '/id=meeting/,/<\/div>/p' >$TMP3
+
+diff -u $TMP2 $TMP3

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Test the extended scribe/scribenick commands.
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> The meeting starts.
+<bar> Rob: I'm here.
+<foo> scribe: foo = John Smith Sr., bar = John Smith Jr.
+<foo> Rob: Or am I?
+<bar> The meeting ends.
+EOF
+
+cat >$TMP2 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class=summary>The meeting starts.</p>
+<p class="phone s01"><cite>Rob:</cite> I'm here.</p>
+<p class="phone s01"><cite>Rob:</cite> Or am I?</p>
+<p class=summary>The meeting ends.</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl $TMP1 | sed -n -e '/id=meeting/,/<\/div>/p' >$TMP3
+
+diff -u $TMP2 $TMP3

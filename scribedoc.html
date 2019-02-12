@@ -77,7 +77,7 @@
   in other environments. (For use in other environments, see the <a
   href="#input_formats" >Input Formats</a> section.)
 
-  <p>This manual documents scribe.perl version 2.55. See below for the <a
+  <p>This manual documents scribe.perl version 2.56. See below for the <a
    href="#changes" >differences with version 1.</a>
 
 
@@ -119,25 +119,13 @@
      <th>Explanation
      <th>Who?
     <tr>
-     <td class=command>Scribe: David Booth
+     <td class=command>Scribe: dbooth
 
-     <td class=help>(Optional) David Booth is the name of the scribe
-      as it should appear in the generated minutes. The ScribeNick
-      will be used instead if Scribe is not specified. If there are
-      multiple scribes: Issue this command and the ScribeNick: command
-      whenever the scribe name changes.
-
-     <td>anybody
-    <tr>
-     <td class=command>ScribeNick: dbooth
-
-     <td class=help>dbooth is the IRC nickname of the scribe. The
-      ScribeNick will be guessed if neither Scribe nor ScribeNick are
-      specified. If there are multiple scribes: Issue this command and
-      the Scribe: command whenever the scribe nickname changes. Or
-      give a comma-separated list of nicknames to indicate that <a
-      href="#multple">multiple scribes</a> are active at the same
-      time.
+     <td class=help>dbooth is the IRC nickname of the scribe. If you
+      don't give this command scribe.perl will guess the scribe. Use
+      the command again if the scribe changes. There are several
+      useful variants of this command, see the <a
+      href="#scribe">scribe command</a> below.
 
      <td>anybody
     <tr>
@@ -629,7 +617,7 @@ you are not using RRSAgent.
     <code>-member</code>, use the 2004 style for team, resp. member
     minutes.
 
-   <dt>-style <var>URL</var> <dd>Use the given style sheet. The usual
+   <dt id=style>-style <var>URL</var> <dd>Use the given style sheet. The usual
     member, team or public styles become alternative styles instead.
 
    <dt id=logo>-logo <var>markup</var> <dd>Replace the link to W3C and
@@ -656,8 +644,9 @@ you are not using RRSAgent.
     figure out which lines were written by the scribe. This scribenick
     will be used for the first lines of the log, until the first
     ‘scribenick’ command in the log itself. (If this option is not
-    given, scribe.perl assumes that that first ‘scribenick’ command
-    also applies to the lines before that command.)
+    given, scribe.perl assumes that that first <code>scribe</code> or
+    <code>scribenick</code> command also applies to the lines before
+    that command.)
   </dl>
 
   <h3 id="options_misc">Miscellaneous Options</h3>
@@ -749,6 +738,10 @@ i|locationString|lineToInsert|
 
   <h3 id="commands_general">General Commands</h3>
 
+  <p>The following commands may be written with any mix of uppercase
+   and lowercase letters: ‘Meeting’, ‘MEETING’ and ‘mEeTiNg’ are all
+   the same thing.
+
   <pre class="command">Meeting: Baking Club</pre>
 
   <p>Use "Baking Club" as the title of the meeting minutes. If used
@@ -759,43 +752,67 @@ i|locationString|lineToInsert|
   <p>Jonathan was the meeting chair. If used multiple times, only the
    last one has effect.
 
-  <pre class="command">Scribe: Mary</pre>
+  <pre class="command" id="scribe">Scribe: MaryScr
+ScribeNick: MaryScr</pre>
 
-  <p>Mary was the scribe, or one of the scribes. The Scribe command is
-   to indicate the full name of the scribe. If the name given in the
-   Scribe command matches an IRC name, then it will also be used as
-   the ScribeNick, in the absence of an explicit ScribeNick command.
-   If you also use the ScribeNick command (below), then you can use
-   the Scribe command to give the full name of the scribe, rather than
-   the IRC nickname. The Scribe command can be used more than once,
-   which indicates that multiple scribes were used during the meeting.
+  <p>Tells scribe.perl that the IRC name of the scribe is MaryScr. If
+   somebody else takes over as scribe, just give the command again,
+   with the nick name of the new scribe.
 
-  <pre class="command" id="ScribeNick">ScribeNick: MaryScr</pre>
-	
-  <p>MaryScr was the IRC nickname used by the scribe. Use this (and
-   the "Scribe:" command above) if the scribe's IRC nickname was
-   cryptic. The ScribeNick command can be used more than once, which
-   indicates that multiple scribes were used during the meeting. Each
-   ScribeNick command indicates the scribe for the lines until the
-   next ScribeNick command. The first ScribeNick command also
-   indicates who was the scribe at the start of the meeting. (But see
-   the <a href="#scribenick-option" ><code>-scribeNick</code></a>
-   option.)
+  <p>‘Scribenick’ is an alternative spelling. Whenever you use
+   ‘scribe’, you can also use ‘scribenick’.
 
-  <pre class="command" id="multiple">ScribeNick: Adam, Teo, Ana</pre>
+  <pre class="command" id="real-name">Scribe: jon2 = John Smith
+Scribe: jon2 / John Smith</pre>
+
+  <p>You can add the scribe's real name, separated from the IRC name
+   with a slash or an equals sign. This changes how the scribe will be
+   called in the summary at the top of the minutes. Useful if the IRC
+   name is cryptic.
+
+  <pre class="command" id="multiple">Scribe: Adam, Teo, Ana
+Scribe:+ Adam/Adamsky, Teo, Ana=Jo-Ana</pre>
 
   <p>Multiple scribes can be active at the same time. Separate their
-    nicknames with commas.
+   names with commas. Of course, you can also add their real name
+   after the nick name.
 
-  <pre class="command" id="noscribe">ScribeNick: *</pre>
+  <pre class="command">Scribe+ jon2
+Scribe+: jon2
+Scribe+ jon2/John Smith
+Scribe+ jon2, adam=Adamsky</pre>
 
-  <p>A <code>*</code> as the scribenick means there is no designated
+  <p>Use ‘scribe+’ (with or without a ‘:’) if one or more scribes
+   start taking minutes in addition to, rather than replacing, the
+   previous scribes.
+  
+  <pre class="command">Scribe- adam
+Scribe- adam,teo</pre>
+
+  <p>Indicates when some scribes stop taking minutes.
+   
+  <pre class="command">Scribe+
+Scribe-</pre>
+
+  <p>If there are no names after the ‘+’ or ‘-’, it means the person
+   typing the command is adding or removing <em>himself</em> from the
+   current list of scribes.
+
+  <p>A scribe can, e.g., temporarily stop taking minutes
+   (<code>scribe-</code>) and resume later (<code>scribe+</code>).
+
+  <pre class="command" id="noscribe">Scribe: *</pre>
+
+  <p>A ‘*’ as the scribenick means there is no designated
    scribe, but everybody is taking notes together. This is useful,
    e.g., when IRC is used for taking notes in a face-to-face meeting,
    when IRC isn't needed as a second conversation channel. (But people
    can still start their lines with their own nick, <code>&lt;nick&gt;
    ...</code>, <a href="#scribeirc">see above,</a> to make remarks
    outside the minutes.)
+
+  <p>People cannot remove themselves from the scribe list with
+   <code>scribe-</code> after this command.
 
   <pre class="command">Agenda: http://www.example.com/agenda.html</pre>
 
@@ -891,9 +908,9 @@ Resolved: next-object does not wrap</pre>
   lines contain the link <a href="https://www.example.org/ns/w2">wall
   2</a>.
 
-  <p>A ‘Xueyuan link’ consists of anchor text, followed by
-  <code>-&gt;</code> followed by a URL. Unlike a Ralph link, it must
-  be the only thing on a line:
+  <p id="xueyuan-link">A ‘Xueyuan link’ consists of anchor text,
+   followed by <code>-&gt;</code> followed by a URL. Unlike a Ralph
+   link, it must be the only thing on a line:
 
 <pre class=command>
 &lt;dbooth&gt; wall 2 -&gt; https://www.example.org/ns/w2
@@ -1124,8 +1141,9 @@ Eric agrees.
      ‘-plain’ and ‘-mit’. Note that the public style is the default.
 
    <li>
-    <p>The <a href="#oldStyle" >‘-oldStyle’</a> and <a href="#fancy"
-    >‘-fancy’</a> options are new.
+    <p>The <a href="#oldStyle" >‘-oldStyle’</a>, <a href="#fancy"
+    >‘-fancy’</a>, <a href="#style">‘-style’</a> and <a
+    href="#logo">‘-logo’</a> options are new.
 
    <li>
     <p>The ‘-scribe’ option is not supported.
@@ -1148,6 +1166,13 @@ Eric agrees.
      href="#scribeirc" >example above</a>).
 
    <li>
+    <p>The <code>scribe</code> and <code>scribenick</code> commands no
+     longer have different functions. Both of them set the IRC name
+     <em>and</em> the real name of the scribes. In order to set a real
+     name that is different from the IRC name, use the <a
+     href="#real-name">syntax with ‘/’ or ‘=’</a>.
+
+   <li>
     <p>The ScribeNick command accepts <a href="#multiple">multiple
     names</a> (separated by commas), and also accepts <a
     href="#noscribe">‘*’</a>
@@ -1155,7 +1180,13 @@ Eric agrees.
    <li>
     <p>The '-philippe' and '-plh' options are not supported. Use
     '-dashTopics' instead.
-   </ul>
+
+   <li>
+    <p>Some new text patterns are recognized and marked up with
+     special classes: <a href="#xueyuan-link">Xueyuan links</a> and
+     messages from <a
+     href="https://www.w3.org/2005/06/tracker/irc">trackbot</a>.
+  </ul>
 
   <!--    No addition of [recorded in ....] after an action. -->
 
