@@ -47,7 +47,7 @@ cat >$TMP3 <<EOF
 <dt>Present</dt><dd></dd>
 <dt>Regrets</dt><dd></dd>
 <dt>Chair</dt><dd>-</dd>
-<dt>Scribe</dt><dd>F&amp;E &quot;OO&quot; Smith</dd>
+<dt>Scribe</dt><dd>F&amp;E &quot;OO&quot; Smith, foo</dd>
 </dl>
 </div>
 
