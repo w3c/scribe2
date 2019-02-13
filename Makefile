@@ -23,7 +23,7 @@ NA := $(shell tput setaf 4)N/A$(shell tput op)
 	 case $$? in \
 	 0) $(ECHO) -n "$(OK)$(CLR_EOL)"; $(ECHO) OK >$*.result;; \
 	 2) $(ECHO) -n "$(NA)$(CLR_EOL)"; $(ECHO) N/A >$*.result;; \
-	 *) $(ECHO) "$(FAIL)"; $(ECHO) FAIL >$*.result;; \
+	 *) $(ECHO) "$(FAIL)$(CLR_EOL)"; $(ECHO) FAIL >$*.result;; \
 	 esac
 
 regressionTests: $(TESTS:.test=)
