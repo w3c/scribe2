@@ -77,7 +77,7 @@
   in other environments. (For use in other environments, see the <a
   href="#input_formats" >Input Formats</a> section.)
 
-  <p>This manual documents scribe.perl version 2.56. See below for the <a
+  <p>This manual documents scribe.perl version 2.57. See below for the <a
    href="#changes" >differences with version 1.</a>
 
 
@@ -142,6 +142,14 @@
      <td class=help>If you want a link to the previous meeting at the
      top of the minutes.
 
+     <td>anybody
+    <tr>
+     <td class=command>Next meeting: http://example.org/20181002
+     <td class=help>Ditto for the next meeting.
+     <td>anybody
+    <tr>
+     <td class=command>Agenda: http://example.org/agenda<br>
+     <td class=help>If you want a link to the agenda at the top of the minutes.
      <td>anybody
   </table>
 
@@ -884,6 +892,16 @@ Resolved: next-object does not wrap</pre>
   resolutionsummary, and actionsummary) are also forbidden, because
   scribe.perl uses them itself.
   
+  <pre class="command">Next meeting: http:///example.org/20180214/mins
+Previous meeting: http://example.org/20180228/mins</pre>
+
+  <p>You can add a link to the previous and next meeting at the top of
+   the minutes.
+
+  <pre class="command">Agenda: http://example.org/2019-02/agenda</pre>
+
+  <p>This adds a link to the meeting agenda at the top of the minutes.
+
   <h3 id="links">Embedding links</h3>
 
   <p>Scribe.perl automatically recognizes most URLs
