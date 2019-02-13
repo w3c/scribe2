@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Check recognition of previous meeting and next meeting.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/nextmtg-XXXXXX` || exit 0
+TMP2=`mktemp /tmp/nextmtg-XXXXXX` || exit 0
+
+cat >$TMP1 <<EOF
+<foo>   PREVIOUS  MEETING  : http://example.org/prev
+<foo>   next  MEETING  : http://example.org/next
+<foo> Previous meeting: not-a-url
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2
+
+if !grep '"http://example.org/prev"><img alt="Previous meeting"' $TMP2; then
+  echo "Failed to find previous meeting"
+  exit 1
+fi
+
+if !grep '"http://example.org/next"><img alt="Next meeting"' $TMP2; then
+  echo "Failed to find next meeting"
+  exit 1
+fi
+
+if !grep "'Previous meeting:' not followed by a URL: 'not-a-url'." $TMP2; then
+  echo "Failed to give a warning for not-a-url"
+  exit 1
+fi
