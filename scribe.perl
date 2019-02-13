@@ -22,10 +22,8 @@
 # as soon as it is read? (s/// and i//// will not work. ScribeNick is
 # not retroactive. Broken lines, as in Mirc logs, are not recombined.)
 #
-# TODO: Add a "next meeting" command that adds a link at the top of
-# the minutes. Like "previous meeting", it could accept a URL. But it
-# could also accept a date or a period: "next meeting: 7 Aug", "next
-# meeting: 2 weeks".
+# TODO: Make "next meeting" accept a date ("7 Aug") or a period ("in 2
+# weeks") and infer a URL?
 #
 # TODO: If trackbot assigns a number ("ISSUE-3") to an issue, use that
 # number instead of the generic "Issue". Also use it in the
@@ -346,6 +344,7 @@ my @records;			# Array of parsed lines
 my $date;			# Date of the meeting
 my $meeting = "(MEETING TITLE)"; # Name of the meeting (HTML-escaped)
 my $prev_meeting = '';		# HTML-formatted link to previous meeting
+my $next_meeting = '';		# HTML-formatted link to next meeting
 my %present;			# List of participants
 my %regrets;			# List of regrets
 my $minutes_url;		# URL of the minutes according to RRSAgent
@@ -363,6 +362,8 @@ my $agenda_icon = '<img alt="Agenda" title="Agenda" ' .
 my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/text-plain.png">';
 my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
+  'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
+my $next_icon = '<img alt="Next meeting" title="Next meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
@@ -617,8 +618,12 @@ for (my $i = 0; $i < @records; $i++) {
     $prev_meeting = '<a href="' . esc($1) . "\">$previous_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif ($records[$i]->{text} =~ /^ *previous +meeting *: *(.*?) *$/i) {
-    push(@diagnostics,"Found 'Previous meeting:' not followed by a URL: '$1'.");
+  } elsif ($records[$i]->{text} =~ /^ *next +meeting *: *($urlpat) *$/i){
+    $next_meeting = '<a href="' . esc($1) . "\">$next_icon</a>\n";
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($records[$i]->{text} =~ /^ *(previous|next) +meeting *: *(.*?) *$/i) {
+    push(@diagnostics,"Found '$1 meeting:' not followed by a URL: '$2'.");
     # $records[$i]->{type} = 'o';	# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *chairs? *: *(.*?) *$/i) {
@@ -988,7 +993,7 @@ $logo<h1>$draft$meeting</h1>
 <h2>$date</h2>
 
 <div id=links>
-$prev_meeting$agenda$log</div>
+$prev_meeting$agenda$log$next_meeting</div>
 </header>
 
 <nav>
