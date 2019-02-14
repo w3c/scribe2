@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test that resolutions, actions and issues can be have continuation
+# Test that resolutions, actions and issues can have continuation
 # lines.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
