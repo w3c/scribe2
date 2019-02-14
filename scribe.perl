@@ -395,6 +395,7 @@ my %options = ("team" => sub {$styleset = 'team'},
 	       "oldStyle!" => \$old_style,
 	       "stylesheet:s" => \$stylesheet,
 	       "logo:s" => \$logo,
+	       "nologo" =>sub {$logo = ''},
 	       "minutes=s" => \$minutes_url);
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
@@ -1080,6 +1081,7 @@ scribe.perl [options] [file ...]
   --oldStyle		Use the style of scribe.perl version 1
   --minutes=URL		Used to guess a date if the URL contains YYYY/MM/DD
   --logo=markup		Replace the W3C link and logo with this HTML markup
+  --nologo      	Same as --logo=""
   --stylesheet=URL	Use this style sheet instead of the default
 
 You can use single dash (-) or double (--). Options are
