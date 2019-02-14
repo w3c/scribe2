@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Check that speakers are distinguished from random text.
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/speaker-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/speaker-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/speaker-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribe: foo
+<foo> bar: I say
+<foo> ...true: I say
+<foo> 2top: me too
+<foo> ..5:00 pm: 5 is not a speaker
+<foo> .hidden: One dot is a speaker
+<foo> ..hidden: Two dots is a continuation
+EOF
+
+cat >$TMP2 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class="phone s01"><cite>bar:</cite> I say<br>
+… true: I say</p>
+<p class="phone s02"><cite>2top:</cite> me too<br>
+… 5:00 pm: 5 is not a speaker</p>
+<p class="phone s03"><cite>.hidden:</cite> One dot is a speaker<br>
+… hidden: Two dots is a continuation</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl $TMP1 | sed -n -e '/<div id=meeting/,/<\/div>/p' >$TMP3
+
+diff -u $TMP2 $TMP3
