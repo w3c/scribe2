@@ -32,6 +32,10 @@
 # TODO: An option to omit the special handling of W3C's bots
 # (currently zakim, rrsagent and trackbot).
 #
+# TODO: Make commands such as scribeoptions:-implicit and
+# scribeoptions:-allowspace apply only until they are overridden by
+# another?
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -89,6 +93,8 @@ use locale;			# Sort using current locale
 my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
+# A speaker name doesn't contain ' ' or ':' and doesn't start with two dots.
+my $speakerpat = '(?:[^. :]|\.[^. :])[^ :]*';
 
 # Command line options:
 my $styleset = 'public';	# Or 'team', 'member' or 'fancy'
@@ -460,9 +466,7 @@ for (my $i = 0; $i < @records; $i++) {
   }
 }
 
-# Step 3: Interpret each record, collect topics, actions, etc.
-#
-# First search for scribeOptions, as they may affect the whole log.
+# Step 3: Search for scribeOptions, as they may affect the whole log.
 #
 foreach my $p (@records) {
   if ($p->{text} =~ /^ *scribeoptions *: *(.*?) *$/i) {
@@ -474,6 +478,8 @@ foreach my $p (@records) {
   }
 }
 
+# Step 4: Find the initial scribe(s).
+#
 # The first scribe/scribenick command is also assumed to apply to the
 # lines that come before it, so search for that first command (unless
 # --scribenick was given on the command line). If no command is found,
@@ -503,6 +509,8 @@ foreach (split(/ *, */, $scribenick)) {
   }
 }
 
+# Step 5: Interpret each record, collect topics, actions, etc.
+#
 # Interpret each line. %curscribes is the current set of scribes in lowercase.
 # $lastspeaker is the current speaker, for use in continuation lines.
 # $lastspeaker is set to foo whenever the scribe writes "foo: ...".
@@ -773,9 +781,11 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} =~ s/^.*?> ?//i;
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   ($records[$i]->{text} =~ /^([^ <:]+) *: *(.*)$/ ||
-	    (!$spacecont && $records[$i]->{text} =~ /^ *([^ <:]+) *: *(.*)$/))&&
+	   ($records[$i]->{text} =~ /^($speakerpat) *: *(.*)$/ ||
+	    (!$spacecont && $records[$i]->{text}
+	     =~ /^ *($speakerpat) *: *(.*)$/)) &&
 	   $records[$i]->{text} !~ /^ *$urlpat/i) {	# ... and not a URL
+    # A speaker line
     $records[$i]->{type} = 's';		# Mark as scribe line
     $lastspeaker{$records[$i]->{speaker}} = $1; # For any continuation lines
     $records[$i]->{speaker} = $1;
@@ -784,9 +794,10 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   defined $lastspeaker{$records[$i]->{speaker}} &&
+	   $records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/ ||
 	   (($implicitcont && $records[$i]->{text} =~ /^ *(.*?) *$/) ||
-	    ($spacecont && $records[$i]->{text} =~ /^ +(.*?) *$/) ||
-	    $records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/)) {
+	    ($spacecont && $records[$i]->{text} =~ /^ +(.*?) *$/))) {
+    # Looks like a continuation line
     $records[$i]->{speaker} = $lastspeaker{$records[$i]->{speaker}};
     $records[$i]->{type} = 's';		# Mark as scribe line
     my $j = $i - 1; $j-- while $j > 0 && $records[$j]->{type} eq 'o';
