@@ -77,7 +77,7 @@
   in other environments. (For use in other environments, see the <a
   href="#input_formats" >Input Formats</a> section.)
 
-  <p>This manual documents scribe.perl version 2.59. See below for the <a
+  <p>This manual documents scribe.perl version 2.61. See below for the <a
    href="#changes" >differences with version 1.</a>
 
 
@@ -933,6 +933,15 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
 <pre class=command>
 &lt;dbooth&gt; wall 2 -&gt; https://www.example.org/ns/w2
+</pre>
+
+  <p id="ivan-link">And finally an ‘Ivan link’ consists of
+   <code>-&gt;</code> followed by anchor text, followed by a URL.
+   There may be surrounding text:
+
+<pre class=command>
+&lt;dbooth&gt; -&gt; wall 2 https://www.example.org/ns/w2
+&lt;dbooth&gt; And -&gt; wall 2 https://www.example.org/ns/w2 too.
 </pre>
 
   <h2 id="editing_the_log">Manually Editing the Log</h2>
