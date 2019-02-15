@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Test that continuation lines are *not* recognized after the scribe
-# writes a summary line.
+# Test that continuation lines after a summary line are added to the
+# summary, not to the preceding speaker.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
@@ -15,7 +15,7 @@ cat >$TMP1 <<EOF
 <foo> .. I wanted to say.
 <foo> ... Very important
 <foo> More talking
-<foo> ... This isn't a continuation.
+<foo> ... This isn't a continuation of Pete.
 <bar> present+ bar
 <baz> q?
 EOF
@@ -26,8 +26,8 @@ cat >$TMP4 <<EOF
 <section><p class="phone s01"><cite>Pete:</cite> Something else<br>
 … I wanted to say.<br>
 … Very important</p>
-<p class=summary>More talking</p>
-<p class=summary>... This isn't a continuation.</p>
+<p class=summary>More talking<br>
+… This isn't a continuation of Pete.</p>
 </section>
 </div>
 EOF
