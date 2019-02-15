@@ -309,10 +309,12 @@ sub esc($;$$$)
     # 1b) A single-quoted Ralph link: ... -> URL 'ANCHOR' ...
     # 1a) An unquoted Ralph link: ... -> URL ANCHOR
     # 2) A Xueyuan link: ANCHOR -> URL
-    # 3) A bare URL: ... URL ...
+    # 3) An Ivan link: -> ANCHOR URL
+    # 4) A bare URL: ... URL ...
     $s =~ s/-&gt; *($urlpat) +(&quot;|')(.*?)\g2/<a href="$1">$3<\/a>/gi or
-	$s =~ s/-&gt; *($urlpat) +([^ ].*?) *$/<a href="$1">$2<\/a>/gi or
-	$s =~ s/^ *([^ ].*?) *-&gt; *($urlpat) *$/<a href="$2">$1<\/a>/gi or
+	$s =~ s/-&gt; *($urlpat) +([^ ].*?) *$/<a href="$1">$2<\/a>/i or
+	$s =~ s/^ *([^ ].*?) *-&gt; *($urlpat) *$/<a href="$2">$1<\/a>/i or
+	$s =~ s/-&gt; *([^ ].*?) +($urlpat)/<a href="$2">$1<\/a>/gi or
 	$s =~ s/\b($urlpat)/"<a href=\"$1\">".break_url($1)."<\/a>"/gie;
   } elsif ($break_urls) {	# Shorten or break URLs
     $s =~ s/($urlpat)/break_url($1)/gie;
@@ -817,7 +819,7 @@ for (my $i = 0; $i < @records; $i++) {
     my ($s, $j, $speaker) = ($1, $i - 1, $records[$i]->{speaker});
     $j-- while $j > 0 && ($records[$j]->{type} eq 'o' ||
 			  $records[$j]->{speaker} ne $speaker);
-    if ($j >= 0 && $records[$j]->{type} =~ /[artuU]/) {
+    if ($j >= 0 && $records[$j]->{type} =~ /[artuUd]/) {
       $records[$j]->{text} .= "\t" . $s;
       $records[$i]->{type} = 'o';	# Omit this line from output
     } elsif (is_cur_scribe($speaker, \%curscribes)) {
