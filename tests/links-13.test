@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if Ivan-links are correctly recognized.
+
+echo "<foo> See -> this http://example.org/ for more" | \
+  perl scribe.perl -urldisplay=full | \
+  grep 'See <a href="http://example.org/">this</a> for more'

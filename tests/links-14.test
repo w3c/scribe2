@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test that "->" with no URL does not create a link.
+
+echo "<foo> See -> this for more" | \
+  perl scribe.perl -urldisplay=full | \
+  grep 'See -&gt; this for more'
