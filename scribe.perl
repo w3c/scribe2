@@ -938,9 +938,9 @@ $logo = '<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w' 
   "3c_home\" alt=W3C border=0 height=48 width=72></a></p>\n\n" if !defined $logo;
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
-my $present = esc(join(", ", sort values %present));
-my $regrets = esc(join(", ", sort values %regrets));
-my $scribes = esc(join(", ", sort values %scribes));
+my $present = esc(join(", ", map($present{$_}, sort keys %present)));
+my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets)));
+my $scribes = esc(join(", ", sort {fc($a) cmp fc($b)} values %scribes));
 my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
   "<div class=diagnostics>\n<h2>Diagnostics<\/h2>\n" .
   join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics) .
