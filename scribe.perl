@@ -372,7 +372,7 @@ my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
 my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 my $next_icon = '<img alt="Next meeting" title="Next meeting" ' .
-  'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
+  'src="https://www.w3.org/StyleSheets/scribe2/go-next.png">';
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
 	    fc('Zakim') => 1);
