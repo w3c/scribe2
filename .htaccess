@@ -1,0 +1,12 @@
+# Apache - directory config file
+
+Options +Indexes
+IndexOptions +NameWidth=*
+ReadmeName README
+
+# README is returned as text/plain anyway, but this is needed to
+# make it show up in the directory listing.
+#
+<Files "README">
+ForceType 'text/plain'
+</Files>
