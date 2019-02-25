@@ -1,5 +1,7 @@
 # Apache - directory config file
 
+AddDefaultCharset utf-8
+
 Options +Indexes
 IndexOptions +NameWidth=*
 ReadmeName README
