@@ -1,6 +1,7 @@
 # Apache - directory config file
 
 AddDefaultCharset utf-8
+AddCharset utf-8 .html .txt .perl
 
 Options +Indexes
 IndexOptions +NameWidth=*
