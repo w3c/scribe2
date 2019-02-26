@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Check that "scribe:" commands that do not follow the special syntax
+# are treated as old-fashioned "real name only" commands. Also check
+# that real names for scribes can be added to nicks afterwards and
+# even corrected.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+
+# Input:
+cat >$TMP1 <<EOF
+<foo> The meeting starts.
+<foo> scribe+
+<foo> I am the scribe.
+<foo> scribe: Flavius O. O'mcintosh
+<foo> That's my name.
+<bar> scribe+ bar/Ben Anton Radius
+<bar> And that's me.
+<baz> scribe: baz
+<baz> Oops, I meant:
+<baz> scribenick: baz/Bo At Zero
+<baz> Uh...
+<baz> scribenick: baz/Bo Ad Zero
+<baz> scribe+
+EOF
+
+# Expected scribes:
+cat >$TMP3 <<EOF
+<dt>Scribe</dt><dd>Ben Anton Radius, Bo Ad Zero, Flavius O. O'mcintosh, foo</dd>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+grep '<dt>Scribe' $TMP2 >$TMP4
+diff -u $TMP3 $TMP4
