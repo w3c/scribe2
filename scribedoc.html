@@ -73,7 +73,7 @@
 
   <h2 id=intro>Introduction</h2>
 	
-  <p><a href="https://dev.w3.org/2002/scribe2/scribe.perl"
+  <p><a href="https://www.w3.org/Tools/2002/scribe2/scribe.perl"
   >Scribe.perl</a> is a perl script for generating meeting minutes
   from an IRC, IM or other log file that follows some simple minuting
   conventions. It is easy to use and requires no installation. It was
@@ -339,7 +339,7 @@ you are not using RRSAgent.
 	<td class="help">(Hint: If RRSAgent wrote the minutes to http://...foo-minutes, then the IRC log will be at http://...foo-irc.txt.)</td>
 </tr>
 <tr>
-	<td class="command">(<a href="https://dev.w3.org/2002/scribe2/scribe.perl">Download scribe.perl</a>)</td>
+	<td class="command">(<a href="https://www.w3.org/Tools/2002/scribe2/scribe.perl">Download scribe.perl</a>)</td>
 	<td class="help">No installation is needed, but you must have <a href="http://www.perl.com/download.csp">perl</a>.</td>
 </tr>
 <tr>
@@ -923,7 +923,7 @@ Previous meeting: http://example.org/20180228/mins</pre>
   href="#urldisplay"><code>-urlDisplay</code></a> for different ways
   to format URLs.
 
-  <p>In addition, scribe.perl recognizes so-called ‘Ralph links’,
+  <p id="ralph-link">In addition, scribe.perl recognizes so-called ‘Ralph links’,
   which consist of <code>-&gt;</code> followed by a URL followed by
   anchor text, like this:
 
@@ -1223,7 +1223,9 @@ Eric agrees.
 
    <li>
     <p>Some new text patterns are recognized and marked up with
-     special classes: <a href="#xueyuan-link">Xueyuan links</a> and
+     special classes: <a href="#ralph-link" >Ralph</a>/<a
+     href="#xueyuan-link" >Xueyuan</a>/<a href="#ivan-link" >Ivan
+     links</a> and
      messages from <a
      href="https://www.w3.org/2005/06/tracker/irc">trackbot</a>.
   </ul>
