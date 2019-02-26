@@ -527,7 +527,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit empty line
 
   } elsif ($records[$i]->{text} =~ /^ *present *: *(.*?) *$/i) {
-    if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {}
+    if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {} # Ignore Zakim?
     elsif ($1 eq '(no one)') {%present = ()}
     else {%present = map {fc($_) => $_} split(/ *, */, $1)}
     $records[$i]->{type} = 'o';		# Omit line from output
@@ -652,7 +652,9 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *\+:? *$/i) {
-    $curscribes{fc $records[$i]->{speaker}} = 1; # Add speaker as scribe
+    my $s = $records[$i]->{speaker};
+    $curscribes{fc $s} = 1;		# Add speaker as scribe
+    $scribes{fc $s} = $s if !$scribes{fc $s}; # Add to collected names
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *: *$/i) {
@@ -661,9 +663,10 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~
 	   /^ *scribe(?:nick)? *(:|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
     %curscribes = () if $1 eq ':';	# Reset scribe nicks
-    foreach (split(/ *, */, $2)) {
+    foreach (split(/ *, */, $2)) {	# Split at commas
       /^$scribepat$/;			# Split into nick and name
-      $scribes{fc $1} = $2//$1 if !$scribes{fc $1}; # Add to collected names
+      if ($2) {$scribes{fc $1} = $2}	# Add real name to scribe list
+      elsif (!$scribes{fc $1}) {$scribes{fc $1} = $1} # Add nick if no name yet
       $curscribes{fc $1} = 1;		# Add to current scribe nicks
     }
     $records[$i]->{type} = 'o';		# Omit line from output
