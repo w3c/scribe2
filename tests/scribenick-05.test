@@ -2,9 +2,11 @@
 
 # Test the extended scribe/scribenick commands.
 
-trap 'rm $TMP1 $TMP2' 0
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/scribenick-XXXXXX` || exit 1
 TMP2=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/scribenick-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/scribenick-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
 <foo> The meeting starts.
@@ -14,10 +16,10 @@ cat >$TMP1 <<EOF
 <bar> The meeting ends.
 EOF
 
-perl scribe.perl $TMP1 >$TMP2
+cat >$TMP3 <<EOF
+<dt>Scribe</dt><dd>John Smith Jr., John Smith Sr.</dd>
+EOF
 
-if ! fgrep '<dt>Scribe</dt><dd>John Smith Jr., John Smith Sr.</dd>' $TMP2; then
-  echo 'Expected "John Smith Jr., John Smith Sr." but found:'
-  fgrep '<dt>Scribe' $TMP2
-  exit 1
-fi
+perl scribe.perl $TMP1 >$TMP2
+grep '<dt>Scribe' $TMP2 >$TMP4
+diff -u $TMP3 $TMP4
