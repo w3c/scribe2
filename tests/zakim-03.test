@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Test if Zakim's "present: ..." is ignored when we ignore Zakim
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/zakim-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+21:13:40 <Mike> present: Mike, Ann
+21:13:41 <Mike> Zakim, who is here?
+21:13:46 <Zakim> Present: Mike, Ann, Joe
+21:13:49 <Mike> OK
+EOF
+
+cat >$TMP4 <<EOF
+<dt>Present</dt><dd>Ann, Mike</dd>
+EOF
+
+perl scribe.perl --nousezakim $TMP1 >$TMP2
+
+grep '<dt>Present' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3
