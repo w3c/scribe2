@@ -527,7 +527,9 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit empty line
 
   } elsif ($records[$i]->{text} =~ /^ *present *: *(.*?) *$/i) {
-    %present = map { fc($_) => $_ } split(/ *, */, $1);
+    if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {}
+    elsif ($1 eq '(no one)') {%present = ()}
+    else {%present = map {fc($_) => $_} split(/ *, */, $1)}
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *present *\+:? *$/i) {
