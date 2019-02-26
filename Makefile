@@ -1,4 +1,4 @@
-all: regressionTests samples
+all: check samples
 
 # REGRESSION TESTS
 #
@@ -26,7 +26,7 @@ NA := $(shell tput setaf 4)N/A$(shell tput op)
 	 *) $(ECHO) "$(FAIL)$(CLR_EOL)"; $(ECHO) FAIL >$*.result;; \
 	 esac
 
-regressionTests: $(TESTS:.test=)
+check: $(TESTS:.test=)
 	@$(ECHO) "====================$(CLR_EOL)"
 	@$(ECHO) "$(OK)  " `grep OK $(RESULTS) | wc -l`
 	@$(ECHO) "$(FAIL)" `grep FAIL $(RESULTS) | wc -l`
@@ -46,3 +46,6 @@ sample-team.html: sample-team.txt scribe.perl
 	perl scribe.perl --embed --team $< >$@
 sample-fancy.html: sample-fancy.txt scribe.perl
 	perl scribe.perl --final --embed --fancy  $< >$@
+
+
+.PHONY: check all samples
