@@ -7,9 +7,13 @@
    href="https://www.w3.org/Guide/guide2006.css">
   <link rel="shortcut icon" href="https://www.w3.org/Icons/WWW/Literature.gif">
   <style type="text/css" media="screen">
+   table {width: 100%; table-layout: fixed}
+   col {width: 50%}
+   col + col {width: 50%}
+   col + col + col {width: 5em}
    th, td {
 	border-bottom: 1px solid #999;}
-   td.command {width:35%;
+   td.command {
 	border:none;
 	border-bottom: 1px solid #999;
 	background: white;}
@@ -91,11 +95,13 @@
   <p>Skip this step if you're not using W3C's IRC.
 
   <table>
-   <tbody>
+   <col><col><col>
+   <thead>
     <tr>
      <th>IRC Command
      <th>Explanation
      <th>Who?
+   <tbody>
     <tr>
      <td class=command>/invite rrsagent
      <td class=help>calls RRSAagent to the your IRC channel
@@ -113,11 +119,13 @@
   <h3 id=start-meeting>Step 2: Start the meeting:</h3>
 
   <table>
-   <tbody>
+   <col><col><col>
+   <thead>
     <tr>
      <th>IRC Command
      <th>Explanation
      <th>Who?
+   <tbody>
     <tr>
      <td class=command>Scribe: dbooth
 
@@ -157,11 +165,13 @@
   <h3 id=notes>Step 3: Take notes in IRC:</h3>
 
   <table>
-   <tbody>
+   <col><col><col>
+   <thead>
     <tr>
      <th>IRC Command
      <th>Explanation
      <th>Who?
+   <tbody>
     <tr>
      <td class=command>Topic: Debate on Feature X
 
@@ -260,12 +270,13 @@
   <h3 id=finish-meeting>Step 4: Finish the meeting</h3>
 
   <table>
-   <tbody>
+   <col><col><col>
+   <thead>
     <tr>
 	<th>IRC Command</th>
 	<th>Explanation</th>
 	<th>Who?
-</tr>
+   <tbody>
 <tr>
 	<td class="command">zakim, bye</td>
 
@@ -317,11 +328,12 @@ you are not using RRSAgent.
 <h3 id="generate-minutes">Step 5: Generate minutes</h3>
 
 <table>
-<tbody>
+<col><col><col>
+<thead>
 <tr>
 	<th>Shell Command</th>
 	<th>Explanation</th>
-</tr>
+<tbody>
 <tr>
 	<td class="command">(Save a copy of the IRC log, such as http://www.w3.org/2002/04/05-arch-irc.txt)</td>
 	<td class="help">(Hint: If RRSAgent wrote the minutes to http://...foo-minutes, then the IRC log will be at http://...foo-irc.txt.)</td>
