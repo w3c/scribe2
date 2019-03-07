@@ -57,14 +57,19 @@
 # into an array of records (see below for the structure of the
 # records).
 #
-# 2) Process "s/old/new/" and "i/where/what/" commands.
+# 2) Processing of "s/old/new/" and "i/where/what/" commands.
 #
-# 3) Each record is interpreted, looking for topics, present & regrets,
+# 3) Scanning for embedded scribeOptions, as they may affect the parsing.
+#
+# 4) Finding the initial scribe, from a command line option or by
+# scanning for the first scribe/scribenick command.
+#
+# 5) Each record is interpreted, looking for topics, present & regrets,
 # actions, resolutions, scribes, statements or summaries minuted by
 # the scribes, and remarks by other people on IRC. Each record is
 # modified and classified accordingly.
 #
-# 4) The array of records is converted to an HTML fragment and that
+# 6) The array of records is converted to an HTML fragment and that
 # fragment, together with the collected topics, actions, etc. are
 # inserted into an HTML template and printed.
 #
@@ -870,7 +875,7 @@ my @also = grep !exists($present{fc $_}),
 push @diagnostics, "Maybe present: " .
     join(", ", sort {fc($a) cmp fc($b)} @also) if @also;
 
-# Step 4. Convert records to HTML and then fill a template.
+# Step 6. Convert records to HTML and then fill a template.
 #
 # Each type of record is converted to a specific HTML fragment, with
 # %1$s replaced by the speaker, %2$s by the ID and %3$s by the text.
