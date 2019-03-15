@@ -344,9 +344,6 @@ sub is_cur_scribe($$)
 
 # Main body
 
-$main::VERSION = '$Revision$'
-  =~ s/\$Revision: //r
-  =~ s/ \$//r;
 my $versiondate = '$Date$'
   =~ s/\$Date: //r
   =~ s/ \$//r;
@@ -1049,12 +1046,12 @@ $actiontoc$resolutiontoc$issuetoc</ul>
 $actions$resolutions$issues
 
 <address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
-href=\"https://dev.w3.org/2002/scribe2/scribedoc.html\"
->scribe.perl</a> version $main::VERSION ($versiondate), a reimplementation
+href=\"https://w3c.github.io/scribe2/scribedoc.html\"
+>scribe.perl</a> version $versiondate, a reimplementation
 of David Booth's <a
 href=\"https://dev.w3.org/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a
-href=\"https://dev.w3.org/cvsweb/2002/scribe2/\">CVS log.</a></address>
+href=\"https://github.com/w3c/scribe2/commits/master/scribe.perl\">version history.</a></address>
 
 $diagnostics</body>
 </html>
@@ -1099,4 +1096,4 @@ scribe.perl [options] [file ...]
 You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
 with `no' (e.g., --nokeeplines). For the full manual see
-L<https://dev.w3.org/2002/scribe2/scribedoc.html>
+L<https://w3c.github.io/scribe2/scribedoc.html>
