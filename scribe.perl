@@ -344,7 +344,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $versiondate = '$Date: Fri Mar 15 14:35:27 2019 UTC $'
+my $versiondate = '$Date: Fri Mar 15 14:54:49 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1051,7 +1051,7 @@ href=\"https://w3c.github.io/scribe2/scribedoc.html\"
 of David Booth's <a
 href=\"https://dev.w3.org/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a
-href=\"https://github.com/w3c/scribe2/commits/master/scribe.perl\">version history.</a></address>
+href=\"https://github.com/w3c/scribe2/commits/master/scribe.perl\">history.</a></address>
 
 $diagnostics</body>
 </html>
