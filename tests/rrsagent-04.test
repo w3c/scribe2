@@ -112,12 +112,12 @@ cat >$TMP2 <<EOF
 
 
 <address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
-href="https://dev.w3.org/2002/scribe2/scribedoc.html"
+href="https://w3c.github.io/scribe2/scribedoc.html"
 >scribe.perl</a> version 2.38 (2017/11/07 01:26:47), a reimplementation
 of David Booth's <a
 href="https://dev.w3.org/2002/scribe/scribedoc.htm"
 >scribe.perl</a>. See <a
-href="https://dev.w3.org/cvsweb/2002/scribe2/">CVS log.</a></address>
+href="https://github.com/w3c/scribe2/commits/master/scribe.perl">history.</a></address>
 
 </body>
 </html>
