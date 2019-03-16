@@ -344,7 +344,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $versiondate = '$Date: Fri Mar 15 14:54:49 2019 UTC $'
+my $versiondate = '$Date: Sat Mar 16 00:44:10 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -804,8 +804,8 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   defined $lastspeaker{$records[$i]->{speaker}} &&
-	   $records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/ ||
-	   (($implicitcont && $records[$i]->{text} =~ /^ *(.*?) *$/) ||
+	   ($records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/ ||
+	    ($implicitcont && $records[$i]->{text} =~ /^ *(.*?) *$/) ||
 	    ($spacecont && $records[$i]->{text} =~ /^ +(.*?) *$/))) {
     # Looks like a continuation line
     $records[$i]->{speaker} = $lastspeaker{$records[$i]->{speaker}};
