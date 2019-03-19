@@ -107,6 +107,6 @@ cat >$TMP2 <<-EOF
 EOF
 
 perl scribe.perl <$TMP1 >$TMP3 || exit 1
-sed -i -e '/ version /d' $TMP2
-sed -i -e '/ version /d' $TMP3
+sed -i '' -e '/ version /d' $TMP2
+sed -i '' -e '/ version /d' $TMP3
 diff -u $TMP2 $TMP3
