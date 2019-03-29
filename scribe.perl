@@ -344,7 +344,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $versiondate = '$Date: Sat Mar 16 00:44:10 2019 UTC $'
+my $versiondate = '$Date: Fri Mar 29 14:57:07 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -375,6 +375,10 @@ my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 my $next_icon = '<img alt="Next meeting" title="Next meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-next.png">';
+my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/I' .
+  'cons/w3c_home_white_transp.png" srcset="https://www.w3.org/Icons/w3c_hom' .
+  'e_white_transp.svg" alt=W3C border=0 height=34 width=68></a>';
+
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
 	    fc('Zakim') => 1);
@@ -943,8 +947,7 @@ my $style = join("\n",
 
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
 $logo = '' if !defined $logo && ($styleset eq 'fancy');
-$logo = '<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w' .
-  "3c_home\" alt=W3C border=0 height=48 width=72></a></p>\n\n" if !defined $logo;
+$logo = "<p>$w3clogo</p>\n\n" if !defined $logo;
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
 my $present = esc(join(", ", map($present{$_}, sort keys %present)));
