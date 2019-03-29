@@ -61,7 +61,7 @@ cat >$TMP2 <<EOF
 
 <body>
 <header>
-<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt=W3C border=0 height=48 width=72></a></p>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home_white_transp.png" srcset="https://www.w3.org/Icons/w3c_home_white_transp.svg" alt=W3C border=0 height=34 width=68></a></p>
 
 <h1>Education and Outreach Working Group Teleconference</h1>
 <h2>25 October 2017</h2>
