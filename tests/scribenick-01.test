@@ -39,11 +39,11 @@ cat >$TMP3 <<EOF
 (MEETING TITLE)</h1>
 <h2></h2>
 
-<div id=links>
-</div>
+<nav id=links>
+</nav>
 </header>
 
-<nav>
+<div id=prelims>
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
@@ -54,7 +54,7 @@ cat >$TMP3 <<EOF
 </dl>
 </div>
 
-<div id=toc>
+<nav id=toc>
 <h2>Contents</h2>
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
@@ -62,8 +62,8 @@ cat >$TMP3 <<EOF
 </ol>
 </li>
 </ul>
-</div>
 </nav>
+</div>
 
 <div id=meeting class=meeting>
 <h2>Meeting minutes</h2>

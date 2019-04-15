@@ -61,13 +61,13 @@ cat >$TMP3 <<EOF
 Public Minutes Teleconference</h1>
 <h2></h2>
 
-<div id=links>
-<a href="http://lists.w3.org/Archives/Public/public-forms/2014Jun/0008"><img alt="Agenda" title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
-<a href="http://www.w3.org/2014/06/w3c-test-fixtures/public-minutes"><img alt="IRC log" title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
-</div>
+<nav id=links>
+<a href="http://lists.w3.org/Archives/Public/public-forms/2014Jun/0008"><img alt="Agenda." title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="http://www.w3.org/2014/06/w3c-test-fixtures/public-minutes"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</nav>
 </header>
 
-<nav>
+<div id=prelims>
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
@@ -78,7 +78,7 @@ Public Minutes Teleconference</h1>
 </dl>
 </div>
 
-<div id=toc>
+<nav id=toc>
 <h2>Contents</h2>
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
@@ -87,8 +87,8 @@ Public Minutes Teleconference</h1>
 </ol>
 </li>
 </ul>
-</div>
 </nav>
+</div>
 
 <div id=meeting class=meeting>
 <h2>Meeting minutes</h2>

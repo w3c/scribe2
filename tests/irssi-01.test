@@ -105,13 +105,13 @@ cat >$TMP3 <<EOF
 W3C/ERCIM Teleconference</h1>
 <h2>31 January 2017</h2>
 
-<div id=links>
-<a href="https://www.w3.org/mid/1950452.hWqkf4ECRx@nyx"><img alt="Agenda" title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
-<a href="http://www.w3.org/2017/01/31-weum-irc"><img alt="IRC log" title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
-</div>
+<nav id=links>
+<a href="https://www.w3.org/mid/1950452.hWqkf4ECRx@nyx"><img alt="Agenda." title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="http://www.w3.org/2017/01/31-weum-irc"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</nav>
 </header>
 
-<nav>
+<div id=prelims>
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
@@ -122,7 +122,7 @@ W3C/ERCIM Teleconference</h1>
 </dl>
 </div>
 
-<div id=toc>
+<nav id=toc>
 <h2>Contents</h2>
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
@@ -130,8 +130,8 @@ W3C/ERCIM Teleconference</h1>
 </ol>
 </li>
 </ul>
-</div>
 </nav>
+</div>
 
 <div id=meeting class=meeting>
 <h2>Meeting minutes</h2>

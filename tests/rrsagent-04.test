@@ -66,12 +66,12 @@ cat >$TMP2 <<EOF
 <h1>Education and Outreach Working Group Teleconference</h1>
 <h2>25 October 2017</h2>
 
-<div id=links>
-<a href="http://www.w3.org/2017/10/25-eo-irc"><img alt="IRC log" title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
-</div>
+<nav id=links>
+<a href="http://www.w3.org/2017/10/25-eo-irc"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</nav>
 </header>
 
-<nav>
+<div id=prelims>
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
@@ -82,7 +82,7 @@ cat >$TMP2 <<EOF
 </dl>
 </div>
 
-<div id=toc>
+<nav id=toc>
 <h2>Contents</h2>
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
@@ -90,8 +90,8 @@ cat >$TMP2 <<EOF
 </ol>
 </li>
 </ul>
-</div>
 </nav>
+</div>
 
 <div id=meeting class=meeting>
 <h2>Meeting minutes</h2>
