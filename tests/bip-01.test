@@ -1,0 +1,572 @@
+#!/bin/bash
+
+# Test if Bip format is recognized
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/test-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/test-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/test-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/test-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/test-XXXXXX` || exit 1
+
+# Input
+
+cat >$TMP1 <<EOF
+18-04-2019 00:54:06 -!- atsushi!himorin@team.cloak has quit ["See you..."]
+18-04-2019 01:48:27 -!- atsushi!himorin@team.cloak has joined #i18n
+18-04-2019 04:40:14 -!- r12a!rishida@team.cloak has joined #i18n
+18-04-2019 04:50:13 -!- atsushi!himorin@team.cloak has quit [Ping timeout: 180 seconds]
+18-04-2019 07:58:13 -!- atsushi!himorin@team.cloak has joined #i18n
+18-04-2019 08:54:10 -!- xfq!xfq@team.cloak has joined #i18n
+18-04-2019 09:52:34 -!- addison!~addison@team.cloak has joined #i18n
+18-04-2019 09:52:41 -!- RRSAgent!rrsagent@team.cloak has joined #i18n
+18-04-2019 09:52:41 < RRSAgent!rrsagent@team.cloak: logging to https://www.w3.org/2019/04/18-i18n-irc
+18-04-2019 09:52:50 < addison!~addison@team.cloak: trackbot, prepare teleconference
+18-04-2019 09:52:50 < * trackbot!trackbot@team.cloak is preparing a teleconference.
+18-04-2019 09:52:53 < trackbot!trackbot@team.cloak: RRSAgent, make logs world
+18-04-2019 09:52:53 < RRSAgent!rrsagent@team.cloak: I have made the request, trackbot
+18-04-2019 09:52:56 < trackbot!trackbot@team.cloak: Meeting: Internationalization Working Group Teleconference
+18-04-2019 09:52:56 < trackbot!trackbot@team.cloak: Date: 18 April 2019
+18-04-2019 09:53:15 < addison!~addison@team.cloak: Agenda: https://lists.w3.org/Archives/Member/member-i18n-core/2019Apr/0012.html
+18-04-2019 09:53:17 < agendabot!bbos@team.cloak: clear agenda
+18-04-2019 09:53:17 < * Zakim!zakim@team.cloak notes agenda cleared
+18-04-2019 09:53:17 < agendabot!bbos@team.cloak: agenda+ Agenda and Minutes
+18-04-2019 09:53:17 < agendabot!bbos@team.cloak: agenda+ Action Items
+18-04-2019 09:53:17 < agendabot!bbos@team.cloak: agenda+ Info Share
+18-04-2019 09:53:17 < agendabot!bbos@team.cloak: agenda+ RADAR and Active Work Review
+18-04-2019 09:53:18 < * Zakim!zakim@team.cloak notes agendum 1 added
+18-04-2019 09:53:18 < * Zakim!zakim@team.cloak notes agendum 2 added
+18-04-2019 09:53:18 < * Zakim!zakim@team.cloak notes agendum 3 added
+18-04-2019 09:53:18 < * Zakim!zakim@team.cloak notes agendum 4 added
+18-04-2019 09:53:19 < agendabot!bbos@team.cloak: agenda+ I18N Issue Resolution
+18-04-2019 09:53:20 < * Zakim!zakim@team.cloak notes agendum 5 added
+18-04-2019 09:53:21 < agendabot!bbos@team.cloak: agenda+ Retiring Charmod-Resid
+18-04-2019 09:53:21 < * Zakim!zakim@team.cloak notes agendum 6 added
+18-04-2019 09:53:24 < agendabot!bbos@team.cloak: agenda+ Non-Semitic text RTL document review
+18-04-2019 09:53:24 < * Zakim!zakim@team.cloak notes agendum 7 added
+18-04-2019 09:53:26 < agendabot!bbos@team.cloak: agenda+ String-Meta
+18-04-2019 09:53:26 < * Zakim!zakim@team.cloak notes agendum 8 added
+18-04-2019 09:53:29 < agendabot!bbos@team.cloak: agenda+ AOB?
+18-04-2019 09:53:29 < * Zakim!zakim@team.cloak notes agendum 9 added
+18-04-2019 09:53:35 < addison!~addison@team.cloak: agenda+ WoT reviews
+18-04-2019 09:53:35 < * Zakim!zakim@team.cloak notes agendum 10 added
+18-04-2019 09:54:04 < addison!~addison@team.cloak: Chair: Addison Phillips
+18-04-2019 09:54:05 < * xfq!xfq@team.cloak saw a request to join the i18n telecom from Kaz (in the winter list), addison
+18-04-2019 09:54:09 < addison!~addison@team.cloak: Scribenick: addison
+18-04-2019 09:54:25 < * addison!~addison@team.cloak rrsagent, draft minutes
+18-04-2019 09:54:25 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html addison
+18-04-2019 09:54:30 < * addison!~addison@team.cloak rrsagent, set logs world
+18-04-2019 09:54:30 < * RRSAgent!rrsagent@team.cloak I have made the request, addison
+18-04-2019 09:55:32 < * xfq!xfq@team.cloak s/telecom/telecon/
+18-04-2019 09:56:36 < * addison!~addison@team.cloak thanks. I invited them
+18-04-2019 09:57:43 -!- Jeff_!~Jeff@team.cloak has joined #i18n
+18-04-2019 09:59:17 < r12a!rishida@team.cloak: present+
+18-04-2019 09:59:18 < atsushi!himorin@team.cloak: present+
+18-04-2019 09:59:24 < addison!~addison@team.cloak: present+
+18-04-2019 09:59:32 < * addison!~addison@team.cloak rresent, set logs world
+18-04-2019 10:00:09 < * r12a!rishida@team.cloak addison Kaz asked me this morning whether he should join - i said he'd need to ask you (as it was late notice) - he's available today, or could try next week
+18-04-2019 10:00:25 < * addison!~addison@team.cloak I replied to his email saying they were welcome to
+18-04-2019 10:00:46 > * Bert is still in another meeting, will join late.
+18-04-2019 10:00:50 < * addison!~addison@team.cloak seems like it would be good to get their input
+18-04-2019 10:01:08 < * xfq!xfq@team.cloak is on the way
+18-04-2019 10:01:14 < * addison!~addison@team.cloak thanks Bert, we'll save some action items for you :-P
+18-04-2019 10:02:17 -!- kaz!ashimura@team.cloak has joined #i18n
+18-04-2019 10:02:34 < Jeff_!~Jeff@team.cloak: present+
+18-04-2019 10:02:41 < * xfq!xfq@team.cloak waves at kaz
+18-04-2019 10:02:54 < xfq!xfq@team.cloak: present+
+18-04-2019 10:02:57 -!- JcK!~JcK@team.cloak has joined #i18n
+18-04-2019 10:03:03 < kaz!ashimura@team.cloak: present+
+18-04-2019 10:03:08 < * kaz!ashimura@team.cloak waves back
+18-04-2019 10:03:28 < * addison!~addison@team.cloak meeting info at https://www.w3.org/2017/09/i18n-meeting-info.html
+18-04-2019 10:03:35 < * r12a!rishida@team.cloak seems you can't hear me :(
+18-04-2019 10:03:45 < * addison!~addison@team.cloak nope
+18-04-2019 10:06:12 < * xfq!xfq@team.cloak can
+18-04-2019 10:06:24 < addison!~addison@team.cloak: agenda?
+18-04-2019 10:06:24 < * Zakim!zakim@team.cloak sees 10 items remaining on the agenda:
+18-04-2019 10:06:25 < * Zakim!zakim@team.cloak 1. Agenda and Minutes [from agendabot]
+18-04-2019 10:06:25 < * Zakim!zakim@team.cloak 2. Action Items [from agendabot]
+18-04-2019 10:06:25 < * Zakim!zakim@team.cloak 3. Info Share [from agendabot]
+18-04-2019 10:06:25 < * Zakim!zakim@team.cloak 4. RADAR and Active Work Review [from agendabot]
+18-04-2019 10:06:25 < * Zakim!zakim@team.cloak 5. I18N Issue Resolution [from agendabot]
+18-04-2019 10:06:25 < * Zakim!zakim@team.cloak 6. Retiring Charmod-Resid [from agendabot]
+18-04-2019 10:06:26 < * Zakim!zakim@team.cloak 7. Non-Semitic text RTL document review [from agendabot]
+18-04-2019 10:06:26 < * Zakim!zakim@team.cloak 8. String-Meta [from agendabot]
+18-04-2019 10:06:27 < * Zakim!zakim@team.cloak 9. AOB? [from agendabot]
+18-04-2019 10:06:27 < * Zakim!zakim@team.cloak 10. WoT reviews [from addison]
+18-04-2019 10:07:20 < addison!~addison@team.cloak: zakim, take up agendum 10
+18-04-2019 10:07:20 < Zakim!zakim@team.cloak: agendum 10. "WoT reviews" taken up [from addison]
+18-04-2019 10:07:26 < JcK!~JcK@team.cloak: present+ JcK
+18-04-2019 10:07:41 < addison!~addison@team.cloak: https://github.com/w3c/i18n-activity/projects/1
+18-04-2019 10:08:12 -!- mkovatsc_!~mkovatsc@team.cloak has joined #i18n
+18-04-2019 10:08:41 < kaz!ashimura@team.cloak: q+
+18-04-2019 10:08:41 < * Zakim!zakim@team.cloak sees kaz on the speaker queue
+18-04-2019 10:08:53 < xfq!xfq@team.cloak: present+ Matthias
+18-04-2019 10:08:56 < addison!~addison@team.cloak: ack kaz
+18-04-2019 10:08:56 < * Zakim!zakim@team.cloak sees no one on the speaker queue
+18-04-2019 10:09:02 < addison!~addison@team.cloak: (addison introduces)
+18-04-2019 10:09:05 < kaz!ashimura@team.cloak: -> https://lists.w3.org/Archives/Public/www-international/2019AprJun/0026.html kaz's write up
+18-04-2019 10:09:37 < addison!~addison@team.cloak: kaz: our main purpose is first doc
+18-04-2019 10:09:38 < xfq!xfq@team.cloak: present+ Sebastian
+18-04-2019 10:09:44 < addison!~addison@team.cloak: ... other is kind of basic concepts
+18-04-2019 10:09:50 < r12a!rishida@team.cloak: q+
+18-04-2019 10:09:50 < * Zakim!zakim@team.cloak sees r12a on the speaker queue
+18-04-2019 10:10:05 < addison!~addison@team.cloak: ... our schedule, we'd like to bring to CR at end of the month
+18-04-2019 10:10:27 < addison!~addison@team.cloak: ... already has some i18n features
+18-04-2019 10:10:35 < addison!~addison@team.cloak: ... like to know if this is okay
+18-04-2019 10:11:03 < kaz!ashimura@team.cloak: s/first doc/first doc, WoT Thing Description/
+18-04-2019 10:11:33 < addison!~addison@team.cloak: ack r12a
+18-04-2019 10:11:33 < * Zakim!zakim@team.cloak sees no one on the speaker queue
+18-04-2019 10:12:39 < addison!~addison@team.cloak: richard: doc I'm looking at is not in a w3c repo
+18-04-2019 10:12:52 < addison!~addison@team.cloak: ... would prefer if it were in w3c repo before we review
+18-04-2019 10:13:21 < addison!~addison@team.cloak: kaz: updating the draft daily, but generated fixed version using branch
+18-04-2019 10:13:40 < addison!~addison@team.cloak: ... better to publish as updated draft
+18-04-2019 10:13:54 < mkovatsc_!~mkovatsc@team.cloak: W3C repo: https://github.com/w3c/wot-thing-description/
+18-04-2019 10:14:20 < mkovatsc_!~mkovatsc@team.cloak: q+
+18-04-2019 10:14:20 < * Zakim!zakim@team.cloak sees mkovatsc_ on the speaker queue
+18-04-2019 10:14:55 < addison!~addison@team.cloak: ack mkovatsc_
+18-04-2019 10:14:55 < * Zakim!zakim@team.cloak sees no one on the speaker queue
+18-04-2019 10:15:12 < addison!~addison@team.cloak: mathias: our doc is on github
+18-04-2019 10:16:53 < addison!~addison@team.cloak: ... would having a meeting to guide you helpful?
+18-04-2019 10:17:47 < addison!~addison@team.cloak: richard: if you can review our checklist, that will help you guide us
+18-04-2019 10:17:51 < kaz!ashimura@team.cloak: s/better to publish as updated draft/if needed, I can copy the fixed HTML to the www.w3.org server./
+18-04-2019 10:18:15 < * xfq!xfq@team.cloak can not hear r12a clearly
+18-04-2019 10:18:18 > * Bert only richard's sound is bad
+18-04-2019 10:18:25 < kaz!ashimura@team.cloak: s/... would having/sebastian: would having /
+18-04-2019 10:18:59 < addison!~addison@team.cloak: ... think it is a good idea for you to look through and identify things important for us to review
+18-04-2019 10:19:11 < addison!~addison@team.cloak: ... we will likely look other places too, but it will still help
+18-04-2019 10:19:28 < addison!~addison@team.cloak: ... https://www.w3.org/International/techniques/shortchecklist.html
+18-04-2019 10:19:40 < addison!~addison@team.cloak: ... points to more detailed checklist also
+18-04-2019 10:20:00 < addison!~addison@team.cloak: ... if you go through and see if there are things to pay attention to while doing review
+18-04-2019 10:20:12 < addison!~addison@team.cloak: ... we have to understand your document in just a few days
+18-04-2019 10:20:31 < * addison!~addison@team.cloak rrsagent, draft minutes
+18-04-2019 10:20:31 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html addison
+18-04-2019 10:20:44 < kaz!ashimura@team.cloak: i|if you go through|-> https://www.w3.org/International/techniques/developing-specs detailed checklist|
+18-04-2019 10:21:19 < addison!~addison@team.cloak: addison: anything you want to call attention to?
+18-04-2019 10:21:34 < addison!~addison@team.cloak: mathias: we will send you links to paths of doc
+18-04-2019 10:21:42 < addison!~addison@team.cloak: ... and double check guidelines
+18-04-2019 10:21:49 < kaz!ashimura@team.cloak: s/matthias:/sebastian:/
+18-04-2019 10:22:11 < addison!~addison@team.cloak: richard: can you give a brief overview of docs?
+18-04-2019 10:22:32 < addison!~addison@team.cloak: kaz: easiest way to explain is
+18-04-2019 10:22:37 < addison!~addison@team.cloak: ... everyone knows html
+18-04-2019 10:22:48 < addison!~addison@team.cloak: ... thing description is for devices
+18-04-2019 10:22:52 < kaz!ashimura@team.cloak: s/kaz:/sebastian:/
+18-04-2019 10:22:54 < addison!~addison@team.cloak: ... index html for things
+18-04-2019 10:23:09 < addison!~addison@team.cloak: ... describe capabilities of things
+18-04-2019 10:23:22 < addison!~addison@team.cloak: ... properties, action events
+18-04-2019 10:23:26 < addison!~addison@team.cloak: ... data expected
+18-04-2019 10:23:26 < * kaz!ashimura@team.cloak thinks the explainer document might be also useful here https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md
+18-04-2019 10:23:37 < addison!~addison@team.cloak: ... protocol, such as http or some other iot protocol
+18-04-2019 10:23:52 < r12a!rishida@team.cloak: uhoh
+18-04-2019 10:23:54 < addison!~addison@team.cloak: ... RDF based
+18-04-2019 10:23:58 < * addison!~addison@team.cloak ;-)
+18-04-2019 10:24:03 < addison!~addison@team.cloak: Explainer: https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md
+18-04-2019 10:24:29 < addison!~addison@team.cloak: Sebastian: what is the action about, title and description terms
+18-04-2019 10:24:35 < r12a!rishida@team.cloak: https://w3c.github.io/string-meta/
+18-04-2019 10:24:38 < * kaz!ashimura@team.cloak tx, addison!
+18-04-2019 10:24:40 < addison!~addison@team.cloak: ... multiple language support
+18-04-2019 10:25:28 < addison!~addison@team.cloak: r12a: is there some kind of markup involved? how is information stored
+18-04-2019 10:25:49 < addison!~addison@team.cloak: sebastian: thing description can be stored in different ways
+18-04-2019 10:26:12 < addison!~addison@team.cloak: matthias: json based interchange format
+18-04-2019 10:26:18 < addison!~addison@team.cloak: ... aligned with JSON-LD
+18-04-2019 10:26:23 < addison!~addison@team.cloak: ... so JSON 1.1 could be used
+18-04-2019 10:26:38 < addison!~addison@team.cloak: ... model for json structure so can be machine read
+18-04-2019 10:26:50 < addison!~addison@team.cloak: ... have a few human-readable fields
+18-04-2019 10:27:06 < addison!~addison@team.cloak: richard: put a link to string-meta, should read carefully
+18-04-2019 10:27:21 < addison!~addison@team.cloak: ... anticipating comments, since we have identified problems with RDF and LD
+18-04-2019 10:27:33 < addison!~addison@team.cloak: ... involving base direction
+18-04-2019 10:28:02 < addison!~addison@team.cloak: Matthias: not a format for display
+18-04-2019 10:28:10 < kaz!ashimura@team.cloak: q+
+18-04-2019 10:28:10 < * Zakim!zakim@team.cloak sees kaz on the speaker queue
+18-04-2019 10:29:35 < addison!~addison@team.cloak: ack kaz
+18-04-2019 10:29:35 < * Zakim!zakim@team.cloak sees no one on the speaker queue
+18-04-2019 10:29:57 < addison!~addison@team.cloak: kaz: have discussion with ld group, including iherman@
+18-04-2019 10:30:24 < addison!~addison@team.cloak: ... model describes device properties and how to control using actions and events
+18-04-2019 10:30:36 < addison!~addison@team.cloak: ... concentrating on how to dea with devices properties
+18-04-2019 10:31:28 < kaz!ashimura@team.cloak: s/iherman@/Ivan Herman/
+18-04-2019 10:31:51 < kaz!ashimura@team.cloak: s/dea with/deal with/
+18-04-2019 10:32:20 < r12a!rishida@team.cloak: Requester provides target URL to initate T2T
+18-04-2019 10:32:53 < kaz!ashimura@team.cloak: s/initate/initiate/
+18-04-2019 10:33:43 < addison!~addison@team.cloak: kaz: will look into detailed checklist
+18-04-2019 10:35:26 < addison!~addison@team.cloak: addison: only one telecon before end of month
+18-04-2019 10:35:45 < addison!~addison@team.cloak: r12a: would like to understand why you didn't come forward sooner
+18-04-2019 10:35:49 < addison!~addison@team.cloak: ... were you unaware?
+18-04-2019 10:36:11 < addison!~addison@team.cloak: matthias: didn't understand process
+18-04-2019 10:36:28 < addison!~addison@team.cloak: richard: need to find way to understand process earlier on
+18-04-2019 10:36:42 < addison!~addison@team.cloak: ... also maybe having an i18n champion in WG
+18-04-2019 10:36:57 < addison!~addison@team.cloak: kaz: had important technical problems
+18-04-2019 10:37:02 < addison!~addison@team.cloak: ... took longer than we expect
+18-04-2019 10:37:51 < addison!~addison@team.cloak: addison: used to reviewing very raw specs
+18-04-2019 10:38:54 < addison!~addison@team.cloak: matthias: reached out in tpac
+18-04-2019 10:39:24 < addison!~addison@team.cloak: ... something fell between lines
+18-04-2019 10:39:34 < addison!~addison@team.cloak: ... good if some kind of early registration mechanism
+18-04-2019 10:40:15 < kaz!ashimura@team.cloak: s/had important/first of all, very sorry as the team contact that we couldn't bring this earlier. there were important/
+18-04-2019 10:40:35 < * addison!~addison@team.cloak rrsagent, draft minutes
+18-04-2019 10:40:35 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html addison
+18-04-2019 10:40:53 < addison!~addison@team.cloak: richard: would having a champion in your WG be helpful?
+18-04-2019 10:41:09 < addison!~addison@team.cloak: agenda?
+18-04-2019 10:41:09 < * Zakim!zakim@team.cloak sees 10 items remaining on the agenda:
+18-04-2019 10:41:10 < * Zakim!zakim@team.cloak 1. Agenda and Minutes [from agendabot]
+18-04-2019 10:41:10 < * Zakim!zakim@team.cloak 2. Action Items [from agendabot]
+18-04-2019 10:41:10 < * Zakim!zakim@team.cloak 3. Info Share [from agendabot]
+18-04-2019 10:41:10 < * Zakim!zakim@team.cloak 4. RADAR and Active Work Review [from agendabot]
+18-04-2019 10:41:10 < * Zakim!zakim@team.cloak 5. I18N Issue Resolution [from agendabot]
+18-04-2019 10:41:10 < * Zakim!zakim@team.cloak 6. Retiring Charmod-Resid [from agendabot]
+18-04-2019 10:41:11 < * Zakim!zakim@team.cloak 7. Non-Semitic text RTL document review [from agendabot]
+18-04-2019 10:41:11 < * Zakim!zakim@team.cloak 8. String-Meta [from agendabot]
+18-04-2019 10:41:11 < * Zakim!zakim@team.cloak 9. AOB? [from agendabot]
+18-04-2019 10:41:11 < * Zakim!zakim@team.cloak 10. WoT reviews [from addison]
+18-04-2019 10:42:11 < kaz!ashimura@team.cloak: kaz: as part of the w3c project team as well as the team contact for wot, yes, i agree
+18-04-2019 10:44:57 < * kaz!ashimura@team.cloak tx you very much, all!!!
+18-04-2019 10:45:05 < addison!~addison@team.cloak: zakim, take up agendum 2
+18-04-2019 10:45:05 < Zakim!zakim@team.cloak: agendum 2. "Action Items" taken up [from agendabot]
+18-04-2019 10:45:09 -!- kaz!ashimura@team.cloak has left #i18n [Leaving]
+18-04-2019 10:45:15 < addison!~addison@team.cloak: https://www.w3.org/International/track/actions/open
+18-04-2019 10:45:51 < addison!~addison@team.cloak: action-764?
+18-04-2019 10:45:51 < * trackbot!trackbot@team.cloak is looking up action-764.
+18-04-2019 10:45:52 < trackbot!trackbot@team.cloak: action-764 -- Addison Phillips to Check if unicode describes backwards deletion clearly and develop doc if not -- due 2018-10-30 -- OPEN
+18-04-2019 10:45:52 < trackbot!trackbot@team.cloak: https://www.w3.org/International/track/actions/764
+18-04-2019 10:46:03 < addison!~addison@team.cloak: addison: PR?
+18-04-2019 10:47:33 < addison!~addison@team.cloak: action-774?
+18-04-2019 10:47:33 < * trackbot!trackbot@team.cloak is looking up action-774.
+18-04-2019 10:47:33 < trackbot!trackbot@team.cloak: action-774 -- Richard Ishida to Publish first public working draft of string-meta -- due 2019-02-07 -- OPEN
+18-04-2019 10:47:33 < trackbot!trackbot@team.cloak: https://www.w3.org/International/track/actions/774
+18-04-2019 10:47:38 < addison!~addison@team.cloak: close action-774
+18-04-2019 10:47:38 < * trackbot!trackbot@team.cloak is closing action-774.
+18-04-2019 10:47:38 < trackbot!trackbot@team.cloak: Closed action-774.
+18-04-2019 10:47:43 -!- mkovatsc_!~mkovatsc@team.cloak has quit ["Page closed"]
+18-04-2019 10:47:53 < addison!~addison@team.cloak: action-795?
+18-04-2019 10:47:53 < * trackbot!trackbot@team.cloak is looking up action-795.
+18-04-2019 10:47:53 < trackbot!trackbot@team.cloak: action-795 -- Addison Phillips to Send issue 521 to css -- due 2019-04-11 -- OPEN
+18-04-2019 10:47:53 < trackbot!trackbot@team.cloak: https://www.w3.org/International/track/actions/795
+18-04-2019 10:48:02 < addison!~addison@team.cloak: close action-795
+18-04-2019 10:48:02 < * trackbot!trackbot@team.cloak is closing action-795.
+18-04-2019 10:48:02 < trackbot!trackbot@team.cloak: Closed action-795.
+18-04-2019 10:48:19 < addison!~addison@team.cloak: action-797?
+18-04-2019 10:48:19 < * trackbot!trackbot@team.cloak is looking up action-797.
+18-04-2019 10:48:19 < trackbot!trackbot@team.cloak: action-797 -- Atsushi Shimono to Start writing weekly summary of new/tracked issues -- due 2019-04-18 -- OPEN
+18-04-2019 10:48:19 < trackbot!trackbot@team.cloak: https://www.w3.org/International/track/actions/797
+18-04-2019 10:49:00 < * addison!~addison@team.cloak rrsagent, draft minutes
+18-04-2019 10:49:00 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html addison
+18-04-2019 10:49:07 < addison!~addison@team.cloak: atsushi: including one line of description
+18-04-2019 10:49:24 < addison!~addison@team.cloak: richard: including 2 in chinese, one at bottom
+18-04-2019 10:49:49 < addison!~addison@team.cloak: atsushi: included some from lreqs
+18-04-2019 10:49:56 < addison!~addison@team.cloak: richard: only include if questions
+18-04-2019 10:51:14 < addison!~addison@team.cloak: action-798?
+18-04-2019 10:51:14 < * trackbot!trackbot@team.cloak is looking up action-798.
+18-04-2019 10:51:14 < trackbot!trackbot@team.cloak: action-798 -- Addison Phillips to Make new autocapitalization issue against html based on today's discussion -- due 2019-04-18 -- OPEN
+18-04-2019 10:51:14 < trackbot!trackbot@team.cloak: https://www.w3.org/International/track/actions/798
+18-04-2019 10:51:18 < addison!~addison@team.cloak: close action-798
+18-04-2019 10:51:18 < * trackbot!trackbot@team.cloak is closing action-798.
+18-04-2019 10:51:18 < trackbot!trackbot@team.cloak: Closed action-798.
+18-04-2019 10:51:25 < addison!~addison@team.cloak: agenda?
+18-04-2019 10:51:25 < * Zakim!zakim@team.cloak sees 10 items remaining on the agenda:
+18-04-2019 10:51:26 < * Zakim!zakim@team.cloak 1. Agenda and Minutes [from agendabot]
+18-04-2019 10:51:26 < * Zakim!zakim@team.cloak 2. Action Items [from agendabot]
+18-04-2019 10:51:26 < * Zakim!zakim@team.cloak 3. Info Share [from agendabot]
+18-04-2019 10:51:26 < * Zakim!zakim@team.cloak 4. RADAR and Active Work Review [from agendabot]
+18-04-2019 10:51:26 < * Zakim!zakim@team.cloak 5. I18N Issue Resolution [from agendabot]
+18-04-2019 10:51:26 < * Zakim!zakim@team.cloak 6. Retiring Charmod-Resid [from agendabot]
+18-04-2019 10:51:27 < * Zakim!zakim@team.cloak 7. Non-Semitic text RTL document review [from agendabot]
+18-04-2019 10:51:27 < * Zakim!zakim@team.cloak 8. String-Meta [from agendabot]
+18-04-2019 10:51:27 < * Zakim!zakim@team.cloak 9. AOB? [from agendabot]
+18-04-2019 10:51:27 < * Zakim!zakim@team.cloak 10. WoT reviews [from addison]
+18-04-2019 10:51:33 < addison!~addison@team.cloak: zakim, take up agendum 3
+18-04-2019 10:51:33 < Zakim!zakim@team.cloak: agendum 3. "Info Share" taken up [from agendabot]
+18-04-2019 10:51:58 < addison!~addison@team.cloak: regrets next week from addison
+18-04-2019 10:52:06 < * addison!~addison@team.cloak rrsagent, draft minutes
+18-04-2019 10:52:06 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html addison
+18-04-2019 10:52:25 < addison!~addison@team.cloak: richard: LTR/RTL doc being reworked
+18-04-2019 10:52:34 < addison!~addison@team.cloak: ... have a look at new version
+18-04-2019 10:52:44 < r12a!rishida@team.cloak: http://w3c.github.io/i18n-drafts/questions/qa-ltr-scripts-in-rtl.en.html
+18-04-2019 10:52:56 < * addison!~addison@team.cloak rrsagent, draft minutes
+18-04-2019 10:52:56 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html addison
+18-04-2019 10:53:33 < addison!~addison@team.cloak: zakim, take up agendum 6
+18-04-2019 10:53:33 < Zakim!zakim@team.cloak: agendum 6. "Retiring Charmod-Resid" taken up [from agendabot]
+18-04-2019 10:54:38 < r12a!rishida@team.cloak: https://www.w3.org/TR/2004/CR-charmod-resid-20041122/
+18-04-2019 10:55:33 < addison!~addison@team.cloak: proposed: retire charmod-resid; convert to WD and then convert to Note and retire it
+18-04-2019 10:55:56 < addison!~addison@team.cloak: jck: choice is either "please don't read this" or do lots of work
+18-04-2019 10:58:01 < addison!~addison@team.cloak: please vote on retiring charmod-resid
+18-04-2019 10:58:03 < r12a!rishida@team.cloak: +1
+18-04-2019 10:58:04 < addison!~addison@team.cloak: +1
+18-04-2019 10:58:08 < xfq!xfq@team.cloak: +1
+18-04-2019 10:58:10 < Jeff_!~Jeff@team.cloak: +1
+18-04-2019 10:58:11 < JcK!~JcK@team.cloak: +1
+18-04-2019 10:58:16 < atsushi!himorin@team.cloak: unicode byte列のデータだけでは＋１
+18-04-2019 10:58:27 < atsushi!himorin@team.cloak: s/unicode byte列のデータだけでは＋１/+1/
+18-04-2019 10:58:43 > Bert: +1
+18-04-2019 10:59:16 < * JcK!~JcK@team.cloak would love to vote "euthanize" rather tnan "retire"
+18-04-2019 10:59:20 < addison!~addison@team.cloak: RESOLVED: retire charmod-resid (withdraw from CR, convert to WD, and publish as retired Note)
+18-04-2019 10:59:43 < addison!~addison@team.cloak: agenda?
+18-04-2019 10:59:43 < * Zakim!zakim@team.cloak sees 10 items remaining on the agenda:
+18-04-2019 10:59:44 < * Zakim!zakim@team.cloak 1. Agenda and Minutes [from agendabot]
+18-04-2019 10:59:44 < * Zakim!zakim@team.cloak 2. Action Items [from agendabot]
+18-04-2019 10:59:44 < * Zakim!zakim@team.cloak 3. Info Share [from agendabot]
+18-04-2019 10:59:44 < * Zakim!zakim@team.cloak 4. RADAR and Active Work Review [from agendabot]
+18-04-2019 10:59:44 < * Zakim!zakim@team.cloak 5. I18N Issue Resolution [from agendabot]
+18-04-2019 10:59:44 < * Zakim!zakim@team.cloak 6. Retiring Charmod-Resid [from agendabot]
+18-04-2019 10:59:45 < * Zakim!zakim@team.cloak 7. Non-Semitic text RTL document review [from agendabot]
+18-04-2019 10:59:45 < * Zakim!zakim@team.cloak 8. String-Meta [from agendabot]
+18-04-2019 10:59:45 < * Zakim!zakim@team.cloak 9. AOB? [from agendabot]
+18-04-2019 10:59:45 < * Zakim!zakim@team.cloak 10. WoT reviews [from addison]
+18-04-2019 10:59:53 < addison!~addison@team.cloak: zakim, take up agendum 9
+18-04-2019 10:59:53 < Zakim!zakim@team.cloak: agendum 9. "AOB?" taken up [from agendabot]
+18-04-2019 11:05:34 < addison!~addison@team.cloak: next week's telecon canceled
+18-04-2019 11:07:00 < * addison!~addison@team.cloak rrsagent, draft minutes
+18-04-2019 11:07:00 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html addison
+18-04-2019 11:09:08 -!- xfq!xfq@team.cloak has quit ["Leaving"]
+18-04-2019 11:17:39 -!- atsushi!himorin@team.cloak has quit ["See you..."]
+18-04-2019 11:22:41 -!- addison!~addison@team.cloak has quit ["Page closed"]
+18-04-2019 11:53:09 < r12a!rishida@team.cloak: s/<r12a> uhoh//
+18-04-2019 11:53:17 < r12a!rishida@team.cloak: rrsagent, draft minutes
+18-04-2019 11:53:17 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html r12a
+18-04-2019 11:54:36 < r12a!rishida@team.cloak: s/<r12a> Requester provides target URL to initiate T2T//
+18-04-2019 11:54:38 < r12a!rishida@team.cloak: rrsagent, draft minutes
+18-04-2019 11:54:38 < RRSAgent!rrsagent@team.cloak: I have made the request to generate https://www.w3.org/2019/04/18-i18n-minutes.html r12a
+18-04-2019 11:54:56 -!- myles!~textual@team.cloak has joined #i18n
+18-04-2019 12:13:29 -!- Jeff_!~Jeff@team.cloak has quit [Ping timeout: 180 seconds]
+EOF
+
+# Expected result
+
+cat >$TMP4 <<EOF
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>Internationalization Working Group Teleconference &ndash; 18 April 2019</title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home_white_transp.png" srcset="https://www.w3.org/Icons/w3c_home_white_transp.svg" alt=W3C border=0 height=34 width=68></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+Internationalization Working Group Teleconference</h1>
+<h2>18 April 2019</h2>
+
+<nav id=links>
+<a href="https://lists.w3.org/Archives/Member/member-i18n-core/2019Apr/0012.html"><img alt="Agenda." title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="https://www.w3.org/2019/04/18-i18n-irc"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>addison, atsushi, JcK, Jeff_, kaz, Matthias, r12a, Sebastian, xfq</dd>
+<dt>Regrets</dt><dd></dd>
+<dt>Chair</dt><dd>Addison Phillips</dd>
+<dt>Scribe</dt><dd>addison</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting minutes</a>
+<ol>
+<li><a href="#x01">WoT reviews</a></li>
+<li><a href="#x02">Action Items</a></li>
+<li><a href="#x03">Info Share</a></li>
+<li><a href="#x04">Retiring Charmod-Resid</a></li>
+<li><a href="#x06">AOB?</a></li>
+</ol>
+</li>
+<li><a href="#ResolutionSummary">Summary of resolutions</a></li>
+</ul>
+</nav>
+</div>
+
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class=summary>trackbot, prepare teleconference</p>
+</section>
+
+<section>
+<h3 id=x01>WoT reviews</h3>
+<p class=summary><a href="https://github.com/w3c/i18n-activity/projects/1">https://&zwnj;github.com/&zwnj;w3c/&zwnj;i18n-activity/&zwnj;projects/&zwnj;1</a></p>
+<p class=summary>(addison introduces)</p>
+<p class=irc><cite>&lt;kaz&gt;</cite> <a href="https://lists.w3.org/Archives/Public/www-international/2019AprJun/0026.html">kaz's write up</a></p>
+<p class="phone s01"><cite>kaz:</cite> our main purpose is first doc, WoT Thing Description<br>
+… other is kind of basic concepts<br>
+… our schedule, we'd like to bring to CR at end of the month<br>
+… already has some i18n features<br>
+… like to know if this is okay</p>
+<p class="phone s02"><cite>richard:</cite> doc I'm looking at is not in a w3c repo<br>
+… would prefer if it were in w3c repo before we review</p>
+<p class="phone s01"><cite>kaz:</cite> updating the draft daily, but generated fixed version using branch<br>
+… if needed, I can copy the fixed HTML to the www.w3.org server.</p>
+<p class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/</a></p>
+<p class="phone s03"><cite>mathias:</cite> our doc is on github</p>
+<p class="phone s04"><cite>sebastian:</cite> would having  a meeting to guide you helpful?</p>
+<p class="phone s02"><cite>richard:</cite> if you can review our checklist, that will help you guide us<br>
+… think it is a good idea for you to look through and identify things important for us to review<br>
+… we will likely look other places too, but it will still help<br>
+… <a href="https://www.w3.org/International/techniques/shortchecklist.html">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;techniques/&zwnj;shortchecklist.html</a><br>
+… points to more detailed checklist also</p>
+<p class=irc><cite>&lt;kaz&gt;</cite> <a href="https://www.w3.org/International/techniques/developing-specs">detailed checklist</a></p>
+<p class="phone s02"><cite>richard:</cite> if you go through and see if there are things to pay attention to while doing review<br>
+… we have to understand your document in just a few days</p>
+<p class="phone s05"><cite>addison:</cite> anything you want to call attention to?</p>
+<p class="phone s03"><cite>mathias:</cite> we will send you links to paths of doc<br>
+… and double check guidelines</p>
+<p class=irc><cite>&lt;kaz&gt;</cite> s/matthias:/sebastian:/</p>
+<p class="phone s02"><cite>richard:</cite> can you give a brief overview of docs?</p>
+<p class="phone s04"><cite>sebastian:</cite> easiest way to explain is<br>
+… everyone knows html<br>
+… thing description is for devices<br>
+… index html for things<br>
+… describe capabilities of things<br>
+… properties, action events<br>
+… data expected<br>
+… protocol, such as http or some other iot protocol</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> uhoh</p>
+<p class="phone s04"><cite>sebastian:</cite> RDF based</p>
+<p class="phone s06"><cite>Explainer:</cite> <a href="https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/&zwnj;blob/&zwnj;TD-TAG-review/&zwnj;explainer/&zwnj;Explainer.md</a></p>
+<p class="phone s04"><cite>Sebastian:</cite> what is the action about, title and description terms</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/string-meta/">https://&zwnj;w3c.github.io/&zwnj;string-meta/</a></p>
+<p class="phone s04"><cite>Sebastian:</cite> multiple language support</p>
+<p class="phone s07"><cite>r12a:</cite> is there some kind of markup involved? how is information stored</p>
+<p class="phone s04"><cite>sebastian:</cite> thing description can be stored in different ways</p>
+<p class="phone s08"><cite>matthias:</cite> json based interchange format<br>
+… aligned with JSON-LD<br>
+… so JSON 1.1 could be used<br>
+… model for json structure so can be machine read<br>
+… have a few human-readable fields</p>
+<p class="phone s02"><cite>richard:</cite> put a link to string-meta, should read carefully<br>
+… anticipating comments, since we have identified problems with RDF and LD<br>
+… involving base direction</p>
+<p class="phone s08"><cite>Matthias:</cite> not a format for display</p>
+<p class="phone s01"><cite>kaz:</cite> have discussion with ld group, including Ivan Herman<br>
+… model describes device properties and how to control using actions and events<br>
+… concentrating on how to deal with devices properties</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> Requester provides target URL to initiate T2T</p>
+<p class="phone s01"><cite>kaz:</cite> will look into detailed checklist</p>
+<p class="phone s05"><cite>addison:</cite> only one telecon before end of month</p>
+<p class="phone s07"><cite>r12a:</cite> would like to understand why you didn't come forward sooner<br>
+… were you unaware?</p>
+<p class="phone s08"><cite>matthias:</cite> didn't understand process</p>
+<p class="phone s02"><cite>richard:</cite> need to find way to understand process earlier on<br>
+… also maybe having an i18n champion in WG</p>
+<p class="phone s01"><cite>kaz:</cite> first of all, very sorry as the team contact that we couldn't bring this earlier. there were important technical problems<br>
+… took longer than we expect</p>
+<p class="phone s05"><cite>addison:</cite> used to reviewing very raw specs</p>
+<p class="phone s08"><cite>matthias:</cite> reached out in tpac<br>
+… something fell between lines<br>
+… good if some kind of early registration mechanism</p>
+<p class="phone s02"><cite>richard:</cite> would having a champion in your WG be helpful?</p>
+<p class=irc><cite>&lt;kaz&gt;</cite> kaz: as part of the w3c project team as well as the team contact for wot, yes, i agree</p>
+</section>
+
+<section>
+<h3 id=x02>Action Items</h3>
+<p class=summary><a href="https://www.w3.org/International/track/actions/open">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;track/&zwnj;actions/&zwnj;open</a></p>
+<p class=summary>action-764?</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/764">action-764</a>:</strong> Addison Phillips to Check if unicode describes backwards deletion clearly and develop doc if not -- due 2018-10-30 -- OPEN</p>
+<p class="phone s05"><cite>addison:</cite> PR?</p>
+<p class=summary>action-774?</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/774">action-774</a>:</strong> Richard Ishida to Publish first public working draft of string-meta -- due 2019-02-07 -- OPEN</p>
+<p class=summary>close action-774</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> Closed action-774.</p>
+<p class=summary>action-795?</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/795">action-795</a>:</strong> Addison Phillips to Send issue 521 to css -- due 2019-04-11 -- OPEN</p>
+<p class=summary>close action-795</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> Closed action-795.</p>
+<p class=summary>action-797?</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/797">action-797</a>:</strong> Atsushi Shimono to Start writing weekly summary of new/tracked issues -- due 2019-04-18 -- OPEN</p>
+<p class="phone s09"><cite>atsushi:</cite> including one line of description</p>
+<p class="phone s02"><cite>richard:</cite> including 2 in chinese, one at bottom</p>
+<p class="phone s09"><cite>atsushi:</cite> included some from lreqs</p>
+<p class="phone s02"><cite>richard:</cite> only include if questions</p>
+<p class=summary>action-798?</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/798">action-798</a>:</strong> Addison Phillips to Make new autocapitalization issue against html based on today's discussion -- due 2019-04-18 -- OPEN</p>
+<p class=summary>close action-798</p>
+<p class=bot><cite>&lt;trackbot&gt;</cite> Closed action-798.</p>
+</section>
+
+<section>
+<h3 id=x03>Info Share</h3>
+<p class=summary>regrets next week from addison</p>
+<p class="phone s02"><cite>richard:</cite> LTR/RTL doc being reworked<br>
+… have a look at new version</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> <a href="http://w3c.github.io/i18n-drafts/questions/qa-ltr-scripts-in-rtl.en.html">http://&zwnj;w3c.github.io/&zwnj;i18n-drafts/&zwnj;questions/&zwnj;qa-ltr-scripts-in-rtl.en.html</a></p>
+</section>
+
+<section>
+<h3 id=x04>Retiring Charmod-Resid</h3>
+<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://www.w3.org/TR/2004/CR-charmod-resid-20041122/">https://&zwnj;www.w3.org/&zwnj;TR/&zwnj;2004/&zwnj;CR-charmod-resid-20041122/</a></p>
+<p class="phone s10"><cite>proposed:</cite> retire charmod-resid; convert to WD and then convert to Note and retire it</p>
+<p class="phone s11"><cite>jck:</cite> choice is either &quot;please don't read this&quot; or do lots of work</p>
+<p class=summary>please vote on retiring charmod-resid</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> +1</p>
+<p class=summary>+1</p>
+<p class=irc><cite>&lt;xfq&gt;</cite> +1</p>
+<p class=irc><cite>&lt;Jeff_&gt;</cite> +1</p>
+<p class=irc><cite>&lt;JcK&gt;</cite> +1</p>
+<p class=irc><cite>&lt;atsushi&gt;</cite> +1</p>
+<p class=irc><cite>&lt;Bert&gt;</cite> +1</p>
+<p class=resolution id=x05><strong>Resolved:</strong> retire charmod-resid (withdraw from CR, convert to WD, and publish as retired Note)</p>
+</section>
+
+<section>
+<h3 id=x06>AOB?</h3>
+<p class=summary>next week's telecon canceled</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> s/&lt;r12a&gt; uhoh//</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> s/&lt;r12a&gt; Requester provides target URL to initiate T2T//</p>
+</section>
+</div>
+
+<div id=ResolutionSummary>
+<h2>Summary of resolutions</h2>
+<ol>
+<li><a href="#x05">retire charmod-resid (withdraw from CR, convert to WD, and publish as retired Note)</a></li>
+</ol>
+</div>
+
+
+<address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+>scribe.perl</a> version Mon Apr 15 13:43:26 2019 UTC, a reimplementation
+of David Booth's <a
+href="https://dev.w3.org/2002/scribe/scribedoc.htm"
+>scribe.perl</a>. See <a
+href="https://github.com/w3c/scribe2/commits/master/scribe.perl">history.</a></address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Succeeded: s/first doc/first doc, WoT Thing Description/</p>
+<p class=warning>Succeeded: s/better to publish as updated draft/if needed, I can copy the fixed HTML to the www.w3.org server./</p>
+<p class=warning>Succeeded: s/... would having/sebastian: would having /</p>
+<p class=warning>Succeeded: i|if you go through|-&gt; https://www.w3.org/International/techniques/developing-specs detailed checklist|</p>
+<p class=warning>Failed: s/matthias:/sebastian:/</p>
+<p class=warning>Succeeded: s/kaz:/sebastian:/</p>
+<p class=warning>Succeeded: s/iherman@/Ivan Herman/</p>
+<p class=warning>Succeeded: s/dea with/deal with/</p>
+<p class=warning>Succeeded: s/initate/initiate/</p>
+<p class=warning>Succeeded: s/had important/first of all, very sorry as the team contact that we couldn't bring this earlier. there were important/</p>
+<p class=warning>Succeeded: s/unicode byte列のデータだけでは＋１/+1/</p>
+<p class=warning>Failed: s/&lt;r12a&gt; uhoh//</p>
+<p class=warning>Failed: s/&lt;r12a&gt; Requester provides target URL to initiate T2T//</p>
+<p class=warning>Maybe present: Explainer, mathias, proposed, richard</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+# Remove version number
+
+fgrep -v 'scribe.perl</a> version' $TMP2 >$TMP3
+fgrep -v 'scribe.perl</a> version' $TMP4 >$TMP5
+
+# Compare
+
+diff -u $TMP5 $TMP3
