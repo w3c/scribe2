@@ -119,8 +119,8 @@ my $logo;			# undef = W3C logo; string = HTML fragment
 my $stylesheet;			# URL of style sheet, undef = use defaults
 
 
-# Each parser takes a reference to an array of text lines (newlines
-# included) and a reference to an array of records. It returns 0
+# Each parser takes a reference to an array of text lines (without
+# newlines) and a reference to an array of records. It returns 0
 # (failed to parse) or 1 (success) and it appends successfully parsed
 # lines to the array of records, with {type} set to 'i' and {speaker}
 # and {text} set to the text and the nick of the person who typed that
@@ -344,7 +344,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $versiondate = '$Date: Fri Mar 29 14:57:07 2019 UTC $'
+my $versiondate = '$Date: Tue Apr 23 21:09:34 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -367,13 +367,13 @@ my $speakerid = 's00';		# Generates unique ID for each speaker
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
-my $agenda_icon = '<img alt="Agenda" title="Agenda" ' .
+my $agenda_icon = '<img alt="Agenda." title="Agenda" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
-my $irclog_icon = '<img alt="IRC log" title="IRC log" ' .
+my $irclog_icon = '<img alt="IRC log." title="IRC log" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/text-plain.png">';
-my $previous_icon = '<img alt="Previous meeting" title="Previous meeting" ' .
+my $previous_icon = '<img alt="Previous meeting." title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
-my $next_icon = '<img alt="Next meeting" title="Next meeting" ' .
+my $next_icon = '<img alt="Next meeting." title="Next meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-next.png">';
 my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/I' .
   'cons/w3c_home_white_transp.png" srcset="https://www.w3.org/Icons/w3c_hom' .
@@ -413,10 +413,10 @@ GetOptions(%options) or pod2usage(2);
 
 # Step 1: Read all lines into a temporary array and parse them into
 # records, trying each parser in turn until one succeeds.
-# Remove any CR, in case the file was saved under Windows.
+# Remove carriage returns and newlines from each line first.
 #
 do {
-  my @input = map s/\r$//r, <>;
+  my @input = map tr/\r\n//dr, <>;
   do {@records = (); last if &$_(\@input, \@records);} foreach (@parsers);
   push(@diagnostics,'Input has an unknown format (or is empty).') if !@records;
 };
@@ -1016,11 +1016,11 @@ $style
 $logo<h1>$draft$meeting</h1>
 <h2>$date</h2>
 
-<div id=links>
-$prev_meeting$agenda$log$next_meeting</div>
+<nav id=links>
+$prev_meeting$agenda$log$next_meeting</nav>
 </header>
 
-<nav>
+<div id=prelims>
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
@@ -1031,7 +1031,7 @@ $prev_meeting$agenda$log$next_meeting</div>
 </dl>
 </div>
 
-<div id=toc>
+<nav id=toc>
 <h2>Contents</h2>
 <ul>
 <li><a href=\"#meeting\">Meeting minutes</a>
@@ -1039,8 +1039,8 @@ $prev_meeting$agenda$log$next_meeting</div>
 $topics</ol>
 </li>
 $actiontoc$resolutiontoc$issuetoc</ul>
-</div>
 </nav>
+</div>
 
 <div id=meeting class=meeting>
 <h2>Meeting minutes</h2>
