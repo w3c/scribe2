@@ -344,7 +344,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $versiondate = '$Date: Tue Apr 23 21:09:34 2019 UTC $'
+my $versiondate = '$Date: Tue Apr 23 21:15:53 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
