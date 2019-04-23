@@ -53,7 +53,7 @@
 
 # Conversion proceeds in four steps:
 #
-# 1) Various parsers are tried to normalize the lines of the input
+# 1) Various parsers are tried to convert the lines of the input
 # into an array of records (see below for the structure of the
 # records).
 #
@@ -344,7 +344,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $versiondate = '$Date: Tue Apr 23 21:15:53 2019 UTC $'
+my $versiondate = '$Date: Tue Apr 23 22:06:29 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
