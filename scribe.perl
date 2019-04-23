@@ -119,8 +119,8 @@ my $logo;			# undef = W3C logo; string = HTML fragment
 my $stylesheet;			# URL of style sheet, undef = use defaults
 
 
-# Each parser takes a reference to an array of text lines (newlines
-# included) and a reference to an array of records. It returns 0
+# Each parser takes a reference to an array of text lines (without
+# newlines) and a reference to an array of records. It returns 0
 # (failed to parse) or 1 (success) and it appends successfully parsed
 # lines to the array of records, with {type} set to 'i' and {speaker}
 # and {text} set to the text and the nick of the person who typed that
@@ -344,7 +344,7 @@ sub is_cur_scribe($$)
 
 # Main body
 
-my $versiondate = '$Date: Mon Apr 15 13:11:59 2019 UTC $'
+my $versiondate = '$Date: Mon Apr 15 13:43:26 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -413,10 +413,10 @@ GetOptions(%options) or pod2usage(2);
 
 # Step 1: Read all lines into a temporary array and parse them into
 # records, trying each parser in turn until one succeeds.
-# Remove any CR, in case the file was saved under Windows.
+# Remove carriage returns and newlines from each line first.
 #
 do {
-  my @input = map s/\r$//r, <>;
+  my @input = map tr/\r\n//dr, <>;
   do {@records = (); last if &$_(\@input, \@records);} foreach (@parsers);
   push(@diagnostics,'Input has an unknown format (or is empty).') if !@records;
 };
