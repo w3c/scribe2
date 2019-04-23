@@ -43,11 +43,11 @@ cat >$TMP2 <<-EOF
 	(MEETING TITLE)</h1>
 	<h2></h2>
 	
-	<div id=links>
-	</div>
+	<nav id=links>
+	</nav>
 	</header>
 	
-	<nav>
+	<div id=prelims>
 	<div id=attendees>
 	<h2>Attendees</h2>
 	<dl class=intro>
@@ -58,7 +58,7 @@ cat >$TMP2 <<-EOF
 	</dl>
 	</div>
 	
-	<div id=toc>
+	<nav id=toc>
 	<h2>Contents</h2>
 	<ul>
 	<li><a href="#meeting">Meeting minutes</a>
@@ -69,8 +69,8 @@ cat >$TMP2 <<-EOF
 	</ol>
 	</li>
 	</ul>
-	</div>
 	</nav>
+	</div>
 	
 	<div id=meeting class=meeting>
 	<h2>Meeting minutes</h2>
@@ -107,6 +107,6 @@ cat >$TMP2 <<-EOF
 EOF
 
 perl scribe.perl <$TMP1 >$TMP3 || exit 1
-sed -i '' -e '/ version /d' $TMP2
-sed -i '' -e '/ version /d' $TMP3
+sed -i -e '/scribe\.perl.* version /d' $TMP2
+sed -i -e '/scribe\.perl.* version /d' $TMP3
 diff -u $TMP2 $TMP3
