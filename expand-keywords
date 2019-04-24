@@ -2,7 +2,7 @@
 #
 # Replace keywords $Date$, $Revision$, $Author$ and $Log$ similar to
 # how RCS and CVS do it.
-
+#
 # However, the revision number is a single number, the date is in
 # ctime(3) format and the author is the real name, not the login name.
 #
