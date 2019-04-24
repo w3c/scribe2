@@ -20,7 +20,7 @@
 use strict;
 use warnings;
 
-die "Usage: $0 git-file-name\n" if scalar @ARGV != 1;
+die "Usage: $0 git-file-name < file\n" if scalar @ARGV != 1;
 
 my $file = shift;
 
