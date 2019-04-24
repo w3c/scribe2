@@ -3,6 +3,9 @@
 # Replace keywords $Date$, $Revision$, $Author$ and $Log$ similar to
 # how RCS and CVS do it.
 #
+# The program reads from stdin. The argument only serves to give the
+# name of the file to get git info about.
+#
 # The expansions are not exactly the same as in RCS: The revision
 # number is a single number, the date is in ctime(3) format and the
 # author is the real name, not the login name.
@@ -17,41 +20,43 @@
 use strict;
 use warnings;
 
-die "Usage: $0 file\n" if scalar @ARGV != 1;
+die "Usage: $0 git-file-name\n" if scalar @ARGV != 1;
+
+my $file = shift;
 
 local $/;
 while (<>) {
 
-  # Get the number of times $ARGV has been committed in the current branch.
-  my $commit_count = `git rev-list --count HEAD -- "$ARGV"`
-      or die "$ARGV: Failed to run \"git rev-list\"\n";
+  # Get the number of times $file has been committed in the current branch.
+  my $commit_count = `git rev-list --count HEAD -- "$file"`
+      or die "$file: Failed to run \"git rev-list\"\n";
   $commit_count =~ s/\n//;
 
   # Get the name of the current branch.
   my $branch = `git rev-parse --abbrev-ref HEAD`
-      or die "$ARGV: Failed to run \"git rev-parse\"\n";
+      or die "$file: Failed to run \"git rev-parse\"\n";
   $branch =~ s/\n//;
 
   # Construct the name of the revision from the commit count and the branch.
   my $revision = ($branch eq 'master' ? '' : $branch . '-') . $commit_count;
 
   # Get the name of the last author.
-  my $author = `git log -n 1 --pretty="format:%an" -- "$ARGV"`
-      or die "$ARGV: Failed to run \"git log\"\n";
+  my $author = `git log -n 1 --pretty="format:%an" -- "$file"`
+      or die "$file: Failed to run \"git log\"\n";
 
   # Get the time of the last commit.
-  my $date = `git log -n 1 --pretty="format:%at" -- "$ARGV"`
-      or die "$ARGV: Failed to run \"git log\"\n";
+  my $date = `git log -n 1 --pretty="format:%at" -- "$file"`
+      or die "$file: Failed to run \"git log\"\n";
   $date = gmtime($date) . ' UTC';
 
   # Get the log message of the last commit.
-  my $log = `git log -n 1 --pretty="format:%s" -- "$ARGV"`
-      or die "$ARGV: Failed to run \"git log\"\n";
+  my $log = `git log -n 1 --pretty="format:%s" -- "$file"`
+      or die "$file: Failed to run \"git log\"\n";
 
   # Expand keywords.
   s/\$Author(?::.*?)?\$/\$Author: $author \$/g;
   s/\$Date(?::.*?)?\$/\$Date: $date \$/g;
-  s/^(.*)\$Log(?::.*?)?\$([ \t]*\n)(?:\g1Revision .*\n)?/$1\$Log: $ARGV \$$2$1Revision $revision  $date  $author\n$1$log\n/mg;
+  s/^(.*)\$Log(?::.*?)?\$([ \t]*\n)(?:\g1Revision .*\n)?/$1\$Log: $file \$$2$1Revision $revision  $date  $author\n$1$log\n/mg;
   s/\$Revision(?::.*?)?\$/\$Revision: $revision \$/g;
 
   print;
