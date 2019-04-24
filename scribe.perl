@@ -343,7 +343,9 @@ sub is_cur_scribe($$)
   
 
 # Main body
-
+my $revision = '$Revision$'
+  =~ s/\$Revision: //r
+  =~ s/ \$//r;
 my $versiondate = '$Date: Tue Apr 23 22:06:29 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
@@ -1050,7 +1052,7 @@ $actions$resolutions$issues
 
 <address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
 href=\"https://w3c.github.io/scribe2/scribedoc.html\"
->scribe.perl</a> version $versiondate, a reimplementation
+>scribe.perl</a> version $revision ($versiondate), a reimplementation
 of David Booth's <a
 href=\"https://dev.w3.org/2002/scribe/scribedoc.htm\"
 >scribe.perl</a>. See <a
