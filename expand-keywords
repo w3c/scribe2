@@ -31,7 +31,7 @@ while (<>) {
   $branch =~ s/\n//;
 
   # Construct the name of the revision from the commit count and the branch.
-  my $revision = $commit_count . ($branch eq 'master' ? '' : '-' . $branch);
+  my $revision = ($branch eq 'master' ? '' : $branch . '-') . $commit_count;
 
   # Get the name of the last author.
   my $author = `git log -n 1 --pretty="format:%an" -- "$ARGV"`
