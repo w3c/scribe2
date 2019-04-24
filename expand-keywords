@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Replace keywords $Date$, $Revision$, $Author$ and $Log$ similar to
+# Replace keywords $Date, $Revision, $Author and $Log similar to
 # how RCS and CVS do it.
 #
 # The program reads from stdin. The argument only serves to give the
@@ -12,7 +12,7 @@
 #
 # TODO: Optimize by calling git less often.
 #
-# $Revision$ $Date$
+# $Revision: 6 $ $Date: Wed Apr 24 13:54:19 2019 UTC $
 #
 # Author: Bert Bos <bert@w3.org>
 # Created: 24 April 2019
@@ -54,10 +54,10 @@ while (<>) {
       or die "$file: Failed to run \"git log\"\n";
 
   # Expand keywords.
-  s/\$Author(?::.*?)?\$/\$Author: $author \$/g;
-  s/\$Date(?::.*?)?\$/\$Date: $date \$/g;
-  s/^(.*)\$Log(?::.*?)?\$([ \t]*\n)(?:\g1Revision .*\n)?/$1\$Log: $file \$$2$1Revision $revision  $date  $author\n$1$log\n/mg;
-  s/\$Revision(?::.*?)?\$/\$Revision: $revision \$/g;
+  s/\$Author(?::.*?)?\$/\$Author\: $author \$/g;
+  s/\$Date(?::.*?)?\$/\$Date\: $date \$/g;
+  s/^(.*)\$Log(?::.*?)?\$([ \t]*\n)(?:\g1Revision .*\n)?/$1\$Log\: $file \$$2$1Revision $revision  $date  $author\n$1$log\n/mg;
+  s/\$Revision(?::.*?)?\$/\$Revision\: $revision \$/g;
 
   print;
 }
