@@ -1,2 +1,1 @@
-scribe.perl filter=dater
-scribedoc.html filter=dater
+* filter=dater
