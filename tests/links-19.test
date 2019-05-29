@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if inverted Xueyuan links without anchor text are correctly ignored.
+
+echo "<foo> https://example.org/test ->     " | \
+  perl scribe.perl --urldisplay=full | \
+  grep -e '<a href="https://example.org/test">https://example.org/test</a> -&gt;'

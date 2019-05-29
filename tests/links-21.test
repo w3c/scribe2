@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if Xueyuan links with quotes are correctly recognized.
+
+echo "<foo> The \"anchor text\" -> ftp://example.org/test   " | \
+  perl scribe.perl --urldisplay=full | \
+  grep "<a href=\"ftp://example.org/test\">The &quot;anchor text&quot;</a>"
