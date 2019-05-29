@@ -36,6 +36,10 @@
 # scribeoptions:-allowspace apply only until they are overridden by
 # another?
 #
+# TODO: An option to replace ASCII smileys by characters: :-) = ☺, ;-)
+# = 😉, :-( = ☹, :-/ = 😕, ,-) = 😜 (or is that the same option as
+# --emphasis?)
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -302,6 +306,7 @@ sub break_url($)
 sub esc($;$$$)
 {
   my ($s, $emphasis, $make_links, $break_urls) = @_;
+  my ($replacement, $pre, $url, $post, $pre1, $post1);
 
   $s =~ s/&/&amp;/g;
   $s =~ s/</&lt;/g;
@@ -314,13 +319,49 @@ sub esc($;$$$)
     # 1b) A single-quoted Ralph link: ... -> URL 'ANCHOR' ...
     # 1a) An unquoted Ralph link: ... -> URL ANCHOR
     # 2) A Xueyuan link: ANCHOR -> URL
-    # 3) An Ivan link: -> ANCHOR URL
-    # 4) A bare URL: ... URL ...
-    $s =~ s/-&gt; *($urlpat) +(&quot;|')(.*?)\g2/<a href="$1">$3<\/a>/gi or
-	$s =~ s/-&gt; *($urlpat) +([^ ].*?) *$/<a href="$1">$2<\/a>/i or
-	$s =~ s/^ *([^ ].*?) *-&gt; *($urlpat) *$/<a href="$2">$1<\/a>/i or
-	$s =~ s/-&gt; *([^ ].*?) +($urlpat)/<a href="$2">$1<\/a>/gi or
-	$s =~ s/\b($urlpat)/"<a href=\"$1\">".break_url($1)."<\/a>"/gie;
+    # 3) An Ivan link: ... -> ANCHOR URL ...
+    # 4a) A double-quoted inverted Xueyuan link: ... URL -> "ANCHOR" ...
+    # 4b) A single-quoted inverted Xueyuan link: ... URL -> 'ANCHOR' ...
+    # 4c) An unquoted inverted Xueyuan link: ... URL -> ANCHOR
+    # 5) A bare URL: ... URL ...
+
+    # Loop until we found all URLs. Look for "->" before or after the URL.
+    $replacement = '';
+    while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/) {
+      if ($pre =~ /-&gt; *([^ ].*?) *$/) {	# Ivan link
+    	$replacement .= "$`<a href=\"$url\">$1</a>";
+    	$s = $post;
+      } elsif (($pre1) = $pre =~ /^(.*?)-&gt; *$/) { # Maybe Ralph or Xueyuan
+    	if ($post =~ /^ *(&quot;|\')(.*?)\g1/) { # Quoted Ralph link
+    	  $replacement .= "$pre1<a href=\"$url\">$2</a>";
+    	  $s = $';
+    	} elsif ($post =~ /^ *([^ ].*?) *$/) {	# Unquoted Ralph link
+    	  $replacement .= "$pre1<a href=\"$url\">$1</a>";
+    	  $s = '';
+    	} elsif ($pre1 =~ /^ *([^ ].*?) *$/) {	# Xueyuan link
+    	  $replacement .= "<a href=\"$url\">$1</a>";
+    	  $s = $post;
+    	} else {				# Missing anchor text
+    	  $replacement .= "$pre<a href=\"$url\">".break_url($url)."<\/a>";
+    	  $s = $post;
+    	}
+      } elsif (($post1) = $post =~ /^ *-&gt;(.*)$/) { # Maybe inverted Xueyuan
+	if ($post1 =~ /^ *(&quot;|\')(.*?)\g1/) { # Quoted inverted Xueyuan
+	  $replacement .= "$pre<a href=\"$url\">$2</a>";
+	  $s = $';
+	} elsif ($post1 =~ /^ *([^ ].*?) *$/) {	# Unquoted inverted Xueyuan link
+	  $replacement .= "$pre<a href=\"$url\">$1</a>";
+	  $s = '';
+	} else {				# Missing anchor text
+	  $replacement .= "$pre<a href=\"$url\">".break_url($url)."</a>$post";
+	  $s = '';
+	}
+      } else {					# Bare URL.
+    	$replacement .= "$pre<a href=\"$url\">".break_url($url)."</a>";
+    	$s = $post;
+      }
+    }
+    $s = $replacement . $s;
   } elsif ($break_urls) {	# Shorten or break URLs
     $s =~ s/($urlpat)/break_url($1)/gie;
   }
