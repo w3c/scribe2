@@ -387,7 +387,7 @@ sub is_cur_scribe($$)
 my $revision = '$Revision: 81 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed May 29 18:48:16 UTC 2019  $'
+my $versiondate = '$Date: Wed May 29 18:48:16 UTC 2019 $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
