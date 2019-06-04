@@ -16,7 +16,7 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<dt>Present</dt><dd></dd>
+<dt>Present</dt><dd>-</dd>
 EOF
 
 perl scribe.perl $TMP1 >$TMP2

@@ -44,8 +44,8 @@ cat >$TMP3 <<EOF
 <div id=attendees>
 <h2>Attendees</h2>
 <dl class=intro>
-<dt>Present</dt><dd></dd>
-<dt>Regrets</dt><dd></dd>
+<dt>Present</dt><dd>-</dd>
+<dt>Regrets</dt><dd>-</dd>
 <dt>Chair</dt><dd>-</dd>
 <dt>Scribe</dt><dd>F&amp;E &quot;OO&quot; Smith, foo</dd>
 </dl>

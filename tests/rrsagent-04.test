@@ -76,7 +76,7 @@ cat >$TMP2 <<EOF
 <h2>Attendees</h2>
 <dl class=intro>
 <dt>Present</dt><dd>Alicia, Charlotte, Eric, James, Laura, Norah, Sharron, Shawn</dd>
-<dt>Regrets</dt><dd></dd>
+<dt>Regrets</dt><dd>-</dd>
 <dt>Chair</dt><dd>-</dd>
 <dt>Scribe</dt><dd>Shawn</dd>
 </dl>
