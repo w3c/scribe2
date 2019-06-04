@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Test if "chair-" and "chairs- foo, bar" are recognized.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Something
+<foo> Chair:Bob, Abel,   Conny,Dodo
+<Abel> Chair-
+<bar> Chairs -: Conny, Bob
+<foo> Else
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+# Dodo should be chair:
+grep -E '<dt>Chair.*Dodo' $TMP2 || exit 1
+
+# Abel, Bob and Conny should not be there:
+grep -E '<dt>Chair.*Abel' $TMP2 && exit 1
+grep -E '<dt>Chair.*Bob' $TMP2 && exit 1
+grep -E '<dt>Chair.*Conny' $TMP2 && exit 1
+
+exit 0

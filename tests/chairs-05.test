@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Test if empty "chair:" is correctly ignored.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Something
+<foo> Chair: Bob
+<Abel> Chair:
+<foo> Else
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+# Bob should be chair:
+grep -E '<dt>Chair.*Bob' $TMP2 || exit 1
+
+cat $TMP2
+
+# There should be a warning about an ignored command:
+grep -E 'Ignored empty command &quot;Chair:&quot;' $TMP2 || exit 1
+
+exit 0
