@@ -381,13 +381,13 @@ sub is_cur_scribe($$)
 
   return $$curscribes_ref{fc($nick)} || $$curscribes_ref{'*'};
 }
-  
+
 
 # Main body
-my $revision = '$Revision: 81 $'
+my $revision = '$Revision: 85 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed May 29 18:48:16 UTC 2019 $'
+my $versiondate = '$Date: Tue Jun  4 19:05:14 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
