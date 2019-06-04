@@ -404,7 +404,7 @@ my $minutes_url;		# URL of the minutes according to RRSAgent
 my $logging_url;		# URL of the log according to RRSAgent
 my $id = 'x00';			# Generates unique IDs
 my $agenda = '';		# HTML-formatted link to an agenda
-my $chair = '-';		# HTML-escaped name of meeting chair
+my %chairs;			# List of meeting chairs
 my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my %speakers;			# Unique ID for each speaker
@@ -688,8 +688,25 @@ for (my $i = 0; $i < @records; $i++) {
     push(@diagnostics,"Found '$1 meeting:' not followed by a URL: '$2'.");
     # $records[$i]->{type} = 'o';	# Omit line from output
 
-  } elsif ($records[$i]->{text} =~ /^ *chairs? *: *(.*?) *$/i) {
-    $chair = esc($1);
+  } elsif ($records[$i]->{text} =~ /^ *chairs? *-:? *$/i) {
+    delete $chairs{fc $records[$i]->{speaker}}; # Remove speaker from chairs
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($records[$i]->{text} =~ /^ *chairs? *-:? *(.*?) *$/i) {
+    delete $chairs{fc $_} foreach (split(/ *, */, $1)); # Remove given chairs
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($records[$i]->{text} =~ /^ *chairs? *\+:? *$/i) {
+    my $s = $records[$i]->{speaker};
+    $chairs{fc $s} = $s;		# Add to collected chairs
+    $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif ($records[$i]->{text} =~ /^ *chairs? *: *$/i) {
+    push(@diagnostics, "Ignored empty command \"$records[$i]->{text}\"");
+
+  } elsif ($records[$i]->{text} =~ /^ *chairs? *(:|\+:?) *(.*?) *$/i) {
+    %chairs = () if $1 eq ':';		# Reset the list of chairs
+    $chairs{fc $_} = $_ foreach (split(/ *, */, $2)); # Add all to chairs list
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *date *: *(\d+ \w+ \d+)/i) {
@@ -910,9 +927,6 @@ if (!defined $date && defined $minutes_url &&
   push(@diagnostics, "Found no dated URLs. You may need to use 'Date:'.");
 }
 
-# If there were no explicit "scribe:" commands, use the scribenicks instead.
-# %scribes = %scribenicks if !%scribes;
-
 # Add a list of speakers that do not appear in %present, if any.
 my @also = grep !exists($present{fc $_}),
     fc_uniq(map $_->{speaker}, grep $_->{type} eq 's', @records);
@@ -993,9 +1007,10 @@ $logo = '' if !defined $logo && ($styleset eq 'fancy');
 $logo = "<p>$w3clogo</p>\n\n" if !defined $logo;
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
-my $present = esc(join(", ", map($present{$_}, sort keys %present)));
-my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets)));
-my $scribes = esc(join(", ", sort {fc($a) cmp fc($b)} values %scribes));
+my $present = esc(join(", ", map($present{$_}, sort keys %present))) || '-';
+my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets))) || '-';
+my $scribes = esc(join(", ", sort {fc($a) cmp fc($b)} values %scribes)) || '-';
+my $chairs = esc(join(", ", sort {fc($a) cmp fc($b)} values %chairs)) || '-';
 my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
   "<div class=diagnostics>\n<h2>Diagnostics<\/h2>\n" .
   join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics) .
@@ -1069,7 +1084,7 @@ $prev_meeting$agenda$log$next_meeting</nav>
 <dl class=intro>
 <dt>Present</dt><dd>$present</dd>
 <dt>Regrets</dt><dd>$regrets</dd>
-<dt>Chair</dt><dd>$chair</dd>
+<dt>Chair</dt><dd>$chairs</dd>
 <dt>Scribe</dt><dd>$scribes</dd>
 </dl>
 </div>
