@@ -779,6 +779,27 @@ i|locationString|lineToInsert|
   <p>Jonathan was the meeting chair. If used multiple times, only the
    last one has effect.
 
+  <pre class="command">chair: Jonathan, Louis
+Chair+ Mia
+chair+ Zoe, Pete, Annabel</pre>
+
+  <p>If there are multiple chairs, you can separate their names with
+   commas, or use the ‘chair+’ command. The combined result of the
+   three lines above is that the meeting minutes will show that there
+   were <em>six</em> chairs.
+
+  <pre class="command">chair- Louis, Pete</pre>
+
+  <p>If you made a mistake, you can remove individual names from the
+   list of chairs.
+
+  <pre class="command">chair+
+chair-</pre>
+
+  <p>And if you use ‘chair+’ or ‘chair-’ without any names, it means
+   that you add, respectively remove, your own nickname from the list
+   of chairs.
+
   <pre class="command" id="scribe">Scribe: MaryScr
 ScribeNick: MaryScr</pre>
 
