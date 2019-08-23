@@ -36,10 +36,6 @@
 # scribeoptions:-allowspace apply only until they are overridden by
 # another?
 #
-# TODO: An option to replace ASCII smileys by characters: :-) = ☺, ;-)
-# = 😉, :-( = ☹, :-/ = 😕, ,-) = 😜 (or is that the same option as
-# --emphasis?)
-#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -369,6 +365,21 @@ sub esc($;$$$)
     $s =~ s{(^|\s)_([^\s_](?:[^_]*[^\s_])?)_(\s|$)}{$1<u>$2</u>$3}g;
     $s =~ s{(^|\s)/([^\s/](?:[^/]*[^\s/])?)/(\s|$)}{$1<em>$2</em>$3}g;
     $s =~ s{(^|\s)\*([^\s*](?:[^*]*[^\s*])?)\*(\s|$)}{$1<strong>$2</strong>$3}g;
+    $s =~ s{(?:^|[^-])\K--&gt;}{⟶}g;	# "-->" not preceded by a "-"
+    $s =~ s{(?:^|[^-])\K-&gt;}{→}g;	# "->" not preceded by a "-"
+    $s =~ s{(?:^|[^=])\K==&gt;}{⟹}g;	# "==>" not preceded by a "="
+    $s =~ s{(?:^|[^=])\K=&gt;}{⇒}g;	# "=>" not preceded by a "="
+    $s =~ s{&lt;--(?!-)}{⟵}g;		# "<--" not followed by a "-"
+    $s =~ s{&lt;-(?!-)}{←}g;		# "<-" not followed by a "-"
+    $s =~ s{&lt;==(?!=)}{⟸}g;		# "<==" not followed by a "="
+    $s =~ s{&lt;=(?!=)}{⇐}g;		# "<=" not followed by a "="
+    $s =~ s{:-\)}{☺}g;
+    $s =~ s{;-\)}{😉}g;
+    $s =~ s{:-\(}{☹}g;
+    $s =~ s{:-/}{😕}g;
+    $s =~ s{,-\)}{😜}g;
+    $s =~ s{\\o/}{🙆}g;
+    $s =~ s{/o\\}{🙎}g;
   }
   return $s;
 }
@@ -384,10 +395,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 85 $'
+my $revision = '$Revision: 86 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jun  4 19:05:14 2019 UTC $'
+my $versiondate = '$Date: Fri Aug 23 14:14:18 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 

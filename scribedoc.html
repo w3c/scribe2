@@ -602,14 +602,18 @@ you are not using RRSAgent.
     <p>Default is <code>-keeplines</code>.
 
    <dt>-emphasis <dd>Cause scribe.perl to interpret ‘ASCII
-    highlighting’. In particular, underscores (‘_…_’) will cause
+    highlighting’, arrows and smileys. Underscores (‘_…_’) will cause
     underlining, slashes (‘/…/’) italics and asterisks (‘*…*’) bold.
     E.g., ‘<code>This is _underlined_ and /italic/ and *even
     bold.*</code>’ leads to ‘This is <span style="text-decoration:
     underline">underlined</span> and
     <i>italic</i> and <b>even bold.</b>.’ Highlighted phrases must be
-    surrounded by spaces to be recognized (or be at the edge of the
-    line).
+    surrounded by spaces to be recognized or be at the edge of the
+    line. The option also causes the replacement of ASCII arrows <code>&lt;- &lt;--
+    &lt;= &lt;== ==&gt; =&gt; --&gt;</code> and <code>-&gt;</code> by
+    arrow characters (← ⟵ ⇐ ⟸ ⟹ ⇒ ⟶ →) and ASCII smileys <code>:-) ;-)
+    :-( :-/ ,-) \o/</code> and <code>/o\</code> by emoticons ☺ 😉 ☹ 😕
+    😜 🙆 and 🙎.
 
    <dt id=urldisplay>-urlDisplay break <dd>[DEFAULT] Scribe.perl will
     ensure that
