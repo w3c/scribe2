@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Test that emphasis marks are recognized in emphasis mode.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> A line without emphasis.
+<foo> A line with a /italic the end./
+<foo> A line with a /italic/ not at the end.
+<foo> A line with *bold the end.*
+<foo> A line with *bold* not at the end.
+<foo> A line with _underline at the end._
+<foo> A line with _underline_ not at the end.
+EOF
+
+cat >$TMP4 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class=summary>A line without emphasis.</p>
+<p class=summary>A line with a <em>italic the end.</em></p>
+<p class=summary>A line with a <em>italic</em> not at the end.</p>
+<p class=summary>A line with <strong>bold the end.</strong></p>
+<p class=summary>A line with <strong>bold</strong> not at the end.</p>
+<p class=summary>A line with <u>underline at the end.</u></p>
+<p class=summary>A line with <u>underline</u> not at the end.</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl --emphasis $TMP1 >$TMP2
+
+# Extract just the minutes:
+sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3

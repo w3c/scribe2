@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Test that smileys are recognized in emphasis mode.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> A line without a smiley.
+<foo> A line with five smileys: :-) ;-) :-( :-/ ,-)
+EOF
+
+cat >$TMP4 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class=summary>A line without a smiley.</p>
+<p class=summary>A line with five smileys: ☺ 😉 ☹ 😕 😜</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl --emphasis $TMP1 >$TMP2
+
+# Extract just the minutes:
+sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3

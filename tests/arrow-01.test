@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Test that arrows "->", "-->", "<-" and "<--" are recognized in
+# emphasis mode.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> A line without an arrow.
+<foo> A line with an arrow at the end: ->
+<foo> A line with an arrow: -> not at the end
+<foo> A line with a long arrow at the end: -->
+<foo> A line with a long arrow: --> not at the end
+<foo> <- a line with an arrow at the start.
+<foo> Not at the start: <- a line with an arrow.
+<foo> <-- a line with a long arrow at the start.
+<foo> Not at the start: <-- a line with a long arrow.
+EOF
+
+cat >$TMP4 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class=summary>A line without an arrow.</p>
+<p class=summary>A line with an arrow at the end: →</p>
+<p class=summary>A line with an arrow: → not at the end</p>
+<p class=summary>A line with a long arrow at the end: ⟶</p>
+<p class=summary>A line with a long arrow: ⟶ not at the end</p>
+<p class=summary>← a line with an arrow at the start.</p>
+<p class=summary>Not at the start: ← a line with an arrow.</p>
+<p class=summary>⟵ a line with a long arrow at the start.</p>
+<p class=summary>Not at the start: ⟵ a line with a long arrow.</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl --emphasis $TMP1 >$TMP2
+
+# Extract just the minutes:
+sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
