@@ -36,6 +36,9 @@
 # scribeoptions:-allowspace apply only until they are overridden by
 # another?
 #
+# TODO: A way to allow a scribe to write "A: 12 votes", where "A" is
+# *not" interpreted as a speaker. Maybe: "A\:", ":A:", "A::"?
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -81,7 +84,6 @@
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
 # If type is 'r' (resolution), <text> is a resolution and <id> is a unique ID.
 # if type is 'u' (issue), <text> is an issue, <id> a unique ID.
-# If type is 'U' (issue-update), <text> is "(issue-#) text", <id> a unique ID.
 # If type is 'c' (change), the record is a s/// or i/// not (yet) successful
 # If type is 'o' (omit), the record is to be ignored.
 # If type is 'n' (named anchor), the record is a target anchor.
@@ -98,8 +100,10 @@ use locale;			# Sort using current locale
 my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
-# A speaker name doesn't contain ' ' or ':' and doesn't start with two dots.
-my $speakerpat = '(?:[^. :]|\.[^. :])[^ :]*';
+# A speaker name doesn't contain ' ', '"' or ':' and doesn't start with "..".
+my $speakerpat = '(?:[^. :"]|\.[^. :"])[^ :"]*';
+# Some words are unlikely to be speaker names
+my $specialpat = '(?:propos(?:ed|al)|issue-\d+|action-\d+)';
 
 # Command line options:
 my $styleset = 'public';	# Or 'team', 'member' or 'fancy'
@@ -670,11 +674,6 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
 
-  } elsif ($records[$i]->{text} =~ /^ *(issue-\d+) *: *(.*?) *$/i) {
-    $records[$i]->{type} = 'U';		# Mark as "updated issue"
-    $records[$i]->{text} = "(" . uc($1). ") " . $2;
-    $records[$i]->{id} = ++$id;		# Unique ID
-
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *($urlpat) *$/i) {
     $agenda = '<a href="' . esc($1) . "\">$agenda_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
@@ -869,7 +868,8 @@ for (my $i = 0; $i < @records; $i++) {
 	   ($records[$i]->{text} =~ /^($speakerpat) *: *(.*)$/ ||
 	    (!$spacecont && $records[$i]->{text}
 	     =~ /^ *($speakerpat) *: *(.*)$/)) &&
-	   $records[$i]->{text} !~ /^ *$urlpat/i) {	# ... and not a URL
+	   $records[$i]->{text} !~ /^ *$urlpat/i && # ... and not a URL
+	   $records[$i]->{text} !~ /^ *$specialpat *:/i) { # ... nor special
     # A speaker line
     $records[$i]->{type} = 's';		# Mark as scribe line
     $lastspeaker{$records[$i]->{speaker}} = $1; # For any continuation lines
@@ -909,12 +909,12 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{type} = 'd';		# Mark as descriptive text
       $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
     }
-    
+
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   $records[$i]->{type} eq 'c') {
     # It's a failed s/// command by the speaker.
     $records[$i]->{type} = 'd';		# Mark as descriptive text
-    
+
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   $records[$i]->{text} =~ /^ *-> *$urlpat/i) {
     # If the scribe used a Ralph-link (-> url ...), still allow continuations
@@ -963,7 +963,6 @@ my %linepat = (
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
   u => "<p class=issue id=%2\$s><strong>Issue:</strong> %3\$s</p>\n",
-  U => "<p class=issue-update id=%2\$s><strong>Issue:</strong> %3\$s</p>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
 my $minutes = '';
