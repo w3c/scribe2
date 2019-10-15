@@ -15,6 +15,7 @@ cat >$TMP1 <<EOF
 <foo> ..5:00 pm: 5 is not a speaker
 <foo> .hidden: One dot is a speaker
 <foo> ..hidden: Two dots is a continuation
+<foo> "dpv:nace" has a quote and is not a speaker
 EOF
 
 cat >$TMP2 <<EOF
@@ -26,6 +27,7 @@ cat >$TMP2 <<EOF
 … 5:00 pm: 5 is not a speaker</p>
 <p class="phone s03"><cite>.hidden:</cite> One dot is a speaker<br>
 … hidden: Two dots is a continuation</p>
+<p class=summary>&quot;dpv:nace&quot; has a quote and is not a speaker</p>
 </section>
 </div>
 EOF

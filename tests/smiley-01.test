@@ -8,16 +8,18 @@ TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
 TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
 TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
 
-cat >$TMP1 <<EOF
+cat >$TMP1 <<'EOF'
 <foo> A line without a smiley.
-<foo> A line with five smileys: :-) ;-) :-( :-/ ,-)
+<foo> A line with seven smileys: :-) ;-) :-( :-/ ,-) \o/ /o\
+<foo> A smiley in parentheses: (:-))
 EOF
 
 cat >$TMP4 <<EOF
 <div id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class=summary>A line without a smiley.</p>
-<p class=summary>A line with five smileys: ☺ 😉 ☹ 😕 😜</p>
+<p class=summary>A line with seven smileys: ☺ 😉 ☹ 😕 😜 🙆 🙎</p>
+<p class=summary>A smiley in parentheses: (☺)</p>
 </section>
 </div>
 EOF

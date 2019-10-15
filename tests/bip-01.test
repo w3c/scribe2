@@ -502,8 +502,8 @@ Internationalization Working Group Teleconference</h1>
 <section>
 <h3 id=x04>Retiring Charmod-Resid</h3>
 <p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://www.w3.org/TR/2004/CR-charmod-resid-20041122/">https://&zwnj;www.w3.org/&zwnj;TR/&zwnj;2004/&zwnj;CR-charmod-resid-20041122/</a></p>
-<p class="phone s10"><cite>proposed:</cite> retire charmod-resid; convert to WD and then convert to Note and retire it</p>
-<p class="phone s11"><cite>jck:</cite> choice is either &quot;please don't read this&quot; or do lots of work</p>
+<p class=summary>proposed: retire charmod-resid; convert to WD and then convert to Note and retire it</p>
+<p class="phone s10"><cite>jck:</cite> choice is either &quot;please don't read this&quot; or do lots of work</p>
 <p class=summary>please vote on retiring charmod-resid</p>
 <p class=irc><cite>&lt;r12a&gt;</cite> +1</p>
 <p class=summary>+1</p>
@@ -554,7 +554,7 @@ href="https://github.com/w3c/scribe2/commits/master/scribe.perl">history.</a></a
 <p class=warning>Succeeded: s/unicode byte列のデータだけでは＋１/+1/</p>
 <p class=warning>Failed: s/&lt;r12a&gt; uhoh//</p>
 <p class=warning>Failed: s/&lt;r12a&gt; Requester provides target URL to initiate T2T//</p>
-<p class=warning>Maybe present: Explainer, mathias, proposed, richard</p>
+<p class=warning>Maybe present: Explainer, mathias, richard</p>
 </div>
 </body>
 </html>

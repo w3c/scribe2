@@ -2,9 +2,11 @@
 
 # Test if issues are recognized
 
-trap 'rm $TMP1 $TMP2' 0
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
 TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
 <foo> Not a topic
@@ -18,24 +20,32 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 ok=true
 
+# Extract the issue summary:
+sed -n -e '/<div id=IssueSummary/,/<\/div/p' $TMP2 >$TMP3
+
+#cat $TMP3
+
+# Extract the body of the minutes:
+sed -n -e '/id=meeting/,/<\/div/p' $TMP2 >$TMP4
+
+#cat $TMP4
+
 # Two new issues in the summary:
-grep '<li><a href="#x01">Use 1 or 2?</a></li>' $TMP2 || ok=false
-grep '<li><a href="#x03">Is issue-1 OK?</a></li>' $TMP2 || ok=false
+grep '<a href="#x01">Use 1 or 2?</a>' $TMP3 || ok=false
+grep '<a href="#x02">Is issue-1 OK?</a>' $TMP3 || ok=false
 
 # But not the numbered issues:
-grep '<li><a href="#x02">' $TMP2
-test $? != 0 || ok=false
-grep '<li><a href="#x04">' $TMP2
-test $? != 0 || ok=false
+grep 'Or: 3' $TMP3 && ok=false
+grep 'Need rewording.' $TMP3 && ok=false
 
-# All four mentions of issues marked-up:
+# Two new issues marked-up:
 grep '<p class=issue id=x01><strong>Issue:</strong> Use 1 or 2?</p>' \
-     $TMP2 || ok=false
-grep '<p class=issue-update id=x02><strong>Issue:</strong> (ISSUE-1) Or: 3.</p>' \
-     $TMP2 || ok=false
-grep '<p class=issue id=x03><strong>Issue:</strong> Is issue-1 OK?</p>' \
-     $TMP2 || ok=false
-grep '<p class=issue-update id=x04><strong>Issue:</strong> (ISSUE-1) Needs rewording.</p>' \
-     $TMP2 || ok=false
+     $TMP4 || ok=false
+grep '<p class=issue id=x02><strong>Issue:</strong> Is issue-1 OK?</p>' \
+     $TMP4 || ok=false
+
+# Two annotations on numbered issues are not marked specially:
+grep '<p class=irc><cite>&lt;bar&gt;</cite> ISSUE-1: Or: 3.</p>' $TMP4 || ok=false
+grep '<p class=summary>  issue-1 : Needs rewording.</p>' $TMP4 || ok=false
 
 $ok
