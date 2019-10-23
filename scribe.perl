@@ -150,6 +150,8 @@ sub RRSAgent_text_format($$)
   foreach (@$lines_ref) {
     if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (joined|left) /) {
       # Ignore lines like "<jfm> jfm has joined #foo"
+    } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has changed the topic to: /) {
+      # Ignore lines like "<jfm> jfm has changed the top to:..."
     } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
     } elsif (/^\s*$/) {
