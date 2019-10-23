@@ -15,6 +15,7 @@ cat >$TMP1 <<EOF
 14:50:46 <RRSAgent> logging to http://www.w3.org/2014/06/w3c-test-fixtures/public-minutes
 14:50:48 <trackbot> RRSAgent, make logs public
 14:50:48 <Zakim> Zakim has joined #forms
+14:50:48 <Abbott> Abbott has changed the topic to: Welcome to our chat!
 14:50:50 <trackbot> Zakim, this will be public-minutes
 14:50:51 <trackbot> Meeting: Public Minutes Teleconference
 14:51:00 <Zakim> Agenda: http://lists.w3.org/Archives/Public/public-forms/2014Jun/0008

@@ -27,6 +27,7 @@ cat >$TMP1 <<EOF
 18-04-2019 09:52:53 < RRSAgent!rrsagent@team.cloak: I have made the request, trackbot
 18-04-2019 09:52:56 < trackbot!trackbot@team.cloak: Meeting: Internationalization Working Group Teleconference
 18-04-2019 09:52:56 < trackbot!trackbot@team.cloak: Date: 18 April 2019
+18-04-2019 09:52:56 -!- Bert!bbos@team.cloak changed topic of #i18n to: WEUM 22 Oct 2019 cancelled
 18-04-2019 09:53:15 < addison!~addison@team.cloak: Agenda: https://lists.w3.org/Archives/Member/member-i18n-core/2019Apr/0012.html
 18-04-2019 09:53:17 < agendabot!bbos@team.cloak: clear agenda
 18-04-2019 09:53:17 < * Zakim!zakim@team.cloak notes agenda cleared
