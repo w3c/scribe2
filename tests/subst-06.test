@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Test that a s/// can change the name of a speaker.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Joe: Original text
+<foo> Joey: More text
+<foo> s/Joey/Joe/
+<foo> s/Joe:/Josh:/g
+EOF
+
+cat >$TMP4 <<EOF
+<div id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class="phone s01"><cite>Josh:</cite> Original text</p>
+<p class="phone s01"><cite>Josh:</cite> More text</p>
+</section>
+</div>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# Extract just the minutes
+sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
