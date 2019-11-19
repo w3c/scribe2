@@ -39,6 +39,13 @@
 # TODO: A way to allow a scribe to write "A: 12 votes", where "A" is
 # *not" interpreted as a speaker. Maybe: "A\:", ":A:", "A::"?
 #
+# TODO: RRSAgent has commands to edit or drop actions (because it
+# doesn't understand s///). Should we support those?
+#
+# TODO: If some URL in the minutes refers to an image, use the image
+# (at a small size) as anchor? (If there is anchor text, use that as
+# caption.)
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -459,7 +466,7 @@ my %options = ("team" => sub {$styleset = 'team'},
 	       "dashTopics!" => \$dash_topics,
 	       "useZakimTopics!" => \$use_zakim,
 	       "scribeOnly!" => \$scribeonly,
-	       "emphasis!", \$emphasis,
+	       "emphasis!" => \$emphasis,
 	       "oldStyle!" => \$old_style,
 	       "stylesheet:s" => \$stylesheet,
 	       "logo:s" => \$logo,
@@ -562,7 +569,7 @@ while (!defined $scribenick && (my ($i,$p) = each @records)) {
   } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?::|\+:?) *([^ ].*?) *$/i) {
     $scribenick = $1;
   } else {
-    $count{fc $p->{speaker}}++ if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
+    $count{$p->{speaker}}++ if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
   }
 }
 if (!defined $scribenick) {
