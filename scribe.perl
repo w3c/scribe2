@@ -42,10 +42,6 @@
 # TODO: RRSAgent has commands to edit or drop actions (because it
 # doesn't understand s///). Should we support those?
 #
-# TODO: If some URL in the minutes refers to an image, use the image
-# (at a small size) as anchor? (If there is anchor text, use that as
-# caption.)
-#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -107,8 +103,8 @@ use locale;			# Sort using current locale
 my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
-# A speaker name doesn't contain ' ', '"' or ':' and doesn't start with "..".
-my $speakerpat = '(?:[^. :"]|\.[^. :"])[^ :"]*';
+# A speaker name doesn't contain [ ":>] and doesn't start with "..".
+my $speakerpat = '(?:[^. :">]|\.[^. :">])[^ :">]*';
 # Some words are unlikely to be speaker names
 my $specialpat = '(?:propos(?:ed|al)|issue-\d+|action-\d+)';
 
@@ -311,11 +307,30 @@ sub break_url($)
 }
 
 
+# make_link -- return HTML fragment for an <a> and/or <img>
+sub make_link($$$)
+{
+  my ($type, $url, $anchortext) = @_;
+  my ($s);
+
+  # The arguments are already HTML-escaped.
+  $s = "<a href=\"$url\">";
+  if ($type eq '--&gt;') {	# "-->" means to embed the URL as an image
+    $s .= "<span class=image><img src=\"$url\" alt=\"[image]\"> $anchortext</span>";
+  } elsif ($anchortext ne '') {	# The anchortext, if provided
+    $s .= $anchortext;
+  } else {
+    $s .= break_url($url);	# Otherwise the URL itself is the anchor text
+  }
+  return "$s</a>";
+}
+
+
 # esc -- escape HTML delimiters (<>&"), optionally handle emphasis marks (_*/)
 sub esc($;$$$)
 {
   my ($s, $emphasis, $make_links, $break_urls) = @_;
-  my ($replacement, $pre, $url, $post, $pre1, $post1);
+  my ($replacement, $pre, $url, $post, $pre1, $post1, $type);
 
   $s =~ s/&/&amp;/g;
   $s =~ s/</&lt;/g;
@@ -333,40 +348,42 @@ sub esc($;$$$)
     # 4b) A single-quoted inverted Xueyuan link: ... URL -> 'ANCHOR' ...
     # 4c) An unquoted inverted Xueyuan link: ... URL -> ANCHOR
     # 5) A bare URL: ... URL ...
+    # With --> instead of ->, the link is embedded as an image (<img>).
 
-    # Loop until we found all URLs. Look for "->" before or after the URL.
+    # Loop until we found all URLs.
     $replacement = '';
     while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/) {
-      if ($pre =~ /-&gt; *([^ ].*?) *$/) {	# Ivan link
-    	$replacement .= "$`<a href=\"$url\">$1</a>";
+      # Look for "->" or "-->" before or after the URL.
+      if ($pre =~ /(--?&gt;) *([^ ].*?) *$/) {	# Ivan link
+    	$replacement .= $` . make_link($1, $url, $2);
     	$s = $post;
-      } elsif (($pre1) = $pre =~ /^(.*?)-&gt; *$/) { # Maybe Ralph or Xueyuan
+      } elsif (($pre1, $type) = $pre =~ /^(.*?)(--?&gt;) *$/) {
+	# Maybe Ralph or Xueyuan
     	if ($post =~ /^ *(&quot;|\')(.*?)\g1/) { # Quoted Ralph link
-    	  $replacement .= "$pre1<a href=\"$url\">$2</a>";
+    	  $replacement .= $pre1 . make_link($type, $url, $2);
     	  $s = $';
     	} elsif ($post =~ /^ *([^ ].*?) *$/) {	# Unquoted Ralph link
-    	  $replacement .= "$pre1<a href=\"$url\">$1</a>";
+    	  $replacement .= $pre1 . make_link($type, $url, $1);
     	  $s = '';
     	} elsif ($pre1 =~ /^ *([^ ].*?) *$/) {	# Xueyuan link
-    	  $replacement .= "<a href=\"$url\">$1</a>";
+    	  $replacement .= make_link($type, $url, $1);
     	  $s = $post;
     	} else {				# Missing anchor text
-    	  $replacement .= "$pre<a href=\"$url\">".break_url($url)."<\/a>";
+    	  $replacement .= $pre1 . make_link($type, $url, '');
     	  $s = $post;
     	}
-      } elsif (($post1) = $post =~ /^ *-&gt;(.*)$/) { # Maybe inverted Xueyuan
+      } elsif (($type, $post1) = $post =~ /^ *(--?&gt;)(.*)$/) {
+	# Maybe inverted Xueyuan
 	if ($post1 =~ /^ *(&quot;|\')(.*?)\g1/) { # Quoted inverted Xueyuan
-	  $replacement .= "$pre<a href=\"$url\">$2</a>";
+	  $replacement .= $pre . make_link($type, $url, $2);
 	  $s = $';
-	} elsif ($post1 =~ /^ *([^ ].*?) *$/) {	# Unquoted inverted Xueyuan link
-	  $replacement .= "$pre<a href=\"$url\">$1</a>";
-	  $s = '';
-	} else {				# Missing anchor text
-	  $replacement .= "$pre<a href=\"$url\">".break_url($url)."</a>$post";
+	} else {				# Unquoted inverted Xueyuan link
+	  $post1 =~ /^ *(.*?) *$/;
+	  $replacement .= $pre . make_link($type, $url, $1);
 	  $s = '';
 	}
       } else {					# Bare URL.
-    	$replacement .= "$pre<a href=\"$url\">".break_url($url)."</a>";
+    	$replacement .= $pre . make_link('-&gt;', $url, '');
     	$s = $post;
       }
     }
@@ -408,10 +425,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 90 $'
+my $revision = '$Revision: 92 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Oct 23 15:26:41 2019 UTC $'
+my $versiondate = '$Date: Tue Nov 19 10:35:21 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
