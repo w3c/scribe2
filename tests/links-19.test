@@ -1,7 +1,20 @@
 #!/bin/bash
 
-# Test if inverted Xueyuan links without anchor text are correctly ignored.
+# Test of inverted Xueyuan links without anchor text.
 
-echo "<foo> https://example.org/test ->     " | \
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+url="ftp://example.org/test"
+
+# Get the generated line:
+echo "<foo> $url ->     " | \
   perl scribe.perl --urldisplay=full | \
-  grep -e '<a href="https://example.org/test">https://example.org/test</a> -&gt;'
+  grep "$url" >$TMP2
+
+# Expected line:
+echo "<section><p class=summary><a href=\"$url\">$url</a></p>" >$TMP1
+
+# Compare:
+diff -u $TMP1 $TMP2

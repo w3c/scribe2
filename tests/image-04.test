@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Test if images (with "-->") with anchortext are correctly embedded.
+# Here in the form of a Ralph link.
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+url="https://www.w3.org/Icons/w3c_48x48.png"
+title="My image"
+
+# Expected line:
+echo "<section><p class=summary>  <a href=\"$url\"><span class=image><img src=\"$url\" alt=\"[image]\"> $title</span></a></p>" >$TMP1
+
+# Get the generated line:
+echo "<foo>   -->$url    $title  " | perl scribe.perl >$TMP3
+# cat $TMP3
+grep "$url" $TMP3 >$TMP2
+
+# Compare:
+diff -u $TMP1 $TMP2

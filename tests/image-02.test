@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Test if images (with "-->") with anchortext are correctly embedded.
+# Here in the form of Xueyuan link.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+url="https://www.w3.org/Icons/w3c_48x48.png"
+title="My image"
+
+# Expected line:
+echo "<section><p class=summary><a href=\"$url\"><span class=image><img src=\"$url\" alt=\"[image]\"> $title</span></a></p>" >$TMP1
+
+# Get the generated line:
+echo "<foo>   $title   -->  $url" | \
+  perl scribe.perl --urldisplay=full | \
+  grep $url >$TMP2
+
+# Compare:
+diff -u $TMP1 $TMP2
