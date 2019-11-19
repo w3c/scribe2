@@ -739,12 +739,12 @@ s|old|new</pre>
    Unsuccessful ones are left in the minutes, so they can be manually
    edited.
 
-  <pre class="command">s/old/new/g 
+  <pre class="command">s/old/new/g
 s|old|new|g</pre>
 
   <p>Replace globally from this point backward.
 
-  <pre class="command">s/old/new/G 
+  <pre class="command">s/old/new/G
 s|old|new|G</pre>
 
   <p>Replace globally, both forward and backward.
@@ -1024,15 +1024,19 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
 <pre class=command>
 &lt;dbooth&gt; See --&gt; https://www.example.org/ns/w2.jpg wall 2
-&lt;dbooth&gt; And -&gt; https://www.example.org/ns/w2.jpg "wall 2", too.
-&lt;dbooth&gt; -&gt; https://www.example.org/ns/w2,jpg 'wall 2' also.
-&lt;dbooth&gt; wall 2 -&gt; https://www.example.org/ns/w2.jpg
-&lt;dbooth&gt; See https://www.example.org/ns/w2.jpg -&gt; wall 2
-&lt;dbooth&gt; And https://www.example.org/ns/w2.jpg -&gt; "wall 2", too.
-&lt;dbooth&gt; https://www.example.org/ns/w2.jpg -&gt; 'wall 2' also.
-&lt;dbooth&gt; -&gt; wall 2 https://www.example.org/ns/w2.jpg
-&lt;dbooth&gt; And -&gt; wall 2 https://www.example.org/ns/w2.jpg too.
-<pre>
+&lt;dbooth&gt; And --&gt; https://www.example.org/ns/w2.jpg "wall 2", too.
+&lt;dbooth&gt; --&gt; https://www.example.org/ns/w2,jpg 'wall 2' also.
+&lt;dbooth&gt; wall 2 --&gt; https://www.example.org/ns/w2.jpg
+&lt;dbooth&gt; See https://www.example.org/ns/w2.jpg --&gt; wall 2
+&lt;dbooth&gt; And https://www.example.org/ns/w2.jpg --&gt; "wall 2", too.
+&lt;dbooth&gt; https://www.example.org/ns/w2.jpg --&gt; 'wall 2' also.
+&lt;dbooth&gt; --&gt; wall 2 https://www.example.org/ns/w2.jpg
+&lt;dbooth&gt; And --&gt; wall 2 https://www.example.org/ns/w2.jpg too.
+</pre>
+
+  <p>The anchor text becomes the image caption. There is no way
+  currently to specify a text alternative (‘alt text’) for the
+  image.</p>
 
   <h2 id="editing_the_log">Manually Editing the Log</h2>
 
