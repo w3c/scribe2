@@ -86,8 +86,8 @@
   href="sample-team.html" >with option -team</a> and <a
   href="sample-fancy.html" >with option -fancy</a>.
 
-  <p>This manual documents scribe.perl version 2, revision 81 (dated
-  29 May 2019). See below for the <a href="#changes" >differences
+  <p>This manual documents scribe.perl version 2, revision 92 (dated
+  19 November 2019). See below for the <a href="#changes" >differences
   with version 1.</a>
 
 
@@ -1205,7 +1205,7 @@ Eric agrees.
 
 
   <h2 id="Environment_Variables">Environment Variables</h2>
-	
+
   <p>The SCRIBEOPTIONS environment variable holds the default options
    that one wants to use. It is not required. Example for a
    Bourne-style shell:
@@ -1227,7 +1227,7 @@ Eric agrees.
      a simple text. A status cade after the action, such as
      ‘<code>ACTION: Joe to write text [PENDING]</code>’, is simply
      part of the action description.
-     
+
    <li>
     <p>There is no <code>-template</code> option. Scribe.perl
      version 2 does not accept external HTML templates.
@@ -1235,7 +1235,7 @@ Eric agrees.
    <li>
     <p>A ‘scribeOptions’ command takes priority over command line
      options, instead of the other way round.
-     
+
    <li>
     <p>The <a href="#keeplines" >‘-keeplines’</a> option (and its
      inverse ‘-nokeeplines’) is new.
@@ -1303,7 +1303,7 @@ Eric agrees.
     <p>Some new text patterns are recognized and marked up with
      special classes: <a href="#ralph-link" >Ralph</a>/<a
      href="#xueyuan-link" >Xueyuan</a>/<a href="#ivan-link" >Ivan
-     links</a> and
+     links</a> (for links with anchor text and images with captions) and
      messages from <a
      href="https://www.w3.org/2005/06/tracker/irc">trackbot</a>.
   </ul>
