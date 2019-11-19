@@ -69,10 +69,10 @@
     <li><a href="#changes" >Changes</a>
    </ul>
   </div>
-	
+
 
   <h2 id=intro>Introduction</h2>
-	
+
   <p><a href="https://github.com/w3c/scribe2"
   >Scribe.perl</a> is a perl script for generating meeting minutes
   from an IRC, IM or other log file that follows some simple minuting
@@ -121,6 +121,11 @@
      <td class=help>ws_arch will be your meeting name
      <td>anybody
   </table>
+
+  <p>Note: If you are on a channel that has
+   a <a href="https://www.w3.org/2005/06/tracker/irc" >Trackbot</a>,
+   the above can be replaced with the single command <code>/trackbot,
+   start meeting</code>
 
   <h3 id=start-meeting>Step 2: Start the meeting:</h3>
 
@@ -328,10 +333,11 @@
 	<td>anybody
 </table>
 
-<p>Continue to Step 5 if you wish to run scribe.perl manually or if
-you are not using RRSAgent.
-
 <h3 id="generate-minutes">Step 5: Generate minutes</h3>
+
+<p>This step is only needed if you are not using RRSAgent, or you
+ forgot step 4 and its too late to run RRSAgent now, or if you want
+ to make edits that are best done locally.
 
 <table>
 <col><col><col>
@@ -454,7 +460,7 @@ you are not using RRSAgent.
 
   <p>Indicate that dash lines are used to indicate that the next line
    is the start of a new topic, such as:
-   
+
   <pre class="command">&lt;Philippe&gt; ---
 &lt;Philippe&gt; Review of Action Items</pre>
 
@@ -1008,6 +1014,25 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
   <p>Like Xueyuan links, Ivan links should not have quotes around the
   text (unless you actually want the anchor text to contain quotes).
+
+  <h3 id="links">Embedding images</h3>
+
+  <p>You can also embed images in the minutes by means of Ralph,
+  (inverted) Xueyuan or Ivan links. The only difference is that
+  the <code>-&gt;</code> must be replaced by <code>--&gt;</code>. Some
+  examples:
+
+<pre class=command>
+&lt;dbooth&gt; See --&gt; https://www.example.org/ns/w2.jpg wall 2
+&lt;dbooth&gt; And -&gt; https://www.example.org/ns/w2.jpg "wall 2", too.
+&lt;dbooth&gt; -&gt; https://www.example.org/ns/w2,jpg 'wall 2' also.
+&lt;dbooth&gt; wall 2 -&gt; https://www.example.org/ns/w2.jpg
+&lt;dbooth&gt; See https://www.example.org/ns/w2.jpg -&gt; wall 2
+&lt;dbooth&gt; And https://www.example.org/ns/w2.jpg -&gt; "wall 2", too.
+&lt;dbooth&gt; https://www.example.org/ns/w2.jpg -&gt; 'wall 2' also.
+&lt;dbooth&gt; -&gt; wall 2 https://www.example.org/ns/w2.jpg
+&lt;dbooth&gt; And -&gt; wall 2 https://www.example.org/ns/w2.jpg too.
+<pre>
 
   <h2 id="editing_the_log">Manually Editing the Log</h2>
 
