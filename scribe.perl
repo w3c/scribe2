@@ -99,6 +99,9 @@ use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
 use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
 use locale;			# Sort using current locale
+use open ':utf8';		# Open all files assuming they are UTF-8
+use utf8;			# This script contains characters in UTF-8
+
 
 my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
@@ -119,7 +122,7 @@ my $scribenick;			# Nick of the current scribe in lowercase
 my $dash_topics = 0;		# If 1, "--" means the next line is a topic
 my $use_zakim = 1;		# If 1, treat conversations with Zakim specially
 my $scribeonly = 0;		# If 1, omit IRC comments by others
-my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things 
+my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things
 my $old_style = 0;		# If 1, use the old (pre-2017) style sheets
 my $url_display = 'break';	# How to display in-your-face URLs
 my $logo;			# undef = W3C logo; string = HTML fragment
@@ -301,43 +304,49 @@ sub fc_uniq(@)
 sub break_url($)
 {
   my ($s) = @_;
-  $s =~ s|/\b|/&zwnj;|g if $url_display eq 'break';
-  $s =~ s|^(.{5}).*(.{6})$|$1…$2| if $url_display eq 'shorten';
+
+  # HTML delimiters are already escaped.
+  if ($url_display eq 'break') {
+    $s =~ s|/\b|/&zwnj;|g;
+  } elsif ($url_display eq 'shorten') {
+    $s =~ s/^((?:[^&]|&[^;]+;){5})(?:[^&]|&[^;]+;)*((?:[^&]|&[^;]+;){6})$/$1…$2/;
+  }
   return $s;
 }
 
 
-# make_link -- return HTML fragment for an <a> and/or <img>
-sub make_link($$$)
+# mklink -- return HTML for a URL with anchortext: link, image or just text
+sub mklink($$$$)
 {
-  my ($type, $url, $anchortext) = @_;
-  my ($s);
+  my ($link, $type, $url, $anchortext) = @_;
+  # $link determines whether to make a link (>0) or just show the text (<0).
+  # $type determines whether to make a text ("->") or an image ("-->").
 
-  # The arguments are already HTML-escaped.
-  $s = "<a href=\"$url\">";
-  if ($type eq '--&gt;') {	# "-->" means to embed the URL as an image
-    $s .= "<span class=image><img src=\"$url\" alt=\"[image]\"> $anchortext</span>";
-  } elsif ($anchortext ne '') {	# The anchortext, if provided
-    $s .= $anchortext;
+  $url = esc($url);
+  if ($link > 0) {
+    my $s = '<a href="' . $url . '">';
+    if ($type eq '-->') {
+      $s .= '<img src="' . $url . '" alt="' . esc($anchortext) . '">';
+    } elsif ($anchortext ne '') {
+      $s .= esc($anchortext, $emphasis);
+    } else {
+      $s .= break_url($url); # Otherwise the URL itself is the anchor text
+    }
+    return "$s</a>";
   } else {
-    $s .= break_url($url);	# Otherwise the URL itself is the anchor text
+    return $anchortext ne '' ? esc($anchortext) : break_url($url);
   }
-  return "$s</a>";
 }
 
 
-# esc -- escape HTML delimiters (<>&"), optionally handle emphasis marks (_*/)
+# esc -- escape HTML delimiters (<>&"), optionally handle emphasis & Ralph links
+sub esc($;$$$);
 sub esc($;$$$)
 {
-  my ($s, $emphasis, $make_links, $break_urls) = @_;
-  my ($replacement, $pre, $url, $post, $pre1, $post1, $type);
+  my ($s, $emph, $link, $break_urls) = @_;
+  my ($replacement, $pre, $url, $post, $pre1, $post1, $type, $anchor);
 
-  $s =~ s/&/&amp;/g;
-  $s =~ s/</&lt;/g;
-  $s =~ s/>/&gt;/g;
-  $s =~ s/"/&quot;/g;
-
-  if ($make_links) {
+  if ($link) {
     # Wrap Ralph-links and bare URLs in <a>
     # 1a) A double-quoted Ralph link: ... -> URL "ANCHOR" ...
     # 1b) A single-quoted Ralph link: ... -> URL 'ANCHOR' ...
@@ -349,67 +358,74 @@ sub esc($;$$$)
     # 4c) An unquoted inverted Xueyuan link: ... URL -> ANCHOR
     # 5) A bare URL: ... URL ...
     # With --> instead of ->, the link is embedded as an image (<img>).
+    # If $link < 0, omit the <a> tag and just insert the text or image.
 
     # Loop until we found all URLs.
     $replacement = '';
     while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/) {
       # Look for "->" or "-->" before or after the URL.
-      if ($pre =~ /(--?&gt;) *([^ ].*?) *$/) {	# Ivan link
-    	$replacement .= $` . make_link($1, $url, $2);
+      if (($type, $anchor) = $pre =~ /(--?>) *([^ ].*?) *$/) {	# Ivan link
+    	$replacement .= esc($`, $emph) . mklink($link, $type, $url, $anchor);
     	$s = $post;
-      } elsif (($pre1, $type) = $pre =~ /^(.*?)(--?&gt;) *$/) {
+      } elsif (($pre1, $type) = $pre =~ /^(.*?)(--?>) *$/) {
 	# Maybe Ralph or Xueyuan
-    	if ($post =~ /^ *(&quot;|\')(.*?)\g1/) { # Quoted Ralph link
-    	  $replacement .= $pre1 . make_link($type, $url, $2);
+    	if ($post =~ /^ *(\"|\')(.*?)\g1/) { # Quoted Ralph link
+    	  $replacement .= esc($pre1, $emph) . mklink($link, $type, $url, $2);
     	  $s = $';
     	} elsif ($post =~ /^ *([^ ].*?) *$/) {	# Unquoted Ralph link
-    	  $replacement .= $pre1 . make_link($type, $url, $1);
+    	  $replacement .= esc($pre1, $emph) . mklink($link, $type, $url, $1);
     	  $s = '';
     	} elsif ($pre1 =~ /^ *([^ ].*?) *$/) {	# Xueyuan link
-    	  $replacement .= make_link($type, $url, $1);
+    	  $replacement .= mklink($link, $type, $url, $1);
     	  $s = $post;
     	} else {				# Missing anchor text
-    	  $replacement .= $pre1 . make_link($type, $url, '');
+    	  $replacement .= esc($pre1, $emph) . mklink($link, $type, $url, '');
     	  $s = $post;
     	}
-      } elsif (($type, $post1) = $post =~ /^ *(--?&gt;)(.*)$/) {
+      } elsif (($type, $post1) = $post =~ /^ *(--?>)(.*)$/) {
 	# Maybe inverted Xueyuan
-	if ($post1 =~ /^ *(&quot;|\')(.*?)\g1/) { # Quoted inverted Xueyuan
-	  $replacement .= $pre . make_link($type, $url, $2);
+	if ($post1 =~ /^ *(\"|\')(.*?)\g1/) { # Quoted inverted Xueyuan
+	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, $2);
 	  $s = $';
 	} else {				# Unquoted inverted Xueyuan link
 	  $post1 =~ /^ *(.*?) *$/;
-	  $replacement .= $pre . make_link($type, $url, $1);
+	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, $1);
 	  $s = '';
 	}
       } else {					# Bare URL.
-    	$replacement .= $pre . make_link('-&gt;', $url, '');
+    	$replacement .= esc($pre, $emph) . mklink($link, '->', $url, '');
     	$s = $post;
       }
     }
-    $s = $replacement . $s;
+    $s = $replacement . esc($s, $emph);
   } elsif ($break_urls) {	# Shorten or break URLs
+    $s = esc($s, $emph);
     $s =~ s/($urlpat)/break_url($1)/gie;
-  }
-  if ($emphasis) {
-    $s =~ s{(^|\s)_([^\s_](?:[^_]*[^\s_])?)_(\s|$)}{$1<u>$2</u>$3}g;
-    $s =~ s{(^|\s)/([^\s/](?:[^/]*[^\s/])?)/(\s|$)}{$1<em>$2</em>$3}g;
-    $s =~ s{(^|\s)\*([^\s*](?:[^*]*[^\s*])?)\*(\s|$)}{$1<strong>$2</strong>$3}g;
-    $s =~ s{(?:^|[^-])\K--&gt;}{⟶}g;	# "-->" not preceded by a "-"
-    $s =~ s{(?:^|[^-])\K-&gt;}{→}g;	# "->" not preceded by a "-"
-    $s =~ s{(?:^|[^=])\K==&gt;}{⟹}g;	# "==>" not preceded by a "="
-    $s =~ s{(?:^|[^=])\K=&gt;}{⇒}g;	# "=>" not preceded by a "="
-    $s =~ s{&lt;--(?!-)}{⟵}g;		# "<--" not followed by a "-"
-    $s =~ s{&lt;-(?!-)}{←}g;		# "<-" not followed by a "-"
-    $s =~ s{&lt;==(?!=)}{⟸}g;		# "<==" not followed by a "="
-    $s =~ s{&lt;=(?!=)}{⇐}g;		# "<=" not followed by a "="
-    $s =~ s{:-\)}{☺}g;
-    $s =~ s{;-\)}{😉}g;
-    $s =~ s{:-\(}{☹}g;
-    $s =~ s{:-/}{😕}g;
-    $s =~ s{,-\)}{😜}g;
-    $s =~ s{\\o/}{🙆}g;
-    $s =~ s{/o\\}{🙎}g;
+  } else {
+    $s =~ s/&/&amp;/g;
+    $s =~ s/</&lt;/g;
+    $s =~ s/>/&gt;/g;
+    $s =~ s/"/&quot;/g;
+    if ($emph) {
+      $s =~ s{(^|\s)_([^\s_](?:[^_]*[^\s_])?)_(\s|$)}{$1<u>$2</u>$3}g;
+      $s =~ s{(^|\s)/([^\s/](?:[^/]*[^\s/])?)/(\s|$)}{$1<em>$2</em>$3}g;
+      $s =~ s{(^|\s)\*([^\s*](?:[^*]*[^\s*])?)\*(\s|$)}{$1<strong>$2</strong>$3}g;
+      $s =~ s{(?:^|[^-])\K--&gt;}{⟶}g;	# "-->" not preceded by a "-"
+      $s =~ s{(?:^|[^-])\K-&gt;}{→}g;	# "->" not preceded by a "-"
+      $s =~ s{(?:^|[^=])\K==&gt;}{⟹}g; # "==>" not preceded by a "="
+      $s =~ s{(?:^|[^=])\K=&gt;}{⇒}g;	# "=>" not preceded by a "="
+      $s =~ s{&lt;--(?!-)}{⟵}g;		# "<--" not followed by a "-"
+      $s =~ s{&lt;-(?!-)}{←}g;		# "<-" not followed by a "-"
+      $s =~ s{&lt;==(?!=)}{⟸}g;	# "<==" not followed by a "="
+      $s =~ s{&lt;=(?!=)}{⇐}g;		# "<=" not followed by a "="
+      $s =~ s{:-\)}{☺}g;
+      $s =~ s{;-\)}{😉}g;
+      $s =~ s{:-\(}{☹}g;
+      $s =~ s{:-/}{😕}g;
+      $s =~ s{,-\)}{😜}g;
+      $s =~ s{\\o/}{🙆}g;
+      $s =~ s{/o\\}{🙎}g;
+    }
   }
   return $s;
 }
@@ -425,10 +441,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 92 $'
+my $revision = '$Revision: 93 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Nov 19 10:35:21 2019 UTC $'
+my $versiondate = '$Date: Tue Nov 19 16:40:53 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -491,6 +507,13 @@ my %options = ("team" => sub {$styleset = 'team'},
 	       "minutes=s" => \$minutes_url);
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
+
+# The "use open" pragma takes care of setting a UTF9 layer on newly
+# opening files from the command line, but STDIN is already open, so
+# need a binmode() command.
+binmode(STDIN, ':utf8');
+binmode(STDOUT, ':utf8');
+binmode(STDERR, ':utf8');
 
 GetOptionsFromString($ENV{"SCRIBEOPTIONS"}, %options) if $ENV{"SCRIBEOPTIONS"};
 GetOptions(%options) or pod2usage(2);
@@ -985,7 +1008,7 @@ my %linepat = (
   i => $scribeonly ? '' : "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   c => "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
-  r => "<p class=resolution id=%2\$s><strong>Resolved:</strong> %3\$s</p>\n",
+  r => "<p class=resolution id=%2\$s><strong>Resolution:</strong> %3\$s</p>\n",
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
   u => "<p class=issue id=%2\$s><strong>Issue:</strong> %3\$s</p>\n",
@@ -995,7 +1018,7 @@ my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
-    esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1),
+    esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1, 1),
     $speakers{fc $p->{speaker}} // '';
   if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ tr/\t/ /;}
   $minutes .= $line;
@@ -1058,7 +1081,7 @@ my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
 #
 my $actions = join("",
 		   map("<li><a href=\"#" . $_->{id} . "\">" .
-		       esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+		       esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 		       grep($_->{type} eq 'a', @records)));
 my $actiontoc = !$actions ? '' :
     "<li><a href=\"#ActionSummary\">Summary of action items</a></li>\n";
@@ -1068,7 +1091,7 @@ if ($keeplines) {$actions =~ s/\t/<br>\n… /g;} else {$actions =~ tr/\t/ /;}
 
 my $resolutions = join("",
 		       map("<li><a href=\"#" . $_->{id} . "\">" .
-			   esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+			   esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 			   grep($_->{type} eq 'r', @records)));
 my $resolutiontoc = !$resolutions ? '' :
     "<li><a href=\"#ResolutionSummary\">Summary of resolutions</a></li>\n";
@@ -1078,7 +1101,7 @@ if ($keeplines) {$resolutions =~ s/\t/<br>\n… /g;} else {$resolutions =~ tr/\t
 
 my $issues = join("",
 		  map("<li><a href=\"#" . $_->{id} . "\">" .
-		      esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+		      esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 		      grep($_->{type} eq 'u', @records)));
 my $issuetoc = !$issues ? '' :
     "<li><a href=\"#IssueSummary\">Summary of issues</a></li>\n";
@@ -1090,7 +1113,7 @@ if ($keeplines) {$issues =~ s/\t/<br>\n… /g;} else {$issues =~ tr/\t/ /;}
 #
 my $topics = join("",
 		  map("<li><a href=\"#" . $_->{id} . "\">" .
-		      esc($_->{text}, $emphasis, 0, 1) . "</a></li>\n",
+		      esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 		      grep($_->{type} eq 't', @records)));
 if ($keeplines) {$topics =~ s/\t/<br>\n… /g;} else {$topics =~ tr/\t/ /;}
 
