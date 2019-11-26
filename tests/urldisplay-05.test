@@ -11,11 +11,15 @@ TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
 cat >$TMP1 <<EOF
 <foo> baz: Hi
 <foo> bar: https://www.example.org/a/long/path
+<foo> bar: https://www.example.org/ànöther/?long&path
 <foo> ScribeNick: foo
 EOF
 
+# The "&" is escaped as "&amp;" but still counts as one character.
+
 cat >$TMP4 <<EOF
 <p class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/a/long/path">https…g/path</a></p>
+<p class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/ànöther/?long&amp;path">https…g&amp;path</a></p>
 EOF
 
 perl scribe.perl --urlDisplay=shorten <$TMP1 >$TMP2 || exit 1

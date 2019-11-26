@@ -28,7 +28,7 @@ EOF
 cat >$TMP4 <<EOF
 <div id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class=resolution id=x01><strong>Resolved:</strong> We do as<br>
+<section><p class=resolution id=x01><strong>Resolution:</strong> We do as<br>
 … I wanted to say.<br>
 … Very important<br>
 … This is part of it.</p>
