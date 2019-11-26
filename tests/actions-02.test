@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Test if actions with links are recognized.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Not a topic
+<foo>  Action: bar to do -> this https://example.org/
+<bar> Action baz: do the same
+<baz> action : bar do this, too
+<foo>   ACTION foo to stop giving actions
+<foo> action-20: look at the documentation.
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# The link must be in the minutes.
+grep '<a href="https://example.org/">this</a>' $TMP2 || exit 1
+
+# New actions must be in the action summary, but without the link.
+grep '<li><a href="#x01">bar to do this</a></li>' $TMP2 || exit 1
+grep '<li><a href="#x02">baz: do the same</a></li>' $TMP2 || exit 1
+grep '<li><a href="#x03">bar do this, too</a></li>' $TMP2 || exit 1
+grep '<li><a href="#x04">foo to stop giving actions</a></li>' $TMP2 || exit 1
+
+# The annotation on action-20 is not marked specially.
+grep '<p class=summary>action-20: look at the documentation.' $TMP2 || exit 1

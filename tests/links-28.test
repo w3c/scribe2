@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if emphasized Xueyuan Links are correctly recognized.
+
+echo "<foo> _Anchor text_ -> ftp://example.org/test     " | \
+  perl scribe.perl --urldisplay=full --emphasis | \
+  grep '<a href="ftp://example.org/test"><u>Anchor text</u></a>'

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test of -emphasis in anchor text
+
+echo "<foo> -> https://example.org/test *example anchor*   " | \
+  perl scribe.perl -emph | \
+  grep '<a href="https://example.org/test"><strong>example anchor</strong></a>'

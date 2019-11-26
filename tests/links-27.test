@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test of quoted inverted Xueyuan links and emphasis in the same line.
+
+echo "<foo> /Before the link/ https://example.org/test -> 'example anchor' /after the link/ " | \
+  perl scribe.perl -emphasis | \
+  grep '<em>Before the link</em> <a href="https://example.org/test">example anchor</a> <em>after the link</em>'

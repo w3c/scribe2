@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if emphasis doesn't break links.
+
+echo "<foo> /Anchor text -> ftp://example.org/test/     " | \
+  perl scribe.perl --urldisplay=full --emphasis | \
+  grep '<a href="ftp://example.org/test/">/Anchor text</a>'
