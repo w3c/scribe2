@@ -36,7 +36,7 @@ cat >$TMP3 <<EOF
 
 <body>
 <header>
-<p><a href="https://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home_white_transp.png" srcset="https://www.w3.org/Icons/w3c_home_white_transp.svg" alt=W3C border=0 height=34 width=68></a></p>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
 
 <h1>&ndash; DRAFT &ndash;<br>
 (MEETING TITLE)</h1>
