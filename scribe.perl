@@ -57,7 +57,7 @@
 # Author: Bert Bos <bert@w3.org>
 
 
-# Conversion proceeds in four steps:
+# Conversion proceeds in six steps:
 #
 # 1) Various parsers are tried to convert the lines of the input
 # into an array of records (see below for the structure of the
@@ -475,9 +475,8 @@ my $previous_icon = '<img alt="Previous meeting." title="Previous meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-previous.png">';
 my $next_icon = '<img alt="Next meeting." title="Next meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-next.png">';
-my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/I' .
-  'cons/w3c_home_white_transp.png" srcset="https://www.w3.org/Icons/w3c_hom' .
-  'e_white_transp.svg" alt=W3C border=0 height=34 width=68></a>';
+my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/' .
+  'StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a>';
 
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
