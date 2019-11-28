@@ -112,13 +112,9 @@ Public Minutes Teleconference</h1>
 </div>
 
 
-<address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
+<address>Minutes manually created (not a transcript), formatted by <a
 href="https://w3c.github.io/scribe2/scribedoc.html"
->scribe.perl</a> version 2.30 (2017/09/29 22:24:05), a reimplementation
-of David Booth's <a
-href="https://dev.w3.org/2002/scribe/scribedoc.htm"
->scribe.perl</a>. See <a
-href="https://github.com/w3c/scribe2/commits/master/scribe.perl">history.</a></address>
+>scribe.perl</a> version 2.30 (2017/09/29 22:24:05).</a></address>
 
 <div class=diagnostics>
 <h2>Diagnostics</h2>

@@ -77,13 +77,9 @@ cat >$TMP3 <<EOF
 </div>
 
 
-<address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
+<address>Minutes manually created (not a transcript), formatted by <a
 href="https://w3c.github.io/scribe2/scribedoc.html"
->scribe.perl</a> version 0.0 (2017-02-05), a reimplementation
-of David Booth's <a
-href="https://dev.w3.org/2002/scribe/scribedoc.htm"
->scribe.perl</a>. See <a
-href="https://github.com/w3c/scribe2/commits/master/scribe.perl">history.</a></address>
+>scribe.perl</a> version 0.0 (2017-02-05).</a></address>
 
 </body>
 </html>
