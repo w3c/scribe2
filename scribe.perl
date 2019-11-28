@@ -507,9 +507,9 @@ my %options = ("team" => sub {$styleset = 'team'},
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
 
-# The "use open" pragma takes care of setting a UTF9 layer on newly
-# opening files from the command line, but STDIN is already open, so
-# need a binmode() command.
+# The "use open" pragma takes care of setting a UTF8 layer on newly
+# opened files from the command line, but STDIN is already open, so it
+# needs a binmode() command.
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
@@ -1164,13 +1164,9 @@ $actiontoc$resolutiontoc$issuetoc</ul>
 </div>
 $actions$resolutions$issues
 
-<address>Minutes manually created (not a transcript), formatted by Bert Bos's <a
+<address>Minutes manually created (not a transcript), formatted by <a
 href=\"https://w3c.github.io/scribe2/scribedoc.html\"
->scribe.perl</a> version $revision ($versiondate), a reimplementation
-of David Booth's <a
-href=\"https://dev.w3.org/2002/scribe/scribedoc.htm\"
->scribe.perl</a>. See <a
-href=\"https://github.com/w3c/scribe2/commits/master/scribe.perl\">history.</a></address>
+>scribe.perl</a> version $revision ($versiondate).</a></address>
 
 $diagnostics</body>
 </html>
