@@ -347,7 +347,7 @@ sub esc($;$$$)
   my ($replacement, $pre, $url, $post, $pre1, $post1, $type, $anchor);
 
   if ($link) {
-    # Wrap Ralph-links and bare URLs in <a>
+    # Wrap Ralph-links and bare URLs in <a>.
     # 1a) A double-quoted Ralph link: ... -> URL "ANCHOR" ...
     # 1b) A single-quoted Ralph link: ... -> URL 'ANCHOR' ...
     # 1a) An unquoted Ralph link: ... -> URL ANCHOR
@@ -441,10 +441,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 101 $'
+my $revision = '$Revision: 102 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Nov 28 13:53:59 2019 UTC $'
+my $versiondate = '$Date: Thu Nov 28 14:58:01 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
