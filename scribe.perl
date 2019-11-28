@@ -1036,14 +1036,16 @@ if ($styleset eq 'team') {
       [$alt + !$old_style, "2004", "$w3/StyleSheets/base.css"],
       [$alt + !$old_style, "2004", "$w3/StyleSheets/team.css"],
       [$alt + !$old_style, "2004", "$w3/StyleSheets/team-minutes.css"],
-      [$alt + !$old_style, "2004", "$w3/2004/02/minutes-style.css"];
+      [$alt + !$old_style, "2004", "$w3/2004/02/minutes-style.css"],
+      [1, "Typewriter", "$w3/StyleSheets/scribe2/tt-team.css"];
 } elsif ($styleset eq 'member') {
   push @stylesheets,
       [$alt + $old_style, "2018", "$w3/StyleSheets/scribe2/member.css"],
       [$alt + !$old_style, "2004", "$w3/StyleSheets/base.css"],
       [$alt + !$old_style, "2004", "$w3/StyleSheets/member.css"],
       [$alt + !$old_style, "2004", "$w3/StyleSheets/member-minutes.css"],
-      [$alt + !$old_style, "2004", "$w3/2004/02/minutes-style.css"];
+      [$alt + !$old_style, "2004", "$w3/2004/02/minutes-style.css"],
+      [1, "Typewriter", "$w3/StyleSheets/scribe2/tt-member.css"];
 } else {			# 'public' or 'fancy'
   my $f = $styleset eq 'fancy';
   push @stylesheets,
@@ -1051,7 +1053,8 @@ if ($styleset eq 'team') {
       [$alt + !$old_style + $f, "2004", "$w3/StyleSheets/base.css"],
       [$alt + !$old_style + $f, "2004", "$w3/StyleSheets/public.css"],
       [$alt + !$old_style + $f, "2004", "$w3/2004/02/minutes-style.css"],
-      [$alt + !$f, "Fancy", "$w3/StyleSheets/scribe2/fancy.css"];
+      [$alt + !$f, "Fancy", "$w3/StyleSheets/scribe2/fancy.css"],
+      [1, "Typewriter", "$w3/StyleSheets/scribe2/tt-member.css"];
 }
 
 # Format some of the variables used in the template below
