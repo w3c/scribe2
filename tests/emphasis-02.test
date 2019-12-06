@@ -19,7 +19,7 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class=summary>A line without emphasis.</p>
 <p class=summary>A line with <a href="http://example.org/1/"><em>italic link 1.</em></a></p>
@@ -29,12 +29,12 @@ cat >$TMP4 <<EOF
 <p class=summary>A line with a bare URL:<a href="http://example.org/_not_underlined_">http://&zwnj;example.org/&zwnj;_not_underlined_</a></p>
 <p class=summary>A line with <a href="http://example.org/1*"><strong>bold link 1</strong></a></p>
 </section>
-</div>
+</main>
 EOF
 
 perl scribe.perl --emphasis $TMP1 >$TMP2
 
 # Extract just the minutes:
-sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
 diff -u $TMP4 $TMP3

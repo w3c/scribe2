@@ -21,7 +21,7 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP2 <<EOF
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class=summary>The meeting starts.</p>
 <p class="phone s01"><cite>Rob:</cite> I'm here.</p>
@@ -31,9 +31,9 @@ cat >$TMP2 <<EOF
 <p class=irc><cite>&lt;bar&gt;</cite> No more scribes!</p>
 <p class=irc><cite>&lt;foo&gt;</cite> Indeed!</p>
 </section>
-</div>
+</main>
 EOF
 
-perl scribe.perl $TMP1 | sed -n -e '/id=meeting/,/<\/div>/p' >$TMP3
+perl scribe.perl $TMP1 | sed -n -e '/<main/,/<\/main>/p' >$TMP3
 
 diff -u $TMP2 $TMP3

@@ -17,17 +17,17 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP2 <<EOF
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class="phone s01"><cite>Ben:</cite> I said what I said yesterday.</p>
 <p class="phone s02"><cite>Bas:</cite> OK then.</p>
 </section>
-</div>
+</main>
 EOF
 
 perl scribe.perl --nokeeplines $TMP1 >$TMP3 || exit 1
 
 # Extract just the minutes
-sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP3 >$TMP4
+sed -n -e '/<main/,/<\/main>/p' $TMP3 >$TMP4
 
 diff -u $TMP2 $TMP4

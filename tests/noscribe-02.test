@@ -15,15 +15,15 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class="phone s01"><cite>Joe:</cite> I agree.</p>
 <p class="phone s02"><cite>Ben:</cite> me too.</p>
 <p class=summary>Joe and Ben agree.</p>
 </section>
-</div>
+</main>
 EOF
 
 perl scribe.perl --scribenick=* $TMP1 >$TMP2
-sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 diff -u $TMP3 $TMP4

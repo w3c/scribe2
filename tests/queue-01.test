@@ -35,16 +35,16 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class=summary>First line</p>
 <p class=summary>+queuing is not ignored</p>
 <p class=summary>?quoi is not ignored</p>
 </section>
-</div>
+</main>
 EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
-sed -n -e '/id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
 diff -u $TMP4 $TMP3

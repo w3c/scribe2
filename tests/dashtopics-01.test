@@ -73,7 +73,7 @@ cat >$TMP2 <<-EOF
 	</nav>
 	</div>
 	
-	<div id=meeting class=meeting>
+	<main id=meeting class=meeting>
 	<h2>Meeting minutes</h2>
 	<section><p class=summary>Welcome</p>
 	</section>
@@ -92,7 +92,7 @@ cat >$TMP2 <<-EOF
 	<h3 id=x03>HTML 2.1</h3>
 	<p class="phone s02"><cite>plh:</cite> Good idea!</p>
 	</section>
-	</div>
+	</main>
 	
 	
 	<address>Minutes manually created (not a transcript), formatted by <a

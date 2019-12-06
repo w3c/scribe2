@@ -94,7 +94,7 @@ cat >$TMP2 <<EOF
 </nav>
 </div>
 
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class=summary>oops, /me forgot to scribe :-(</p>
 <p class=summary>For UT at TPAC, static image of home page ideas</p>
@@ -109,7 +109,7 @@ cat >$TMP2 <<EOF
 <p class=summary><a href="https://www.nngroup.com/articles/audience-based-navigation/">https://&zwnj;www.nngroup.com/&zwnj;articles/&zwnj;audience-based-navigation/</a></p>
 <p class=summary>ah, but that is navigation, not alt info in home page</p>
 </section>
-</div>
+</main>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a

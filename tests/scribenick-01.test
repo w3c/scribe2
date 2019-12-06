@@ -66,7 +66,7 @@ cat >$TMP3 <<EOF
 </nav>
 </div>
 
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class="phone s01"><cite>bar:</cite> I just say<br>
 … I say nothing</p>
@@ -74,7 +74,7 @@ cat >$TMP3 <<EOF
 <p class="phone s02"><cite>baz:</cite> you say</p>
 <p class="phone s01"><cite>bar:</cite> OK</p>
 </section>
-</div>
+</main>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a

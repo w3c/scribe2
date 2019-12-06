@@ -93,7 +93,7 @@ Public Minutes Teleconference</h1>
 </nav>
 </div>
 
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section></section>
 
@@ -112,7 +112,7 @@ Public Minutes Teleconference</h1>
 <p class="phone s01"><cite>Abbott:</cite> Who</p>
 <p class="phone s02"><cite>Costello:</cite> The fellow playin' first base</p>
 </section>
-</div>
+</main>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a

@@ -19,7 +19,7 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class=summary>A line without emphasis.</p>
 <p class=summary>A line with a <em>italic the end.</em></p>
@@ -29,12 +29,12 @@ cat >$TMP4 <<EOF
 <p class=summary>A line with <u>underline at the end.</u></p>
 <p class=summary>A line with <u>underline</u> not at the end.</p>
 </section>
-</div>
+</main>
 EOF
 
 perl scribe.perl --emphasis $TMP1 >$TMP2
 
 # Extract just the minutes:
-sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
 diff -u $TMP4 $TMP3

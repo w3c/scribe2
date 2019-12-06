@@ -22,7 +22,7 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class="phone s01"><cite>Pete:</cite> Something else</p>
 <p class=anchor id="Right_&quot;Here&quot;!"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
@@ -31,12 +31,12 @@ cat >$TMP4 <<EOF
 <p class=irc><cite>&lt;foo&gt;</cite> namedanchorhere:  x10  </p>
 <p class="phone s01"><cite>Pete:</cite> at least to me.</p>
 </section>
-</div>
+</main>
 EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 # Extract just the minutes
-sed -n -e '/<div id=meeting/,/<\/div>/p' $TMP2 >$TMP3
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
 diff -u $TMP3 $TMP4

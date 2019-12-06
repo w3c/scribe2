@@ -134,12 +134,12 @@ W3C/ERCIM Teleconference</h1>
 </nav>
 </div>
 
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p class=summary><a href="https://www.w3.org/2017/01/24-weum-minutes.html">Last minutes</a></p>
 <p class=summary>Meeting canceled (too many regrets)</p>
 </section>
-</div>
+</main>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a
