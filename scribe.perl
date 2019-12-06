@@ -441,10 +441,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 102 $'
+my $revision = '$Revision: 103 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Nov 28 14:58:01 2019 UTC $'
+my $versiondate = '$Date: Fri Dec  6 18:39:41 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1161,10 +1161,10 @@ $actiontoc$resolutiontoc$issuetoc</ul>
 </nav>
 </div>
 
-<div id=meeting class=meeting>
+<main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section>$minutes</section>
-</div>
+</main>
 $actions$resolutions$issues
 
 <address>Minutes manually created (not a transcript), formatted by <a
