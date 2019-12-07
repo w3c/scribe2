@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# Test --scribeonly
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:36 <foo> bar: I just say
+13:28:46 <foo> ... I say nothing
+13:28:56 <bar>  Better: I say nada
+13:29:06 <foo> baz: you say
+13:29:16 <foo> bar: OK
+13:30:00 <baz> Ignore me
+13:30:02 <foo> scribe+
+13:30:40 <foo> scribeoptions: -scribeonly
+13:31:02 <foo> s/failed: /also ignored/
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<nav id=links>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>-</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>foo</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting minutes</a>
+<ol>
+</ol>
+</li>
+</ul>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class="phone s01"><cite>bar:</cite> I just say<br>
+… I say nothing</p>
+<p class="phone s02"><cite>baz:</cite> you say</p>
+<p class="phone s01"><cite>bar:</cite> OK</p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+>scribe.perl</a> version 0.0 (2017-02-05).</a></address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Failed: s/failed: /also ignored/</p>
+<p class=warning>No scribenick or scribe found. Guessed: foo</p>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>Maybe present: bar, baz</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4

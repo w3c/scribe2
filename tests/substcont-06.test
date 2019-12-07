@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test that a s/// can change the name of a speaker.
+# Test that a failed s/// is not taken to be a speaker line.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
@@ -10,26 +10,23 @@ TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
 <foo> Joe: Original text
-<foo> Joey: More text
-<foo> Jen: Other text
-<foo> s/Joey/Joe/
-<foo> s/Joe:/Josh:/g
-<foo> s/Jen: Other text/Josh: Also my text/
+<foo> First implicit continuation
 <foo> s/Pete: text/Josh: There's no Pete/
+<foo> Second implicit continuation
 EOF
 
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class="phone s01"><cite>Josh:</cite> Original text</p>
-<p class="phone s01"><cite>Josh:</cite> More text</p>
-<p class="phone s01"><cite>Josh:</cite> Also my text</p>
+<section><p class="phone s01"><cite>Joe:</cite> Original text<br>
+… First implicit continuation</p>
 <p class=irc><cite>&lt;foo&gt;</cite> s/Pete: text/Josh: There's no Pete/</p>
+<p class="phone s01"><cite>Joe:</cite> Second implicit continuation</p>
 </section>
 </main>
 EOF
 
-perl scribe.perl $TMP1 >$TMP2 || exit 1
+perl scribe.perl -implicit $TMP1 >$TMP2 || exit 1
 
 # Extract just the minutes
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
