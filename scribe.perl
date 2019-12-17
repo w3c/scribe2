@@ -441,10 +441,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 103 $'
+my $revision = '$Revision: 104 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Dec  6 18:39:41 2019 UTC $'
+my $versiondate = '$Date: Tue Dec 17 10:20:14 2019 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -480,6 +480,7 @@ my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/' .
 
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
+	    fc('agendabot') => 1,
 	    fc('Zakim') => 1);
 
 my %options = ("team" => sub {$styleset = 'team'},
