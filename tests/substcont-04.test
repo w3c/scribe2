@@ -16,7 +16,7 @@ EOF
 
 cat >$TMP3 <<EOF
 <section><p class="phone s01"><cite>Joe:</cite> Original text</p>
-<p class=summary>s/doesnotexist/Final/G</p>
+<p class=irc><cite>&lt;foo&gt;</cite> s/doesnotexist/Final/G</p>
 <p class="phone s01"><cite>Joe:</cite> And more</p>
 </section>
 EOF

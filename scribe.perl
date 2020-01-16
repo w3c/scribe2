@@ -441,10 +441,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 104 $'
+my $revision = '$Revision: 105 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Dec 17 10:20:14 2019 UTC $'
+my $versiondate = '$Date: Thu Jan 16 17:30:36 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -702,7 +702,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~ /^ *rrsagent,/i) {
     $records[$i]->{type} = 'o';		# Ignore this line
 
-  } elsif ($records[$i]->{speaker} =~ /^RRSAgent$/) {
+  } elsif ($records[$i]->{speaker} eq 'RRSAgent') {
     # Ignore RRSAgent's list of actions, etc.
     $records[$i]->{type} = 'o';		# Ignore this line
 
@@ -917,6 +917,7 @@ for (my $i = 0; $i < @records; $i++) {
 	   ($records[$i]->{text} =~ /^($speakerpat) *: *(.*)$/ ||
 	    (!$spacecont && $records[$i]->{text}
 	     =~ /^ *($speakerpat) *: *(.*)$/)) &&
+	   $records[$i]->{type} ne 'c' &&	    # ... and not a failed s///
 	   $records[$i]->{text} !~ /^ *$urlpat/i && # ... and not a URL
 	   $records[$i]->{text} !~ /^ *$specialpat *:/i) { # ... nor special
     # A speaker line
@@ -930,7 +931,8 @@ for (my $i = 0; $i < @records; $i++) {
 	   defined $lastspeaker{$records[$i]->{speaker}} &&
 	   ($records[$i]->{text} =~ /^ *(?:\.\.\.*|…) *(.*?) *$/ ||
 	    ($implicitcont && $records[$i]->{text} =~ /^ *(.*?) *$/) ||
-	    ($spacecont && $records[$i]->{text} =~ /^ +(.*?) *$/))) {
+	    ($spacecont && $records[$i]->{text} =~ /^ +(.*?) *$/)) &&
+	   $records[$i]->{type} ne 'c') { # ... and not a failed s///
     # Looks like a continuation line
     $records[$i]->{speaker} = $lastspeaker{$records[$i]->{speaker}};
     $records[$i]->{type} = 's';		# Mark as scribe line
@@ -960,9 +962,8 @@ for (my $i = 0; $i < @records; $i++) {
     }
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   $records[$i]->{type} eq 'c') {
-    # It's a failed s/// command by the speaker.
-    $records[$i]->{type} = 'd';		# Mark as descriptive text
+  	   $records[$i]->{type} eq 'c') {
+    # It's a failed s/// command by the speaker. Leave it as a 'c'.
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   $records[$i]->{text} =~ /^ *-> *$urlpat/i) {
@@ -1006,7 +1007,7 @@ my %linepat = (
   B => "<p class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
   d => "<p class=summary>%3\$s</p>\n",
   i => $scribeonly ? '' : "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  c => "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  c => $scribeonly ? '' : "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
   r => "<p class=resolution id=%2\$s><strong>Resolution:</strong> %3\$s</p>\n",
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",

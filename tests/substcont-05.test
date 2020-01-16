@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Test that a failed s/// remains in the minutes, while a successful
-# one is removed.
+# Test that a failed s/// is not taken to be a speaker line.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
@@ -10,18 +9,19 @@ TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
 TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
-<foo> Original text
-<foo> Anchor text
-<foo> s/Original/Changed/
-<foo> s/Non-existent/Changed/
+<foo> Joe: Original text
+<foo> ... First continuation
+<foo> s/Pete: text/Josh: There's no Pete/
+<foo> ... Second continuation
 EOF
 
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class=summary>Changed text</p>
-<p class=summary>Anchor text</p>
-<p class=irc><cite>&lt;foo&gt;</cite> s/Non-existent/Changed/</p>
+<section><p class="phone s01"><cite>Joe:</cite> Original text<br>
+… First continuation</p>
+<p class=irc><cite>&lt;foo&gt;</cite> s/Pete: text/Josh: There's no Pete/</p>
+<p class="phone s01"><cite>Joe:</cite> Second continuation</p>
 </section>
 </main>
 EOF
@@ -31,4 +31,4 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 # Extract just the minutes
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
-diff -u $TMP3 $TMP4
+diff -u $TMP4 $TMP3

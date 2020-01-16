@@ -36,7 +36,7 @@ cat >$TMP4 <<EOF
 … over two lines.</p>
 <p class=issue id=x03><strong>Issue:</strong> This is an issue<br>
 … which is very important.</p>
-<p class=summary>s/hmmm/hmm/</p>
+<p class=irc><cite>&lt;foo&gt;</cite> s/hmmm/hmm/</p>
 </section>
 </main>
 EOF
