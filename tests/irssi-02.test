@@ -1,0 +1,219 @@
+#!/bin/bash
+
+# Test if Coralie's IRSSI theme is recognized
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+--- Log opened 2020-02-04T10:02:59Z Tue Feb 04
+2020-02-04T10:02:59Z -!- koalie [coralie@team.cloak] has joined &weum
+2020-02-04T10:02:59Z -!- Irssi: &weum: Total of 15 nicks [0 ops, 0 halfops, 0 voices, 15 normal]
+2020-02-04T10:03:01Z -!- Irssi: Join to &weum was synced in 2 secs
+2020-02-04T10:03:28Z  * koalie arriving
+2020-02-04T10:03:52Z <koalie> present+ Coralie
+2020-02-04T10:04:18Z  * koalie twice is too much!?
+2020-02-04T10:04:42Z <koalie> Zakim, agenda?
+2020-02-04T10:04:42Z <Zakim> I see 7 items remaining on the agenda:
+2020-02-04T10:04:43Z <Zakim> 1. Scribe [from agendabot]
+2020-02-04T10:04:43Z <Zakim> 2. Reminder of good teleconferences [from agendabot]
+2020-02-04T10:04:43Z <Zakim> 3. Agenda [from agendabot]
+2020-02-04T10:04:43Z <Zakim> 4. Actions [from agendabot]
+2020-02-04T10:04:43Z <Zakim> 5. Two minutes round the table [from agendabot]
+2020-02-04T10:04:43Z <Zakim> 6. Any topics arising from the two minutes [from agendabot]
+2020-02-04T10:04:44Z <Zakim> 7. Future topics or mini-presentations [from agendabot]
+2020-02-04T10:05:01Z  * koalie could have mimosas twice *a day*
+2020-02-04T10:05:45Z <stevelee> present+
+2020-02-04T10:05:50Z <Bert> present+
+2020-02-04T10:06:27Z <dmontalvo> present+ Daniel.
+2020-02-04T10:07:27Z  * koalie "folks, let's call it referrrrrer"
+2020-02-04T10:08:09Z <r12a> present+
+2020-02-04T10:08:11Z <koalie> present+ Josh
+2020-02-04T10:09:04Z <koalie> scribenick: koalie
+2020-02-04T10:09:09Z <koalie> Zakim, close item 1
+2020-02-04T10:09:09Z <Zakim> agendum 1, Scribe, closed
+2020-02-04T10:09:10Z <Zakim> I see 6 items remaining on the agenda; the next one is
+2020-02-04T10:09:10Z <Zakim> 2. Reminder of good teleconferences [from agendabot]
+2020-02-04T10:09:46Z <koalie> Zakim, take up item 2
+2020-02-04T10:09:46Z <Zakim> agendum 2. "Reminder of good teleconferences" taken up [from agendabot]
+2020-02-04T10:09:51Z <koalie> Steve: Zoom?
+2020-02-04T10:10:00Z <koalie> Bert: We use it for our european project
+2020-02-04T10:10:09Z <koalie> Zakim, close item 2
+2020-02-04T10:10:09Z <Zakim> agendum 2, Reminder of good teleconferences, closed
+2020-02-04T10:10:10Z <Zakim> I see 5 items remaining on the agenda; the next one is
+2020-02-04T10:10:10Z <Zakim> 3. Agenda [from agendabot]
+2020-02-04T10:10:12Z <koalie> Zakim, next item
+2020-02-04T10:10:12Z <Zakim> agendum 3. "Agenda" taken up [from agendabot]
+2020-02-04T10:10:21Z <koalie> [no new agendum]
+2020-02-04T10:10:24Z <koalie> Zakim, close this item
+2020-02-04T10:10:24Z <Zakim> agendum 3 closed
+2020-02-04T10:10:25Z <Zakim> I see 4 items remaining on the agenda; the next one is
+2020-02-04T10:10:25Z <Zakim> 4. Actions [from agendabot]
+2020-02-04T10:10:28Z <koalie> Zakim, drop item 4
+2020-02-04T10:10:28Z <Zakim> agendum 4, Actions, dropped
+2020-02-04T10:10:31Z <koalie> Zakim, next item
+2020-02-04T10:10:31Z <Zakim> agendum 5. "Two minutes round the table" taken up [from agendabot]
+2020-02-04T10:10:45Z <koalie> -> https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0001.html CM's two minutes
+2020-02-04T10:11:21Z -!- joconnor [joconnor@team.cloak] has joined &weum
+2020-02-04T10:11:36Z -!- joconnor is now known as RealJoshue108_
+2020-02-04T10:11:51Z <RealJoshue108_> present+
+2020-02-04T10:14:46Z <koalie> -> https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD Daniel's 2 minutes
+2020-02-04T10:17:31Z <koalie> -> https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html Josh's 2 minutes
+2020-02-04T10:19:09Z <koalie> Richard: Looked at Thai requirements
+2020-02-04T10:19:17Z <koalie> ... someone joined the Arabic TF recently
+2020-02-04T10:19:30Z <koalie> ... if anybody knows an expert in language systems, let me know
+2020-02-04T10:20:05Z <koalie> ... in order to deal with the people on expert networks, I've been reassessing the matrix document
+2020-02-04T10:20:24Z <koalie> ... one approach as people are scared of doing PRs on Github
+2020-02-04T10:20:36Z <koalie> ... I put together a system where you can edit the gap analysis document
+2020-02-04T10:20:47Z <koalie> ... by writing text in a GH issue
+2020-02-04T10:21:04Z <RealJoshue108_> +1 to GH related fear, it is a problem
+2020-02-04T10:21:06Z <koalie> s/the matrix document/how we edit the gap analysis document/
+2020-02-04T10:21:11Z <koalie> Richard: example:
+2020-02-04T10:21:15Z <r12a> https://w3c.github.io/jlreq/gap-analysis/
+2020-02-04T10:21:24Z <r12a> https://w3c.github.io/jlreq/gap-analysis/#direction
+2020-02-04T10:21:37Z <koalie> Richard: there's a section you jump to
+2020-02-04T10:21:55Z <koalie> ... and numbers of issues that deal with a particular topic
+2020-02-04T10:21:55Z <r12a> https://github.com/w3c/jlreq/issues/171
+2020-02-04T10:38:12Z <koalie> -> https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html Steve's 2 minutes
+2020-02-04T10:38:15Z <RealJoshue108_> It's helpful to disuss!
+2020-02-04T10:38:21Z <RealJoshue108_> discuss even..
+2020-02-04T10:38:58Z  * koalie hears Steve
+2020-02-04T10:39:29Z  * RealJoshue108_ lost Steve
+2020-02-04T10:39:40Z  * RealJoshue108_ back
+2020-02-04T10:39:48Z <koalie> ====
+2020-02-04T10:39:55Z <koalie> -> https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0003.html Bert's 2 minutes
+2020-02-04T10:42:09Z  * koalie mispelling in a vocabulary doc is ironic
+2020-02-04T10:42:25Z <koalie> Zakim, close this item
+2020-02-04T10:42:25Z <Zakim> agendum 5 closed
+2020-02-04T10:42:26Z <Zakim> I see 2 items remaining on the agenda; the next one is
+2020-02-04T10:42:26Z <Zakim> 6. Any topics arising from the two minutes [from agendabot]
+2020-02-04T10:43:11Z  * koalie josh your audio is pretty bad today
+2020-02-04T10:43:14Z <r12a> s/reassessing the matrix document/reassessing how to edit the gap-analysis documents/
+2020-02-04T10:43:30Z <koalie> rrsagent, please draft minutes v2
+2020-02-04T10:46:59Z <r12a> s/in respect/in Respec/
+2020-02-04T10:48:07Z -!- r12a [rishida@team.cloak] has left &weum [Bye.]
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<nav id=links>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>Bert, Coralie, Daniel., Josh, r12a, RealJoshue108_, stevelee</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>koalie</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ul>
+<li><a href="#meeting">Meeting minutes</a>
+<ol>
+<li><a href="#x01">Reminder of good teleconferences</a></li>
+<li><a href="#x02">Agenda</a></li>
+<li><a href="#x03">Two minutes round the table</a></li>
+</ol>
+</li>
+</ul>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=x01>Reminder of good teleconferences</h3>
+<p class="phone s01"><cite>Steve:</cite> Zoom?</p>
+<p class="phone s02"><cite>Bert:</cite> We use it for our european project</p>
+</section>
+
+<section>
+<h3 id=x02>Agenda</h3>
+<p class=summary>[no new agendum]</p>
+</section>
+
+<section>
+<h3 id=x03>Two minutes round the table</h3>
+<p class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0001.html">CM's two minutes</a></p>
+<p class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD">Daniel's 2 minutes</a></p>
+<p class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html">Josh's 2 minutes</a></p>
+<p class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
+… someone joined the Arabic TF recently<br>
+… if anybody knows an expert in language systems, let me know<br>
+… in order to deal with the people on expert networks, I've been reassessing how we edit the gap analysis document<br>
+… one approach as people are scared of doing PRs on Github<br>
+… I put together a system where you can edit the gap analysis document<br>
+… by writing text in a GH issue</p>
+<p class=irc><cite>&lt;RealJoshue108_&gt;</cite> +1 to GH related fear, it is a problem</p>
+<p class="phone s03"><cite>Richard:</cite> example:</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/</a></p>
+<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/#direction</a></p>
+<p class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
+… and numbers of issues that deal with a particular topic</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">https://&zwnj;github.com/&zwnj;w3c/&zwnj;jlreq/&zwnj;issues/&zwnj;171</a></p>
+<p class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>
+<p class=irc><cite>&lt;RealJoshue108_&gt;</cite> It's helpful to disuss!</p>
+<p class=irc><cite>&lt;RealJoshue108_&gt;</cite> discuss even..</p>
+<p class=summary>====</p>
+<p class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0003.html">Bert's 2 minutes</a></p>
+<p class=irc><cite>&lt;r12a&gt;</cite> s/reassessing the matrix document/reassessing how to edit the gap-analysis documents/</p>
+<p class=irc><cite>&lt;r12a&gt;</cite> s/in respect/in Respec/</p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+>scribe.perl</a> version 0.0 (2017-02-05).</a></address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Succeeded: s/the matrix document/how we edit the gap analysis document/</p>
+<p class=warning>Failed: s/reassessing the matrix document/reassessing how to edit the gap-analysis documents/</p>
+<p class=warning>Failed: s/in respect/in Respec/</p>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>Maybe present: Richard, Steve</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl --embed $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4
