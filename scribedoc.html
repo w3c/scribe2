@@ -86,8 +86,8 @@
   href="sample-team.html" >with option -team</a> and <a
   href="sample-fancy.html" >with option -fancy</a>.
 
-  <p>This manual documents scribe.perl version 2, revision 103 (dated
-  6 December 2019). See below for the <a href="#changes" >differences
+  <p>This manual documents scribe.perl version 2, revision 107 (dated
+  4 February 2020). See below for the <a href="#changes" >differences
   with version 1.</a>
 
 
@@ -1077,11 +1077,10 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
    <li><a href="#Mirc_Text_Format" >Mirc_Text_Format</a>
 
-   <li><a href="#XChat_Timestamped_Log_Format"
-     >XChat_Timestamped_Log_Format</a>
+   <!--<li><a href="#XChat_Timestamped_Log_Format"
+     >XChat_Timestamped_Log_Format</a>-->
 
-   <li><a href="#Irssi_ISO8601_Log_Text_Format"
-     >Irssi_ISO8601_Log_Text_Format</a>
+   <li><a href="#Irssi_Format" >Irssi_Format</a>
 
    <li><a href="#Yahoo_IM_Format" >Yahoo_IM_Format</a>
 
@@ -1136,6 +1135,7 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;ericn&gt; I agree.
 </pre>
 
+<!--
 	<h3 id="XChat_Timestamped_Log_Format">XChat_Timestamped_Log_Format</h3>
 	<p>Timestamped log format produced by X-Chat.  <a href="https://lists.w3.org/Archives/Public/www-archive/2005Feb/0026.html">Example</a>:</p>
 <pre class="command" id="body">
@@ -1151,14 +1151,17 @@ Feb 14 11:02:23 &lt;larryk&gt;   This is an on-the-record comment
 Feb 14 11:02:26 *    Yves This is an off-the-record comment
 **** ENDING LOGGING AT Mon Feb 14 10:22:09 2005
 </pre>
+-->
 
-	<h3 id="Irssi_ISO8601_Log_Text_Format">Irssi_ISO8601_Log_Text_Format</h3>
+	<h3 id="Irssi_Format">Irssi_Format</h3>
 	
 	<p>The format produced by Irssi logging with <a href="https://www.w3.org/TR/NOTE-datetime">ISO8601 timestamp</a> prefixes.  Example:</p>
 
-<pre class="command">2003-12-18T15:27:21-0500 &lt;dbooth&gt; Mike: Feature X would benefit users.
-2003-12-18T15:27:36-0500 &lt;dbooth&gt; ... and implementation would be easy.
-2003-12-18T15:27:36-0500 &lt;ericn&gt; I agree.
+<pre class="command">2003-12-18T15:27:21-0500Z &lt;dbooth&gt; Mike: Feature X would benefit users.
+2003-12-18T15:27:36-0500Z &lt;dbooth&gt; ... and implementation would be easy.
+2003-12-18T15:27:36-0500Z &lt;ericn&gt; I agree.
+2003-12-18T16:02:59Z -!- koalie [coralie@team.cloak] has joined &weum
+2003-12-18T16:38:58Z  * koalie hears Steve
 </pre>
 
 <p>The date, seconds and timezone are optional, so the following is also recognized:
@@ -1310,6 +1313,9 @@ Eric agrees.
      links</a> (for links with anchor text and images with captions) and
      messages from <a
      href="https://www.w3.org/2005/06/tracker/irc">trackbot</a>.
+
+   <li>
+    <p>The XChat log format is not (yet) supported.
   </ul>
 
   <!--    No addition of [recorded in ....] after an action. -->
