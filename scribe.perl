@@ -42,6 +42,8 @@
 # TODO: RRSAgent has commands to edit or drop actions (because it
 # doesn't understand s///). Should we support those?
 #
+# TODO: Add subtopics (type 'T') to the ToC?
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -84,6 +86,7 @@
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
 # If type is 't' (topic), <text> is the title for a new topic.
+# If type is 'T' (subtopic), <text> is the title for a new subtopic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
 # If type is 'r' (resolution), <text> is a resolution and <id> is a unique ID.
 # if type is 'u' (issue), <text> is an issue, <id> a unique ID.
@@ -107,7 +110,7 @@ my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 # A speaker name doesn't contain [ ":>] and doesn't start with "..".
-my $speakerpat = '(?:[^. :">]|\.[^. :">])[^ :">]*';
+my $speakerpat = '(?:[^. :">]|\\.[^. :">])[^ :">]*';
 # Some words are unlikely to be speaker names
 my $specialpat = '(?:propos(?:ed|al)|issue-\d+|action-\d+)';
 
@@ -462,10 +465,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 107 $'
+my $revision = '$Revision: 108 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Feb  4 12:47:25 2020 UTC $'
+my $versiondate = '$Date: Fri Feb 21 15:12:44 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -696,6 +699,11 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($records[$i]->{text} =~ /^ *topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
+    $records[$i]->{text} = $1;
+    $records[$i]->{id} = ++$id;		# Unique ID
+
+  } elsif ($records[$i]->{text} =~ /^ *sub-?topic *: *(.*?) *$/i) {
+    $records[$i]->{type} = 'T';		# Mark as subtopic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$id;		# Unique ID
 
@@ -935,6 +943,14 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} =~ s/^.*?> ?//i;
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
+	   ($records[$i]->{text} =~ /^ *\\(.*)/)) {	# Starts with backslash
+    $records[$i]->{type} = 'd';				# Descriptive text
+    $records[$i]->{text} = $1;				# Remove backslash
+
+  } elsif ($records[$i]->{text} =~ /^ *\\(.*)/) {	# Starts with backslash
+    $records[$i]->{text} = $1;				# Remove backslash
+
+  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
 	   ($records[$i]->{text} =~ /^($speakerpat) *: *(.*)$/ ||
 	    (!$spacecont && $records[$i]->{text}
 	     =~ /^ *($speakerpat) *: *(.*)$/)) &&
@@ -1034,6 +1050,7 @@ my %linepat = (
   s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
   u => "<p class=issue id=%2\$s><strong>Issue:</strong> %3\$s</p>\n",
+  T => "<h4 id=%2\$s>%3\$s</h4>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
 my $minutes = '';
@@ -1141,6 +1158,7 @@ my $topics = join("",
 		      esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 		      grep($_->{type} eq 't', @records)));
 if ($keeplines) {$topics =~ s/\t/<br>\n… /g;} else {$topics =~ tr/\t/ /;}
+$topics = "<ol>\n$topics</ol>\n" if ($topics);
 
 # And output the formatted HTML.
 #
@@ -1177,9 +1195,7 @@ $prev_meeting$agenda$log$next_meeting</nav>
 <h2>Contents</h2>
 <ul>
 <li><a href=\"#meeting\">Meeting minutes</a>
-<ol>
-$topics</ol>
-</li>
+$topics</li>
 $actiontoc$resolutiontoc$issuetoc</ul>
 </nav>
 </div>
