@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Test if subtopics are recognized
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Not a topic
+<foo> Subtopic: This is a subtopic
+<baz> Just a line
+<foo>  Topic: First topic
+<bar> Topic: Second one
+<foo> Subtopic: This is 2.1
+<baz> Just a line
+<foo>    Sub-topic     : This is 2.2
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p class=summary>Not a topic</p>
+<h4 id=x01>This is a subtopic</h4>
+<p class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
+</section>
+
+<section>
+<h3 id=x02>First topic</h3>
+</section>
+
+<section>
+<h3 id=x03>Second one</h3>
+<h4 id=x04>This is 2.1</h4>
+<p class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
+<h4 id=x05>This is 2.2</h4>
+</section>
+</main>
+EOF
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# Extract just the minutes
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3

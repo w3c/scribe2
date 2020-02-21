@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Test that backslashes at the start remove special meaning.
+
+trap 'rm -f $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/backslash-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/backslash-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/backslash-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/backslash-XXXXXX` || exit 1
+
+# (The triple \\\ below is needed to escape the backslash from the shell.)
+cat >$TMP1 <<EOF
+<foo> Topic: Test
+<foo> \Topic: This is not a topic.
+<foo> Ben: Indeed!
+<foo> \Ben: the man who says "indeed!"
+<foo> \Or: This is not a speaker named "Or".
+<foo> \Subtopic: This is not a subtopic.
+<foo>     \Scribe: the magic word!
+<foo>     \  Scribe: the magic word!
+<foo>   A fairly normal line.
+<foo>  Chair: Bar
+<foo>   \Chair: I said it.
+<foo> This is wrong.
+<foo> s/wrong/right/
+<foo> \s/This/isn't a substitution/
+<foo> \Action: none
+<foo>   \scribe+ bar
+<foo>  \\\n starts with \n
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=x01>Test</h3>
+<p class=summary>Topic: This is not a topic.</p>
+<p class="phone s01"><cite>Ben:</cite> Indeed!</p>
+<p class=summary>Ben: the man who says &quot;indeed!&quot;</p>
+<p class=summary>Or: This is not a speaker named &quot;Or&quot;.</p>
+<p class=summary>Subtopic: This is not a subtopic.</p>
+<p class=summary>Scribe: the magic word!</p>
+<p class=summary>  Scribe: the magic word!</p>
+<p class=summary>  A fairly normal line.</p>
+<p class=summary>Chair: I said it.</p>
+<p class=summary>This is right.</p>
+<p class=summary>s/This/isn't a substitution/</p>
+<p class=summary>Action: none</p>
+<p class=summary>scribe+ bar</p>
+<p class=summary>\n starts with \n</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+diff -u $TMP3 $TMP4
