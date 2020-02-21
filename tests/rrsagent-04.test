@@ -87,8 +87,6 @@ cat >$TMP2 <<EOF
 <h2>Contents</h2>
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
-<ol>
-</ol>
 </li>
 </ul>
 </nav>
