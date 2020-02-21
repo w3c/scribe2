@@ -86,8 +86,8 @@
   href="sample-team.html" >with option -team</a> and <a
   href="sample-fancy.html" >with option -fancy</a>.
 
-  <p>This manual documents scribe.perl version 2, revision 107 (dated
-  4 February 2020). See below for the <a href="#changes" >differences
+  <p>This manual documents scribe.perl version 2, revision 108 (dated
+  21 February 2020). See below for the <a href="#changes" >differences
   with version 1.</a>
 
 
@@ -191,6 +191,12 @@
       href="https://www.w3.org/2001/12/zakim-irc-bot.html#agenda"
       >Zakim bot's agenda control</a>, which is recognized by default.
       (See the <a href="#useZakimTopics">-useZakimTopics option</a> below.)
+
+     <td>anybody
+    <tr>
+     <td class=command>Subtopic: Intro to feature X
+
+     <td class=help>Use "Subtopic: …" for a subtopic.
 
      <td>anybody
     <tr>
@@ -941,7 +947,7 @@ Resolved: next-object does not wrap</pre>
   A few other words (toc, meeting, attendees, links,
   resolutionsummary, and actionsummary) are also forbidden, because
   scribe.perl uses them itself.
-  
+
   <pre class="command">Next meeting: http:///example.org/20180214/mins
 Previous meeting: http://example.org/20180228/mins</pre>
 
@@ -951,6 +957,40 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <pre class="command">Agenda: http://example.org/2019-02/agenda</pre>
 
   <p>This adds a link to the meeting agenda at the top of the minutes.
+
+  <h3 id="escaped">Escapes</h3>
+
+  <p>If you <em>don't</em> want a line to be interpreted by
+  scribe.perl, start it with a backslash. E.g.:
+
+  <pre class="command">&lt;gigi&gt; here are some words:
+&lt;gigi&gt; \Subject: a noun
+&lt;gigi&gt; \Topic: same as Subject
+&lt;gigi&gt; \Ben: a name
+&lt;gigi&gt; \Action: a noun</pre>
+
+  <p>Even if gigi is the scribe, the above will not be taken as lines
+  spoken by ‘Ben’ or by ‘Subject’ and will not create a new topic or a
+  new action. A few more examples:
+
+  <pre class="command">&lt;jany&gt; \s/week/month/
+&lt;jany&gt; \scribe+
+&lt;jany&gt; \present + Jan</pre>
+
+  <p>Such an initial backslash is omitted from the minutes. If you
+  happen to have a line that <em>should</em> start with a backslash,
+  double it:
+
+  <pre class="command">&lt;jany&gt; Here are some escapes used in C:
+&lt;jany&gt; \\n = newline
+&lt;jany&gt; \\t = tab</pre>
+
+  <p>Backslashes elswhere than at the start are not special. E.g., you
+  could write the above like this:
+
+  <pre class="command">&lt;jany&gt; Here are some escapes used in C:
+&lt;jany&gt; * \n = newline
+&lt;jany&gt; * \t = tab</pre>
 
   <h3 id="links">Embedding links</h3>
 
