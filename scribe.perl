@@ -462,10 +462,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 109 $'
+my $revision = '$Revision: 110 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Feb 28 14:23:49 2020 UTC $'
+my $versiondate = '$Date: Fri Feb 28 15:50:13 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1061,10 +1061,13 @@ foreach my $p (@records) {
   my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
     esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1, 1),
     $speakers{fc $p->{speaker}} // '', ++$lineid;
-  if ($keeplines) {
-    $line =~ s|\t|"<br>\n<a id=" . ++$lineid . "></a>… "|ge;
-  } else {
+  if (!$keeplines) {
     $line =~ tr/\t/ /;
+  } elsif ($line =~ /\t/) {
+    #    $line =~ s|\t|"<br>\n<a id=" . ++$lineid . "></a>… "|ge;
+    $line =~ s|\t|"<br>\n<span id=" . ++$lineid . ">… "|e; # First line
+    $line =~ s|\t|"</span><br>\n<span id=" . ++$lineid . ">… "|ge; # Others
+    $line =~ s|</p>|</span></p>|; # Last line
   }
   $minutes .= $line;
 }
