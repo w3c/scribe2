@@ -155,10 +155,8 @@ sub RRSAgent_text_format($$)
   my ($lines_ref, $records_ref) = @_;
 
   foreach (@$lines_ref) {
-    if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (joined|left) /) {
+    if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (?:joined|left|changed the topic to: ) /) {
       # Ignore lines like "<jfm> jfm has joined #foo"
-    } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has changed the topic to: /) {
-      # Ignore lines like "<jfm> jfm has changed the top to:..."
     } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
     } elsif (/^\s*$/) {
@@ -462,10 +460,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 110 $'
+my $revision = '$Revision: 111 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Feb 28 15:50:13 2020 UTC $'
+my $versiondate = '$Date: Fri Feb 28 17:05:30 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -938,13 +936,13 @@ for (my $i = 0; $i < @records; $i++) {
       $namedanchors{$a} = 1;
     }
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   $records[$i]->{text} =~ /^\s*<$records[$i]->{speaker}>/i) {
+  } elsif ($records[$i]->{text} =~ /^\s*\Q<$records[$i]->{speaker}\E>/i &&
+	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
     # Ralph's escape for a scribe's personal remarks: "<mynick> my opinion"
     $records[$i]->{text} =~ s/^.*?> ?//i;
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   ($records[$i]->{text} =~ /^ *\\(.*)/)) {	# Starts with backslash
+  } elsif (($records[$i]->{text} =~ /^ *\\(.*)/) &&	# Starts with backslash
+	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
     $records[$i]->{type} = 'd';				# Descriptive text
     $records[$i]->{text} = $1;				# Remove backslash
 
@@ -999,8 +997,8 @@ for (my $i = 0; $i < @records; $i++) {
       $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
     }
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-  	   $records[$i]->{type} eq 'c') {
+  } elsif ($records[$i]->{type} eq 'c' &&
+	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
     # It's a failed s/// command by the speaker. Leave it as a 'c'.
 
   } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
