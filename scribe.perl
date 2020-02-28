@@ -36,9 +36,6 @@
 # scribeoptions:-allowspace apply only until they are overridden by
 # another?
 #
-# TODO: A way to allow a scribe to write "A: 12 votes", where "A" is
-# *not" interpreted as a speaker. Maybe: "A\:", ":A:", "A::"?
-#
 # TODO: RRSAgent has commands to edit or drop actions (because it
 # doesn't understand s///). Should we support those?
 #
@@ -465,10 +462,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 108 $'
+my $revision = '$Revision: 109 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Feb 21 15:12:44 2020 UTC $'
+my $versiondate = '$Date: Fri Feb 28 14:23:49 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -483,11 +480,15 @@ my %present;			# List of participants
 my %regrets;			# List of regrets
 my $minutes_url;		# URL of the minutes according to RRSAgent
 my $logging_url;		# URL of the log according to RRSAgent
-my $id = 'x00';			# Generates unique IDs
 my $agenda = '';		# HTML-formatted link to an agenda
 my %chairs;			# List of meeting chairs
 my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
+my $topicid = 't00';		# Generates unique ID for each topic
+my $actionid = 'a00';		# Generates unique ID for each action
+my $resolutionid = 'r00';	# Generates unique ID for each resolution
+my $issueid = 'i00';		# Generates unique ID for each issue
+my $lineid = 'x000';		# Generates unique ID for each line
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
@@ -700,19 +701,19 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~ /^ *topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
-    $records[$i]->{id} = ++$id;		# Unique ID
+    $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($records[$i]->{text} =~ /^ *sub-?topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 'T';		# Mark as subtopic line
     $records[$i]->{text} = $1;
-    $records[$i]->{id} = ++$id;		# Unique ID
+    $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($dash_topics && $records[$i]->{text} =~ /^ *-+ *$/) {
     for (my $j = $i + 1; $j < @records; $j++) {
       if ($records[$j]->{speaker} eq $records[$i]->{speaker}) {
 	$records[$i]->{type} = 't';
 	$records[$i]->{text} = $records[$j]->{text} =~ s/^ *(.*?) *$/$1/r;
-	$records[$i]->{id} = ++$id;	# Unique ID
+	$records[$i]->{id} = ++$topicid;
 	$records[$j]->{type} = 'o';
 	last;
       }
@@ -740,17 +741,17 @@ for (my $i = 0; $i < @records; $i++) {
 	   $records[$i]->{text} =~ /^ *action +([^ ]+ +to\b.*?) *$/i) {
     $records[$i]->{type} = 'a';		# Mark as action line
     $records[$i]->{text} = $1;
-    $records[$i]->{id} = ++$id;		# Unique ID
+    $records[$i]->{id} = ++$actionid;	# Unique ID
 
   } elsif ($records[$i]->{text} =~ /^ *resol(?:ved|ution) *: *(.*?) *$/i) {
     $records[$i]->{type} = 'r';		# Mark as resolution line
     $records[$i]->{text} = $1;
-    $records[$i]->{id} = ++$id;		# Unique ID
+    $records[$i]->{id} = ++$resolutionid;
 
   } elsif ($records[$i]->{text} =~ /^ *issue *: *(.*?) *$/i) {
     $records[$i]->{type} = 'u';		# Mark as issue line
     $records[$i]->{text} = $1;
-    $records[$i]->{id} = ++$id;		# Unique ID
+    $records[$i]->{id} = ++$issueid;	# Unique ID
 
   } elsif ($records[$i]->{text} =~ /^ *agenda *: *($urlpat) *$/i) {
     $agenda = '<a href="' . esc($1) . "\">$agenda_icon</a>\n";
@@ -838,7 +839,7 @@ for (my $i = 0; $i < @records; $i++) {
 	   $records[$i]->{text} =~ /^agendum \d+\. "(.*)" taken up/) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
-    $records[$i]->{id} = ++$id;		# Unique ID
+    $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   $records[$i]->{text} =~ /the attendees (?:were|have been) (.*?),?$/){
@@ -989,7 +990,7 @@ for (my $i = 0; $i < @records; $i++) {
     my ($s, $j, $speaker) = ($1, $i - 1, $records[$i]->{speaker});
     $j-- while $j > 0 && ($records[$j]->{type} eq 'o' ||
 			  $records[$j]->{speaker} ne $speaker);
-    if ($j >= 0 && $records[$j]->{type} =~ /[artuUd]/) {
+    if ($j >= 0 && $records[$j]->{type} =~ /[artTuUd]/) {
       $records[$j]->{text} .= "\t" . $s;
       $records[$i]->{type} = 'o';	# Omit this line from output
     } elsif (is_cur_scribe($speaker, \%curscribes)) {
@@ -1034,32 +1035,37 @@ push @diagnostics, "Maybe present: " .
 # Step 6. Convert records to HTML and then fill a template.
 #
 # Each type of record is converted to a specific HTML fragment, with
-# %1$s replaced by the speaker, %2$s by the ID and %3$s by the text.
+# %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
+# by the speaker ID and %5$s by a unique ID for the record.
 #
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
 my %linepat = (
-  a => "<p class=action id=%2\$s><strong>Action:</strong> %3\$s</p>\n",
-  b => "<p class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  B => "<p class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
-  d => "<p class=summary>%3\$s</p>\n",
-  i => $scribeonly ? '' : "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  c => $scribeonly ? '' : "<p class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  a => "<p id=%2\$s class=action><strong>Action:</strong> %3\$s</p>\n",
+  b => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  B => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
+  d => "<p id=%5\$s class=summary>%3\$s</p>\n",
+  i => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  c => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
-  r => "<p class=resolution id=%2\$s><strong>Resolution:</strong> %3\$s</p>\n",
-  s => "<p class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
+  r => "<p id=%2\$s class=resolution><strong>Resolution:</strong> %3\$s</p>\n",
+  s => "<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  u => "<p class=issue id=%2\$s><strong>Issue:</strong> %3\$s</p>\n",
+  u => "<p id=%2\$s class=issue><strong>Issue:</strong> %3\$s</p>\n",
   T => "<h4 id=%2\$s>%3\$s</h4>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
 my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
-  my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s',
+  my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
     esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1, 1),
-    $speakers{fc $p->{speaker}} // '';
-  if ($keeplines) {$line =~ s/\t/<br>\n… /g;} else {$line =~ tr/\t/ /;}
+    $speakers{fc $p->{speaker}} // '', ++$lineid;
+  if ($keeplines) {
+    $line =~ s|\t|"<br>\n<a id=" . ++$lineid . "></a>… "|ge;
+  } else {
+    $line =~ tr/\t/ /;
+  }
   $minutes .= $line;
 }
 
@@ -1208,7 +1214,7 @@ $actions$resolutions$issues
 
 <address>Minutes manually created (not a transcript), formatted by <a
 href=\"https://w3c.github.io/scribe2/scribedoc.html\"
->scribe.perl</a> version $revision ($versiondate).</a></address>
+>scribe.perl</a> version $revision ($versiondate).</address>
 
 $diagnostics</body>
 </html>

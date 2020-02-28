@@ -44,7 +44,7 @@
   </div>
 
   <div class=toc>
-   <h4>Also on this page &#x2192; </h4>
+   <h4>On this page &#x2192; </h4>
    <ul>
     <li><a href="#Quick_Start_Guide">Quick Start Guide</a>
      &nbsp;&bull;&nbsp;
@@ -57,6 +57,10 @@
     <li><a href="#options">Options</a> &nbsp;&bull;&nbsp;
 
     <li><a href="#one_time_commands">Commands</a> &nbsp;&bull;&nbsp;
+
+    <li><a href="#links">Embedding links</a> &nbsp;&bull;&nbsp;
+
+    <li><a href="#images">Embedding images</a> &nbsp;&bull;&nbsp;
 
     <li><a href="#editing_the_log">Editing the Log</a>
      &nbsp;&bull;&nbsp;
@@ -378,22 +382,22 @@
 
   <h2 id="Pros_and_Cons_of_Using_Scribe.perl">Pros and Cons of Using
    Scribe.perl</h2>
-	
-  <h3 id=pros>Pros</h3>
+
+  <p id=pros>Pros:
 
   <ul>
    <li>It's free, it's open source, and it usually works.
-    
+
    <li>It runs anywhere that perl is installed. (I hope! Please let me
     know if it doesn't.)
-      
+
    <li>Easy to use. It uses conventions that are used in many W3C
     working groups.
 
    <li>It recognizes several input and log formats.
   </ul>
 
-  <h3 id=cons>Cons</h3>
+  <p id=cons>Cons:
 
   <ul>
    <li>You still need to do some manual clean-up.
@@ -564,7 +568,7 @@
 
   <h3 id="options_output_format">Output Format Options</h3>
 
-  <p>These options control the output format.</p>	
+  <p>These options control the output format.</p>
 
   <dl>
    <dt>-scribeOnly <dd>Only include what the scribe wrote. Discard any
@@ -582,7 +586,7 @@
     diagnostic output into the generated minutes. This is most useful
     when scribe.perl is run as part of an automated process that
     otherwise would not display the diagnostic output to the user.
-    
+
    <dt>-noEmbedDiagnostics <dd>[DEFAULT] Write diagnostic output to
     the console (stderr).
 
@@ -647,7 +651,7 @@
   <dl>
    <dt>-member <dd>Use the style sheet for member-only minutes, rather
     than the style sheet for public minutes.
-    
+
    <dt>-team <dd>Use the style sheet for team-only minutes, rather
     than the style sheet for public minutes.
 
@@ -849,12 +853,12 @@ Scribe+ jon2, adam=Adamsky</pre>
   <p>Use ‘scribe+’ (with or without a ‘:’) if one or more scribes
    start taking minutes in addition to, rather than replacing, the
    previous scribes.
-  
+
   <pre class="command">Scribe- adam
 Scribe- adam,teo</pre>
 
   <p>Indicates when some scribes stop taking minutes.
-   
+
   <pre class="command">Scribe+
 Scribe-</pre>
 
@@ -882,11 +886,11 @@ Scribe-</pre>
 
   <p>Specify the agenda URL (optional). If used multiple times, only
    the last one has effect.
-	
+
   <pre class="command" id=present>Present: Jonathan, Mary, Barbara, Steve</pre>
 
   <p>Indicate who was present.
-	
+
   <pre class="command">Regrets: Nathan, Emma</pre>
 
   <p>Indicate who sent regrets (optional).
@@ -904,7 +908,7 @@ Scribe-</pre>
 
   <p>Specify the meeting date. Not usually needed, because the default
    is guessed from the log URL reported by RRSAgent.
-	
+
   <pre class="command">ACTION: Frank, Mary and Kate to propose solution for issue 42
 action Ann: publish report 17
 Action Fred to do something</pre>
@@ -912,7 +916,7 @@ Action Fred to do something</pre>
   <p>Three ways to give an action item: ‘action:’, ‘action name:’ and
    ‘action name to’. (Other bots, such as Tracker, may require that
    only one of these syntaxes is used.)
-	
+
   <pre class="command">RESOLUTION: Issue 42 closed as duplicate of issue 21
 Resolved: next-object does not wrap</pre>
 
@@ -992,7 +996,7 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;jany&gt; * \n = newline
 &lt;jany&gt; * \t = tab</pre>
 
-  <h3 id="links">Embedding links</h3>
+  <h2 id="links">Embedding links</h2>
 
   <p>Scribe.perl automatically recognizes most URLs
   (<code>http://…</code>, <code>mailto:…</code>, etc.) and turns them
@@ -1006,8 +1010,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <code>-&gt;</code> is due to Ralph Swick.) More precisely, you can
   use any of the following:
 
-  <p>A ‘Ralph link’ has <code>-&gt;</code> followed by a URL followed
-  by anchor text, like this:
+  <p>A <strong>Ralph link</strong> has <code>-&gt;</code> followed by
+  a URL followed by anchor text, like this:
 
 <pre class=command>
 &lt;dbooth&gt; See -&gt; https://www.example.org/ns/w2 wall 2
@@ -1021,8 +1025,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
   lines contain the link <a href="https://www.example.org/ns/w2">wall
   2</a>.
 
-  <p id="xueyuan-link">A ‘Xueyuan link’ has the <code>-&gt;</code>
-  between the anchor text and the URL:
+  <p id="xueyuan-link">A <strong>Xueyuan link</strong> has
+  the <code>-&gt;</code> between the anchor text and the URL:
 
 <pre class=command>
 &lt;dbooth&gt; wall 2 -&gt; https://www.example.org/ns/w2
@@ -1033,7 +1037,7 @@ Previous meeting: http://example.org/20180228/mins</pre>
   actually want quotes in the anchor text.
 
   <p>The anchor text and URL can also swap places. This is known as an
-  ‘inverted Xueyuan link’:
+  <strong>inverted Xueyuan link:</strong>
 
 <pre class=command>
 &lt;dbooth&gt; See https://www.example.org/ns/w2 -&gt; wall 2
@@ -1044,8 +1048,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <p>In this case, like with the Ralph links, you can use quotes to
   limit what goes into the anchor text.
 
-  <p id="ivan-link">And finally an ‘Ivan link’ is like a Ralph link,
-  but with the anchor text and the URL swapped:
+  <p id="ivan-link">And finally an <strong>Ivan link</strong> is like
+  a Ralph link, but with the anchor text and the URL swapped:
 
 <pre class=command>
 &lt;dbooth&gt; -&gt; wall 2 https://www.example.org/ns/w2
@@ -1055,7 +1059,7 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <p>Like Xueyuan links, Ivan links should not have quotes around the
   text (unless you actually want the anchor text to contain quotes).
 
-  <h3 id="links">Embedding images</h3>
+  <h2 id="images">Embedding images</h2>
 
   <p>You can also embed images in the minutes by means of Ralph,
   (inverted) Xueyuan or Ivan links. The only difference is that
@@ -1074,9 +1078,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;dbooth&gt; And --&gt; wall 2 https://www.example.org/ns/w2.jpg too.
 </pre>
 
-  <p>The anchor text becomes the image caption. There is no way
-  currently to specify a text alternative (‘alt text’) for the
-  image.</p>
+  <p>The anchor text becomes the image's text alternative (‘alt
+  text’). There is no way to specify a caption.</p>
 
   <h2 id="editing_the_log">Manually Editing the Log</h2>
 
@@ -1109,26 +1112,28 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <p>Several log formats are recognized, and are described below:
 
   <ul>
-   <li><a href="#RRSAgent_Text_Format" >RRSAgent_Text_Format</a>
+   <li><a href="#RRSAgent_Text_Format" >RRSAgent text format</a>
     (RECOMMENDED)
 
    <li><a href="scribedoc.htm#Mirc_Timestamped_Log_Format"
      >Mirc_Timestamped_Log_Format</a>
 
-   <li><a href="#Mirc_Text_Format" >Mirc_Text_Format</a>
+   <li><a href="#Mirc_Text_Format" >Mirc text format</a>
 
    <!--<li><a href="#XChat_Timestamped_Log_Format"
      >XChat_Timestamped_Log_Format</a>-->
 
-   <li><a href="#Irssi_Format" >Irssi_Format</a>
+   <li><a href="#Irssi_Format" >Irssi format</a>
 
-   <li><a href="#Yahoo_IM_Format" >Yahoo_IM_Format</a>
+   <li><a href="#Bip_Format" >Bip format</a>
 
-   <li><a href="#Plain_Text_Format" >Plain_Text_Format</a>
+   <li><a href="#Yahoo_IM_Format" >Yahoo IM format</a>
 
-   <li><a href="#Bert_IRSSI_Format" >Bert_IRSSI_Format</a>
+   <li><a href="#Plain_Text_Format" >Plain-text format</a>
+
+   <li><a href="#Bert_IRSSI_Format" >Bert IRSSI format</a>
   </ul>
-	
+
   <p>Scribe.perl guesses which format you have used by trying each in
    turn until it finds one one that matches.
 
@@ -1141,18 +1146,24 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
    <li>Write a parser for it and add it to scribe.perl.
   </ol>
-  
-  <h3 id="RRSAgent_Text_Format">RRSAgent_Text_Format (RECOMMENDED)</h3>
-	
-	<p>The plain text format (*.txt) produced by RRSAgent.  Hint: add ".txt" to the RRSAgent log URL to get the text version, such as: http://www.w3.org/2002/11/07-ws-arch-irc.txt .  The timestamps are ignored (except in guessing the input format), so you can safely edit the log and add lines without having to fake timestamps.  <a href="https://www.w3.org/2003/03/03-ws-desc-irc.txt">Example:</a></p>
+
+  <h3 id="RRSAgent_Text_Format">RRSAgent text format (recommended)</h3>
+
+  <p>The plain text format (*.txt) produced by RRSAgent.  Hint: add
+   ".txt" to the RRSAgent log URL to get the text version, such as:
+   http://www.w3.org/2002/11/07-ws-arch-irc.txt .  The timestamps are
+   ignored, so you can safely edit the log and add lines without
+   having to fake
+   timestamps. <a href="https://www.w3.org/2003/03/03-ws-desc-irc.txt"
+   >Example:</a></p>
 
 <pre class="command">20:41:27 &lt;dbooth&gt; Mike: Feature X would benefit users.
 20:41:37 &lt;dbooth&gt; ... and implementation would be easy.
 20:41:47 &lt;ericn&gt; I agree.
 </pre>
 
-	<h3 id="Mirc_Timestamped_Log_Format">Mirc_Timestamped_Log_Format</h3>
-	
+  <h3 id="Mirc_Timestamped_Log_Format">Mirc timestamped log format</h3>
+
 	<p>Timestamped log format produced by mIRC.  Example:
 	</p>
 <pre class="command">
@@ -1162,10 +1173,10 @@ Previous meeting: http://example.org/20180228/mins</pre>
 [19:36] * Zakim sees Steven on the speaker queue
 </pre>
 
-	<h3 id="Mirc_Text_Format">Mirc_Text_Format</h3>
-	
+  <h3 id="Mirc_Text_Format">Mirc text format</h3>
+
 <p>	The format produced by mIRC when you do Buffer&rarr;Save As.  Example:
-</p>	
+</p>
 <pre class="command">
 &lt;dbooth&gt; Mike: Feature X would benefit users.
 &lt;dbooth&gt; ... and implementation would be easy.
@@ -1193,14 +1204,14 @@ Feb 14 11:02:26 *    Yves This is an off-the-record comment
 </pre>
 -->
 
-	<h3 id="Irssi_Format">Irssi_Format</h3>
-	
+  <h3 id="Irssi_Format">Irssi format</h3>
+
 	<p>The format produced by Irssi logging with <a href="https://www.w3.org/TR/NOTE-datetime">ISO8601 timestamp</a> prefixes.  Example:</p>
 
 <pre class="command">2003-12-18T15:27:21-0500Z &lt;dbooth&gt; Mike: Feature X would benefit users.
 2003-12-18T15:27:36-0500Z &lt;dbooth&gt; ... and implementation would be easy.
 2003-12-18T15:27:36-0500Z &lt;ericn&gt; I agree.
-2003-12-18T16:02:59Z -!- koalie [coralie@team.cloak] has joined &weum
+2003-12-18T16:02:59Z -!- koalie [coralie@team.cloak] has joined &amp;weum
 2003-12-18T16:38:58Z  * koalie hears Steve
 </pre>
 
@@ -1211,16 +1222,32 @@ Feb 14 11:02:26 *    Yves This is an off-the-record comment
 15:27 &lt;ericn&gt; I agree.
 </pre>
 
-	<h3 id="Yahoo_IM_Format">Yahoo_IM_Format</h3>
-	
+  <h3 id="Bip_Format">Bip format</h3>
+
+  <p>Bip is an IRC proxy. Its logs look like this:
+
+<pre class="command">
+27-02-2020 15:04:33 < addison!~addison@team.cloak: zakim, take up agendum 1
+27-02-2020 15:04:33 < Zakim!zakim@team.cloak: agendum 1. "Agenda and Minutes" taken up [from agendabot]
+27-02-2020 15:04:54 -!- JcK!~JcK@team.cloak has joined #i18n
+27-02-2020 15:04:54 < addison!~addison@team.cloak: zakim, take up agendum 2
+27-02-2020 15:04:54 < Zakim!zakim@team.cloak: agendum 2. "Action Items" taken up [from agendabot]
+27-02-2020 15:05:04 < addison!~addison@team.cloak: https://www.w3.org/International/track/actions/open
+27-02-2020 15:05:22 < addison!~addison@team.cloak: action-856?
+27-02-2020 15:05:22 < * trackbot!trackbot@team.cloak is looking up action-856.
+27-02-2020 15:05:22 < trackbot!trackbot@team.cloak: action-856 -- Richard Ishida to Check the time planner -- due 2020-02-27 -- OPEN
+</pre>
+
+  <h3 id="Yahoo_IM_Format">Yahoo IM format</h3>
+
 	<p>The format produced when you save a Yahoo IM session.  Example:</p>
 <pre class="command">dbooth: Mike: Feature X would benefit users.
 dbooth: ... and implementation would be easy.
 ericn: I agree.
 </pre>
 
-	<h3 id="Plain_Text_Format">Plain_Text_Format</h3>
-	
+  <h3 id="Plain_Text_Format">Plain-text format</h3>
+
 	<p>Line-oriented plain text format.  This format is intended for occasions when the scribe doesn't have access to IRC, and simply takes notes in a text editor.  Example:
 	</p>
 <pre class="command">
@@ -1228,7 +1255,7 @@ ericn: I agree.
 Eric agrees.
 </pre>
 
-	<h3 id="Bert_IRSSI_Format">Bert_IRSSI_Format</h3>
+  <h3 id="Bert_IRSSI_Format">Bert IRSSI format</h3>
 
 	<p>The style of IRSSI logs as used by Bert Bos, characterized
 	by a date &amp; time at the start and a vertical bar
@@ -1367,6 +1394,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Fri Dec  6 23:05:39 2019 UTC $</address>
+   >W3C Software License</a>. $Date: Fri Feb 28 14:23:49 2020 UTC $</address>
  </body>
 </html>
