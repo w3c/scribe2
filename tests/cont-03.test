@@ -24,9 +24,9 @@ cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x006 class="phone s01"><cite>Pete:</cite> Something else<br>
-<a id=x007></a>… I wanted to say.<br>
-<a id=x008></a>… Very important<br>
-<a id=x009></a>… This is a continuation.</p>
+<span id=x007>… I wanted to say.</span><br>
+<span id=x008>… Very important</span><br>
+<span id=x009>… This is a continuation.</span></p>
 </section>
 </main>
 EOF

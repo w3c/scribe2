@@ -22,12 +22,12 @@ cat >$TMP2 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x003 class="phone s01"><cite>bar:</cite> I say<br>
-<a id=x004></a>… true: I say</p>
+<span id=x004>… true: I say</span></p>
 <p id=x006 class="phone s02"><cite>2top:</cite> me too<br>
-<a id=x007></a>… 5:00 pm: 5 is not a speaker</p>
+<span id=x007>… 5:00 pm: 5 is not a speaker</span></p>
 <p id=x010 class="phone s03"><cite>.hidden:</cite> I'm a speaker<br>
-<a id=x011></a>… but this: is a continuation<br>
-<a id=x012></a>… &quot;dpv:nace&quot; has a quote and is not a speaker</p>
+<span id=x011>… but this: is a continuation</span><br>
+<span id=x012>… &quot;dpv:nace&quot; has a quote and is not a speaker</span></p>
 </section>
 </main>
 EOF

@@ -69,7 +69,7 @@ cat >$TMP3 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x002 class="phone s01"><cite>Mike:</cite> Feature X would benefit users.<br>
-<a id=x003></a>… and implementation would be easy.</p>
+<span id=x003>… and implementation would be easy.</span></p>
 <p id=x004 class=summary>This is pretending to be a long line that mIRC breaks in order to display, but scribe.perl will re-join into a single line.</p>
 <p id=x005 class=irc><cite>&lt;ericn&gt;</cite> I agree.</p>
 </section>

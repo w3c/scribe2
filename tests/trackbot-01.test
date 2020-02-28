@@ -37,8 +37,8 @@ cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x007 class="phone s01"><cite>Pete:</cite> Something else<br>
-<a id=x008></a>… I wanted to say.<br>
-<a id=x009></a>… Very important</p>
+<span id=x008>… I wanted to say.</span><br>
+<span id=x009>… Very important</span></p>
 <p id=x012 class=irc><cite>&lt;bar&gt;</cite> action-33?</p>
 <p id=x013 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/community/dpvcg/track/actions/33">action-33</a>:</strong> Harsh to Summarize elements of consent -- due 2018-11-13 -- OPEN</p>
 <p id=x017 class=summary>close action-35</p>

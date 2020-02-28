@@ -171,18 +171,18 @@ cat >$TMP3 <<EOF
 <p id=x042 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD">Daniel's 2 minutes</a></p>
 <p id=x043 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html">Josh's 2 minutes</a></p>
 <p id=x050 class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
-<a id=x051></a>… someone joined the Arabic TF recently<br>
-<a id=x052></a>… if anybody knows an expert in language systems, let me know<br>
-<a id=x053></a>… in order to deal with the people on expert networks, I've been reassessing how we edit the gap analysis document<br>
-<a id=x054></a>… one approach as people are scared of doing PRs on Github<br>
-<a id=x055></a>… I put together a system where you can edit the gap analysis document<br>
-<a id=x056></a>… by writing text in a GH issue</p>
+<span id=x051>… someone joined the Arabic TF recently</span><br>
+<span id=x052>… if anybody knows an expert in language systems, let me know</span><br>
+<span id=x053>… in order to deal with the people on expert networks, I've been reassessing how we edit the gap analysis document</span><br>
+<span id=x054>… one approach as people are scared of doing PRs on Github</span><br>
+<span id=x055>… I put together a system where you can edit the gap analysis document</span><br>
+<span id=x056>… by writing text in a GH issue</span></p>
 <p id=x057 class=irc><cite>&lt;RealJoshue108_&gt;</cite> +1 to GH related fear, it is a problem</p>
 <p id=x059 class="phone s03"><cite>Richard:</cite> example:</p>
 <p id=x060 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/</a></p>
 <p id=x061 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/#direction</a></p>
 <p id=x063 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
-<a id=x064></a>… and numbers of issues that deal with a particular topic</p>
+<span id=x064>… and numbers of issues that deal with a particular topic</span></p>
 <p id=x065 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">https://&zwnj;github.com/&zwnj;w3c/&zwnj;jlreq/&zwnj;issues/&zwnj;171</a></p>
 <p id=x066 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>
 <p id=x067 class=irc><cite>&lt;RealJoshue108_&gt;</cite> It's helpful to disuss!</p>

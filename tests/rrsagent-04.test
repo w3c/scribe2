@@ -99,7 +99,7 @@ cat >$TMP2 <<EOF
 <p id=x010 class=summary>informal UT - ask &quot;What do you knwo about accessibility?&quot; and then &quot;What do you want to know about accessibility?&quot; and then let them try to find their answers</p>
 <p id=x011 class=summary>goodies to lure them and thank them</p>
 <p id=x013 class="phone s01"><cite>Charlotte:</cite> W3C Developer site work well there because less stuff and just one audience.<br>
-<a id=x014></a>… good visual treatment of the site map</p>
+<span id=x014>… good visual treatment of the site map</span></p>
 <p id=x015 class=summary>+1 to we have lots of different audiences</p>
 <p id=x016 class="phone s02"><cite>Eric:</cite> from last meeting, not just the learning resources, also clear that we are doing the standards work</p>
 <p id=x017 class=summary><a href="https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page">https://&zwnj;www.w3.org/&zwnj;WAI/&zwnj;EO/&zwnj;wiki/&zwnj;Redesign_-_October_Revisions#Home_page</a></p>
