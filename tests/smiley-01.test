@@ -17,9 +17,9 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class=summary>A line without a smiley.</p>
-<p class=summary>A line with seven smileys: ☺ 😉 ☹ 😕 😜 🙆 🙎</p>
-<p class=summary>A smiley in parentheses: (☺)</p>
+<section><p id=x001 class=summary>A line without a smiley.</p>
+<p id=x002 class=summary>A line with seven smileys: ☺ 😉 ☹ 😕 😜 🙆 🙎</p>
+<p id=x003 class=summary>A smiley in parentheses: (☺)</p>
 </section>
 </main>
 EOF

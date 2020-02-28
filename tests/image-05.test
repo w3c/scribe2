@@ -13,7 +13,7 @@ url2="https://www.w3.org/Icons/www24.png"
 title2="WWW logo"
 
 # Expected line.
-echo "<section><p class=summary>  And here are some images:    <a href=\"$url1\"><img src=\"$url1\" alt=\"$title1\"></a>   <a href=\"$url2\"><img src=\"$url2\" alt=\"$title2\"></a></p>" >$TMP1
+echo "<section><p id=x001 class=summary>  And here are some images:    <a href=\"$url1\"><img src=\"$url1\" alt=\"$title1\"></a>   <a href=\"$url2\"><img src=\"$url2\" alt=\"$title2\"></a></p>" >$TMP1
 
 # Get the generated line:
 echo "<foo>   And here are some images:    -->$title1  $url1   -->   $title2 $url2" | \

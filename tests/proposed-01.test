@@ -21,13 +21,13 @@ EOF
 cat >$TMP2 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class="phone s01"><cite>bar:</cite> I say<br>
-… true: I say</p>
-<p class=summary>PROPOSED : close all actions</p>
-<p class=irc><cite>&lt;bar&gt;</cite> ..5:00 pm: really?</p>
-<p class="phone s02"><cite>.hidden:</cite> One dot is a speaker<br>
-… hidden: Two dots is a continuation</p>
-<p class=summary>issue-25: this is a note.</p>
+<section><p id=x003 class="phone s01"><cite>bar:</cite> I say<br>
+<a id=x004></a>… true: I say</p>
+<p id=x005 class=summary>PROPOSED : close all actions</p>
+<p id=x006 class=irc><cite>&lt;bar&gt;</cite> ..5:00 pm: really?</p>
+<p id=x008 class="phone s02"><cite>.hidden:</cite> One dot is a speaker<br>
+<a id=x009></a>… hidden: Two dots is a continuation</p>
+<p id=x010 class=summary>issue-25: this is a note.</p>
 </section>
 </main>
 EOF

@@ -21,10 +21,10 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 grep '<a href="https://example.org/">this</a>' $TMP2 || exit 1
 
 # New actions must be in the action summary, but without the link.
-grep '<li><a href="#x01">bar to do this</a></li>' $TMP2 || exit 1
-grep '<li><a href="#x02">baz: do the same</a></li>' $TMP2 || exit 1
-grep '<li><a href="#x03">bar do this, too</a></li>' $TMP2 || exit 1
-grep '<li><a href="#x04">foo to stop giving actions</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a01">bar to do this</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a02">baz: do the same</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a03">bar do this, too</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a04">foo to stop giving actions</a></li>' $TMP2 || exit 1
 
 # The annotation on action-20 is not marked specially.
-grep '<p class=summary>action-20: look at the documentation.' $TMP2 || exit 1
+grep 'class=summary>action-20: look at the documentation.' $TMP2 || exit 1

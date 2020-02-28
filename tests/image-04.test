@@ -12,7 +12,7 @@ url="https://www.w3.org/Icons/w3c_48x48.png"
 title="My image"
 
 # Expected line:
-echo "<section><p class=summary>  <a href=\"$url\"><img src=\"$url\" alt=\"$title\"></a></p>" >$TMP1
+echo "<section><p id=x001 class=summary>  <a href=\"$url\"><img src=\"$url\" alt=\"$title\"></a></p>" >$TMP1
 
 # Get the generated line:
 echo "<foo>   -->$url    $title  " | perl scribe.perl >$TMP3

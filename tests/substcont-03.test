@@ -15,9 +15,9 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP3 <<EOF
-<section><p class="phone s01"><cite>Joe:</cite> Original text</p>
-<p class=irc><cite>&lt;bar&gt;</cite> s/doesnotexist/Final/G</p>
-<p class="phone s01"><cite>Joe:</cite> And more</p>
+<section><p id=x001 class="phone s01"><cite>Joe:</cite> Original text</p>
+<p id=x002 class=irc><cite>&lt;bar&gt;</cite> s/doesnotexist/Final/G</p>
+<p id=x003 class="phone s01"><cite>Joe:</cite> And more</p>
 </section>
 EOF
 

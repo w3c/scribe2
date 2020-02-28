@@ -70,10 +70,10 @@ cat >$TMP3 <<EOF
 
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class="phone s01"><cite>bar:</cite> I just say<br>
-… I say nothing</p>
-<p class="phone s02"><cite>baz:</cite> you say</p>
-<p class="phone s01"><cite>bar:</cite> OK</p>
+<section><p id=x002 class="phone s01"><cite>bar:</cite> I just say<br>
+<a id=x003></a>… I say nothing</p>
+<p id=x005 class="phone s02"><cite>baz:</cite> you say</p>
+<p id=x006 class="phone s01"><cite>bar:</cite> OK</p>
 </section>
 </main>
 

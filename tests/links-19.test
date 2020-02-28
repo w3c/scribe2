@@ -14,7 +14,7 @@ echo "<foo> $url ->     " | \
   grep "$url" >$TMP2
 
 # Expected line:
-echo "<section><p class=summary><a href=\"$url\">$url</a></p>" >$TMP1
+echo "<section><p id=x001 class=summary><a href=\"$url\">$url</a></p>" >$TMP1
 
 # Compare:
 diff -u $TMP1 $TMP2

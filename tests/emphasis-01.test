@@ -21,13 +21,13 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class=summary>A line without emphasis.</p>
-<p class=summary>A line with a <em>italic the end.</em></p>
-<p class=summary>A line with a <em>italic</em> not at the end.</p>
-<p class=summary>A line with <strong>bold the end.</strong></p>
-<p class=summary>A line with <strong>bold</strong> not at the end.</p>
-<p class=summary>A line with <u>underline at the end.</u></p>
-<p class=summary>A line with <u>underline</u> not at the end.</p>
+<section><p id=x001 class=summary>A line without emphasis.</p>
+<p id=x002 class=summary>A line with a <em>italic the end.</em></p>
+<p id=x003 class=summary>A line with a <em>italic</em> not at the end.</p>
+<p id=x004 class=summary>A line with <strong>bold the end.</strong></p>
+<p id=x005 class=summary>A line with <strong>bold</strong> not at the end.</p>
+<p id=x006 class=summary>A line with <u>underline at the end.</u></p>
+<p id=x007 class=summary>A line with <u>underline</u> not at the end.</p>
 </section>
 </main>
 EOF

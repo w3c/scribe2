@@ -23,10 +23,10 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class="phone s01"><cite>Pete:</cite> Something else<br>
-… I wanted to say.<br>
-… Very important<br>
-… This is a continuation.</p>
+<section><p id=x006 class="phone s01"><cite>Pete:</cite> Something else<br>
+<a id=x007></a>… I wanted to say.<br>
+<a id=x008></a>… Very important<br>
+<a id=x009></a>… This is a continuation.</p>
 </section>
 </main>
 EOF
@@ -36,4 +36,4 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 # Extract just the minutes
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
-diff -u $TMP4 $TMP3
+diff -u $TMP3 $TMP4

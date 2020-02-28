@@ -17,13 +17,13 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class="phone s01"><cite>Joe:</cite> I agree.</p>
-<p class="phone s02"><cite>Ben:</cite> me too.</p>
-<p class=summary>Joe and Ben agree.</p>
+<section><p id=x001 class="phone s01"><cite>Joe:</cite> I agree.</p>
+<p id=x002 class="phone s02"><cite>Ben:</cite> me too.</p>
+<p id=x003 class=summary>Joe and Ben agree.</p>
 </section>
 </main>
 EOF
 
 perl scribe.perl --scribenick=* $TMP1 >$TMP2
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
-diff -u $TMP3 $TMP4
+diff -u $TMP4 $TMP3

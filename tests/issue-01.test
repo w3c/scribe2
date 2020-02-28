@@ -31,21 +31,21 @@ sed -n -e '/id=meeting/,/<\/div/p' $TMP2 >$TMP4
 #cat $TMP4
 
 # Two new issues in the summary:
-grep '<a href="#x01">Use 1 or 2?</a>' $TMP3 || ok=false
-grep '<a href="#x02">Is issue-1 OK?</a>' $TMP3 || ok=false
+grep '<a href="#i01">Use 1 or 2?</a>' $TMP3 || ok=false
+grep '<a href="#i02">Is issue-1 OK?</a>' $TMP3 || ok=false
 
 # But not the numbered issues:
 grep 'Or: 3' $TMP3 && ok=false
 grep 'Need rewording.' $TMP3 && ok=false
 
 # Two new issues marked-up:
-grep '<p class=issue id=x01><strong>Issue:</strong> Use 1 or 2?</p>' \
+grep '<p id=i01 class=issue><strong>Issue:</strong> Use 1 or 2?</p>' \
      $TMP4 || ok=false
-grep '<p class=issue id=x02><strong>Issue:</strong> Is issue-1 OK?</p>' \
+grep '<p id=i02 class=issue><strong>Issue:</strong> Is issue-1 OK?</p>' \
      $TMP4 || ok=false
 
 # Two annotations on numbered issues are not marked specially:
-grep '<p class=irc><cite>&lt;bar&gt;</cite> ISSUE-1: Or: 3.</p>' $TMP4 || ok=false
-grep '<p class=summary>  issue-1 : Needs rewording.</p>' $TMP4 || ok=false
+egrep '<p.* class=irc><cite>&lt;bar&gt;</cite> ISSUE-1: Or: 3.</p>' $TMP4 || ok=false
+egrep '<p.* class=summary>  issue-1 : Needs rewording.</p>' $TMP4 || ok=false
 
 $ok

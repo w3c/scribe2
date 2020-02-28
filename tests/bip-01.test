@@ -374,11 +374,11 @@ Internationalization Working Group Teleconference</h1>
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
 <ol>
-<li><a href="#x01">WoT reviews</a></li>
-<li><a href="#x02">Action Items</a></li>
-<li><a href="#x03">Info Share</a></li>
-<li><a href="#x04">Retiring Charmod-Resid</a></li>
-<li><a href="#x06">AOB?</a></li>
+<li><a href="#t01">WoT reviews</a></li>
+<li><a href="#t02">Action Items</a></li>
+<li><a href="#t03">Info Share</a></li>
+<li><a href="#t04">Retiring Charmod-Resid</a></li>
+<li><a href="#t05">AOB?</a></li>
 </ol>
 </li>
 <li><a href="#ResolutionSummary">Summary of resolutions</a></li>
@@ -388,154 +388,154 @@ Internationalization Working Group Teleconference</h1>
 
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class=summary>trackbot, prepare teleconference</p>
+<section><p id=x002 class=summary>trackbot, prepare teleconference</p>
 </section>
 
 <section>
-<h3 id=x01>WoT reviews</h3>
-<p class=summary><a href="https://github.com/w3c/i18n-activity/projects/1">https://&zwnj;github.com/&zwnj;w3c/&zwnj;i18n-activity/&zwnj;projects/&zwnj;1</a></p>
-<p class=summary>(addison introduces)</p>
-<p class=irc><cite>&lt;kaz&gt;</cite> <a href="https://lists.w3.org/Archives/Public/www-international/2019AprJun/0026.html">kaz's write up</a></p>
-<p class="phone s01"><cite>kaz:</cite> our main purpose is first doc, WoT Thing Description<br>
-… other is kind of basic concepts<br>
-… our schedule, we'd like to bring to CR at end of the month<br>
-… already has some i18n features<br>
-… like to know if this is okay</p>
-<p class="phone s02"><cite>richard:</cite> doc I'm looking at is not in a w3c repo<br>
-… would prefer if it were in w3c repo before we review</p>
-<p class="phone s01"><cite>kaz:</cite> updating the draft daily, but generated fixed version using branch<br>
-… if needed, I can copy the fixed HTML to the www.w3.org server.</p>
-<p class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/</a></p>
-<p class="phone s03"><cite>mathias:</cite> our doc is on github</p>
-<p class="phone s04"><cite>sebastian:</cite> would having  a meeting to guide you helpful?</p>
-<p class="phone s02"><cite>richard:</cite> if you can review our checklist, that will help you guide us<br>
-… think it is a good idea for you to look through and identify things important for us to review<br>
-… we will likely look other places too, but it will still help<br>
-… <a href="https://www.w3.org/International/techniques/shortchecklist.html">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;techniques/&zwnj;shortchecklist.html</a><br>
-… points to more detailed checklist also</p>
-<p class=irc><cite>&lt;kaz&gt;</cite> <a href="https://www.w3.org/International/techniques/developing-specs">detailed checklist</a></p>
-<p class="phone s02"><cite>richard:</cite> if you go through and see if there are things to pay attention to while doing review<br>
-… we have to understand your document in just a few days</p>
-<p class="phone s05"><cite>addison:</cite> anything you want to call attention to?</p>
-<p class="phone s03"><cite>mathias:</cite> we will send you links to paths of doc<br>
-… and double check guidelines</p>
-<p class=irc><cite>&lt;kaz&gt;</cite> s/matthias:/sebastian:/</p>
-<p class="phone s02"><cite>richard:</cite> can you give a brief overview of docs?</p>
-<p class="phone s04"><cite>sebastian:</cite> easiest way to explain is<br>
-… everyone knows html<br>
-… thing description is for devices<br>
-… index html for things<br>
-… describe capabilities of things<br>
-… properties, action events<br>
-… data expected<br>
-… protocol, such as http or some other iot protocol</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> uhoh</p>
-<p class="phone s04"><cite>sebastian:</cite> RDF based</p>
-<p class="phone s06"><cite>Explainer:</cite> <a href="https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/&zwnj;blob/&zwnj;TD-TAG-review/&zwnj;explainer/&zwnj;Explainer.md</a></p>
-<p class="phone s04"><cite>Sebastian:</cite> what is the action about, title and description terms</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/string-meta/">https://&zwnj;w3c.github.io/&zwnj;string-meta/</a></p>
-<p class="phone s04"><cite>Sebastian:</cite> multiple language support</p>
-<p class="phone s07"><cite>r12a:</cite> is there some kind of markup involved? how is information stored</p>
-<p class="phone s04"><cite>sebastian:</cite> thing description can be stored in different ways</p>
-<p class="phone s08"><cite>matthias:</cite> json based interchange format<br>
-… aligned with JSON-LD<br>
-… so JSON 1.1 could be used<br>
-… model for json structure so can be machine read<br>
-… have a few human-readable fields</p>
-<p class="phone s02"><cite>richard:</cite> put a link to string-meta, should read carefully<br>
-… anticipating comments, since we have identified problems with RDF and LD<br>
-… involving base direction</p>
-<p class="phone s08"><cite>Matthias:</cite> not a format for display</p>
-<p class="phone s01"><cite>kaz:</cite> have discussion with ld group, including Ivan Herman<br>
-… model describes device properties and how to control using actions and events<br>
-… concentrating on how to deal with devices properties</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> Requester provides target URL to initiate T2T</p>
-<p class="phone s01"><cite>kaz:</cite> will look into detailed checklist</p>
-<p class="phone s05"><cite>addison:</cite> only one telecon before end of month</p>
-<p class="phone s07"><cite>r12a:</cite> would like to understand why you didn't come forward sooner<br>
-… were you unaware?</p>
-<p class="phone s08"><cite>matthias:</cite> didn't understand process</p>
-<p class="phone s02"><cite>richard:</cite> need to find way to understand process earlier on<br>
-… also maybe having an i18n champion in WG</p>
-<p class="phone s01"><cite>kaz:</cite> first of all, very sorry as the team contact that we couldn't bring this earlier. there were important technical problems<br>
-… took longer than we expect</p>
-<p class="phone s05"><cite>addison:</cite> used to reviewing very raw specs</p>
-<p class="phone s08"><cite>matthias:</cite> reached out in tpac<br>
-… something fell between lines<br>
-… good if some kind of early registration mechanism</p>
-<p class="phone s02"><cite>richard:</cite> would having a champion in your WG be helpful?</p>
-<p class=irc><cite>&lt;kaz&gt;</cite> kaz: as part of the w3c project team as well as the team contact for wot, yes, i agree</p>
+<h3 id=t01>WoT reviews</h3>
+<p id=x032 class=summary><a href="https://github.com/w3c/i18n-activity/projects/1">https://&zwnj;github.com/&zwnj;w3c/&zwnj;i18n-activity/&zwnj;projects/&zwnj;1</a></p>
+<p id=x036 class=summary>(addison introduces)</p>
+<p id=x037 class=irc><cite>&lt;kaz&gt;</cite> <a href="https://lists.w3.org/Archives/Public/www-international/2019AprJun/0026.html">kaz's write up</a></p>
+<p id=x044 class="phone s01"><cite>kaz:</cite> our main purpose is first doc, WoT Thing Description<br>
+<a id=x045></a>… other is kind of basic concepts<br>
+<a id=x046></a>… our schedule, we'd like to bring to CR at end of the month<br>
+<a id=x047></a>… already has some i18n features<br>
+<a id=x048></a>… like to know if this is okay</p>
+<p id=x052 class="phone s02"><cite>richard:</cite> doc I'm looking at is not in a w3c repo<br>
+<a id=x053></a>… would prefer if it were in w3c repo before we review</p>
+<p id=x055 class="phone s01"><cite>kaz:</cite> updating the draft daily, but generated fixed version using branch<br>
+<a id=x056></a>… if needed, I can copy the fixed HTML to the www.w3.org server.</p>
+<p id=x057 class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/</a></p>
+<p id=x060 class="phone s03"><cite>mathias:</cite> our doc is on github</p>
+<p id=x061 class="phone s04"><cite>sebastian:</cite> would having  a meeting to guide you helpful?</p>
+<p id=x068 class="phone s02"><cite>richard:</cite> if you can review our checklist, that will help you guide us<br>
+<a id=x069></a>… think it is a good idea for you to look through and identify things important for us to review<br>
+<a id=x070></a>… we will likely look other places too, but it will still help<br>
+<a id=x071></a>… <a href="https://www.w3.org/International/techniques/shortchecklist.html">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;techniques/&zwnj;shortchecklist.html</a><br>
+<a id=x072></a>… points to more detailed checklist also</p>
+<p id=x073 class=irc><cite>&lt;kaz&gt;</cite> <a href="https://www.w3.org/International/techniques/developing-specs">detailed checklist</a></p>
+<p id=x075 class="phone s02"><cite>richard:</cite> if you go through and see if there are things to pay attention to while doing review<br>
+<a id=x076></a>… we have to understand your document in just a few days</p>
+<p id=x079 class="phone s05"><cite>addison:</cite> anything you want to call attention to?</p>
+<p id=x081 class="phone s03"><cite>mathias:</cite> we will send you links to paths of doc<br>
+<a id=x082></a>… and double check guidelines</p>
+<p id=x083 class=irc><cite>&lt;kaz&gt;</cite> s/matthias:/sebastian:/</p>
+<p id=x084 class="phone s02"><cite>richard:</cite> can you give a brief overview of docs?</p>
+<p id=x093 class="phone s04"><cite>sebastian:</cite> easiest way to explain is<br>
+<a id=x094></a>… everyone knows html<br>
+<a id=x095></a>… thing description is for devices<br>
+<a id=x096></a>… index html for things<br>
+<a id=x097></a>… describe capabilities of things<br>
+<a id=x098></a>… properties, action events<br>
+<a id=x099></a>… data expected<br>
+<a id=x100></a>… protocol, such as http or some other iot protocol</p>
+<p id=x101 class=irc><cite>&lt;r12a&gt;</cite> uhoh</p>
+<p id=x102 class="phone s04"><cite>sebastian:</cite> RDF based</p>
+<p id=x103 class="phone s06"><cite>Explainer:</cite> <a href="https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/&zwnj;blob/&zwnj;TD-TAG-review/&zwnj;explainer/&zwnj;Explainer.md</a></p>
+<p id=x104 class="phone s04"><cite>Sebastian:</cite> what is the action about, title and description terms</p>
+<p id=x105 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/string-meta/">https://&zwnj;w3c.github.io/&zwnj;string-meta/</a></p>
+<p id=x106 class="phone s04"><cite>Sebastian:</cite> multiple language support</p>
+<p id=x107 class="phone s07"><cite>r12a:</cite> is there some kind of markup involved? how is information stored</p>
+<p id=x108 class="phone s04"><cite>sebastian:</cite> thing description can be stored in different ways</p>
+<p id=x113 class="phone s08"><cite>matthias:</cite> json based interchange format<br>
+<a id=x114></a>… aligned with JSON-LD<br>
+<a id=x115></a>… so JSON 1.1 could be used<br>
+<a id=x116></a>… model for json structure so can be machine read<br>
+<a id=x117></a>… have a few human-readable fields</p>
+<p id=x120 class="phone s02"><cite>richard:</cite> put a link to string-meta, should read carefully<br>
+<a id=x121></a>… anticipating comments, since we have identified problems with RDF and LD<br>
+<a id=x122></a>… involving base direction</p>
+<p id=x123 class="phone s08"><cite>Matthias:</cite> not a format for display</p>
+<p id=x128 class="phone s01"><cite>kaz:</cite> have discussion with ld group, including Ivan Herman<br>
+<a id=x129></a>… model describes device properties and how to control using actions and events<br>
+<a id=x130></a>… concentrating on how to deal with devices properties</p>
+<p id=x133 class=irc><cite>&lt;r12a&gt;</cite> Requester provides target URL to initiate T2T</p>
+<p id=x135 class="phone s01"><cite>kaz:</cite> will look into detailed checklist</p>
+<p id=x136 class="phone s05"><cite>addison:</cite> only one telecon before end of month</p>
+<p id=x138 class="phone s07"><cite>r12a:</cite> would like to understand why you didn't come forward sooner<br>
+<a id=x139></a>… were you unaware?</p>
+<p id=x140 class="phone s08"><cite>matthias:</cite> didn't understand process</p>
+<p id=x142 class="phone s02"><cite>richard:</cite> need to find way to understand process earlier on<br>
+<a id=x143></a>… also maybe having an i18n champion in WG</p>
+<p id=x145 class="phone s01"><cite>kaz:</cite> first of all, very sorry as the team contact that we couldn't bring this earlier. there were important technical problems<br>
+<a id=x146></a>… took longer than we expect</p>
+<p id=x147 class="phone s05"><cite>addison:</cite> used to reviewing very raw specs</p>
+<p id=x150 class="phone s08"><cite>matthias:</cite> reached out in tpac<br>
+<a id=x151></a>… something fell between lines<br>
+<a id=x152></a>… good if some kind of early registration mechanism</p>
+<p id=x155 class="phone s02"><cite>richard:</cite> would having a champion in your WG be helpful?</p>
+<p id=x157 class=irc><cite>&lt;kaz&gt;</cite> kaz: as part of the w3c project team as well as the team contact for wot, yes, i agree</p>
 </section>
 
 <section>
-<h3 id=x02>Action Items</h3>
-<p class=summary><a href="https://www.w3.org/International/track/actions/open">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;track/&zwnj;actions/&zwnj;open</a></p>
-<p class=summary>action-764?</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/764">action-764</a>:</strong> Addison Phillips to Check if unicode describes backwards deletion clearly and develop doc if not -- due 2018-10-30 -- OPEN</p>
-<p class="phone s05"><cite>addison:</cite> PR?</p>
-<p class=summary>action-774?</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/774">action-774</a>:</strong> Richard Ishida to Publish first public working draft of string-meta -- due 2019-02-07 -- OPEN</p>
-<p class=summary>close action-774</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> Closed action-774.</p>
-<p class=summary>action-795?</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/795">action-795</a>:</strong> Addison Phillips to Send issue 521 to css -- due 2019-04-11 -- OPEN</p>
-<p class=summary>close action-795</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> Closed action-795.</p>
-<p class=summary>action-797?</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/797">action-797</a>:</strong> Atsushi Shimono to Start writing weekly summary of new/tracked issues -- due 2019-04-18 -- OPEN</p>
-<p class="phone s09"><cite>atsushi:</cite> including one line of description</p>
-<p class="phone s02"><cite>richard:</cite> including 2 in chinese, one at bottom</p>
-<p class="phone s09"><cite>atsushi:</cite> included some from lreqs</p>
-<p class="phone s02"><cite>richard:</cite> only include if questions</p>
-<p class=summary>action-798?</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/798">action-798</a>:</strong> Addison Phillips to Make new autocapitalization issue against html based on today's discussion -- due 2019-04-18 -- OPEN</p>
-<p class=summary>close action-798</p>
-<p class=bot><cite>&lt;trackbot&gt;</cite> Closed action-798.</p>
+<h3 id=t02>Action Items</h3>
+<p id=x160 class=summary><a href="https://www.w3.org/International/track/actions/open">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;track/&zwnj;actions/&zwnj;open</a></p>
+<p id=x161 class=summary>action-764?</p>
+<p id=x162 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/764">action-764</a>:</strong> Addison Phillips to Check if unicode describes backwards deletion clearly and develop doc if not -- due 2018-10-30 -- OPEN</p>
+<p id=x164 class="phone s05"><cite>addison:</cite> PR?</p>
+<p id=x165 class=summary>action-774?</p>
+<p id=x166 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/774">action-774</a>:</strong> Richard Ishida to Publish first public working draft of string-meta -- due 2019-02-07 -- OPEN</p>
+<p id=x168 class=summary>close action-774</p>
+<p id=x169 class=bot><cite>&lt;trackbot&gt;</cite> Closed action-774.</p>
+<p id=x170 class=summary>action-795?</p>
+<p id=x171 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/795">action-795</a>:</strong> Addison Phillips to Send issue 521 to css -- due 2019-04-11 -- OPEN</p>
+<p id=x173 class=summary>close action-795</p>
+<p id=x174 class=bot><cite>&lt;trackbot&gt;</cite> Closed action-795.</p>
+<p id=x175 class=summary>action-797?</p>
+<p id=x176 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/797">action-797</a>:</strong> Atsushi Shimono to Start writing weekly summary of new/tracked issues -- due 2019-04-18 -- OPEN</p>
+<p id=x179 class="phone s09"><cite>atsushi:</cite> including one line of description</p>
+<p id=x180 class="phone s02"><cite>richard:</cite> including 2 in chinese, one at bottom</p>
+<p id=x181 class="phone s09"><cite>atsushi:</cite> included some from lreqs</p>
+<p id=x182 class="phone s02"><cite>richard:</cite> only include if questions</p>
+<p id=x183 class=summary>action-798?</p>
+<p id=x184 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/798">action-798</a>:</strong> Addison Phillips to Make new autocapitalization issue against html based on today's discussion -- due 2019-04-18 -- OPEN</p>
+<p id=x186 class=summary>close action-798</p>
+<p id=x187 class=bot><cite>&lt;trackbot&gt;</cite> Closed action-798.</p>
 </section>
 
 <section>
-<h3 id=x03>Info Share</h3>
-<p class=summary>regrets next week from addison</p>
-<p class="phone s02"><cite>richard:</cite> LTR/RTL doc being reworked<br>
-… have a look at new version</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> <a href="http://w3c.github.io/i18n-drafts/questions/qa-ltr-scripts-in-rtl.en.html">http://&zwnj;w3c.github.io/&zwnj;i18n-drafts/&zwnj;questions/&zwnj;qa-ltr-scripts-in-rtl.en.html</a></p>
+<h3 id=t03>Info Share</h3>
+<p id=x191 class=summary>regrets next week from addison</p>
+<p id=x194 class="phone s02"><cite>richard:</cite> LTR/RTL doc being reworked<br>
+<a id=x195></a>… have a look at new version</p>
+<p id=x196 class=irc><cite>&lt;r12a&gt;</cite> <a href="http://w3c.github.io/i18n-drafts/questions/qa-ltr-scripts-in-rtl.en.html">http://&zwnj;w3c.github.io/&zwnj;i18n-drafts/&zwnj;questions/&zwnj;qa-ltr-scripts-in-rtl.en.html</a></p>
 </section>
 
 <section>
-<h3 id=x04>Retiring Charmod-Resid</h3>
-<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://www.w3.org/TR/2004/CR-charmod-resid-20041122/">https://&zwnj;www.w3.org/&zwnj;TR/&zwnj;2004/&zwnj;CR-charmod-resid-20041122/</a></p>
-<p class=summary>proposed: retire charmod-resid; convert to WD and then convert to Note and retire it</p>
-<p class="phone s10"><cite>jck:</cite> choice is either &quot;please don't read this&quot; or do lots of work</p>
-<p class=summary>please vote on retiring charmod-resid</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> +1</p>
-<p class=summary>+1</p>
-<p class=irc><cite>&lt;xfq&gt;</cite> +1</p>
-<p class=irc><cite>&lt;Jeff_&gt;</cite> +1</p>
-<p class=irc><cite>&lt;JcK&gt;</cite> +1</p>
-<p class=irc><cite>&lt;atsushi&gt;</cite> +1</p>
-<p class=irc><cite>&lt;Bert&gt;</cite> +1</p>
-<p class=resolution id=x05><strong>Resolution:</strong> retire charmod-resid (withdraw from CR, convert to WD, and publish as retired Note)</p>
+<h3 id=t04>Retiring Charmod-Resid</h3>
+<p id=x200 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://www.w3.org/TR/2004/CR-charmod-resid-20041122/">https://&zwnj;www.w3.org/&zwnj;TR/&zwnj;2004/&zwnj;CR-charmod-resid-20041122/</a></p>
+<p id=x201 class=summary>proposed: retire charmod-resid; convert to WD and then convert to Note and retire it</p>
+<p id=x202 class="phone s10"><cite>jck:</cite> choice is either &quot;please don't read this&quot; or do lots of work</p>
+<p id=x203 class=summary>please vote on retiring charmod-resid</p>
+<p id=x204 class=irc><cite>&lt;r12a&gt;</cite> +1</p>
+<p id=x205 class=summary>+1</p>
+<p id=x206 class=irc><cite>&lt;xfq&gt;</cite> +1</p>
+<p id=x207 class=irc><cite>&lt;Jeff_&gt;</cite> +1</p>
+<p id=x208 class=irc><cite>&lt;JcK&gt;</cite> +1</p>
+<p id=x209 class=irc><cite>&lt;atsushi&gt;</cite> +1</p>
+<p id=x211 class=irc><cite>&lt;Bert&gt;</cite> +1</p>
+<p id=r01 class=resolution><strong>Resolution:</strong> retire charmod-resid (withdraw from CR, convert to WD, and publish as retired Note)</p>
 </section>
 
 <section>
-<h3 id=x06>AOB?</h3>
-<p class=summary>next week's telecon canceled</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> s/&lt;r12a&gt; uhoh//</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> s/&lt;r12a&gt; Requester provides target URL to initiate T2T//</p>
+<h3 id=t05>AOB?</h3>
+<p id=x216 class=summary>next week's telecon canceled</p>
+<p id=x218 class=irc><cite>&lt;r12a&gt;</cite> s/&lt;r12a&gt; uhoh//</p>
+<p id=x221 class=irc><cite>&lt;r12a&gt;</cite> s/&lt;r12a&gt; Requester provides target URL to initiate T2T//</p>
 </section>
 </main>
 
 <div id=ResolutionSummary>
 <h2>Summary of resolutions</h2>
 <ol>
-<li><a href="#x05">retire charmod-resid (withdraw from CR, convert to WD, and publish as retired Note)</a></li>
+<li><a href="#r01">retire charmod-resid (withdraw from CR, convert to WD, and publish as retired Note)</a></li>
 </ol>
 </div>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a
 href="https://w3c.github.io/scribe2/scribedoc.html"
->scribe.perl</a> version (Mon Apr 15 13:43:26 2019 UTC).</a></address>
+>scribe.perl</a> version 108 (Fri Feb 21 15:12:44 2020 UTC).</address>
 
 <div class=diagnostics>
 <h2>Diagnostics</h2>

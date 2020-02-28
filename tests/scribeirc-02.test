@@ -16,4 +16,4 @@ cat >$TMP1 <<-EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
-grep '<p class=summary>&lt;won&gt; +1</p>' $TMP2 || exit 1
+grep ' class=summary>&lt;won&gt; +1</p>' $TMP2 || exit 1

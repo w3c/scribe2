@@ -28,15 +28,15 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class=resolution id=x01><strong>Resolution:</strong> We do as<br>
-… I wanted to say.<br>
-… Very important<br>
-… This is part of it.</p>
-<p class=action id=x02><strong>Action:</strong> Pete: Write an action<br>
-… over two lines.</p>
-<p class=issue id=x03><strong>Issue:</strong> This is an issue<br>
-… which is very important.</p>
-<p class=irc><cite>&lt;foo&gt;</cite> s/hmmm/hmm/</p>
+<section><p id=r01 class=resolution><strong>Resolution:</strong> We do as<br>
+<a id=x003></a>… I wanted to say.<br>
+<a id=x004></a>… Very important<br>
+<a id=x005></a>… This is part of it.</p>
+<p id=a01 class=action><strong>Action:</strong> Pete: Write an action<br>
+<a id=x012></a>… over two lines.</p>
+<p id=i01 class=issue><strong>Issue:</strong> This is an issue<br>
+<a id=x016></a>… which is very important.</p>
+<p id=x017 class=irc><cite>&lt;foo&gt;</cite> s/hmmm/hmm/</p>
 </section>
 </main>
 EOF
@@ -46,4 +46,4 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 # Extract just the minutes
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
-diff -u $TMP4 $TMP3
+diff -u $TMP3 $TMP4

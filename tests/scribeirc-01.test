@@ -18,5 +18,5 @@ cat >$TMP1 <<-EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
-grep '<p class=irc><cite>&lt;Ralph&gt;</cite> +1</p>' $TMP2 || exit 1
-grep '<p class="phone s01"><cite>Bill:</cite> Consensus!</p>' $TMP2 || exit 1
+grep ' class=irc><cite>&lt;Ralph&gt;</cite> +1</p>' $TMP2 || exit 1
+grep ' class="phone s01"><cite>Bill:</cite> Consensus!</p>' $TMP2 || exit 1

@@ -19,8 +19,8 @@ EOF
 cat >$TMP2 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class="phone s01"><cite>Ben:</cite> I said what I said yesterday.</p>
-<p class="phone s02"><cite>Bas:</cite> OK then.</p>
+<section><p id=x003 class="phone s01"><cite>Ben:</cite> I said what I said yesterday.</p>
+<p id=x005 class="phone s02"><cite>Bas:</cite> OK then.</p>
 </section>
 </main>
 EOF

@@ -17,8 +17,8 @@ EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
-grep -E '<p class="phone .*"><cite>bar:</cite> I just say<br>' $TMP2 || exit 1
+grep -E '<p.* class="phone .*"><cite>bar:</cite> I just say<br>' $TMP2 || exit 1
 grep -E '… I say nothing<br>' $TMP2 || exit 1
 grep -E '… Better: I say nada</p>' $TMP2 || exit 1
-grep -E '<p class="phone .*"><cite>baz:</cite> you say</p>' $TMP2 || exit 1
+grep -E '<p.* class="phone .*"><cite>baz:</cite> you say</p>' $TMP2 || exit 1
 exit 0

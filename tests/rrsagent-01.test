@@ -86,7 +86,7 @@ Public Minutes Teleconference</h1>
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
 <ol>
-<li><a href="#x01">&quot;Who's on First&quot;</a></li>
+<li><a href="#t01">&quot;Who's on First&quot;</a></li>
 </ol>
 </li>
 </ul>
@@ -98,26 +98,26 @@ Public Minutes Teleconference</h1>
 <section></section>
 
 <section>
-<h3 id=x01>&quot;Who's on First&quot;</h3>
-<p class="phone s01"><cite>Abbott:</cite> Strange as it may seem, they give ball players nowadays very peculiar names.</p>
-<p class="phone s02"><cite>Costello:</cite> Funny names?</p>
-<p class="phone s01"><cite>Abbott:</cite> Nicknames, nicknames. Now, on the St. Louis team we have Who's on first, What's on second, I Don't Know is on third--</p>
-<p class="phone s02"><cite>Costello:</cite> That's what I want to find out. I want you to tell me the names of the fellows on the St. Louis team.</p>
-<p class="phone s01"><cite>Abbott:</cite> I'm telling you. Who's on first, What's on second, I Don't Know is on third--</p>
-<p class="phone s02"><cite>Costello:</cite> You know the fellows' names?</p>
-<p class="phone s01"><cite>Abbott:</cite> Yes.</p>
-<p class="phone s02"><cite>Costello:</cite> Well, then who's playing first?</p>
-<p class="phone s01"><cite>Abbott:</cite> Yes.</p>
-<p class="phone s02"><cite>Costello:</cite> I mean the fellow's name on first base.</p>
-<p class="phone s01"><cite>Abbott:</cite> Who</p>
-<p class="phone s02"><cite>Costello:</cite> The fellow playin' first base</p>
+<h3 id=t01>&quot;Who's on First&quot;</h3>
+<p id=x010 class="phone s01"><cite>Abbott:</cite> Strange as it may seem, they give ball players nowadays very peculiar names.</p>
+<p id=x011 class="phone s02"><cite>Costello:</cite> Funny names?</p>
+<p id=x012 class="phone s01"><cite>Abbott:</cite> Nicknames, nicknames. Now, on the St. Louis team we have Who's on first, What's on second, I Don't Know is on third--</p>
+<p id=x013 class="phone s02"><cite>Costello:</cite> That's what I want to find out. I want you to tell me the names of the fellows on the St. Louis team.</p>
+<p id=x014 class="phone s01"><cite>Abbott:</cite> I'm telling you. Who's on first, What's on second, I Don't Know is on third--</p>
+<p id=x015 class="phone s02"><cite>Costello:</cite> You know the fellows' names?</p>
+<p id=x016 class="phone s01"><cite>Abbott:</cite> Yes.</p>
+<p id=x017 class="phone s02"><cite>Costello:</cite> Well, then who's playing first?</p>
+<p id=x018 class="phone s01"><cite>Abbott:</cite> Yes.</p>
+<p id=x019 class="phone s02"><cite>Costello:</cite> I mean the fellow's name on first base.</p>
+<p id=x020 class="phone s01"><cite>Abbott:</cite> Who</p>
+<p id=x021 class="phone s02"><cite>Costello:</cite> The fellow playin' first base</p>
 </section>
 </main>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a
 href="https://w3c.github.io/scribe2/scribedoc.html"
->scribe.perl</a> version 2.30 (2017/09/29 22:24:05).</a></address>
+>scribe.perl</a> version 108 (Fri Feb 21 15:12:44 2020 UTC).</address>
 
 <div class=diagnostics>
 <h2>Diagnostics</h2>

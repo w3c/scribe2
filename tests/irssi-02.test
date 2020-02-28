@@ -141,9 +141,9 @@ cat >$TMP3 <<EOF
 <ul>
 <li><a href="#meeting">Meeting minutes</a>
 <ol>
-<li><a href="#x01">Reminder of good teleconferences</a></li>
-<li><a href="#x02">Agenda</a></li>
-<li><a href="#x03">Two minutes round the table</a></li>
+<li><a href="#t01">Reminder of good teleconferences</a></li>
+<li><a href="#t02">Agenda</a></li>
+<li><a href="#t03">Two minutes round the table</a></li>
 </ol>
 </li>
 </ul>
@@ -155,49 +155,49 @@ cat >$TMP3 <<EOF
 <section></section>
 
 <section>
-<h3 id=x01>Reminder of good teleconferences</h3>
-<p class="phone s01"><cite>Steve:</cite> Zoom?</p>
-<p class="phone s02"><cite>Bert:</cite> We use it for our european project</p>
+<h3 id=t01>Reminder of good teleconferences</h3>
+<p id=x023 class="phone s01"><cite>Steve:</cite> Zoom?</p>
+<p id=x024 class="phone s02"><cite>Bert:</cite> We use it for our european project</p>
 </section>
 
 <section>
-<h3 id=x02>Agenda</h3>
-<p class=summary>[no new agendum]</p>
+<h3 id=t02>Agenda</h3>
+<p id=x031 class=summary>[no new agendum]</p>
 </section>
 
 <section>
-<h3 id=x03>Two minutes round the table</h3>
-<p class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0001.html">CM's two minutes</a></p>
-<p class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD">Daniel's 2 minutes</a></p>
-<p class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html">Josh's 2 minutes</a></p>
-<p class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
-… someone joined the Arabic TF recently<br>
-… if anybody knows an expert in language systems, let me know<br>
-… in order to deal with the people on expert networks, I've been reassessing how we edit the gap analysis document<br>
-… one approach as people are scared of doing PRs on Github<br>
-… I put together a system where you can edit the gap analysis document<br>
-… by writing text in a GH issue</p>
-<p class=irc><cite>&lt;RealJoshue108_&gt;</cite> +1 to GH related fear, it is a problem</p>
-<p class="phone s03"><cite>Richard:</cite> example:</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/</a></p>
-<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/#direction</a></p>
-<p class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
-… and numbers of issues that deal with a particular topic</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">https://&zwnj;github.com/&zwnj;w3c/&zwnj;jlreq/&zwnj;issues/&zwnj;171</a></p>
-<p class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>
-<p class=irc><cite>&lt;RealJoshue108_&gt;</cite> It's helpful to disuss!</p>
-<p class=irc><cite>&lt;RealJoshue108_&gt;</cite> discuss even..</p>
-<p class=summary>====</p>
-<p class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0003.html">Bert's 2 minutes</a></p>
-<p class=irc><cite>&lt;r12a&gt;</cite> s/reassessing the matrix document/reassessing how to edit the gap-analysis documents/</p>
-<p class=irc><cite>&lt;r12a&gt;</cite> s/in respect/in Respec/</p>
+<h3 id=t03>Two minutes round the table</h3>
+<p id=x040 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0001.html">CM's two minutes</a></p>
+<p id=x042 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD">Daniel's 2 minutes</a></p>
+<p id=x043 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html">Josh's 2 minutes</a></p>
+<p id=x050 class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
+<a id=x051></a>… someone joined the Arabic TF recently<br>
+<a id=x052></a>… if anybody knows an expert in language systems, let me know<br>
+<a id=x053></a>… in order to deal with the people on expert networks, I've been reassessing how we edit the gap analysis document<br>
+<a id=x054></a>… one approach as people are scared of doing PRs on Github<br>
+<a id=x055></a>… I put together a system where you can edit the gap analysis document<br>
+<a id=x056></a>… by writing text in a GH issue</p>
+<p id=x057 class=irc><cite>&lt;RealJoshue108_&gt;</cite> +1 to GH related fear, it is a problem</p>
+<p id=x059 class="phone s03"><cite>Richard:</cite> example:</p>
+<p id=x060 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/</a></p>
+<p id=x061 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://&zwnj;w3c.github.io/&zwnj;jlreq/&zwnj;gap-analysis/#direction</a></p>
+<p id=x063 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
+<a id=x064></a>… and numbers of issues that deal with a particular topic</p>
+<p id=x065 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">https://&zwnj;github.com/&zwnj;w3c/&zwnj;jlreq/&zwnj;issues/&zwnj;171</a></p>
+<p id=x066 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>
+<p id=x067 class=irc><cite>&lt;RealJoshue108_&gt;</cite> It's helpful to disuss!</p>
+<p id=x068 class=irc><cite>&lt;RealJoshue108_&gt;</cite> discuss even..</p>
+<p id=x069 class=summary>====</p>
+<p id=x070 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0003.html">Bert's 2 minutes</a></p>
+<p id=x075 class=irc><cite>&lt;r12a&gt;</cite> s/reassessing the matrix document/reassessing how to edit the gap-analysis documents/</p>
+<p id=x077 class=irc><cite>&lt;r12a&gt;</cite> s/in respect/in Respec/</p>
 </section>
 </main>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a
 href="https://w3c.github.io/scribe2/scribedoc.html"
->scribe.perl</a> version 0.0 (2017-02-05).</a></address>
+>scribe.perl</a> version 108 (Fri Feb 21 15:12:44 2020 UTC).</address>
 
 <div class=diagnostics>
 <h2>Diagnostics</h2>
@@ -211,7 +211,7 @@ href="https://w3c.github.io/scribe2/scribedoc.html"
 </html>
 EOF
 
-perl scribe.perl --embed $TMP1 >$TMP2 || exit 1
+perl scribe.perl --embed $TMP1 >$TMP2
 
 grep -v version $TMP2 >$TMP4	# Omit version number
 grep -v version $TMP3 >$TMP5

@@ -24,15 +24,15 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p class=summary>A line without an arrow.</p>
-<p class=summary>A line with an arrow at the end: →</p>
-<p class=summary>A line with an arrow: → not at the end</p>
-<p class=summary>A line with a long arrow at the end: ⟶</p>
-<p class=summary>A line with a long arrow: ⟶ not at the end</p>
-<p class=summary>← a line with an arrow at the start.</p>
-<p class=summary>Not at the start: ← a line with an arrow.</p>
-<p class=summary>⟵ a line with a long arrow at the start.</p>
-<p class=summary>Not at the start: ⟵ a line with a long arrow.</p>
+<section><p id=x001 class=summary>A line without an arrow.</p>
+<p id=x002 class=summary>A line with an arrow at the end: →</p>
+<p id=x003 class=summary>A line with an arrow: → not at the end</p>
+<p id=x004 class=summary>A line with a long arrow at the end: ⟶</p>
+<p id=x005 class=summary>A line with a long arrow: ⟶ not at the end</p>
+<p id=x006 class=summary>← a line with an arrow at the start.</p>
+<p id=x007 class=summary>Not at the start: ← a line with an arrow.</p>
+<p id=x008 class=summary>⟵ a line with a long arrow at the start.</p>
+<p id=x009 class=summary>Not at the start: ⟵ a line with a long arrow.</p>
 </section>
 </main>
 EOF
