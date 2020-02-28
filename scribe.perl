@@ -155,7 +155,7 @@ sub RRSAgent_text_format($$)
   my ($lines_ref, $records_ref) = @_;
 
   foreach (@$lines_ref) {
-    if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (?:joined|left|changed the topic to: ) /) {
+    if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (?:joined|left|changed the topic to:) /) {
       # Ignore lines like "<jfm> jfm has joined #foo"
     } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
@@ -460,10 +460,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 111 $'
+my $revision = '$Revision: 112 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Feb 28 17:05:30 2020 UTC $'
+my $versiondate = '$Date: Fri Feb 28 17:14:01 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
