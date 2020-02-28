@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Check that every <p> and every line has a unique ID.
+
+trap 'rm -f $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/id-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/id-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/id-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Line 1.
+<foo> ... Line 2.
+<bar> Line 3.
+<foo> scribe+
+<bar> Line 4
+<foo> ... Line 5.
+EOF
+
+# Get all lines in the main section that end in <br> or </p>.
+perl scribe.perl --keeplines $TMP1 |
+  sed -n -e '1,/<main/d' -e '/<\/main/,$d' -e '/<br/p' -e '/<\/p>/p' >$TMP2
+
+cat $TMP2
+
+# Check that there is at least one line
+n=`wc -l <$TMP2`
+echo Found $n lines
+test $n -ne 0 || exit 1
+
+# Remove lines without an ID.
+sed -n -e '/<[^>]* id=/p' $TMP2 >$TMP3
+
+# Check that the result is the same.
+diff -u $TMP2 $TMP3 || exit 1
+
+# Check that all IDs are unique.
+sed -e 's/.* id=//' -e 's/[ "/>].*//' $TMP2 | sort -u >$TMP3
+cat $TMP3
+test `wc -l <$TMP2` -eq `wc -l <$TMP3` || exit 1

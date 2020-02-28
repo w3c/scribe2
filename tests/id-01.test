@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Check that every <p> has a unique ID.
+
+trap 'rm -f $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/id-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/id-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Line 1.
+<foo> ... Line 2.
+<bar> Line 3.
+<foo> scribe+
+<bar> Line 4
+<foo> ... Line 5.
+EOF
+
+perl scribe.perl --nokeeplines $TMP1 | sed -n '/<main/,/<\/main/p' >$TMP2
+cat $TMP2
+nlines=`egrep -o '<p' $TMP2 | wc -l`
+echo nlines=$nlines
+nids=`egrep -o '<p[^>]* id=[^ ">/]*' $TMP2 | egrep -o ' id=[^ ">/]*' | sort -u | wc -l`
+echo nids=$nids
+test "$nlines" -eq "$nids"
