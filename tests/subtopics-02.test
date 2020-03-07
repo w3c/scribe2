@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Test the structure of the table of contents.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Not a topic
+<foo> Subtopic: This is a subtopic
+<foo> ... (it really is)
+<baz> action: foo to write an action.
+<foo>  Topic: First topic
+<bar> Topic: Second one
+<foo> Subtopic: This is 2.1
+<baz> Resolved: Just a line
+<foo>    Sub-topic     : This is 2.2
+EOF
+
+cat >$TMP4 <<EOF
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+<li>
+<ol>
+<li><a href="#t01">This is a subtopic (it really is)</a></li>
+</ol>
+</li>
+<li><a href="#t02">First topic</a></li>
+<li><a href="#t03">Second one</a>
+<ol>
+<li><a href="#t04">This is 2.1</a></li>
+<li><a href="#t05">This is 2.2</a></li>
+</ol>
+</li>
+<li class=app><a href="#ActionSummary">Summary of action items</a></li>
+<li class=app><a href="#ResolutionSummary">Summary of resolutions</a></li>
+</ol>
+</nav>
+EOF
+perl scribe.perl -nokeeplines -embed $TMP1 >$TMP2 || exit 1
+
+# Extract just the ToC
+sed -n -e '/<nav id=toc/,/<\/nav/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
