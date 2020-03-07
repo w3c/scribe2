@@ -14,8 +14,9 @@ cat >$TMP1 <<EOF
 <foo> ... (it really is)
 <baz> action: foo to write an action.
 <foo>  Topic: First topic
+<foo> The URL above won't be in the ToC.
 <bar> Topic: Second one
-<foo> Subtopic: This is 2.1
+<foo> Subtopic: -> http://example.com/first This is 2.1
 <baz> Resolved: Just a line
 <foo>    Sub-topic     : This is 2.2
 EOF
@@ -42,6 +43,8 @@ cat >$TMP4 <<EOF
 </nav>
 EOF
 perl scribe.perl -nokeeplines -embed $TMP1 >$TMP2 || exit 1
+
+# cat $TMP2
 
 # Extract just the ToC
 sed -n -e '/<nav id=toc/,/<\/nav/p' $TMP2 >$TMP3
