@@ -460,10 +460,10 @@ sub is_cur_scribe($$)
 
 
 # Main body
-my $revision = '$Revision: 112 $'
+my $revision = '$Revision: 113 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Feb 28 17:14:01 2020 UTC $'
+my $versiondate = '$Date: Sat Mar  7 01:13:06 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1133,7 +1133,7 @@ my $actions = join("",
 		       esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 		       grep($_->{type} eq 'a', @records)));
 my $actiontoc = !$actions ? '' :
-    "<li><a href=\"#ActionSummary\">Summary of action items</a></li>\n";
+    "<li class=app><a href=\"#ActionSummary\">Summary of action items</a></li>\n";
 $actions = "\n<div id=ActionSummary>\n<h2>Summary of action items</h2>
 <ol>\n$actions</ol>\n</div>\n" if $actions;
 if ($keeplines) {$actions =~ s/\t/<br>\n… /g;} else {$actions =~ tr/\t/ /;}
@@ -1143,7 +1143,7 @@ my $resolutions = join("",
 			   esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 			   grep($_->{type} eq 'r', @records)));
 my $resolutiontoc = !$resolutions ? '' :
-    "<li><a href=\"#ResolutionSummary\">Summary of resolutions</a></li>\n";
+    "<li class=app><a href=\"#ResolutionSummary\">Summary of resolutions</a></li>\n";
 $resolutions = "\n<div id=ResolutionSummary>\n<h2>Summary of resolutions</h2>
 <ol>\n$resolutions</ol>\n</div>\n" if $resolutions;
 if ($keeplines) {$resolutions =~ s/\t/<br>\n… /g;} else {$resolutions =~ tr/\t/ /;}
@@ -1153,19 +1153,28 @@ my $issues = join("",
 		      esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
 		      grep($_->{type} eq 'u', @records)));
 my $issuetoc = !$issues ? '' :
-    "<li><a href=\"#IssueSummary\">Summary of issues</a></li>\n";
+    "<li class=app><a href=\"#IssueSummary\">Summary of issues</a></li>\n";
 $issues = "\n<div id=IssueSummary>\n<h2>Summary of issues</h2>
 <ol>\n$issues</ol>\n</div>\n" if $issues;
 if ($keeplines) {$issues =~ s/\t/<br>\n… /g;} else {$issues =~ tr/\t/ /;}
 
-# Collect topics (records with type 't') for the ToC.
+# Collect topics (records with type 't' or 'T') for the ToC.
 #
-my $topics = join("",
-		  map("<li><a href=\"#" . $_->{id} . "\">" .
-		      esc($_->{text}, $emphasis, -1, 1) . "</a></li>\n",
-		      grep($_->{type} eq 't', @records)));
+my $topics = '';
+my $prev_level = ' ';
+foreach my $t (grep($_->{type} =~ /[Tt]/, @records)) {
+  my $s = "<li><a href=\"#" . $t->{id} . "\">" .
+      esc($t->{text}, $emphasis, -1, 1) . "</a>";
+  if ($prev_level eq $t->{type}) {$topics .= "</li>\n$s"}
+  elsif ($prev_level eq 't') {$topics .= "\n<ol>\n$s"}
+  elsif ($prev_level eq 'T') {$topics .= "</li>\n</ol>\n</li>\n$s"}
+  elsif ($t->{type} eq 't') {$topics .= $s}
+  else {$topics .= "<li>\n<ol>\n$s"}
+  $prev_level = $t->{type};
+}
+if ($prev_level eq 'T') {$topics .= "</li>\n</ol>\n</li>\n"}
+elsif ($prev_level eq 't') {$topics .= "</li>\n"}
 if ($keeplines) {$topics =~ s/\t/<br>\n… /g;} else {$topics =~ tr/\t/ /;}
-$topics = "<ol>\n$topics</ol>\n" if ($topics);
 
 # And output the formatted HTML.
 #
@@ -1200,10 +1209,8 @@ $prev_meeting$agenda$log$next_meeting</nav>
 
 <nav id=toc>
 <h2>Contents</h2>
-<ul>
-<li><a href=\"#meeting\">Meeting minutes</a>
-$topics</li>
-$actiontoc$resolutiontoc$issuetoc</ul>
+<ol>
+$topics$actiontoc$resolutiontoc$issuetoc</ol>
 </nav>
 </div>
 
