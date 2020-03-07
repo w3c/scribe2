@@ -371,18 +371,14 @@ Internationalization Working Group Teleconference</h1>
 
 <nav id=toc>
 <h2>Contents</h2>
-<ul>
-<li><a href="#meeting">Meeting minutes</a>
 <ol>
 <li><a href="#t01">WoT reviews</a></li>
 <li><a href="#t02">Action Items</a></li>
 <li><a href="#t03">Info Share</a></li>
 <li><a href="#t04">Retiring Charmod-Resid</a></li>
 <li><a href="#t05">AOB?</a></li>
+<li class=app><a href="#ResolutionSummary">Summary of resolutions</a></li>
 </ol>
-</li>
-<li><a href="#ResolutionSummary">Summary of resolutions</a></li>
-</ul>
 </nav>
 </div>
 

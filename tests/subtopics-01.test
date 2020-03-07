@@ -41,6 +41,8 @@ cat >$TMP4 <<EOF
 EOF
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
+cat $TMP2
+
 # Extract just the minutes
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 

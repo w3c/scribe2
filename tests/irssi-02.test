@@ -138,15 +138,11 @@ cat >$TMP3 <<EOF
 
 <nav id=toc>
 <h2>Contents</h2>
-<ul>
-<li><a href="#meeting">Meeting minutes</a>
 <ol>
 <li><a href="#t01">Reminder of good teleconferences</a></li>
 <li><a href="#t02">Agenda</a></li>
 <li><a href="#t03">Two minutes round the table</a></li>
 </ol>
-</li>
-</ul>
 </nav>
 </div>
 

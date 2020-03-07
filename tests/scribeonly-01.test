@@ -61,10 +61,8 @@ cat >$TMP3 <<EOF
 
 <nav id=toc>
 <h2>Contents</h2>
-<ul>
-<li><a href="#meeting">Meeting minutes</a>
-</li>
-</ul>
+<ol>
+</ol>
 </nav>
 </div>
 

@@ -61,15 +61,11 @@ cat >$TMP2 <<-EOF
 	
 	<nav id=toc>
 	<h2>Contents</h2>
-	<ul>
-	<li><a href="#meeting">Meeting minutes</a>
 	<ol>
 	<li><a href="#t01">HTML 10.2</a></li>
 	<li><a href="#t02">HTML 11.0</a></li>
 	<li><a href="#t03">HTML 2.1</a></li>
 	</ol>
-	</li>
-	</ul>
 	</nav>
 	</div>
 	

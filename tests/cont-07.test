@@ -22,15 +22,11 @@ EOF
 cat >$TMP4 <<EOF
 <nav id=toc>
 <h2>Contents</h2>
-<ul>
-<li><a href="#meeting">Meeting minutes</a>
 <ol>
 <li><a href="#t01">Agenda,<br>
 … roll call<br>
 … and scribe</a></li>
 </ol>
-</li>
-</ul>
 </nav>
 EOF
 
