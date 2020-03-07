@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Test of images (with "-->") inside a topic.
+
+trap 'rm $TMP1' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+url="https://www.w3.org/Icons/w3c_48x48.png"
+
+# Generate the minutes:
+echo -e "<foo> scribenick:bar\n<foo> Topic: --> Image $url" | \
+  perl scribe.perl -embed >$TMP1
+
+# See if the expected H3 (with an image) is in the minutes:
+fgrep "<h3 id=t01><a href=\"$url\"><img src=\"$url\" alt=\"Image\"></a></h3>" $TMP1 || exit 1
+
+# See if the expected line (without the image) is in the ToC:
+fgrep "<li><a href=\"#t01\">Image</a></li>" $TMP1
