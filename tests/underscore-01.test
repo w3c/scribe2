@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Check that nicknames with and without trailing "_" are treated as one.
+
+trap 'rm -f $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/underscore-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/underscore-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/underscore-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/underscore-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo_> topic: Test
+<foo_> scribe: foo
+<foo_> First scribe line
+<foo_> Second scribe line
+<foo__> Third scribe line
+<bar> Hi, it's me
+<bar_> Still me
+<foo__> scribe+
+<foo__> That wasn't needed
+EOF
+
+cat >$TMP2 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=t01>Test</h3>
+<p id=x003 class=summary>First scribe line</p>
+<p id=x004 class=summary>Second scribe line</p>
+<p id=x005 class=summary>Third scribe line</p>
+<p id=x006 class=irc><cite>&lt;bar&gt;</cite> Hi, it's me</p>
+<p id=x007 class=irc><cite>&lt;bar_&gt;</cite> Still me</p>
+<p id=x009 class=summary>That wasn't needed</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP3 || exit 1
+sed -n -e '/<main/,/<\/main>/p' $TMP3 >$TMP4
+diff -u $TMP2 $TMP4
