@@ -39,8 +39,6 @@
 # TODO: RRSAgent has commands to edit or drop actions (because it
 # doesn't understand s///). Should we support those?
 #
-# TODO: Add subtopics (type 'T') to the ToC?
-#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -433,7 +431,7 @@ sub esc($;$$$)
       $s =~ s{(?:^|[^-])\K-&gt;}{→}g;	# "->" not preceded by a "-"
       $s =~ s{(?:^|[^=])\K==&gt;}{⟹}g; # "==>" not preceded by a "="
       $s =~ s{(?:^|[^=])\K=&gt;}{⇒}g;	# "=>" not preceded by a "="
-      $s =~ s{&lt;--(?!-)}{⟵}g;		# "<--" not followed by a "-"
+      $s =~ s{&lt;--(?!-)}{⟵}g;	# "<--" not followed by a "-"
       $s =~ s{&lt;-(?!-)}{←}g;		# "<-" not followed by a "-"
       $s =~ s{&lt;==(?!=)}{⟸}g;	# "<==" not followed by a "="
       $s =~ s{&lt;=(?!=)}{⇐}g;		# "<=" not followed by a "="
@@ -450,20 +448,51 @@ sub esc($;$$$)
 }
 
 
-# is_cur_scribe -- true if $nick is in %$curscribes_ref
+# is_cur_scribe -- true if $nick is in %$curscribes_ref, ignores trailing "_"
 sub is_cur_scribe($$)
 {
   my ($nick, $curscribes_ref) = @_;
 
-  return $$curscribes_ref{fc($nick)} || $$curscribes_ref{'*'};
+  return $$curscribes_ref{fc($nick =~ s/_+$//r)} || $$curscribes_ref{'*'};
+}
+
+
+# add_scribes -- add scribes to the scribe list and the current scribes
+sub add_scribes($$$)
+{
+  my ($names, $curscribes_ref, $scribes_ref) = @_;
+
+  # We may assume $names matches zero or more comma-separated $scribepat
+  foreach (split(/ *, */, $names)) {	# Split at commas
+    my ($nick, $real) = /^$scribepat$/;	# Split into nick and real name
+    my $n = fc($nick =~ s/_+$//r);	# Case-insensitive, without trailing _
+    $$curscribes_ref{$n} = 1;		# Add speaker as scribe
+    # Add a new real name, or use the nick as real name if there was none.
+    if ($real) {$$scribes_ref{$n} = $real;}
+    elsif (!$$scribes_ref{$n}) {$$scribes_ref{$n} = $nick;}
+  }
+}
+
+
+# delete_scribes -- remove from current scribe list
+sub delete_scribes($$)
+{
+  my ($names, $curscribes_ref) = @_;
+
+  # We may assume $names matches zero or more comma-separated $scribepat
+  foreach (split(/ *, */, $names)) {	# Split at commas
+    my ($nick, $real) = /^$scribepat$/;	# Split into name and real name
+    my $n = fc($nick =~ s/_+$//r);	# Case-sensitive, without trailing _
+    delete $$curscribes_ref{$n};	# Remove from curscribes
+  }
 }
 
 
 # Main body
-my $revision = '$Revision: 113 $'
+my $revision = '$Revision: 114 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Mar  7 01:13:06 2020 UTC $'
+my $versiondate = '$Date: Tue Mar 17 13:45:45 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -629,7 +658,7 @@ my %count;
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
   if ($p->{text} =~ /^ *scribe(?:nick)? * \+:? *$/i) {
     $scribenick = $p->{speaker};
-  } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?::|\+:?) *([^ ].*?) *$/i) {
+  } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?::|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
     $scribenick = $1;
   } else {
     $count{$p->{speaker}}++ if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
@@ -641,12 +670,7 @@ if (!defined $scribenick) {
   $scribenick = '*' if !defined $scribenick;
   push(@diagnostics, "No scribenick or scribe found. Guessed: $scribenick");
 }
-foreach (split(/ *, */, $scribenick)) {
-  if (/^$scribepat$/ or /^(.+)$/) {
-    $scribes{fc $1} = $2 // $1;
-    $curscribes{fc $1} = 1;
-  }
-}
+add_scribes($scribenick, \%curscribes, \%scribes);
 
 # Step 5: Interpret each record, collect topics, actions, etc.
 #
@@ -801,13 +825,11 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *-:? *$/i) {
-    delete $curscribes{fc $records[$i]->{speaker}}; # Remove speaker as scribe
+    delete_scribes($records[$i]->{speaker}, \%curscribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *\+:? *$/i) {
-    my $s = $records[$i]->{speaker};
-    $curscribes{fc $s} = 1;		# Add speaker as scribe
-    $scribes{fc $s} = $s if !$scribes{fc $s}; # Add to collected names
+    add_scribes($records[$i]->{speaker}, \%curscribes, \%scribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *: *$/i) {
@@ -816,12 +838,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{text} =~
 	   /^ *scribe(?:nick)? *(:|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
     %curscribes = () if $1 eq ':';	# Reset scribe nicks
-    foreach (split(/ *, */, $2)) {	# Split at commas
-      /^$scribepat$/;			# Split into nick and name
-      if ($2) {$scribes{fc $1} = $2}	# Add real name to scribe list
-      elsif (!$scribes{fc $1}) {$scribes{fc $1} = $1} # Add nick if no name yet
-      $curscribes{fc $1} = 1;		# Add to current scribe nicks
-    }
+    add_scribes($2, \%curscribes, \%scribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *scribe *: *([^ ].*?) *$/i) {
@@ -830,7 +847,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($records[$i]->{text} =~ /^ *scribe(?:nick)? *-:? *([^ ].*)? *$/i) {
-    foreach (split(/ *, */, $1)) {delete $curscribes{fc $1} if /^([^ ]+)/}
+    delete_scribes($1, \%curscribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
  } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
