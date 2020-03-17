@@ -90,8 +90,8 @@
   href="sample-team.html" >with option -team</a> and <a
   href="sample-fancy.html" >with option -fancy</a>.
 
-  <p>This manual documents scribe.perl version 2, revision 112 (dated
-  28 February 2020). See below for the <a href="#changes" >differences
+  <p>This manual documents scribe.perl version 2, revision 114 (dated
+  17 March 2020). See below for the <a href="#changes" >differences
   with version 1.</a>
 
 
@@ -695,6 +695,14 @@
     <code>scribenick</code> command also applies to the lines before
     that command.)
   </dl>
+
+  <p>Underscores (‘_’) at the end of scribe nicks are ignored, because
+   many IRC clients add them automatically, often after a network
+   error when the original nickname still lingers on the server.
+
+  <p>However, occasionally ‘foo’ and ‘foo_’ may actually be different
+   people. So it is advisable to change your nickname back to one
+   without an underscore.
 
   <h3 id="options_misc">Miscellaneous Options</h3>
 
@@ -1394,6 +1402,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Fri Feb 28 14:40:13 2020 UTC $</address>
+   >W3C Software License</a>. $Date: Tue Mar 17 13:59:25 2020 UTC $</address>
  </body>
 </html>
