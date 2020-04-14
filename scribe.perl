@@ -39,6 +39,9 @@
 # TODO: RRSAgent has commands to edit or drop actions (because it
 # doesn't understand s///). Should we support those?
 #
+# TODO: An option to add rel=nofollow to links? (In case RRSAgent is
+# used to create Google karma for sites.)
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -107,7 +110,7 @@ my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 # A speaker name doesn't contain [ ":>] and doesn't start with "..".
 my $speakerpat = '(?:[^. :">]|\\.[^. :">])[^ :">]*';
 # Some words are unlikely to be speaker names
-my $specialpat = '(?:propos(?:ed|al)|issue-\d+|action-\d+)';
+my $specialpat = '(?:propos(?:ed|al)|issue-\d+|action-\d+|github)';
 
 # Command line options:
 my $styleset = 'public';	# Or 'team', 'member' or 'fancy'
@@ -489,10 +492,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 115 $'
+my $revision = '$Revision: 116 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Apr 14 16:11:08 2020 UTC $'
+my $versiondate = '$Date: Tue Apr 14 16:29:03 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
