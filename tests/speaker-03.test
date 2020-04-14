@@ -16,6 +16,7 @@ cat >$TMP1 <<EOF
 <foo> .hidden: I'm a speaker
 <foo> but this: is a continuation
 <foo> "dpv:nace" has a quote and is not a speaker
+<foo> http://example.org/ is a URL and not a speaker
 EOF
 
 cat >$TMP2 <<EOF
@@ -25,9 +26,10 @@ cat >$TMP2 <<EOF
 <span id=x004>… true: I say</span></p>
 <p id=x006 class="phone s02"><cite>2top:</cite> me too<br>
 <span id=x007>… 5:00 pm: 5 is not a speaker</span></p>
-<p id=x010 class="phone s03"><cite>.hidden:</cite> I'm a speaker<br>
-<span id=x011>… but this: is a continuation</span><br>
-<span id=x012>… &quot;dpv:nace&quot; has a quote and is not a speaker</span></p>
+<p id=x011 class="phone s03"><cite>.hidden:</cite> I'm a speaker<br>
+<span id=x012>… but this: is a continuation</span><br>
+<span id=x013>… &quot;dpv:nace&quot; has a quote and is not a speaker</span><br>
+<span id=x014>… <a href="http://example.org/">http://&zwnj;example.org/</a> is a URL and not a speaker</span></p>
 </section>
 </main>
 EOF
@@ -35,4 +37,4 @@ EOF
 perl scribe.perl -implicit $TMP1 | \
   sed -n -e '/<main/,/<\/main>/p' >$TMP3
 
-diff -u $TMP3 $TMP2
+diff -u $TMP2 $TMP3
