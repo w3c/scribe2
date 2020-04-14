@@ -32,6 +32,10 @@ cat >$TMP1 <<EOF
 <foo> ?queue
 <foo> +queuing is not ignored
 <foo> ?quoi is not ignored
+<foo> chair acks next
+<foo> chair recognizes next
+<foo> vq?
+<foo>  pls show the  full q?
 EOF
 
 cat >$TMP4 <<EOF
