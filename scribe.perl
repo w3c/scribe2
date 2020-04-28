@@ -492,10 +492,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 116 $'
+my $revision = '$Revision: 117 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Apr 14 16:29:03 2020 UTC $'
+my $versiondate = '$Date: Tue Apr 28 12:46:31 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -690,7 +690,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
 
-  } elsif (/^ *present *: *(.*?) *$/i) {
+  } elsif (/^ *present *[:=] *(.*?) *$/i) {
     if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {} # Ignore Zakim?
     elsif ($1 eq '(no one)') {%present = ()}
     else {%present = map {fc($_) => $_} split(/ *, */, $1)}
