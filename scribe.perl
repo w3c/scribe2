@@ -499,10 +499,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 119 $'
+my $revision = '$Revision: 120 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Mon Jun  8 13:22:22 2020 UTC $'
+my $versiondate = '$Date: Mon Jun  8 13:42:03 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -611,12 +611,13 @@ for (my $i = 0; $i < @records; $i++) {
   if ($records[$i]->{type} eq 'c' &&
       $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
     my ($cmd, $old, $new, $global) = ($1, $3, $4, $5);
-    $old =~ s/\x{200C}//g;			# Remove any U+200C
+    my $old2 = $old =~ s/\x{200C}//gr;		# Version without any U+200C
 
     if ($cmd eq 'i') {				# i/where/what/
       my $j = $i - 1;
       $j-- until $j < 0 || ($records[$j]->{type} eq 'i' &&
-			    $records[$j]->{text} =~ /\Q$old\E/);
+			    ($records[$j]->{text} =~ /\Q$old\E/ ||
+			     $records[$j]->{text} =~ /\Q$old2\E/));
       if ($j >= 0) {
 	splice(@records, $j, 0,
 	       {type=>'i',id=>'',speaker=>$records[$i]->{speaker},text=>$new});
@@ -630,7 +631,8 @@ for (my $i = 0; $i < @records; $i++) {
     } elsif (! defined $global) {		# s/old/new/
       my $j = $i - 1;
       $j-- until $j < 0 || ($records[$j]->{type} eq 'i' &&
-			    $records[$j]->{text} =~ s/\Q$old\E/$new/);
+			    ($records[$j]->{text} =~ s/\Q$old\E/$new/ ||
+			     $records[$j]->{text} =~ s/\Q$old2\E/$new/));
 
       push(@diagnostics,
 	   ($j >= 0 ? 'Succeeded: ' : 'Failed: ') . $records[$i]->{text});
@@ -639,8 +641,9 @@ for (my $i = 0; $i < @records; $i++) {
     } else {					# s/old/new/g or .../G
       my $n = 0;
       for (0 .. ($global eq 'g' ? $i-1 : @records-1)) {
-	$records[$_]->{text} =~ s/\Q$old\E/$new/ and $n++ if
-	    $records[$_]->{type} eq 'i';
+	$n++ if $records[$_]->{type} eq 'i' &&
+	    ($records[$_]->{text} =~ s/\Q$old\E/$new/ ||
+	     $records[$_]->{text} =~ s/\Q$old2\E/$new/);
       }
       push(@diagnostics,
 	   ($n ? "Succeeded $n times: " : "Failed: ") . $records[$i]->{text});
