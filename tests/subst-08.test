@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Test s/// when there are invisible U+200C characters in the command
+# (in particular in the URL).
+
 trap 'rm -f $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/subst-XXXXXX` || exit 1
 TMP2=`mktemp /tmp/subst-XXXXXX` || exit 1
@@ -14,7 +17,7 @@ cat >$TMP1 <<EOF
 16:15:20 <nigel> rrsagent, make minutes v2
 16:15:20 <RRSAgent> I have made the request to generate https://www.w3.org/2020/06/04-tt-minutes.html nigel
 16:16:09 <nigel> s/I don't think I'm not suggesting a normative change/I am not suggesting a normative change
-16:19:34 <nigel> s|https://github.com/w3c/imsc/settings/branches||
+16:19:34 <nigel> s|https://‌github.com/‌w3c/‌imsc/‌settings/‌branches||
 16:19:37 <nigel> rrsagent, make minutes v2
 EOF
 
