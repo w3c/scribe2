@@ -42,6 +42,13 @@
 # TODO: An option to add rel=nofollow to links? (In case RRSAgent is
 # used to create Google karma for sites.)
 #
+# TODO: Remove invisible characters (such as zero-width non joiner,
+# U+200C) from the input, or at least from strings being matched for
+# s/// and i///? Because if somebody tries to replace a URL but
+# copy-pastes the URL from the generated HTML instead of the IRC log,
+# it will contain invisible U+2005 characters and mysteriously fail to
+# match.)
+#
 # Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -492,10 +499,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 117 $'
+my $revision = '$Revision: 118 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Apr 28 12:46:31 2020 UTC $'
+my $versiondate = '$Date: Mon Jun  8 12:49:33 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
