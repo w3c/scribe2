@@ -499,10 +499,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 118 $'
+my $revision = '$Revision: 119 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Mon Jun  8 12:49:33 2020 UTC $'
+my $versiondate = '$Date: Mon Jun  8 13:22:22 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -597,6 +597,10 @@ do {
 # apply the substitutions and insertions. Successful s/// and i///
 # become of type 'o' (omit).
 #
+# If people try to use s/// to replace URLs and they copy-paste the
+# URLs from the generated minutes, there will be zero-width non-joiner
+# characters in the URLs. Remove them before matching.
+#
 foreach (@records) {
   $_->{type} = 'c' if
       $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/;
@@ -607,6 +611,7 @@ for (my $i = 0; $i < @records; $i++) {
   if ($records[$i]->{type} eq 'c' &&
       $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
     my ($cmd, $old, $new, $global) = ($1, $3, $4, $5);
+    $old =~ s/\x{200C}//g;			# Remove any U+200C
 
     if ($cmd eq 'i') {				# i/where/what/
       my $j = $i - 1;
