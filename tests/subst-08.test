@@ -1,0 +1,31 @@
+#!/bin/bash
+
+trap 'rm -f $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/subst-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/subst-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/subst-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/subst-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+14:59:37 <nigel> scribe: nigel
+15:15:06 <nigel> Nigel: I don't think I'm not suggesting a normative change.
+16:11:01 <atai> atai has left #tt
+16:12:27 <atsushi> https://github.com/w3c/imsc/settings/branches
+16:15:20 <nigel> rrsagent, make minutes v2
+16:15:20 <RRSAgent> I have made the request to generate https://www.w3.org/2020/06/04-tt-minutes.html nigel
+16:16:09 <nigel> s/I don't think I'm not suggesting a normative change/I am not suggesting a normative change
+16:19:34 <nigel> s|https://github.com/w3c/imsc/settings/branches||
+16:19:37 <nigel> rrsagent, make minutes v2
+EOF
+
+cat >$TMP2 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x002 class="phone s01"><cite>Nigel:</cite> I am not suggesting a normative change.</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl --embed $TMP1 >$TMP3
+sed -n -e '/<main/,/<\/main/p' $TMP3 >$TMP4
+diff -u $TMP2 $TMP4
