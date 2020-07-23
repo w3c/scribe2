@@ -6,9 +6,8 @@ locally by hand. See scribedoc.html[2] for the IRC conventions it
 understands.
 
 This is version 2 of scribe.perl, an improved version of the original
-scribe.perl[3,4] by David Booth.
+scribe.perl[3] by David Booth.
 
 [1] https://www.w3.org/2002/03/RRSAgent
 [2] https://w3c.github.io/scribe2/scribedoc.html
-[3] https://dev.w3.org/2002/scribe/scribedoc.htm
-[4] https://github.com/w3c/scribe
+[3] https://github.com/w3c/scribe
