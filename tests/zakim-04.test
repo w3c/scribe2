@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Test if Zakim's "attendees have been (no one)" is recognized
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/zakim-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/zakim-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+21:13:40 <Mike> Hi
+21:14:38 <Bert> zakim, end meeting
+21:14:38 <Zakim> As of this point the attendees have been (no one)
+21:14:49 <Mike> OK
+EOF
+
+cat >$TMP4 <<EOF
+<dt>Present</dt><dd>-</dd>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+
+grep '<dt>Present' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3
