@@ -492,10 +492,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 121 $'
+my $revision = '$Revision: 122 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Mon Jun  8 14:50:45 2020 UTC $'
+my $versiondate = '$Date: Tue Aug 11 13:09:49 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -868,7 +868,7 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   /the attendees (?:were|have been) (.*?),?$/){
-    $present{fc $_} = $_ foreach split(/, */, $1);
+    $present{fc $_} = $_ foreach split(/, */, ($1 =~ s/\(no one\)//r));
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
