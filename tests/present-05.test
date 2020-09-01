@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Test that long lists of participants create a collapsed list.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:36 <foo> bar: I just say
+13:28:46 <foo> ... I say nothing
+13:28:56 <bar>  Better: I say nada
+13:29:06 <foo> baz: you say
+13:29:16 <foo> bar: OK
+13:29:17 <foo> present+
+13:29:18 <bar> present+
+13:30:01 <bar> present+ ella01, ella02, ella03, ella04, ella05, ella06
+13:30:01 <bar> present+ ella07, ella08, ella09, ella10
+13:30:02 <bar> present+ ella11, ella12, ella13, ella14, ella15, ella16
+13:30:03 <bar> present+ ella17, ella18, ella19, ella20
+13:30:04 <bar> present+ ella21, ella22, ella23, ella24, ella25, ella26
+13:30:05 <bar> present+ ella27, ella28, ella29, ella30
+EOF
+
+cat >$TMP3 <<EOF
+<dt>Present</dt><dd><details><summary>bar,</summary> ella01, ella02, ella03, ella04, ella05, ella06, ella07, ella08, ella09, ella10, ella11, ella12, ella13, ella14, ella15, ella16, ella17, ella18, ella19, ella20, ella21, ella22, ella23, ella24, ella25, ella26, ella27, ella28, ella29, ella30, foo</details></dd>
+EOF
+
+perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
+grep '<dt>Present' $TMP2 >$TMP4
+diff -u $TMP3 $TMP4

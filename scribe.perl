@@ -492,10 +492,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 122 $'
+my $revision = '$Revision: 123 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Aug 11 13:09:49 2020 UTC $'
+my $versiondate = '$Date: Tue Sep  1 21:19:13 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1149,7 +1149,11 @@ $logo = "<p>$w3clogo</p>\n\n" if !defined $logo;
 my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
 my $present = esc(join(", ", map($present{$_}, sort keys %present))) || '-';
+$present = "<details><summary>".($present =~ s/,/,<\/summary>/r)."</details>"
+  if scalar keys %present > 30; # Collapsed list if the list is long
 my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets))) || '-';
+$regrets = "<details><summary>".($regrets =~ s/,/,<\/summary>/r)."</details>"
+  if scalar keys %regrets > 30; # Collapsed list if the list is long
 my $scribes = esc(join(", ", sort {fc($a) cmp fc($b)} values %scribes)) || '-';
 my $chairs = esc(join(", ", sort {fc($a) cmp fc($b)} values %chairs)) || '-';
 my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
