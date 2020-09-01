@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Test that a long lists of regrets creates a collapsed list.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/regrets-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/regrets-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/regrets-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/regrets-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Regrets: Do, Not, Consider, This, Line
+<foo> Regrets : Adam, Eve
+<foo> regret + Jupiter
+<foo> regrets +Apollo, Venus
+<foo> REGRET-Apollo
+<bar> regrets+ ella01, ella02, ella03, ella04, ella05, ella06
+<bar> regrets+ ella07, ella08, ella09, ella10
+<bar> regrets+ ella11, ella12, ella13, ella14, ella15, ella16
+<bar> regrets+ ella17, ella18, ella19, ella20
+<bar> regrets+ ella21, ella22, ella23, ella24, ella25, ella26
+<bar> regrets+ ella27, ella28, ella29, ella30
+<bar> regrets+ ella31, ella32, ella33, ella34, ella35, ella36
+<bar> regrets+ ella37, ella38, ella39, ella40
+EOF
+
+cat >$TMP3 <<EOF
+<dt>Regrets</dt><dd><details><summary>Adam,</summary> ella01, ella02, ella03, ella04, ella05, ella06, ella07, ella08, ella09, ella10, ella11, ella12, ella13, ella14, ella15, ella16, ella17, ella18, ella19, ella20, ella21, ella22, ella23, ella24, ella25, ella26, ella27, ella28, ella29, ella30, ella31, ella32, ella33, ella34, ella35, ella36, ella37, ella38, ella39, ella40, Eve, Jupiter, Venus</details></dd>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+
+cat $TMP2
+
+grep '<dt>Regrets' $TMP2 >$TMP4
+diff -u $TMP3 $TMP4
