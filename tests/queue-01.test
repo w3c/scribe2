@@ -36,6 +36,9 @@ cat >$TMP1 <<EOF
 <foo> chair recognizes next
 <foo> vq?
 <foo>  pls show the  full q?
+<foo> q
+<foo> QQ+
+<foo> r
 EOF
 
 cat >$TMP4 <<EOF
@@ -44,6 +47,7 @@ cat >$TMP4 <<EOF
 <section><p id=x001 class=summary>First line</p>
 <p id=x022 class=summary>+queuing is not ignored</p>
 <p id=x023 class=summary>?quoi is not ignored</p>
+<p id=x030 class=summary>r</p>
 </section>
 </main>
 EOF
