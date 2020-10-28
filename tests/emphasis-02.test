@@ -26,7 +26,7 @@ cat >$TMP4 <<EOF
 <p id=x003 class=summary>A line with an <a href="http://example.org/"><em>italic link</em></a> not at the end.</p>
 <p id=x004 class=summary>A line with <a href="http://example.org/3/"><em>italic link 3</em> link</a></p>
 <p id=x005 class=summary>A line with an <a href="http://example.org/">/ambiguous link</a></p>
-<p id=x006 class=summary>A line with a bare URL:<a href="http://example.org/_not_underlined_">http://&zwnj;example.org/&zwnj;_not_underlined_</a></p>
+<p id=x006 class=summary>A line with a bare URL:<a href="http://example.org/_not_underlined_">http://<wbr>example.org/<wbr>_not_underlined_</a></p>
 <p id=x007 class=summary>A line with <a href="http://example.org/1*"><strong>bold link 1</strong></a></p>
 </section>
 </main>

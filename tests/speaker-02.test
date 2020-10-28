@@ -29,7 +29,7 @@ cat >$TMP2 <<EOF
 <p id=x009 class="phone s03"><cite>.hidden:</cite> I'm a speaker<br>
 <span id=x010>… hidden: but this is a continuation</span></p>
 <p id=x011 class=summary>&quot;dpv:nace&quot; has a quote and is not a speaker</p>
-<p id=x012 class=summary><a href="http://example.org/">http://&zwnj;example.org/</a> is a URL and not a speaker</p>
+<p id=x012 class=summary><a href="http://example.org/">http://<wbr>example.org/</a> is a URL and not a speaker</p>
 </section>
 </main>
 EOF

@@ -15,7 +15,7 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<p id=x002 class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/a/long/path">https://&zwnj;www.example.org/&zwnj;a/&zwnj;long/&zwnj;path</a></p>
+<p id=x002 class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a></p>
 EOF
 
 perl scribe.perl --urlDisplay=break <$TMP1 >$TMP2 || exit 1

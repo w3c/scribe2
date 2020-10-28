@@ -389,7 +389,7 @@ Internationalization Working Group Teleconference</h1>
 
 <section>
 <h3 id=t01>WoT reviews</h3>
-<p id=x032 class=summary><a href="https://github.com/w3c/i18n-activity/projects/1">https://&zwnj;github.com/&zwnj;w3c/&zwnj;i18n-activity/&zwnj;projects/&zwnj;1</a></p>
+<p id=x032 class=summary><a href="https://github.com/w3c/i18n-activity/projects/1">https://<wbr>github.com/<wbr>w3c/<wbr>i18n-activity/<wbr>projects/<wbr>1</a></p>
 <p id=x036 class=summary>(addison introduces)</p>
 <p id=x037 class=irc><cite>&lt;kaz&gt;</cite> <a href="https://lists.w3.org/Archives/Public/www-international/2019AprJun/0026.html">kaz's write up</a></p>
 <p id=x044 class="phone s01"><cite>kaz:</cite> our main purpose is first doc, WoT Thing Description<br>
@@ -401,13 +401,13 @@ Internationalization Working Group Teleconference</h1>
 <span id=x053>… would prefer if it were in w3c repo before we review</span></p>
 <p id=x055 class="phone s01"><cite>kaz:</cite> updating the draft daily, but generated fixed version using branch<br>
 <span id=x056>… if needed, I can copy the fixed HTML to the www.w3.org server.</span></p>
-<p id=x057 class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/</a></p>
+<p id=x057 class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">https://<wbr>github.com/<wbr>w3c/<wbr>wot-thing-description/</a></p>
 <p id=x060 class="phone s03"><cite>mathias:</cite> our doc is on github</p>
 <p id=x061 class="phone s04"><cite>sebastian:</cite> would having  a meeting to guide you helpful?</p>
 <p id=x068 class="phone s02"><cite>richard:</cite> if you can review our checklist, that will help you guide us<br>
 <span id=x069>… think it is a good idea for you to look through and identify things important for us to review</span><br>
 <span id=x070>… we will likely look other places too, but it will still help</span><br>
-<span id=x071>… <a href="https://www.w3.org/International/techniques/shortchecklist.html">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;techniques/&zwnj;shortchecklist.html</a></span><br>
+<span id=x071>… <a href="https://www.w3.org/International/techniques/shortchecklist.html">https://<wbr>www.w3.org/<wbr>International/<wbr>techniques/<wbr>shortchecklist.html</a></span><br>
 <span id=x072>… points to more detailed checklist also</span></p>
 <p id=x073 class=irc><cite>&lt;kaz&gt;</cite> <a href="https://www.w3.org/International/techniques/developing-specs">detailed checklist</a></p>
 <p id=x075 class="phone s02"><cite>richard:</cite> if you go through and see if there are things to pay attention to while doing review<br>
@@ -427,9 +427,9 @@ Internationalization Working Group Teleconference</h1>
 <span id=x100>… protocol, such as http or some other iot protocol</span></p>
 <p id=x101 class=irc><cite>&lt;r12a&gt;</cite> uhoh</p>
 <p id=x102 class="phone s04"><cite>sebastian:</cite> RDF based</p>
-<p id=x103 class="phone s06"><cite>Explainer:</cite> <a href="https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md">https://&zwnj;github.com/&zwnj;w3c/&zwnj;wot-thing-description/&zwnj;blob/&zwnj;TD-TAG-review/&zwnj;explainer/&zwnj;Explainer.md</a></p>
+<p id=x103 class="phone s06"><cite>Explainer:</cite> <a href="https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md">https://<wbr>github.com/<wbr>w3c/<wbr>wot-thing-description/<wbr>blob/<wbr>TD-TAG-review/<wbr>explainer/<wbr>Explainer.md</a></p>
 <p id=x104 class="phone s04"><cite>Sebastian:</cite> what is the action about, title and description terms</p>
-<p id=x105 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/string-meta/">https://&zwnj;w3c.github.io/&zwnj;string-meta/</a></p>
+<p id=x105 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/string-meta/">https://<wbr>w3c.github.io/<wbr>string-meta/</a></p>
 <p id=x106 class="phone s04"><cite>Sebastian:</cite> multiple language support</p>
 <p id=x107 class="phone s07"><cite>r12a:</cite> is there some kind of markup involved? how is information stored</p>
 <p id=x108 class="phone s04"><cite>sebastian:</cite> thing description can be stored in different ways</p>
@@ -465,7 +465,7 @@ Internationalization Working Group Teleconference</h1>
 
 <section>
 <h3 id=t02>Action Items</h3>
-<p id=x160 class=summary><a href="https://www.w3.org/International/track/actions/open">https://&zwnj;www.w3.org/&zwnj;International/&zwnj;track/&zwnj;actions/&zwnj;open</a></p>
+<p id=x160 class=summary><a href="https://www.w3.org/International/track/actions/open">https://<wbr>www.w3.org/<wbr>International/<wbr>track/<wbr>actions/<wbr>open</a></p>
 <p id=x161 class=summary>action-764?</p>
 <p id=x162 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/764">action-764</a>:</strong> Addison Phillips to Check if unicode describes backwards deletion clearly and develop doc if not -- due 2018-10-30 -- OPEN</p>
 <p id=x164 class="phone s05"><cite>addison:</cite> PR?</p>
@@ -494,12 +494,12 @@ Internationalization Working Group Teleconference</h1>
 <p id=x191 class=summary>regrets next week from addison</p>
 <p id=x194 class="phone s02"><cite>richard:</cite> LTR/RTL doc being reworked<br>
 <span id=x195>… have a look at new version</span></p>
-<p id=x196 class=irc><cite>&lt;r12a&gt;</cite> <a href="http://w3c.github.io/i18n-drafts/questions/qa-ltr-scripts-in-rtl.en.html">http://&zwnj;w3c.github.io/&zwnj;i18n-drafts/&zwnj;questions/&zwnj;qa-ltr-scripts-in-rtl.en.html</a></p>
+<p id=x196 class=irc><cite>&lt;r12a&gt;</cite> <a href="http://w3c.github.io/i18n-drafts/questions/qa-ltr-scripts-in-rtl.en.html">http://<wbr>w3c.github.io/<wbr>i18n-drafts/<wbr>questions/<wbr>qa-ltr-scripts-in-rtl.en.html</a></p>
 </section>
 
 <section>
 <h3 id=t04>Retiring Charmod-Resid</h3>
-<p id=x200 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://www.w3.org/TR/2004/CR-charmod-resid-20041122/">https://&zwnj;www.w3.org/&zwnj;TR/&zwnj;2004/&zwnj;CR-charmod-resid-20041122/</a></p>
+<p id=x200 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://www.w3.org/TR/2004/CR-charmod-resid-20041122/">https://<wbr>www.w3.org/<wbr>TR/<wbr>2004/<wbr>CR-charmod-resid-20041122/</a></p>
 <p id=x201 class=summary>proposed: retire charmod-resid; convert to WD and then convert to Note and retire it</p>
 <p id=x202 class="phone s10"><cite>jck:</cite> choice is either &quot;please don't read this&quot; or do lots of work</p>
 <p id=x203 class=summary>please vote on retiring charmod-resid</p>

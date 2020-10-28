@@ -100,9 +100,9 @@ cat >$TMP2 <<EOF
 <span id=x014>… good visual treatment of the site map</span></p>
 <p id=x015 class=summary>+1 to we have lots of different audiences</p>
 <p id=x016 class="phone s02"><cite>Eric:</cite> from last meeting, not just the learning resources, also clear that we are doing the standards work</p>
-<p id=x017 class=summary><a href="https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page">https://&zwnj;www.w3.org/&zwnj;WAI/&zwnj;EO/&zwnj;wiki/&zwnj;Redesign_-_October_Revisions#Home_page</a></p>
+<p id=x017 class=summary><a href="https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page">https://<wbr>www.w3.org/<wbr>WAI/<wbr>EO/<wbr>wiki/<wbr>Redesign_-_October_Revisions#Home_page</a></p>
 <p id=x021 class=irc><cite>&lt;Zakim&gt;</cite> yatil, you wanted to say tagging and to say good direction</p>
-<p id=x022 class=summary><a href="https://www.nngroup.com/articles/audience-based-navigation/">https://&zwnj;www.nngroup.com/&zwnj;articles/&zwnj;audience-based-navigation/</a></p>
+<p id=x022 class=summary><a href="https://www.nngroup.com/articles/audience-based-navigation/">https://<wbr>www.nngroup.com/<wbr>articles/<wbr>audience-based-navigation/</a></p>
 <p id=x023 class=summary>ah, but that is navigation, not alt info in home page</p>
 </section>
 </main>
