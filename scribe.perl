@@ -42,7 +42,10 @@
 # TODO: An option to add rel=nofollow to links? (In case RRSAgent is
 # used to create Google karma for sites.)
 #
-# Copyright © 2017-2019 World Wide Web Consortium, (Massachusetts Institute
+# TODO: A command to skip several lines or end the minutes before the
+# end of the input. ("StopMinutesHere", "ResumeMinutesHere"?)
+#
+# Copyright © 2017-2020 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
 # work is distributed under the W3C® Software License[1] in the hope
@@ -327,7 +330,7 @@ sub break_url($)
 
   # HTML delimiters are already escaped.
   if ($url_display eq 'break') {
-    $s =~ s|/\b|/&zwnj;|g;
+    $s =~ s|/\b|/<wbr>|g;
   } elsif ($url_display eq 'shorten') {
     $s =~ s/^((?:[^&]|&[^;]+;){5})(?:[^&]|&[^;]+;)*((?:[^&]|&[^;]+;){6})$/$1…$2/;
   }
@@ -364,7 +367,7 @@ sub esc($;$$$);
 sub esc($;$$$)
 {
   my ($s, $emph, $link, $break_urls) = @_;
-  my ($replacement, $pre, $url, $post, $pre1, $post1, $type, $anchor);
+  my ($replacement, $pre, $url, $post, $type);
 
   if ($link) {
     # Wrap Ralph-links and bare URLs in <a>.
@@ -384,34 +387,32 @@ sub esc($;$$$)
     $replacement = '';
     while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/) {
       # Look for "->" or "-->" before or after the URL.
-      if (($type, $anchor) = $pre =~ /(--?>) *([^ ].*?) *$/) {	# Ivan link
-    	$replacement .= esc($`, $emph) . mklink($link, $type, $url, $anchor);
-    	$s = $post;
-      } elsif (($pre1, $type) = $pre =~ /^(.*?)(--?>) *$/) {
-	# Maybe Ralph or Xueyuan
-    	if ($post =~ /^ *(\"|\')(.*?)\g1/) { # Quoted Ralph link
-    	  $replacement .= esc($pre1, $emph) . mklink($link, $type, $url, $2);
-    	  $s = $';
-    	} elsif ($post =~ /^ *([^ ].*?) *$/) {	# Unquoted Ralph link
-    	  $replacement .= esc($pre1, $emph) . mklink($link, $type, $url, $1);
-    	  $s = '';
-    	} elsif ($pre1 =~ /^ *([^ ].*?) *$/) {	# Xueyuan link
-    	  $replacement .= mklink($link, $type, $url, $1);
-    	  $s = $post;
-    	} else {				# Missing anchor text
-    	  $replacement .= esc($pre1, $emph) . mklink($link, $type, $url, '');
-    	  $s = $post;
-    	}
-      } elsif (($type, $post1) = $post =~ /^ *(--?>)(.*)$/) {
-	# Maybe inverted Xueyuan
-	if ($post1 =~ /^ *(\"|\')(.*?)\g1/) { # Quoted inverted Xueyuan
-	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, $2);
-	  $s = $';
-	} else {				# Unquoted inverted Xueyuan link
-	  $post1 =~ /^ *(.*?) *$/;
+      if ($pre =~ /(--?>) *$/p) { # Ralph, Xueyuan or missing anchor text
+	$type = $1;
+	$pre = ${^PREMATCH};
+	if ($post =~ /^ *"([^"\t]*)"/p || $post =~ /^ *'([^'\t]*)'/p ||
+	    $post =~ /^ *([^'" \t][^\t]*[^ \t]) */p ||
+	    $post =~ /^ *([^'" \t]) */p) { # Ralph link
 	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, $1);
-	  $s = '';
+	  $s = ${^POSTMATCH};
+	} elsif ($pre =~ / *([^ \t][^\t]*[^ \t]|[^ \t]) *$/p) {	# Xueyuan link
+	  $replacement .= esc(${^PREMATCH}, $emph)
+	      . mklink($link, $type, $url,$1);
+	  $s = $post;
+	} else {		# Missing anchor text
+	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, '');
+	  $s = $post;
 	}
+      } elsif ($pre =~ /(--?>) *(.+?) *$/p) { # Ivan link
+	$replacement .= esc(${^PREMATCH}, $emph) . mklink($link, $1, $url, $2);
+	$s = $post;
+      } elsif ($post =~ /^ *(--?>) *"([^"\t]*)"/p ||
+	       $post =~ /^ *(--?>) *'([^'\t]*)'/p ||
+	       $post =~ /^ *(--?>) *([^ \t][^\t]*[^ \t]) */p ||
+	       $post =~ /^ *(--?>) *([^ \t]) */p ||
+	       $post =~ /^ *(--?>) *()/p) { # Inverted Xueyuan link
+	$replacement  .= esc($pre, $emph) . mklink($link, $1, $url, $2);
+	$s = ${^POSTMATCH};
       } else {					# Bare URL.
     	$replacement .= esc($pre, $emph) . mklink($link, '->', $url, '');
     	$s = $post;
@@ -492,10 +493,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 123 $'
+my $revision = '$Revision: 124 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Sep  1 21:19:13 2020 UTC $'
+my $versiondate = '$Date: Wed Oct 28 18:08:33 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
