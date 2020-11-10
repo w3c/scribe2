@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Do not include quote marks in the URL.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/url-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/url-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/url-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/url-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<Zakim> agendum 1. "Test http://www.example.com/" taken up [from foo]
+<foo> ScribeNick: foo
+<foo> baz: Hi
+<foo> bar: See <https://www.example.org/a/long/path>
+<foo> bar: And "https://www.example.org/a/long/path"
+<foo> bar: Or ‘https://www.example.org/a/long/path’
+<foo> bar: Or “https://www.example.org/a/long/path”
+<foo> bar: Or «https://www.example.org/a/long/path»
+<foo> bar: Also ›https://www.example.org/a/long/path‹ and
+<foo> bar: Finally ‹https://www.example.org/a/long/path›
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=t01>Test <a href="http://www.example.com/">http://<wbr>www.example.com/</a></h3>
+<p id=x003 class="phone s01"><cite>baz:</cite> Hi</p>
+<p id=x004 class="phone s02"><cite>bar:</cite> See &lt;<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>&gt;</p>
+<p id=x005 class="phone s02"><cite>bar:</cite> And &quot;<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>&quot;</p>
+<p id=x006 class="phone s02"><cite>bar:</cite> Or ‘<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>’</p>
+<p id=x007 class="phone s02"><cite>bar:</cite> Or “<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>”</p>
+<p id=x008 class="phone s02"><cite>bar:</cite> Or «<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>»</p>
+<p id=x009 class="phone s02"><cite>bar:</cite> Also ›<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>‹ and</p>
+<p id=x010 class="phone s02"><cite>bar:</cite> Finally ‹<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>›</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl <$TMP1 >$TMP2 || exit 1
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3

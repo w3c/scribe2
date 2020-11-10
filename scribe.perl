@@ -107,7 +107,9 @@ use open ':utf8';		# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
 
 
-my $urlpat= '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<]+';
+# Pattern for URLs. Note: single quote (') does not end a URL.
+my $urlpat =
+  '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 # A speaker name doesn't contain [ ":>] and doesn't start with "..".
@@ -493,10 +495,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 125 $'
+my $revision = '$Revision: 126 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Nov 10 11:00:56 2020 UTC $'
+my $versiondate = '$Date: Tue Nov 10 12:12:40 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
