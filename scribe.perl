@@ -30,7 +30,7 @@
 # #IssueSummary.
 #
 # TODO: An option to omit the special handling of W3C's bots
-# (currently zakim, rrsagent and trackbot).
+# (currently zakim, rrsagent, agendabot and trackbot).
 #
 # TODO: Make commands such as scribeoptions:-implicit and
 # scribeoptions:-allowspace apply only until they are overridden by
@@ -493,10 +493,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 124 $'
+my $revision = '$Revision: 125 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Oct 28 18:08:33 2020 UTC $'
+my $versiondate = '$Date: Tue Nov 10 11:00:56 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -954,6 +954,12 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($records[$i]->{speaker} eq 'trackbot') {
     $records[$i]->{type} = 'b'		# A response from trackbot
+
+  } elsif ($records[$i]->{speaker} eq 'agendabot') {
+    $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
+
+  } elsif (/^ *agendabot,/i) {
+    $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
   } elsif (/^ *namedanchorhere *: *(.*?) *$/i) {
     my $a = $1 =~ s/ /_/gr;
