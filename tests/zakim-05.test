@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Test if Zakim's new agenda announcements are recognized.
+
+trap 'rm -f $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/zakim-XXXXXX` || exit 0
+TMP2=`mktemp /tmp/zakim-XXXXXX` || exit 0
+TMP3=`mktemp /tmp/zakim-XXXXXX` || exit 0
+
+cat >$TMP1 <<EOF
+16:04:46 <alastairc> zakim, take up item 6
+16:04:46 <Zakim> agendum 6 -- Silver objections -- taken up [from alastairc]
+16:05:30 <alastairc> AC: Send them all?
+16:05:40 <alastairc> MC: yes, noting one left
+16:07:55 <alastairc> MC: Still waiting for official approval from Ralph
+16:14:38 <alastairc> agenda?
+16:15:01 <alastairc> zakim, take up next item
+16:15:01 <Zakim> agendum 4 -- next week's agenda -- taken up [from alastairc]
+16:15:18 <alastairc> zakim, take up item 5
+16:15:18 <Zakim> agendum 5 -- https://github.com/w3c/wcag/pull/1500 -- taken up [from alastairc]
+16:16:46 <alastairc> Whether 1.4.1 use of color is ok for links
+EOF
+
+cat >$TMP2 <<EOF
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+<li><a href="#t01">Silver objections</a></li>
+<li><a href="#t02">next week's agenda</a></li>
+<li><a href="#t03">https://<wbr>github.com/<wbr>w3c/<wbr>wcag/<wbr>pull/<wbr>1500</a></li>
+</ol>
+</nav>
+EOF
+
+perl scribe.perl --embed <$TMP1 |
+  sed -n -e '/<nav id=toc>/,/<\/nav>/p' >$TMP3
+
+diff -u $TMP3 $TMP2
