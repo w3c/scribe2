@@ -495,10 +495,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 126 $'
+my $revision = '$Revision: 127 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Nov 10 12:12:40 2020 UTC $'
+my $versiondate = '$Date: Wed Dec 30 17:39:58 2020 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -864,7 +864,8 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
-	   /^agendum \d+\. "(.*)" taken up/) {
+	   (/^agendum \d+\. "(.*)" taken up/ ||	   # Old Zakim
+	    /^agendum \d+ -- (.*) -- taken up/)) { # New Zakim
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$topicid;	# Unique ID
