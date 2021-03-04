@@ -31,7 +31,9 @@
     <nav class=toc>
       <h4>On this page &#x2192; </h4>
       <ul>
-	<li>[...]
+	<li><a href="#task1">Find logs</a> &nbsp;&bull;&nbsp;
+	<li><a href="#task2">Convert logs to minutes</a> &nbsp;&bull;&nbsp;
+	<li><a href="#task3">Upload minutes</a>
       </ul>
     </nav>
 
@@ -66,7 +68,7 @@
       those three things yourself. How? It depends on your skills,
       environment and preferences.
 
-    <h2>Task 1. Find IRC logs</h2>
+    <h2 id=task1>Task 1. Find IRC logs</h2>
 
     <p>First you need the text that was typed into IRC.
 
@@ -84,22 +86,20 @@
     <p>And if that doesn't work, maybe somebody else who was in the
       meeting still has the logs.
 
-    <h2>Task 2. Convert the log to minutes in HTML</h2>
+    <h2 id=task2>Task 2. Convert the log to minutes in HTML</h2>
 
-    <p>You now have text, but no nicely formatted minutes in HTML
-      yet. RRSAgent uses a program called scribe.perl to process the
-      text. You can do so yourself in one of two ways: using an online
-      service or by downloading scribe.perl and running it
-      locally.
+    <p>RRSAgent uses a program called scribe.perl to process the text.
+      You can do so yourself in one of two ways: using an online
+      service or by runninf scribe.perl locally.
 
-    <p>To use the <strong>online service,</strong> go to
-      the <a href="https://www.w3.org/2005/02/minutes">Online Minutes
+    <p>To use the <strong>online service,</strong> go to the <a
+      href="https://www.w3.org/2005/02/minutes">Online Minutes
       Generator</a>. You can copy-paste your text into the text box,
-      or, if you have the text in a file, upload the file. When you
-      then press the button ‘Generate Minutes’, the web service will
+      or, if you have the text in a file, upload the file. The web service will
       try to run scribe.perl to turn the text into minutes in HTML and
       display them. If it succeeds, you can save the page and proceed
-      to task 3. Otherwise some editing may help, see below.
+      to task 3. Otherwise some editing may help, see <a
+      href="#editing">below</a>.
 
     <p>To run scribe.perl <strong>locally,</strong> you need
       to <a href="https://w3c.github.io/scribe2/scribe.perl">download
@@ -117,15 +117,15 @@
     <p>Try to open the result, ‘minutes.html’, in a browser to see if
       the command succeeded. If so, you can proceed to task 3.
 
-    <p>If the above didn't produce correct minutes, it may be that
-      scribe.perl didn't recognize the format of the text. The
-      section <a href="https://w3c.github.io/scribe2/scribedoc.html#input_formats"
+    <p id=editing>If the above didn't produce correct minutes, it may
+      be that scribe.perl didn't recognize the format. The section <a
+      href="https://w3c.github.io/scribe2/scribedoc.html#input_formats"
       >Input Formats</a> in the manual shows examples of IRC logs that
-      scribe.perl knows. Maybe by editing your log in a text editor,
+      scribe.perl knows. Maybe by editing your log in a text editor
       you can make it look sufficiently like one of the recognized
       formats.
 
-    <h2>Task 3. Upload the minutes</h2>
+    <h2 id=task3>Task 3. Upload the minutes</h2>
 
     <p>Once you have the minutes, you can send them to a mailing
       list. If the mailing list is archived, that gives them a URL as
@@ -135,8 +135,6 @@
 
     <p>Uploading requires special privileges. Typically, it needs to
       be done by a team member.
-
-    <p>There are several ways to do upload a file to the www.w3.org server.
 
     <p>First determine what the URL of the minutes is going to be. The
       conventional URL is of this form:
@@ -159,6 +157,8 @@
       <dd>The Automotive WG on February 2, 2021, on the #auto channel.
     </dl>
 
+    <p>Then there are several ways to do upload a file.
+
     <p>You can use <strong>BlueGriffon</strong>. Load the minutes into
       BlueGriffon and use the PUTter command from the Tools
       menu. BlueGriffon will ask you for the URL and then for your
@@ -167,7 +167,7 @@
 
     <p>If you have the <strong>curl</strong> program, you can use it
       from a command line. Assuming you put the formatted minutes in
-      minutes.html, the command to type is:
+      minutes.html, the command is:
 
       <pre class=command>curl --location-trusted -u <var>myusername</var> -T minutes.html https://www.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</pre>
 
@@ -195,40 +195,36 @@
       both of the <var>YYYY</var> and <var>MM</var> directories are
       already checked out, this will give some error messages, but in
       any case this puts you in the <var>MM</var> directory. (You can
-      of course also use a graphical CVS client instead of the command
-      line, if you have one.)
+      of course also use a graphical CVS client.)
 
-    <p>Copy the formatted minutes to this directory and name the
-      file <var>DD</var>-<var>xxx</var>-minutes.html. Then check it in
-      with <code>cvs
-      commit <var>DD</var>-<var>xxx</var>-minutes.html</code> from the
-      command line (or the equivalent command in your graphical
-      client).
+    <p>Copy the formatted minutes to this directory and name the file
+      <var>DD</var>-<var>xxx</var>-minutes.html. Then check it in with
+      <code>cvs commit
+      <var>DD</var>-<var>xxx</var>-minutes.html</code> from the
+      command line (or the equivalent in your graphical client).
 
     <p>A fourth way is to use <strong>WebDav</strong>. If your
       operating system supports the WebDav protocol, or you have a
       WebDav program, you can connect to edit.w3.org and use it almost
       as if it were a directory on your local system. Under Debian and
       similar Linux distributions, you need the davfs package and then
-      you can mount the file system (as root) with something
-      like <code>mount -t davfs https://edit.w3.org /mnt</code>. After
+      you can mount the file system (as root) with something like
+      <code>mount -t davfs https://edit.w3.org /mnt</code>. After
       that, you can find the contents of edit.w3.org under /mnt and
       you can create the file
       /mnt/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html
       for your minutes. When using KDE, you don't even need to mount
-      the file system, you can just type ‘webdavs://edit.w3.org’ in
-      the location bar in Dolphin, navigate to the right directory and
-      copy your minutes there. Under MacOS, you can use ‘Go’ &rarr;
-      ‘Connect to server’ in the Finder and enter
+      the file system, just type ‘webdavs://edit.w3.org’ in the
+      location bar in Dolphin or Konqueror, navigate to the right
+      directory and copy your minutes there. Under MacOS, you can use
+      ‘Go’ &rarr; ‘Connect to server’ in the Finder and enter
       ‘https://edit.w3.org’ in the dialog in order to mount
-      edit.w3.org as a file system. (However, WebDav on MacOs is too
-      slow to be usable.) If you use Emacs, you also don't need to
-      mount the file system, because Emacs has WebDav built in
-      (assuming the tramp package is loaded, which it usually is): You
-      open edit.w3.org as a directory by opening
-      ‘/davs:<var>myusername</var>@edit.w3.org:/ after which you can
-      navigate to the right directory and create the file for the
-      minutes.
+      edit.w3.org as a file system. If you use Emacs, you also don't
+      need to mount the file system (assuming the tramp package is
+      loaded, which it usually is): You open edit.w3.org as a
+      directory by opening ‘/davs:<var>myusername</var>@edit.w3.org:/
+      after which you can navigate to the right directory and create
+      the minutes file there.
 
     <p>Note: If WebDav doesn't show you a directory, or the directory
       appears empty, although you know that it isn't, the problem is
@@ -240,4 +236,4 @@
     <hr>
 
     <address><a href="mailto:bert@w3.org" >Bert Bos</a><br>
-      $Date: Tue Nov 10 12:58:32 2020 UTC $</address>
+      $Date: Thu Mar  4 11:59:56 2021 UTC $</address>
