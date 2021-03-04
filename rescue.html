@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang=en>
+  <head>
+    <meta charset=utf-8>
+    <title>Making minutes without RRSAgent</title>
+    <link rel=stylesheet type="text/css"
+	  href="https://www.w3.org/Guide/guide2006.css">
+    <link rel="shortcut icon"
+	  href="https://www.w3.org/Icons/WWW/Literature.gif">
+  </head>
+
+  <body>
+    <header class=header>
+      <span class=logo><a href="https://www.w3.org/"><img
+      src="https://www.w3.org/Icons/WWW/w3c_home_nb" alt="W3C"
+      height=48 width=72></a></span>
+
+      <div class=breadcrumb>
+	<a href="https://www.w3.org/Member/">Member</a> &#x2192; <a
+	href="https://www.w3.org/Guide/">The Art of Consensus</a>
+	&#x2192;
+
+	<h1>Making minutes without RRSAgent</h1>
+      </div>
+
+      <p class=baseline>This <strong>Guidebook</strong> is the
+	collected wisdom of the W3C Group Chairs and other
+	collaborators.
+    </header>
+
+    <nav class=toc>
+      <h4>On this page &#x2192; </h4>
+      <ul>
+	<li>[...]
+      </ul>
+    </nav>
+
+    <h2 id=intro>Introduction</h2>
+
+    <aside class="toolbox box" style="margin: 0 0 1em 1em">
+      <h4>Nearby</h4>
+      <ul>
+	<li><a href="https://www.w3.org/2001/12/zakim-irc-bot.html"
+	>Zakim IRC teleconference agent</a>
+
+	<li><a href="http://www.w3.org/2002/03/RRSAgent">RRSAgent
+	record-keeping bot</a>
+
+	<li><a href="https://www.w3.org/2006/tools/wiki/WebExBestPractices"
+	>WebEx Best Practices</a></li>
+
+	<li><a href="https://www.w3.org/2006/tools/wiki/WebExFAQ"
+	>WebEx FAQ</a></li>
+      </ul>
+    </aside>
+
+    <p>It happens occasionally that you have been happily taking
+      minutes in IRC and at the end of the meeting discover (oh
+      horror!)  that nobody
+      invited <a href="http://www.w3.org/2002/03/RRSAgent"
+      >RRSAgent</a>! No logs, no minutes… What now?
+
+    <p>RRSAgent does three things: keep a log of what is typed in IRC,
+      call a program to turn the log into nice minutes in HTML, and
+      upload the minutes. So, without RRSAgent, you will need to do
+      those three things yourself. How? It depends on your skills,
+      environment and preferences.
+
+    <h2>Task 1. Find IRC logs</h2>
+
+    <p>First you need the text that was typed into IRC.
+
+    <p>If you can scroll back up in your IRC window, you may be able
+      to find the start of the minutes and <strong>copy-paste</strong>
+      all text into an editor window or into the online minutes tool
+      (see the next section).
+
+    <p>If you were using an IRC program on your own computer (rather
+      than the <a href="http://irc.w3.org/" >web interface</a>), it
+      may have kept <strong>logs</strong> in a file, if you previously
+      configured it to do so. If you can find that log file, you can
+      copy the minutes from there.
+
+    <p>And if that doesn't work, maybe somebody else who was in the
+      meeting still has the logs.
+
+    <h2>Task 2. Convert the log to minutes in HTML</h2>
+
+    <p>You now have text, but no nicely formatted minutes in HTML
+      yet. RRSAgent uses a program called scribe.perl to process the
+      text. You can do so yourself in one of two ways: using an online
+      service or by downloading scribe.perl and running it
+      locally.
+
+    <p>To use the <strong>online service,</strong> go to
+      the <a href="https://www.w3.org/2005/02/minutes">Online Minutes
+      Generator</a>. You can copy-paste your text into the text box,
+      or, if you have the text in a file, upload the file. When you
+      then press the button ‘Generate Minutes’, the web service will
+      try to run scribe.perl to turn the text into minutes in HTML and
+      display them. If it succeeds, you can save the page and proceed
+      to task 3. Otherwise some editing may help, see below.
+
+    <p>To run scribe.perl <strong>locally,</strong> you need
+      to <a href="https://w3c.github.io/scribe2/scribe.perl">download
+      it</a>. You also need to have Perl installed and you need to
+      have access to a command line. Save the text of the minutes into
+      a file (e.g., into ‘log.txt’) and type something like:
+
+    <pre class=command>perl scribe.perl log.txt >minutes.html</pre>
+
+    <p>There are
+      various <a href="https://w3c.github.io/scribe2/scribedoc.html#options"
+      >options you can add</a>, e.g., to select the style or to embed
+      scribe.perl's diagnostic messages in the minutes.
+
+    <p>Try to open the result, ‘minutes.html’, in a browser to see if
+      the command succeeded. If so, you can proceed to task 3.
+
+    <p>If the above didn't produce correct minutes, it may be that
+      scribe.perl didn't recognize the format of the text. The
+      section <a href="https://w3c.github.io/scribe2/scribedoc.html#input_formats"
+      >Input Formats</a> in the manual shows examples of IRC logs that
+      scribe.perl knows. Maybe by editing your log in a text editor,
+      you can make it look sufficiently like one of the recognized
+      formats.
+
+    <h2>Task 3. Upload the minutes</h2>
+
+    <p>Once you have the minutes, you can send them to a mailing
+      list. If the mailing list is archived, that gives them a URL as
+      well. But it is also good to have them stored in the usual place
+      for minutes under https://www.w3.org/2021/03/ or whatever the
+      current year and month is.
+
+    <p>Uploading requires special privileges. Typically, it needs to
+      be done by a team member.
+
+    <p>There are several ways to do upload a file to the www.w3.org server.
+
+    <p>First determine what the URL of the minutes is going to be. The
+      conventional URL is of this form:
+
+    <pre class=command>https://www.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</pre>
+
+    <p>Here <var>YYYY</var>, <var>MM</var> and <var>DD</var> represent
+      the year, the month and the day of the meeting
+      and <var>xxx</var> is the name of the IRC channel on which the
+      meeting took place. Some examples:
+
+    <dl>
+      <dt>https://www.w3.org/2021/03/02-weum-minutes.html
+      <dd>The W3C Europe teleconference of March 2, 2021, on the &amp;weum IRC channel.
+
+      <dt>https://www.w3.org/2020/12/01-events-minutes.html
+      <dd>The Event Team meeting of December 1, 2020, on the &amp;events channel.
+
+      <dt>https://www.w3.org/2021/02/02-auto-minutes.html
+      <dd>The Automotive WG on February 2, 2021, on the #auto channel.
+    </dl>
+
+    <p>You can use <strong>BlueGriffon</strong>. Load the minutes into
+      BlueGriffon and use the PUTter command from the Tools
+      menu. BlueGriffon will ask you for the URL and then for your
+      username and password. (There are also some other editors that
+      know how to do HTTP PUT, such as Kate.)
+
+    <p>If you have the <strong>curl</strong> program, you can use it
+      from a command line. Assuming you put the formatted minutes in
+      minutes.html, the command to type is:
+
+      <pre class=command>curl --location-trusted -u <var>myusername</var> -T minutes.html https://www.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</pre>
+
+    <p>Where <var>myusername</var> is your username. Curl will prompt
+      for your password.
+
+    <p>(The --location-trusted option tells curl to follow
+      redirects. In fact, the www.w3.org server doesn't handle the
+      upload itself, but redirects to edit.w3.org. That means you
+      could also use this shorter command: <code>curl
+      -u <var>myusername</var> -T minutes.html
+      https://edit.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</code>)
+
+    <p>A third way is to use <strong>CVS</strong> to upload the minutes.
+
+    <p>Assuming you have already checked out some part of the W3C web
+      site somewhere, first make sure you have the
+      WWW/<var>YYYY</var>/<var>MM</var> directory checked out, e.g.,
+      like this: go to the WWW directory (the root of the checked out
+      site) and do this on the command
+      line: <code>mkdir <var>YYYY</var>; cvs add <var>YYYY</var>;
+      cd <var>YYYY</var>; mkdir <var>MM</var>; cvs add <var>MM</var>;
+      cd <var>MM</var></code> (Replace <var>YYYY</var>
+      and <var>MM</var> with the year and month, as above.) If one or
+      both of the <var>YYYY</var> and <var>MM</var> directories are
+      already checked out, this will give some error messages, but in
+      any case this puts you in the <var>MM</var> directory. (You can
+      of course also use a graphical CVS client instead of the command
+      line, if you have one.)
+
+    <p>Copy the formatted minutes to this directory and name the
+      file <var>DD</var>-<var>xxx</var>-minutes.html. Then check it in
+      with <code>cvs
+      commit <var>DD</var>-<var>xxx</var>-minutes.html</code> from the
+      command line (or the equivalent command in your graphical
+      client).
+
+    <p>A fourth way is to use <strong>WebDav</strong>. If your
+      operating system supports the WebDav protocol, or you have a
+      WebDav program, you can connect to edit.w3.org and use it almost
+      as if it were a directory on your local system. Under Debian and
+      similar Linux distributions, you need the davfs package and then
+      you can mount the file system (as root) with something
+      like <code>mount -t davfs https://edit.w3.org /mnt</code>. After
+      that, you can find the contents of edit.w3.org under /mnt and
+      you can create the file
+      /mnt/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html
+      for your minutes. When using KDE, you don't even need to mount
+      the file system, you can just type ‘webdavs://edit.w3.org’ in
+      the location bar in Dolphin, navigate to the right directory and
+      copy your minutes there. Under MacOS, you can use ‘Go’ &rarr;
+      ‘Connect to server’ in the Finder and enter
+      ‘https://edit.w3.org’ in the dialog in order to mount
+      edit.w3.org as a file system. (However, WebDav on MacOs is too
+      slow to be usable.) If you use Emacs, you also don't need to
+      mount the file system, because Emacs has WebDav built in
+      (assuming the tramp package is loaded, which it usually is): You
+      open edit.w3.org as a directory by opening
+      ‘/davs:<var>myusername</var>@edit.w3.org:/ after which you can
+      navigate to the right directory and create the file for the
+      minutes.
+
+    <p>Note: If WebDav doesn't show you a directory, or the directory
+      appears empty, although you know that it isn't, the problem is
+      usually that the directory has no access defined. Use
+      the <a href="https://www.w3.org/Systems/Acl/UserDoc" >,access
+      tool</a> to set the directory to Team-only (or some other
+      access, as appropriate).
+
+    <hr>
+
+    <address><a href="mailto:bert@w3.org" >Bert Bos</a><br>
+      $Date: Tue Nov 10 12:58:32 2020 UTC $</address>
