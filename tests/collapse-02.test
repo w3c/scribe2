@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Test with the number of regrets surpassing --collapseLimit
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:36 <foo> bar: I just say
+13:28:46 <foo> ... I say nothing
+13:28:56 <bar>  Better: I say nada
+13:29:06 <foo> baz: you say
+13:29:16 <foo> bar: OK
+13:29:17 <foo> present+
+13:29:18 <bar> present+
+13:30:18 <bar> regrets: aa, bb, cc, dd, ee, ff, gg
+EOF
+
+cat >$TMP3 <<EOF
+<dt>Regrets</dt><dd><details><summary>aa,</summary> bb, cc, dd, ee, ff, gg</details></dd>
+EOF
+
+perl scribe.perl --collapseLimit=6 $TMP1 >$TMP2 || exit 1
+
+cat $TMP2
+
+grep '<dt>Regrets' $TMP2 >$TMP4
+diff -u $TMP3 $TMP4
