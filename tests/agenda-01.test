@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Test that agenda commands are ignored
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> clear the agenda
+<foo> please clear the agenda
+<foo> pls clear the agenda
+<foo> agenda+ first item
+<foo> Agenda+ second item
+<foo> AGENDA?
+<foo> agenda 1 = the first item
+<foo> agendum 1 = the first item
+<foo> agenda- 2
+<foo> delete agenda 2
+<foo> delete agendum 2
+<foo> drop agendum 2
+<foo> forget agendum 2
+<foo> remove agendum 2
+<foo> Take Up Agendum 1
+<foo> OPEN AGENDUM 1
+<foo> This line is not ignored.
+<foo> move   to agendum  first item
+<foo>  take up next agendum
+<foo> next agendum
+<foo>    open next agendum
+<foo> move  to next agendum
+<foo> close agendum 1
+<foo> close this agendum
+<foo> really close this agendum
+<foo> really close agendum 1
+<foo> skip agendum 2
+<foo> skip this agendum
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x017 class=summary>This line is not ignored.</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
