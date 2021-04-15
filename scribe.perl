@@ -137,6 +137,7 @@ my $emphasis = 0;		# If 1, _xxx_, *xxx* and /xxx/ highlight things
 my $old_style = 0;		# If 1, use the old (pre-2017) style sheets
 my $url_display = 'break';	# How to display in-your-face URLs
 my $logo;			# undef = W3C logo; string = HTML fragment
+my $collapse_limit = 30;	# Longer participant lists are collapsed
 my $stylesheet;			# URL of style sheet, undef = use defaults
 
 
@@ -523,10 +524,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 128 $'
+my $revision = '$Revision: 129 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Mar  4 11:59:56 2021 UTC $'
+my $versiondate = '$Date: Thu Apr 15 09:58:31 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -590,6 +591,7 @@ my %options = ("team" => sub {$styleset = 'team'},
 	       "stylesheet:s" => \$stylesheet,
 	       "logo:s" => \$logo,
 	       "nologo" => sub {$logo = ''},
+	       "collapseLimit:i" => \$collapse_limit,
 	       "minutes=s" => \$minutes_url);
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
@@ -1188,10 +1190,10 @@ my $draft = $final ? "" : "&ndash; DRAFT &ndash;<br>\n";
 my $log = defined $logging_url?"<a href=\"$logging_url\">$irclog_icon</a>\n":"";
 my $present = esc(join(", ", map($present{$_}, sort keys %present))) || '-';
 $present = "<details><summary>".($present =~ s/,/,<\/summary>/r)."</details>"
-  if scalar keys %present > 30; # Collapsed list if the list is long
+  if scalar keys %present > $collapse_limit; # Collapsed if the list is long
 my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets))) || '-';
 $regrets = "<details><summary>".($regrets =~ s/,/,<\/summary>/r)."</details>"
-  if scalar keys %regrets > 30; # Collapsed list if the list is long
+  if scalar keys %regrets > $collapse_limit; # Collapsed if the list is long
 my $scribes = esc(join(", ", sort {fc($a) cmp fc($b)} values %scribes)) || '-';
 my $chairs = esc(join(", ", sort {fc($a) cmp fc($b)} values %chairs)) || '-';
 my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
@@ -1338,6 +1340,7 @@ scribe.perl [options] [file ...]
   --logo=markup		Replace the W3C link and logo with this HTML markup
   --nologo      	Same as --logo=""
   --stylesheet=URL	Use this style sheet instead of the default
+  --collapseLimit=n     Collapse the participant list if there are more (30)
 
 You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
