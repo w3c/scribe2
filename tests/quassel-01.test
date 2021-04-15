@@ -1,0 +1,158 @@
+#!/bin/bash
+
+# Test the Quassel copy-paste format
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+[11:02:21] <Bert> zakim, start meeting
+[11:02:21] <Zakim> inviting RRSAgent
+[11:02:21] --> RRSAgent (rrsagent@815ad96c.team.cloak) has joined &weum
+[11:02:21] <RRSAgent> logging to https://www.w3.org/2021/02/09-weum-irc
+[11:02:24] <Zakim> RRSAgent, make logs Team
+[11:02:24] <Zakim> Meeting: W3C/ERCIM Teleconference
+[11:02:24] <RRSAgent> I have made the request, Zakim
+[11:02:41] <Bert> agendabot, find agenda
+[11:02:43] <agendabot> Bert, OK. This may take a minute...
+[11:02:46] <agendabot> agenda: https://lists.w3.org/Archives/Team/w3t-europe/2021Feb/0001.html
+[11:02:46] <agendabot> clear agenda
+[11:02:46] <agendabot> agenda+ Scribe
+[11:02:46] <agendabot> agenda+ Agenda
+[11:02:46] -*- Zakim notes agenda cleared
+[11:02:46] <agendabot> agenda+ Actions
+[11:02:47] -*- Zakim notes agendum 1 added
+[11:02:48] -*- Zakim notes agendum 2 added
+[11:02:48] -*- Zakim notes agendum 3 added
+[11:02:48] <agendabot> agenda+ Two minutes round the table
+[11:02:49] -*- Zakim notes agendum 4 added
+[11:02:51] <agendabot> agenda+ Any topics arising from the two minutes
+[11:02:51] -*- Zakim notes agendum 5 added
+[11:02:53] <agendabot> agenda+ Future topics or mini-presentations
+[11:02:53] -*- Zakim notes agendum 6 added
+[11:03:00] <Bert> Chair:   Bert
+[11:03:00] <Bert> Regrets: Denis
+[11:03:00] <Bert> Previous meeting: https://www.w3.org/2021/02/02-weum-minutes.html
+[11:03:00] <Bert> Next meeting: https://www.w3.org/2021/02/16-weum-minutes.html
+[11:05:30] <Daniel> present+
+[11:05:37] <Bert> present+
+[11:08:56] <joconnor> present+
+[11:09:32] <stevelee> present+
+[11:09:48] <marie> regrets+ marie
+[11:10:47] <shadi> q+ to ask about AC/TPAC accessibility reviews
+[11:10:48] -*- Zakim sees shadi on the speaker queue
+[11:10:51] <shadi> present+
+[11:10:59] --> r12a (rishida@815ad96c.team.cloak) has joined &weum
+[11:11:03] <r12a> q+
+[11:11:04] -*- Zakim sees shadi, r12a on the speaker queue
+[11:11:13] <r12a> present+
+[11:11:21] <Bert> ack sha
+[11:11:21] <Zakim> shadi, you wanted to ask about AC/TPAC accessibility reviews
+[11:11:22] -*- Zakim sees r12a on the speaker queue
+[11:15:52] <Bert> ack r12
+[11:15:52] -*- Zakim sees no one on the speaker queue
+[11:18:24] <Bert> -> https://lists.w3.org/Archives/Team/team-2minutes/2021Feb/0003.html Bert's 2 minutes
+[11:22:55] -*- joconnor sounds interesting Shadi
+[11:23:19] <shadi> https://www.rightscon.org/
+[11:35:41] <Bert> Josh: Don't recommend *only* standing up.
+[12:03:10] <Bert> zakim, end meeting
+[12:03:11] <Zakim> As of this point the attendees have been Daniel, Bert, joconnor, stevelee, shadi, r12a
+[12:03:13] <Zakim> RRSAgent, please draft minutes v2
+[12:03:13] <RRSAgent> I have made the request to generate https://www.w3.org/2021/02/09-weum-minutes.html Zakim
+[12:03:16] <Zakim> I am happy to have been of service, Bert; please remember to excuse RRSAgent.  Goodbye
+[12:03:20] <-- Zakim (zakim@815ad96c.team.cloak) has left &weum
+[12:05:23] <Bert> s/And his is /And he is /
+[12:12:47] <Bert> RRSAgent, make minutes v2
+[13:35:07] <-> Daniel is now known as Daniel-away
+[13:42:41] --> dsr_ (dsr@815ad96c.team.cloak) has joined &weum
+[13:50:04] <-- dsr_ (dsr@815ad96c.team.cloak) has quit (Ping timeout: 180 seconds)
+[14:16:00] --> dsr_ (dsr@815ad96c.team.cloak) has joined &weum
+[14:23:18] <-- dsr_ (dsr@815ad96c.team.cloak) has quit (Ping timeout: 180 seconds)
+[14:48:00] --> dsr_ (dsr@815ad96c.team.cloak) has joined &weum
+[14:55:35] <-- dsr_ (dsr@815ad96c.team.cloak) has quit (Ping timeout: 180 seconds)
+[15:19:43] --> dsr_ (dsr@815ad96c.team.cloak) has joined &weum
+[15:27:29] <-- dsr_ (dsr@815ad96c.team.cloak) has quit (Ping timeout: 180 seconds)
+[15:38:40] <-> Daniel-away is now known as Daniel
+[15:39:41] <Bert> scribeoptions: -emphasis
+[15:39:42] <Bert> RRSAgent, make minutes v2
+[15:39:42] <RRSAgent> I have made the request to generate https://www.w3.org/2021/02/09-weum-minutes.html Bert
+[15:50:42] --> dsr_ (dsr@815ad96c.team.cloak) has joined &weum
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>W3C/ERCIM Teleconference &ndash; 09 February 2021</title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+W3C/ERCIM Teleconference</h1>
+<h2>09 February 2021</h2>
+
+<nav id=links>
+<a href="https://www.w3.org/2021/02/02-weum-minutes.html"><img alt="Previous meeting." title="Previous meeting" src="https://www.w3.org/StyleSheets/scribe2/go-previous.png"></a>
+<a href="https://lists.w3.org/Archives/Team/w3t-europe/2021Feb/0001.html"><img alt="Agenda." title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="https://www.w3.org/2021/02/09-weum-irc"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+<a href="https://www.w3.org/2021/02/16-weum-minutes.html"><img alt="Next meeting." title="Next meeting" src="https://www.w3.org/StyleSheets/scribe2/go-next.png"></a>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>Bert, Daniel, joconnor, r12a, shadi, stevelee</dd>
+<dt>Regrets</dt><dd>Denis, marie</dd>
+<dt>Chair</dt><dd>Bert</dd>
+<dt>Scribe</dt><dd>Bert</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+</ol>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x031 class=irc><cite>&lt;Zakim&gt;</cite> shadi, you wanted to ask about AC/TPAC accessibility reviews</p>
+<p id=x033 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2021Feb/0003.html">Bert's 2 minutes</a></p>
+<p id=x034 class=irc><cite>&lt;shadi&gt;</cite> <a href="https://www.rightscon.org/">https://<wbr>www.rightscon.org/</a></p>
+<p id=x035 class="phone s01"><cite>Josh:</cite> Don't recommend <strong>only</strong> standing up.</p>
+<p id=x041 class=irc><cite>&lt;Bert&gt;</cite> s/And his is /And he is /</p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+
+</body>
+</html>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4
