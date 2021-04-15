@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Test s/// when there are invisible U+200C characters in the command
-# (in particular in the URL).
+# Test s/// when there are invisible U+200C characters in the command,
+# in particular in the URL. (Some old versions of scribe.perl v2
+# generated HTML with U+200C characters in the URLs.)
 
 trap 'rm -f $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/subst-XXXXXX` || exit 1
