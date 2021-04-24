@@ -1,0 +1,120 @@
+#!/bin/bash
+
+# Test the Quassel copy-paste format, without seconds, with a date change
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+[15:02] <-- Karen (karen@899c7108.team.cloak) has quit ("My MacBook has gone to sleep. ZZZzzz…")
+[15:08] --> Karen (karen@899c7108.team.cloak) has joined &testchan
+[15:18] --> ivan (ivan@899c7108.team.cloak) has joined &testchan
+[15:34] <abram> scribe: joe
+[15:34] <abram> I use mosh (instead of plain ssh) out of habit and because at times it's been helpful with network latency and buffering
+[15:34] <abram> BUT,
+[15:35] <abram> ... every now and then, it replaces what I'm typing in irssi by something I have typed before
+[15:35] <abram> In most cases I notice
+[15:35] <abram> what I typed before hitting enter is lost every time, though
+[15:35] <abram> but at times I don't notice
+[15:36] <abram> and the result can be seemingly a randomly generated sentence
+[15:36] <abram> such as "… wrote mail to speakers n Twitter: Tzviya asked [...]"
+[15:37] <abram> anyone even remotely familiar with this particular side-effect of mosh? (could be mosh + screen?)
+[16:56] --> marcosc (marcosc@899c7108.team.cloak) has joined &testchan
+[17:03] <-- marcosc (marcosc@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[17:19] <-- xfq__ (xfq@899c7108.team.cloak) has quit (Client closed connection)
+[17:36] <-- dontcallmeDOM (dom@899c7108.team.cloak) has quit ("Leaving")
+[18:03] <-- ivan (ivan@899c7108.team.cloak) has quit ("Bye everybody...")
+[18:25] <-- Bert (bbos@899c7108.team.cloak) has quit
+[18:26] --> Bert (bip@bip.bip.bip) has joined &testchan
+[18:26] * Topic for &testchan is "All of Team is now switched to SSO  (10/03). Please write us here or mail sysreq if you have issues"
+[18:26] * Topic set by jose-cdbtr on 2021-03-10 08:55:52 UTC
+[18:26] *** Mode &testchan + by team-irc.w3.org
+[18:26] * Channel &testchan created on 2020-06-10 10:49:24 UTC
+[20:57] --> marcosc (marcosc@899c7108.team.cloak) has joined &testchan
+[21:05] <-- marcosc (marcosc@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[22:55] <sysbot> new group formed: Metaverse Interoperability Community Group https://www.w3.org/2011/06/proposed_groups/?pgid=899
+[23:04] <Ralph> vivien++
+[23:43] <-- jeff (Jeff@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[23:57] --> jeff (Jeff@899c7108.team.cloak) has joined &testchan
+[00:00] - {Day changed to 24 April 2021}
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<nav id=links>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>-</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>joe</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+</ol>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x002 class=irc><cite>&lt;abram&gt;</cite> I use mosh (instead of plain ssh) out of habit and because at times it's been helpful with network latency and buffering</p>
+<p id=x003 class=irc><cite>&lt;abram&gt;</cite> BUT,</p>
+<p id=x004 class=irc><cite>&lt;abram&gt;</cite> ... every now and then, it replaces what I'm typing in irssi by something I have typed before</p>
+<p id=x005 class=irc><cite>&lt;abram&gt;</cite> In most cases I notice</p>
+<p id=x006 class=irc><cite>&lt;abram&gt;</cite> what I typed before hitting enter is lost every time, though</p>
+<p id=x007 class=irc><cite>&lt;abram&gt;</cite> but at times I don't notice</p>
+<p id=x008 class=irc><cite>&lt;abram&gt;</cite> and the result can be seemingly a randomly generated sentence</p>
+<p id=x009 class=irc><cite>&lt;abram&gt;</cite> such as &quot;… wrote mail to speakers n Twitter: Tzviya asked [...]&quot;</p>
+<p id=x010 class=irc><cite>&lt;abram&gt;</cite> anyone even remotely familiar with this particular side-effect of mosh? (could be mosh + screen?)</p>
+<p id=x011 class=irc><cite>&lt;sysbot&gt;</cite> new group formed: Metaverse Interoperability Community Group <a href="https://www.w3.org/2011/06/proposed_groups/?pgid=899">https://<wbr>www.w3.org/<wbr>2011/<wbr>06/<wbr>proposed_groups/?pgid=899</a></p>
+<p id=x012 class=irc><cite>&lt;Ralph&gt;</cite> vivien++</p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+
+</body>
+</html>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4

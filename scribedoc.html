@@ -638,7 +638,7 @@
 
     <p>Default is <code>-keeplines</code>.
 
-   <dt>-emphasis <dd>Cause scribe.perl to interpret ‘ASCII
+   <dt id=emphasis>-emphasis <dd>Cause scribe.perl to interpret ‘ASCII
     highlighting’, arrows and smileys. Underscores (‘_…_’) will cause
     underlining, slashes (‘/…/’) italics and asterisks (‘*…*’) bold.
     E.g., ‘<code>This is _underlined_ and /italic/ and *even
@@ -656,7 +656,7 @@
     ensure that
     long URLs can be broken at the end of a line, even in browsers
     that normally do not break URLs. This is done by inserting
-    invisible &amp;zwnj; characters after most slashes (/).
+    HTML's &lt;wbr&gt; tags after most slashes (/).
 
     <dt>-urlDisplay shorten <dd>Long URLs are shortened by displaying
     just the first and the last few characters, like this:
@@ -664,7 +664,7 @@
 
    <dt>-urlDisplay full <dd>Long URLs are displayed as they are.
 
-   <dt>-collapseLimit <var>N</var> <dd>If there are more participants
+   <dt id=collapseLimit>-collapseLimit <var>N</var> <dd>If there are more participants
      or more regrets than <var>N</var>, the list of participants or
      regrets is collapsed (with HTML's &lt;details&gt; element). The
      reader needs to click on it to see the whole list. The default is
@@ -1123,7 +1123,7 @@ Previous meeting: http://example.org/20180228/mins</pre>
   a text editor (by mimicking the log format) before running
   scribe.perl. This is most useful for commands that have a broad
   effect on the generated HTML. Scribe.perl also recognizes RRSAgent's
-  log format <em>without</em> time stamps, so can leave those off,
+  log format <em>without</em> time stamps, so you can leave those off,
   rather than invent fake ones.
 
   <p>Here is an example snippet of an IRC log in which the commands
@@ -1346,10 +1346,6 @@ Eric agrees.
      options, instead of the other way round.
 
    <li>
-    <p>The <a href="#keeplines" >‘-keeplines’</a> option (and its
-     inverse ‘-nokeeplines’) is new.
-
-   <li>
     <p>The ‘-inputFormat’ option is not supported. It is not possible
      to override the automatic selection of the input format.
 
@@ -1368,11 +1364,6 @@ Eric agrees.
      ‘-plain’ and ‘-mit’. Note that the public style is the default.
 
    <li>
-    <p>The <a href="#oldStyle" >‘-oldStyle’</a>, <a href="#fancy"
-    >‘-fancy’</a>, <a href="#style">‘-style’</a> and <a
-    href="#logo">‘-logo’</a> options are new.
-
-   <li>
     <p>The ‘-scribe’ option is not supported.
 
    <li>
@@ -1383,9 +1374,6 @@ Eric agrees.
     <p>The ‘Log:’ command is not supported. It was rarely needed,
      because the URL of the IRC log, if any, can usually be inferred
      from the messages by RRSAgent.
-
-   <li>
-    <p>The ‘-emphasis’ option is new.
 
    <li>
     <p>The scribe can make IRC statements as himself by prefixing his
@@ -1409,6 +1397,15 @@ Eric agrees.
     '-dashTopics' instead.
 
    <li>
+    <p>The option <a href="#oldStyle"
+    >‘-oldStyle’</a>, <a href="#fancy"
+    >‘-fancy’</a>, <a href="#style">‘-style’</a>, <a href="#logo"
+    >‘-logo’</a>, <a href="#keeplines"
+    >‘-keeplines’/‘-nokeeplines’</a> <a href="#collapseLimit"
+    >‘-collapseLimit’</a> and <a href="#emphasis" >‘-emphasis’</a> are
+    new.
+
+   <li>
     <p>Some new text patterns are recognized and marked up with
      special classes: <a href="#ralph-link" >Ralph</a>/<a
      href="#xueyuan-link" >Xueyuan</a>/<a href="#ivan-link" >Ivan
@@ -1429,6 +1426,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Thu Apr 15 10:10:59 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Sat Apr 24 13:53:36 2021 UTC $</address>
  </body>
 </html>

@@ -303,6 +303,7 @@ sub Quassel_paste_format($$)
     next if /^\[[0-9:]+\] \* /;		# Change of topic, channel created...
     next if /^\[[0-9:]+\] -\*-/;	# Somebody used /me
     next if /^\[[0-9:]+\] \*\*\*/;	# Channel mode change
+    next if /^\[[0-9:]+\] - \{/;	# Message "Day changed to ..."
     next if /^\s*$/;			# Skip empty line
     if (/^\[[0-9:]+\] <([^>]+)> (.*)$/) {
       push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
@@ -524,10 +525,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 129 $'
+my $revision = '$Revision: 131 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Apr 15 09:58:31 2021 UTC $'
+my $versiondate = '$Date: Sat Apr 24 13:53:36 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
