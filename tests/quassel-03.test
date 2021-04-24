@@ -166,8 +166,6 @@ EOF
 
 perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
 
-cp $TMP2 tmp.html
-
 grep -v version $TMP2 >$TMP4	# Omit version number
 grep -v version $TMP3 >$TMP5
 
