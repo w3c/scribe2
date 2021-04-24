@@ -1166,6 +1166,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
    <li><a href="#Plain_Text_Format" >Plain-text format</a>
 
+   <li><a href="#QUassel_Paste_Format" >Quassel paste format</a>
+
    <li><a href="#Bert_IRSSI_Format" >Bert IRSSI format</a>
   </ul>
 
@@ -1289,6 +1291,31 @@ ericn: I agree.
 	Mike: Feature X would benefit users.... and implementation would be easy.
 Eric agrees.
 </pre>
+
+  <h3 id="Quassel_Paste_Format">Quassel paste format</h3>
+
+  <p>The format of text that is copy-pasted from a Quassel chat
+  window. The line starts with a date &amp; time in square brackets.
+
+  <p>The format of the date &amp; time can be actually configured by
+  the user, but scribe.perl only accepts dates and times that consists
+  of <strong>digits, dots, dashes and spaces, optionally with am and
+  pm.</strong> Here is an example where the date &amp; time is just
+  hours and minutes:
+
+  <pre>[01:09] <-- borisjohn (borisjohn@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[08:50] --> raul (raul@899c7108.team.cloak) has joined &fleague
+[09:02] --> borisjohn (borisjohn@899c7108.team.cloak) has joined &fleague
+[09:09] <-- borisjohn (borisjohn@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[10:02] --> borisjohn (borisjohn@899c7108.team.cloak) has joined &fleague
+[11:00] -*- kolec still on another call; it may spill a lot
+[11:02] * zakim has been invited to &fleague
+[11:02] --> Zakim (zakim@815ad96c.team.cloak) has joined &fleague
+[11:02] <Gert> zakim, start meeting
+[11:02] <Zakim> inviting RRSAgent
+[11:02] --> RRSAgent (rrsagent@815ad96c.team.cloak) has joined &fleague
+[11:02] <RRSAgent> logging to https://www.w3.org/2021/04/20-fleague-irc
+[11:02] <Zakim> RRSAgent, make logs Team</pre>
 
   <h3 id="Bert_IRSSI_Format">Bert IRSSI format</h3>
 
@@ -1426,6 +1453,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Sat Apr 24 13:53:36 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Sat Apr 24 15:23:43 2021 UTC $</address>
  </body>
 </html>

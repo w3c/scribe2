@@ -296,16 +296,20 @@ sub Quassel_paste_format($$)
 {
   my ($lines_ref, $records_ref) = @_;
 
+  # In fact, the date and time between the square brackets can be
+  # anything, including month names and arbitrary punctuation. We only
+  # accept digits, dots, spaces and am/pm here.
+  #
   foreach (@$lines_ref) {
-    next if /^\[[0-9:]+\] -->/;		# Somebody joined the channel
-    next if /^\[[0-9:]+\] <--/;		# Somebody quit the channel
-    next if /^\[[0-9:]+\] <->/;		# Somebody changed nick
-    next if /^\[[0-9:]+\] \* /;		# Change of topic, channel created...
-    next if /^\[[0-9:]+\] -\*-/;	# Somebody used /me
-    next if /^\[[0-9:]+\] \*\*\*/;	# Channel mode change
-    next if /^\[[0-9:]+\] - \{/;	# Message "Day changed to ..."
+    next if /^\[[0-9:. apm-]+\] -->/;	# Somebody joined the channel
+    next if /^\[[0-9:. apm-]+\] <--/;	# Somebody quit the channel
+    next if /^\[[0-9:. apm-]+\] <->/;	# Somebody changed nick
+    next if /^\[[0-9:. apm-]+\] \* /;	# Change of topic, channel created...
+    next if /^\[[0-9:. apm-]+\] -\*-/;	# Somebody used /me
+    next if /^\[[0-9:. apm-]+\] \*\*\*/;	# Channel mode change
+    next if /^\[[0-9:. apm-]+\] - \{/;	# Message "Day changed to ..."
     next if /^\s*$/;			# Skip empty line
-    if (/^\[[0-9:]+\] <([^>]+)> (.*)$/) {
+    if (/^\[[0-9:. apm-]+\] <([^>]+)> (.*)$/) {
       push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
     } else {
       return 0;
@@ -528,7 +532,7 @@ sub delete_scribes($$)
 my $revision = '$Revision: 131 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Apr 24 13:53:36 2021 UTC $'
+my $versiondate = '$Date: Sat Apr 24 15:23:43 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
