@@ -1,0 +1,174 @@
+#!/bin/bash
+
+# Test the Quassel copy-paste format, without seconds, with am/pm
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<'EOF'
+[1:09 am] <-- borisjohn (borisjohn@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[5:02 am] --> borisjohn (borisjohn@899c7108.team.cloak) has joined &fleague
+[7:09 am] <-- borisjohn (borisjohn@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[8:50 am] --> raul (raul@899c7108.team.cloak) has joined &fleague
+[9:02 am] --> borisjohn (borisjohn@899c7108.team.cloak) has joined &fleague
+[9:09 am] <-- borisjohn (borisjohn@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[10:01 am] --> dsr (dsr@899c7108.team.cloak) has joined &fleague
+[10:02 am] --> borisjohn (borisjohn@899c7108.team.cloak) has joined &fleague
+[11:00 am] -*- kolec still on another call; it may spill a lot
+[11:02 am] * zakim has been invited to &fleague
+[11:02 am] --> Zakim (zakim@815ad96c.team.cloak) has joined &fleague
+[11:02 am] <Gert> zakim, start meeting
+[11:02 am] <Zakim> inviting RRSAgent
+[11:02 am] --> RRSAgent (rrsagent@815ad96c.team.cloak) has joined &fleague
+[11:02 am] <RRSAgent> logging to https://www.w3.org/2021/04/20-fleague-irc
+[11:02 am] <Zakim> RRSAgent, make logs Team
+[11:02 am] <Zakim> Meeting: Football League Teleconference
+[11:02 am] <RRSAgent> I have made the request, Zakim
+[11:04 am] <Gert> agendabot, find agenda
+[11:04 am] <agendabot> Gert, OK. This may take a minute...
+[11:04 am] <agendabot> agenda: https://lists.w3.org/Archives/Team/fleague/2021Apr/0007.html
+[11:04 am] <agendabot> clear agenda
+[11:04 am] <agendabot> agenda+ Scribe
+[11:04 am] -*- Zakim notes agenda cleared
+[11:04 am] <agendabot> agenda+ Agenda
+[11:04 am] <agendabot> agenda+ Actions
+[11:04 am] -*- Zakim notes agendum 1 added
+[11:04 am] -*- Zakim notes agendum 2 added
+[11:04 am] -*- Zakim notes agendum 3 added
+[11:04 am] <agendabot> agenda+ Two minutes round the table
+[11:04 am] -*- Zakim notes agendum 4 added
+[11:04 am] <Gert> present+
+[11:04 am] <agendabot> agenda+ Any topics arising from the two minutes
+[11:04 am] -*- Zakim notes agendum 5 added
+[11:04 am] <agendabot> agenda+ Future topics or mini-presentations
+[11:04 am] -*- Zakim notes agendum 6 added
+[11:08 am] --> Amee (amee@899c7108.team.cloak) has joined &fleague
+[11:08 am] -*- Amee finds it very messy to each egg sandwiches without the bread `
+[11:09 am] -*- Amee peanut butter & honey sandwiches are worse
+[11:13 am] <Amee> present+
+[11:14 am] <Fleming> present+
+[11:15 am] -*- kolec still on another call; will join as soon as possible if not too late
+[11:15 am] <Gert> Caitlyn: Extension of last week's 2 minutes, plus completed the paper. REM/XEM work. RADAR: Good call on Friday about a list of sunny needs. Small group, 2 hours, good progress. A bit on ENG interfaces requirements also. Going to work with Victoria on coloring flowers over the coming months.
+[11:15 am] <Fleming> https://lists.w3.org/Archives/Team/fleague/2021Apr/0010.html
+[11:17 am] <Gert> Fleming: Organizing snacks and bottles for costume designer modules.
+[11:17 am] <Gert> ... PCM findings, reviewing: editorial issues, inconsistencies
+[11:17 am] <Gert> ... Reviewing books that Raul worked on.
+[11:18 am] <Gert> Raul: Many small things and meetings.
+[11:19 am] <Gert> ... Finding facililatior PCM snack group, processes.
+[11:19 am] <Gert> ... Improving products, prettier, adding info.
+[11:21 am] <Amee> https://www.w3.org/International/questions/qa-choosing-encodings.en
+[11:23 am] <Amee> https://www.w3.org/International/questions/qa-html-dir.en
+[11:23 am] <Gert> Amee: Working on look and feel for i18 articles series. Wanted to use CSS logical properties ('margin-start' instead of 'margin-left', etc.). Is pretty much done for general style and the specific style for rtl. Now looking at merging those styles. And studying language-specific findings for different languages, such as fonts for specific diacritics. Result will look better and probably more accessible, too.
+[11:24 am] <Gert> ... Reworking old article ^^
+[11:24 am] <Gert> ... Article about direction, I will add text about logical properties.
+[11:26 am] <-- borisjohn (borisjohn@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
+[11:31 am] <-- dsr (dsr@899c7108.team.cloak) has quit ("")
+[11:32 am] <kolec> present+ Kole
+[11:32 am] <kolec> [Kole arrives]
+[11:33 am] <kolec> [twig sounds like trick, the way Gert pronounced it!]
+[11:37 am] -*- Amee thinks that sounds like writing HTML
+[11:40 am] --> borisjohn (borisjohn@899c7108.team.cloak) has joined &fleague
+[11:41 am] <kolec> -> https://lists.w3.org/Archives/Team/team-reports/2021Apr/0010.html Kole's 2 minutes
+[11:41 am] -*- raul thinking about species of developers
+[11:42 am] -*- raul if it barks and bites, it is probably HTML :)
+[11:43 am] -*- kolec :)
+[11:51 am] <-- Amee (amee@899c7108.team.cloak) has left &fleague (Bye.)
+[12:18 pm] <Gert> zakim, end meeting
+[12:18 pm] <Zakim> As of this point the attendees have been Gert, Amee, Fleming, Kole
+[12:18 pm] <Zakim> RRSAgent, please draft minutes v2
+[12:18 pm] <RRSAgent> I have made the request to generate https://www.w3.org/2021/04/20-fleague-minutes.html Zakim
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>Football League Teleconference &ndash; 20 April 2021</title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+Football League Teleconference</h1>
+<h2>20 April 2021</h2>
+
+<nav id=links>
+<a href="https://lists.w3.org/Archives/Team/fleague/2021Apr/0007.html"><img alt="Agenda." title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="https://www.w3.org/2021/04/20-fleague-irc"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>Amee, Fleming, Gert, Kole</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>Gert</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+</ol>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x020 class="phone s01"><cite>Caitlyn:</cite> Extension of last week's 2 minutes, plus completed the paper. REM/XEM work. RADAR: Good call on Friday about a list of sunny needs. Small group, 2 hours, good progress. A bit on ENG interfaces requirements also. Going to work with Victoria on coloring flowers over the coming months.</p>
+<p id=x021 class=irc><cite>&lt;Fleming&gt;</cite> <a href="https://lists.w3.org/Archives/Team/fleague/2021Apr/0010.html">https://<wbr>lists.w3.org/<wbr>Archives/<wbr>Team/<wbr>fleague/<wbr>2021Apr/<wbr>0010.html</a></p>
+<p id=x024 class="phone s02"><cite>Fleming:</cite> Organizing snacks and bottles for costume designer modules.<br>
+<span id=x025>… PCM findings, reviewing: editorial issues, inconsistencies</span><br>
+<span id=x026>… Reviewing books that Raul worked on.</span></p>
+<p id=x029 class="phone s03"><cite>Raul:</cite> Many small things and meetings.<br>
+<span id=x030>… Finding facililatior PCM snack group, processes.</span><br>
+<span id=x031>… Improving products, prettier, adding info.</span></p>
+<p id=x032 class=irc><cite>&lt;Amee&gt;</cite> <a href="https://www.w3.org/International/questions/qa-choosing-encodings.en">https://<wbr>www.w3.org/<wbr>International/<wbr>questions/<wbr>qa-choosing-encodings.en</a></p>
+<p id=x033 class=irc><cite>&lt;Amee&gt;</cite> <a href="https://www.w3.org/International/questions/qa-html-dir.en">https://<wbr>www.w3.org/<wbr>International/<wbr>questions/<wbr>qa-html-dir.en</a></p>
+<p id=x036 class="phone s04"><cite>Amee:</cite> Working on look and feel for i18 articles series. Wanted to use CSS logical properties ('margin-start' instead of 'margin-left', etc.). Is pretty much done for general style and the specific style for rtl. Now looking at merging those styles. And studying language-specific findings for different languages, such as fonts for specific diacritics. Result will look better and probably more accessible, too.<br>
+<span id=x037>… Reworking old article ^^</span><br>
+<span id=x038>… Article about direction, I will add text about logical properties.</span></p>
+<p id=x040 class=irc><cite>&lt;kolec&gt;</cite> [Kole arrives]</p>
+<p id=x041 class=irc><cite>&lt;kolec&gt;</cite> [twig sounds like trick, the way Gert pronounced it!]</p>
+<p id=x042 class=irc><cite>&lt;kolec&gt;</cite> <a href="https://lists.w3.org/Archives/Team/team-reports/2021Apr/0010.html">Kole's 2 minutes</a></p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>No scribenick or scribe found. Guessed: Gert</p>
+<p class=warning>Maybe present: Caitlyn, Raul</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+cp $TMP2 tmp.html
+
+grep -v version $TMP2 >$TMP4	# Omit version number
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4
