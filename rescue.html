@@ -89,7 +89,7 @@
     <h2 id=task2>Task 2. Convert the log to minutes in HTML</h2>
 
     <p>RRSAgent uses a program called scribe.perl to process the text.
-      You can do so yourself in one of two ways: using an online
+      You can process it yourself in one of two ways: using an online
       service or by running scribe.perl locally.
 
     <p>To use the <strong>online service,</strong> go to the <a
@@ -99,7 +99,7 @@
       try to run scribe.perl to turn the text into minutes in HTML and
       display them. If it succeeds, you can save the page and proceed
       to task 3. Otherwise some editing may help, see <a
-      href="#editing">below</a>.
+      href="#editing">‘editing the log’</a> below.
 
     <p>To run scribe.perl <strong>locally,</strong> you need
       to <a href="https://w3c.github.io/scribe2/scribe.perl">download
@@ -107,7 +107,7 @@
       have access to a command line. Save the text of the minutes into
       a file (e.g., into ‘log.txt’) and type something like:
 
-    <pre class=command>perl scribe.perl log.txt >minutes.html</pre>
+    <pre class=command>perl scribe.perl log.txt > minutes.html</pre>
 
     <p>There are
       various <a href="https://w3c.github.io/scribe2/scribedoc.html#options"
@@ -117,7 +117,7 @@
     <p>Try to open the result, ‘minutes.html’, in a browser to see if
       the command succeeded. If so, you can proceed to task 3.
 
-    <p id=editing>If the above didn't produce correct minutes, it may
+    <p id=editing><strong>✏ Editing the log:</strong> If the above didn't produce correct minutes, it may
       be that scribe.perl didn't recognize the format. The section <a
       href="https://w3c.github.io/scribe2/scribedoc.html#input_formats"
       >Input Formats</a> in the manual shows examples of IRC logs that
@@ -210,7 +210,7 @@
       similar Linux distributions, you need the davfs package and then
       you can mount the file system (as root) with something like
       <code>mount -t davfs https://edit.w3.org /mnt</code>. After
-      that, you can find the contents of edit.w3.org under /mnt and
+      that, you can find the contents of edit.w3.org under <code>/mnt</code> and
       you can create the file
       /mnt/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html
       for your minutes. When using KDE, you don't even need to mount
@@ -236,4 +236,4 @@
     <hr>
 
     <address><a href="mailto:bert@w3.org" >Bert Bos</a><br>
-      $Date: Wed Apr  7 19:20:49 2021 UTC $</address>
+      $Date: Tue Apr 27 12:54:54 2021 UTC $</address>
