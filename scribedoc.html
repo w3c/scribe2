@@ -24,6 +24,8 @@
 	padding-left: 1em;}
    dd > p:first-child {margin-top: 0}
   </style>
+  <script src="https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js"
+   id=MathJax-script async></script>
  </head>
 
  <body>
@@ -487,8 +489,10 @@
   <p>These options are used to accommodate the different input
    syntaxes and scribing styles.
 
-  <h4 id="dashTopics">-dashTopics</h4>
+  <dl>
+  <dt id="dashTopics">-dashTopics
 
+  <dd>
   <p>Indicate that dash lines are used to indicate that the next line
    is the start of a new topic, such as:
 
@@ -500,8 +504,9 @@
   <pre class="command">&lt;Philippe&gt Topic: Review of Action Items</pre>
 
 
-  <h4 id="implicitContinuations">-implicitContinuations</h4>
+  <dt id="implicitContinuations">-implicitContinuations
 
+  <dd>
   <p>Indicate that the scribe used implicit continuation lines like
    this:
 
@@ -529,9 +534,10 @@
    To continue topics, resolutions, actions or issues on the next
    line, you must still use ‘...’ or ‘…’.
 
-  <h4 id=allowSpaceContinuations>-allowSpaceContinuations /
-  -noallowSpaceContinuations</h4>
+  <dt id=allowSpaceContinuations>-allowSpaceContinuations /
+  -noallowSpaceContinuations
 
+  <dd>
   <p>By default, scribe.perl removes leading spaces on a line and
    recognizes continuation lines because they start with three periods
    (‘...’) or an ellipsis (‘…’). <code>-allowSpaceContinuations</code>
@@ -556,8 +562,9 @@
    To continue topics, resolutions, actions or issues on the next
    line, you must still use ‘...’ or ‘…’.
 
-  <h4 id="useZakimTopics">-useZakimTopics</h4>
+  <dt id="useZakimTopics">-useZakimTopics
 
+  <dd>
   <p>[Default] Recognize when Zakim bot is used to manage the agenda
    and the list of attendees.
    Specifically, treat Zakim statements like:
@@ -571,21 +578,24 @@
   <p>and use Zakim's lines such as ‘As of this point the attendees
   were…’ as an additional source of names for the presence list.
 
-  <h4 id="noUseZakimTopics">-noUseZakimTopics</h4>
+  <dt id="noUseZakimTopics">-noUseZakimTopics
 
+  <dd>
   <p>Turn off the -useZakimTopics option.
   This also causes commands for Zakim (‘next agendum’, ‘q+’, ‘zakim,
   list participants’, etc.) and Zakim's answers to be treated as
   normal text for the minutes, rather than skipped.
 
   <!--
-  <h4 id="inputFormat">-inputFormat NameOfFormat</h4>
+  <dt id="inputFormat">-inputFormat NameOfFormat
 
+  <dd>
   <p>Force input to be treated as NameOfFormat, which must be one of
   the formats listed in <a href="#input_formats" >Input Formats</a>.
   This option is not normally needed, as the input format will
   normally be guessed.
   -->
+  </dl>
 
   <h3 id="options_output_format">Output Format Options</h3>
 
@@ -638,19 +648,83 @@
 
     <p>Default is <code>-keeplines</code>.
 
-   <dt id=emphasis>-emphasis <dd>Cause scribe.perl to interpret ‘ASCII
-    highlighting’, arrows and smileys. Underscores (‘_…_’) will cause
-    underlining, slashes (‘/…/’) italics and asterisks (‘*…*’) bold.
-    E.g., ‘<code>This is _underlined_ and /italic/ and *even
-    bold.*</code>’ leads to ‘This is <span style="text-decoration:
-    underline">underlined</span> and
-    <i>italic</i> and <b>even bold.</b>.’ Highlighted phrases must be
+   <dt id=emphasis>-emphasis <dd><p>Cause scribe.perl to interpret
+    ‘ASCII highlighting’, arrows, smileys and mathematical formulas.
+
+    <p>ASCII highlighting gives underlined, italic and bold text:
+    <table>
+     <thead>
+      <tr><th>Input <th>Output
+     <tbody>
+      <tr><td><code>_underlined_</code> <td><u>underlined</u>
+      <tr><td><code>/italic/</code> <td><i>italic</i>
+      <tr><td><code>*bold*</code> <td><b>bold</b>
+    </table>
+
+    <p>Highlighted phrases must be
     surrounded by spaces to be recognized or be at the edge of the
-    line. The option also causes the replacement of ASCII arrows <code>&lt;- &lt;--
-    &lt;= &lt;== ==&gt; =&gt; --&gt;</code> and <code>-&gt;</code> by
-    arrow characters (← ⟵ ⇐ ⟸ ⟹ ⇒ ⟶ →) and ASCII smileys <code>:-) ;-)
-    :-( :-/ ,-) \o/</code> and <code>/o\</code> by emoticons ☺ 😉 ☹ 😕
-    😜 🙆 and 🙎.
+    line.
+
+    <p>The option also causes the replacement of ASCII arrows
+     and ASCII smileys:
+
+    <table>
+     <thead>
+      <tr><th>Input <th>Output
+     <tbody>
+      <tr><td><code>&lt;-</code> <td>←
+      <tr><td><code>&lt;--</code> <td>⟵
+      <tr><td><code>&lt;=</code> <td>⇐
+      <tr><td><code>&lt;==</code> <td>⟸
+      <tr><td><code>==&gt;</code> <td>⟹
+      <tr><td><code>=&gt;</code> <td>⇒
+      <tr><td><code>--&gt;</code> <td>⟶
+      <tr><td><code><code>-&gt;</code> <td>→
+      <tr><td><code>:-)</code> <td>☺
+      <tr><td><code>;-)</code> <td>😉
+      <tr><td><code>:-(</code> <td>☹
+      <tr><td><code>:-/</code> <td>😕
+      <tr><td><code>,-)</code> <td>😜
+      <tr><td><code>\o/</code> <td>🙆
+      <tr><td><code>/o\</code> <td>🙎
+    </table>
+
+    <p>Mathematical formulas use L<sup style="margin-left:
+    -0.2em">A</sup>T<sub>E</sub>X notation, either between single $
+    signs (for inline math) or double $$ signs (display math), e.g.:
+
+    <pre class="command">Then calculate $\frac{1}{x}$ and $$\sum_1^\inf{\frac{1}{x}}$$</pre>
+
+    <p>yields:
+
+    <blockquote>
+      <p>Then calculate
+	<math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\frac{1}{x}" display="inline">
+	  <mfrac>
+	    <mn>1</mn>
+	    <mi>x</mi>
+	  </mfrac>
+	</math>
+	and
+	<math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\sum_{1}^{\inf}{\frac{1}{x}}" display="block">
+	  <mrow>
+	    <munderover>
+	      <mo largeop="true" movablelimits="false" symmetric="true">∑</mo>
+	      <mn>1</mn>
+	      <mo>inf</mo>
+	    </munderover>
+	    <mfrac>
+	      <mn>1</mn>
+	      <mi>x</mi>
+	    </mfrac>
+	  </mrow>
+	</math>
+    </blockquote>
+
+    <p>Math requires an external program called ‘latexmlmath’ (part of
+     a suite of programs called ‘latexml’). If you run scribe.perl and
+     do not have ‘latexmlmath’, the formulas will remain in
+     L<sup style="margin-left: -0.2em">A</sup>T<sub>E</sub>X notation.
 
    <dt id=urldisplay>-urlDisplay break <dd>[DEFAULT] Scribe.perl will
     ensure that
@@ -700,6 +774,11 @@
     height=48 width=72>&lt;/a></code> is replaced by
     <var>markup</var>. To suppress the logo, use <code>-nologo</code>
     (or <code>-logo=""</code>).
+
+   <dt id=mathjax>-mathjax <var>URL</var> <dd>Use the given URL to
+    load the MathJax script from, instead of the default. MathJax is a
+    script that improves the rendering of mathematical formulas. This
+    option only has effect in combination with <code>-emphasis</code>.
   </dl>
 
   <h3 id="options_scribe_identification">Scribe Identification Options</h3>
@@ -1431,7 +1510,8 @@ Eric agrees.
     >‘-fancy’</a>, <a href="#style">‘-style’</a>, <a href="#logo"
     >‘-logo’</a>, <a href="#keeplines"
     >‘-keeplines’/‘-nokeeplines’</a> <a href="#collapseLimit"
-    >‘-collapseLimit’</a> and <a href="#emphasis" >‘-emphasis’</a> are
+    >‘-collapseLimit’</a>, <a href="#emphasis" >‘-emphasis’</a>
+    and <a href="#mathjax" >‘-mathjax’</a> are
     new.
 
    <li>
@@ -1455,6 +1535,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Tue Apr 27 12:54:54 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Sat May 22 20:03:46 2021 UTC $</address>
  </body>
 </html>

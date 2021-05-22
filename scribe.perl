@@ -139,6 +139,8 @@ my $url_display = 'break';	# How to display in-your-face URLs
 my $logo;			# undef = W3C logo; string = HTML fragment
 my $collapse_limit = 30;	# Longer participant lists are collapsed
 my $stylesheet;			# URL of style sheet, undef = use defaults
+my $mathjax =			# undef = no math; string is MathJax URL
+  'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 
 
 # Each parser takes a reference to an array of text lines (without
@@ -359,6 +361,65 @@ sub fc_uniq(@)
 }
 
 
+# to_mathml -- call latexmlmath to convert a LaTeX math expression to MathML
+sub to_mathml($)
+{
+  my ($s) = @_;
+  my ($in, $out);
+  $in = $s;
+  $in =~ s/\\/\\\\/g;
+  $in =~ s/\"/\\\"/g;
+  $in =~ s/\$/\\\$/g;
+  $in =~ s/\`/\\\`/g;
+  $out = `latexmlmath -strict "$in" 2>/dev/null`;
+  $out =~ s/<\?xml[^>]*\?>//;
+  return $? == 0 ? $out : $s;
+}
+
+
+# to_emph -- replace smileys, arrows, emphasis marks and math
+sub to_emph($);
+sub to_emph($)
+{
+  for ($_[0]) {
+    return to_emph($`) . to_mathml($&) . to_emph($')
+	if /\$\$[^\$]+\$\$/;
+    return to_emph($`) . to_mathml($&) . to_emph($')
+	if /\$[^\$]+\$/;
+    return to_emph($`.$1) . "<u>$2</u>" . to_emph($3.$')
+	if /(^|\s)_([^\s_](?:[^_]*[^\s_])?)_(\s|$)/;
+    return to_emph($`.$1) . "<em>$2</em>" . to_emph($3.$')
+	if m{(^|\s)/([^\s/](?:[^/]*[^\s/])?)/(\s|$)};
+    return to_emph($`.$1) . "<strong>$2</strong>" . to_emph($3.$')
+	if /(^|\s)\*([^\s*](?:[^*]*[^\s*])?)\*(\s|$)/;
+    return to_emph($`) . "⟶" . to_emph($')
+	if /(?:^|[^-])\K--&gt;/;		# "-->" not preceded by a "-"
+    return to_emph($`) . "→" . to_emph($')
+	if /(?:^|[^-])\K-&gt;/;			# "->" not preceded by a "-"
+    return to_emph($`) . "⟹" .  to_emph($')
+	if /(?:^|[^=])\K==&gt;/;		# "==>" not preceded by a "="
+    return to_emph($`) . "⇒" . to_emph($')
+	if /(?:^|[^=])\K=&gt;/;			# "=>" not preceded by a "="
+    return to_emph($`) . "⟵" . to_emph($')
+	if /&lt;--(?!-)/;			# "<--" not followed by a "-"
+    return to_emph($`) . "←" . to_emph($')
+	if /&lt;-(?!-)/;			# "<-" not followed by a "-"
+    return to_emph($`) . "⟸" . to_emph($')
+	if /&lt;==(?!=)/;			# "<==" not followed by a "="
+    return to_emph($`) . "⇐" . to_emph($')
+	if /&lt;=(?!=)/;			# "<=" not followed by a "="
+    return to_emph($`) . "☺" . to_emph($') if /:-\)/;
+    return to_emph($`) . "😉" . to_emph($') if /;-\)/;
+    return to_emph($`) . "☹" . to_emph($') if /:-\(/;
+    return to_emph($`) . "😕" . to_emph($') if m{:-/};
+    return to_emph($`) . "😜" . to_emph($') if /,-\)/;
+    return to_emph($`) . "🙆" . to_emph($') if m{\\o/};
+    return to_emph($`) . "🙎" . to_emph($') if m{/o\\};
+    return $_;
+  }
+}
+
+
 # break_url -- apply -urlDisplay option to a URL
 sub break_url($)
 {
@@ -425,14 +486,14 @@ sub esc($;$$$)
       # Look for "->" or "-->" before or after the URL.
       if ($pre =~ /(--?>) *$/p) { # Ralph, Xueyuan or missing anchor text
 	$type = $1;
-	$pre = ${^PREMATCH};
+	$pre = $`;
 	if ($post =~ /^ *"([^"\t]*)"/p || $post =~ /^ *'([^'\t]*)'/p ||
 	    $post =~ /^ *([^'" \t][^\t]*[^ \t]) */p ||
 	    $post =~ /^ *([^'" \t]) */p) { # Ralph link
 	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, $1);
-	  $s = ${^POSTMATCH};
+	  $s = $';
 	} elsif ($pre =~ / *([^ \t][^\t]*[^ \t]|[^ \t]) *$/p) {	# Xueyuan link
-	  $replacement .= esc(${^PREMATCH}, $emph)
+	  $replacement .= esc($`, $emph)
 	      . mklink($link, $type, $url,$1);
 	  $s = $post;
 	} else {		# Missing anchor text
@@ -440,7 +501,7 @@ sub esc($;$$$)
 	  $s = $post;
 	}
       } elsif ($pre =~ /(--?>) *(.+?) *$/p) { # Ivan link
-	$replacement .= esc(${^PREMATCH}, $emph) . mklink($link, $1, $url, $2);
+	$replacement .= esc($`, $emph) . mklink($link, $1, $url, $2);
 	$s = $post;
       } elsif ($post =~ /^ *(--?>) *"([^"\t]*)"/p ||
 	       $post =~ /^ *(--?>) *'([^'\t]*)'/p ||
@@ -448,7 +509,7 @@ sub esc($;$$$)
 	       $post =~ /^ *(--?>) *([^ \t]) */p ||
 	       $post =~ /^ *(--?>) *()/p) { # Inverted Xueyuan link
 	$replacement  .= esc($pre, $emph) . mklink($link, $1, $url, $2);
-	$s = ${^POSTMATCH};
+	$s = $';
       } else {					# Bare URL.
     	$replacement .= esc($pre, $emph) . mklink($link, '->', $url, '');
     	$s = $post;
@@ -463,26 +524,7 @@ sub esc($;$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
-    if ($emph) {
-      $s =~ s{(^|\s)_([^\s_](?:[^_]*[^\s_])?)_(\s|$)}{$1<u>$2</u>$3}g;
-      $s =~ s{(^|\s)/([^\s/](?:[^/]*[^\s/])?)/(\s|$)}{$1<em>$2</em>$3}g;
-      $s =~ s{(^|\s)\*([^\s*](?:[^*]*[^\s*])?)\*(\s|$)}{$1<strong>$2</strong>$3}g;
-      $s =~ s{(?:^|[^-])\K--&gt;}{⟶}g;	# "-->" not preceded by a "-"
-      $s =~ s{(?:^|[^-])\K-&gt;}{→}g;	# "->" not preceded by a "-"
-      $s =~ s{(?:^|[^=])\K==&gt;}{⟹}g; # "==>" not preceded by a "="
-      $s =~ s{(?:^|[^=])\K=&gt;}{⇒}g;	# "=>" not preceded by a "="
-      $s =~ s{&lt;--(?!-)}{⟵}g;	# "<--" not followed by a "-"
-      $s =~ s{&lt;-(?!-)}{←}g;		# "<-" not followed by a "-"
-      $s =~ s{&lt;==(?!=)}{⟸}g;	# "<==" not followed by a "="
-      $s =~ s{&lt;=(?!=)}{⇐}g;		# "<=" not followed by a "="
-      $s =~ s{:-\)}{☺}g;
-      $s =~ s{;-\)}{😉}g;
-      $s =~ s{:-\(}{☹}g;
-      $s =~ s{:-/}{😕}g;
-      $s =~ s{,-\)}{😜}g;
-      $s =~ s{\\o/}{🙆}g;
-      $s =~ s{/o\\}{🙎}g;
-    }
+    $s = to_emph($s) if $emph;
   }
   return $s;
 }
@@ -529,10 +571,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 131 $'
+my $revision = '$Revision: 132 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Apr 24 15:23:43 2021 UTC $'
+my $versiondate = '$Date: Sat May 22 20:03:46 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -592,6 +634,7 @@ my %options = ("team" => sub {$styleset = 'team'},
 	       "useZakimTopics!" => \$use_zakim,
 	       "scribeOnly!" => \$scribeonly,
 	       "emphasis!" => \$emphasis,
+	       "mathjax=s" => \$mathjax,
 	       "oldStyle!" => \$old_style,
 	       "stylesheet:s" => \$stylesheet,
 	       "logo:s" => \$logo,
@@ -1187,6 +1230,8 @@ if ($styleset eq 'team') {
 my $style = join("\n",
   map {"<link rel=\"" . ($_->[0] ? "alternate " : "") . "stylesheet\" " .
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
+my $scripts = !$emphasis ? ''
+  : "<script src=\"$mathjax\" id=MathJax-script async></script>\n";
 
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
 $logo = '' if !defined $logo && ($styleset eq 'fancy');
@@ -1267,7 +1312,7 @@ print "<!DOCTYPE html>
 <title>$meeting &ndash; $date</title>
 <meta name=viewport content=\"width=device-width\">
 $style
-</head>
+$scripts</head>
 
 <body>
 <header>
@@ -1339,7 +1384,8 @@ scribe.perl [options] [file ...]
   --dashTopics		Allow a line of dashes to start a new topic
   --useZakimTopics	Parse Zakim's lines for agenda topics (default)
   --scribeOnly		Omit all text that is not written by a scribe
-  --emphasis		Allow inline styles: _underline_ /italics/ *bold*
+  --emphasis		Allow smileys, arrows and inline styles
+  --mathjax=URL		Use a specific MathJax (only with --emphasis)
   --oldStyle		Use the style of scribe.perl version 1
   --minutes=URL		Used to guess a date if the URL contains YYYY/MM/DD
   --logo=markup		Replace the W3C link and logo with this HTML markup
