@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Test the --mathjax option
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
+
+MATHJAX="http://example.org/es5/mml-chtml.js"
+
+cat >$TMP3 <<EOF
+<script src="$MATHJAX" id=MathJax-script async></script>
+EOF
+
+perl scribe.perl --emphasis --mathjax=$MATHJAX /dev/null >$TMP1
+
+# Extract just the script:
+grep '<script' $TMP1 >$TMP2
+
+diff -u $TMP3 $TMP2
