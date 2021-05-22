@@ -142,6 +142,8 @@ my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 
+# Global variables:
+my $has_math = 0;		# Set to 1 by to_mathml()
 
 # Each parser takes a reference to an array of text lines (without
 # newlines) and a reference to an array of records. It returns 0
@@ -372,8 +374,10 @@ sub to_mathml($)
   $in =~ s/\$/\\\$/g;
   $in =~ s/\`/\\\`/g;
   $out = `latexmlmath -strict "$in" 2>/dev/null`;
+  return $s if $? != 0;		# An error occurred, return original string
   $out =~ s/<\?xml[^>]*\?>//;
-  return $? == 0 ? $out : $s;
+  $has_math = 1;
+  return $out;
 }
 
 
@@ -571,10 +575,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 132 $'
+my $revision = '$Revision: 133 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat May 22 20:03:46 2021 UTC $'
+my $versiondate = '$Date: Sat May 22 20:31:01 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1230,7 +1234,7 @@ if ($styleset eq 'team') {
 my $style = join("\n",
   map {"<link rel=\"" . ($_->[0] ? "alternate " : "") . "stylesheet\" " .
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
-my $scripts = !$emphasis ? ''
+my $scripts = !$emphasis || !$has_math ? ''
   : "<script src=\"$mathjax\" id=MathJax-script async></script>\n";
 
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
