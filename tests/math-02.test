@@ -2,20 +2,27 @@
 
 # Test the --mathjax option
 
-trap 'rm $TMP1 $TMP2 $TMP3' 0
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
 TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
 TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
 
 MATHJAX="http://example.org/es5/mml-chtml.js"
 
-cat >$TMP3 <<EOF
+# Input
+cat >$TMP1 <<'EOF'
+<foo> A line with some math: $x_i$
+EOF
+
+# Expected output
+cat >$TMP4 <<EOF
 <script src="$MATHJAX" id=MathJax-script async></script>
 EOF
 
-perl scribe.perl --emphasis --mathjax=$MATHJAX /dev/null >$TMP1
+perl scribe.perl --emphasis --mathjax=$MATHJAX $TMP1 >$TMP2
 
 # Extract just the script:
-grep '<script' $TMP1 >$TMP2
+grep '<script' $TMP2 >$TMP3
 
-diff -u $TMP3 $TMP2
+diff -u $TMP4 $TMP3
