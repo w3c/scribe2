@@ -62,7 +62,8 @@
 13:10:24 <Zakim> On IRC I see Bin_Hu, whyun, gmandyam, ddavis, RRSAgent, Zakim, kaz, aldafu, jcverdie, schuki, MarkS, timeless_, tobie__, trackbot
 13:11:06 <ddavis> Scribe: Daniel
 13:11:10 <ddavis> scribenick: ddavis
-13:12:03 <ddavis> Topic: Review action item and issues
+13:12:02 <ddavis> scribeoptions: -emph
+13:12:03 <ddavis> Topic: With some math: $\sin(x)=\sqrt{2x}$
 13:12:49 <ddavis> Kaz: There's been a problem with the tracker (access is blocked). The sysadmins are looking into it but it's not fixed yet.
 13:12:57 <kaz> -> http://www.w3.org/2014/02/19-webtv-minutes.html Feb. 19 minutes
 13:13:17 <ddavis> kaz: We can try to look at the action items recorded in the Feb 19 call minutes.
