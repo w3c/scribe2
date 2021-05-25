@@ -373,7 +373,7 @@ sub to_mathml($)
   $in =~ s/\"/\\\"/g;
   $in =~ s/\$/\\\$/g;
   $in =~ s/\`/\\\`/g;
-  $out = `latexmlmath -strict "$in" 2>/dev/null`;
+  $out = `latexmlmath "$in" 2>/dev/null`;
   return $s if $? != 0;		# An error occurred, return original string
   $out =~ s/<\?xml[^>]*\?>//;
   $has_math = 1;
@@ -575,10 +575,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 133 $'
+my $revision = '$Revision: 134 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat May 22 20:31:01 2021 UTC $'
+my $versiondate = '$Date: Tue May 25 10:06:35 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
