@@ -387,15 +387,15 @@ sub to_emph($)
 {
   for ($_[0]) {
     return to_emph($`) . to_mathml($&) . to_emph($')
-	if /\$\$[^\$]+\$\$/;
+	if /(?:^|[^\\])\K\$\$[^\$]+\$\$/; # $$...$$ not preceded by a '\'
     return to_emph($`) . to_mathml($&) . to_emph($')
-	if /\$[^\$]+\$/;
-    return to_emph($`.$1) . "<u>$2</u>" . to_emph($3.$')
-	if /(^|\s)_([^\s_](?:[^_]*[^\s_])?)_(\s|$)/;
-    return to_emph($`.$1) . "<em>$2</em>" . to_emph($3.$')
-	if m{(^|\s)/([^\s/](?:[^/]*[^\s/])?)/(\s|$)};
-    return to_emph($`.$1) . "<strong>$2</strong>" . to_emph($3.$')
-	if /(^|\s)\*([^\s*](?:[^*]*[^\s*])?)\*(\s|$)/;
+	if /(?:^|[^\\])\K\$[^\$]+\$/; # $...$ not preceded by a '\'
+    return to_emph($`) . "<u>$1</u>" . to_emph($')
+	if /(?:^|\s)\K_([^\s_](?:[^_]*[^\s_])?)_(?=\s|$)/;
+    return to_emph($`) . "<em>$1</em>" . to_emph($')
+	if m{(?:^|\s)\K/([^\s/][^/]*[^\s/]|[^\s/])/(?=\s|$)};
+    return to_emph($`) . "<strong>$1</strong>" . to_emph($')
+	if /(?:^|\s)\K\*([^\s*](?:[^*]*[^\s*])?)\*(?=\s|$)/;
     return to_emph($`) . "⟶" . to_emph($')
 	if /(?:^|[^-])\K--&gt;/;		# "-->" not preceded by a "-"
     return to_emph($`) . "→" . to_emph($')
@@ -419,6 +419,7 @@ sub to_emph($)
     return to_emph($`) . "😜" . to_emph($') if /,-\)/;
     return to_emph($`) . "🙆" . to_emph($') if m{\\o/};
     return to_emph($`) . "🙎" . to_emph($') if m{/o\\};
+    return to_emph($`) . '$' . to_emph($') if /\\\$/;
     return $_;
   }
 }
@@ -575,10 +576,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 134 $'
+my $revision = '$Revision: 135 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue May 25 10:06:35 2021 UTC $'
+my $versiondate = '$Date: Tue May 25 12:23:05 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
