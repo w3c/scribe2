@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Test two $-signs in a line without actual math in between using "\$"
+
+# Only applicable if latexmlmath is installed:
+if ! type -t latexmlmath >/dev/null; then exit 2; fi
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
+
+cat >$TMP1 <<'EOF'
+<foo> A line without emphasis.
+<foo> A line with displayed math: $$\frac{1}{1+x^2}$$
+<foo> A price of \$15 and a variable $HOME are not math.
+<foo> Also \$15 and a variable \$HOME are not math.
+<foo> Another line without math.
+<foo> scribeoptions: -emph
+EOF
+
+cat >$TMP4 <<'EOF'
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x001 class=summary>A line without emphasis.</p>
+<p id=x002 class=summary>A line with displayed math: 
+<math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\frac{1}{1+x^{2}}" display="block">
+  <mfrac>
+    <mn>1</mn>
+    <mrow>
+      <mn>1</mn>
+      <mo>+</mo>
+      <msup>
+        <mi>x</mi>
+        <mn>2</mn>
+      </msup>
+    </mrow>
+  </mfrac>
+</math>
+</p>
+<p id=x003 class=summary>A price of $15 and a variable $HOME are not math.</p>
+<p id=x004 class=summary>Also $15 and a variable $HOME are not math.</p>
+<p id=x005 class=summary>Another line without math.</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2
+
+# Extract just the minutes:
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
