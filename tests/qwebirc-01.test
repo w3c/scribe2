@@ -1,0 +1,155 @@
+#!/bin/bash
+
+# Test input copy-pasted from the qwebirc web-based client.
+
+trap 'rm -f $INPUT $OUTPUT1 $OUTPUT2 $EXPECTED1 $EXPECTED2' 0
+INPUT=`mktemp /tmp/qwebirc-01-XXXXXX` || exit 1
+OUTPUT1=`mktemp /tmp/qwebirc-01-XXXXXX` || exit 1
+OUTPUT2=`mktemp /tmp/qwebirc-01-XXXXXX` || exit 1
+EXPECTED1=`mktemp /tmp/qwebirc-01-XXXXXX` || exit 1
+EXPECTED2=`mktemp /tmp/qwebirc-01-XXXXXX` || exit 1
+
+cat >$INPUT <<'EOF'
+[09:59] == Wilco [~Wilco@4a714a7c.public.cloak] has joined #act-r
+[09:59] == Zakim [zakim@899c7108.team.cloak] has joined #act-r
+[10:00] <Wilco> agenda+ Update from the ACT Task Force   https://docs.google.com/spreadsheets/d/1OSkPFocXk4K3zYLnwS78WLsWO4PvE5yRcsauyefuIUI/edit?usp=sharing
+[10:00] * Zakim notes agendum 1 added
+[10:00] <Wilco> agenda+ ACT/Silver workshop Feedback
+[10:00] * Zakim notes agendum 2 added
+[10:00] <Wilco> agenda+ Assigned issues:   https://github.com/act-rules/act-rules.github.io/issues?page=1&q=is%3Aissue+is%3Aopen
+[10:00] * Zakim notes agendum 3 added
+[10:00] <Wilco> agenda+ Change "element with a semantic role of X" to "semantic X"?   https://github.com/act-rules/act-rules.github.io/issues/1593
+[10:00] * Zakim notes agendum 4 added
+[10:00] <Wilco> agenda+ Replace the "Each test target" phrase in expectations?   https://github.com/act-rules/act-rules.github.io/issues/1594
+[10:00] * Zakim notes agendum 5 added
+[10:00] <Wilco> agenda+ Visible label part of acc name, extra space around numbers   https://github.com/act-rules/act-rules.github.io/issues/1615
+[10:00] * Zakim notes agendum 6 added
+[10:01] == Jean-Yves [~Jean-Yves@4a714a7c.public.cloak] has joined #act-r
+[10:02] == CarlosD [~carlosd@4a714a7c.public.cloak] has joined #act-r
+[10:04] <CarlosD> present+
+[10:04] <CarlosD> scribe: CarlosD
+[10:05] <Jean-Yves> present+
+[10:05] <Wilco> present+
+[10:05] <CarlosD> zakim, take up next
+[10:05] <Zakim> agendum 1 -- Update from the ACT Task Force   https://docs.google.com/spreadsheets/d/1OSkPFocXk4K3zYLnwS78WLsWO4PvE5yRcsauyefuIUI/edit?usp=sharing -- taken up [from Wilco]
+[10:05] <Daniel> present+
+[10:05] == anne_thyme [~anne_thyme@4a714a7c.public.cloak] has joined #act-r
+[10:05] == KatrineGregersen [~KatrineGregersen@4a714a7c.public.cloak] has joined #act-r
+[10:05] <CarlosD> Wilco: provides update on what the TF has been doing
+[10:05] <anne_thyme> present+
+[10:06] <KatrineGregersen> Present+
+[10:06] <CarlosD> ... there has been a bit of a slowdown because of the meetings with the Silver TF
+[10:06] <CarlosD> ... but there is been good progress with a large number of issues being opened
+[10:07] <CarlosD> zakim, take up next
+[10:07] <Zakim> agendum 2 -- ACT/Silver workshop Feedback -- taken up [from Wilco]
+[10:08] <CarlosD> Wilco: there have been 2 calls with the WCAG 3 TF and AG
+[10:08] <CarlosD> ... what were your thoughts on the meetings?
+[10:09] <CarlosD> anne_thyme: enjoyed the second meeting better than the first
+[10:09] <CarlosD> ... pleased with the way things seemed to be going now
+[10:10] <CarlosD> Wilco: The firs takeaway is that outcomes need to better defined
+[10:11] <CarlosD> ... the second takeaway is that methods can be aligned with ACT rules
+[10:11] <CarlosD> CarlosD: I agree with anne_thyme
+[10:12] <CarlosD> ... need to try to make sure that methods and outcomes are objective as possible
+[10:12] <CarlosD> Daniel: I also agree with anne_thyme and CarlosD
+[10:12] <CarlosD> Wilco: the next steps will be to have more joint meetings
+[10:13] <CarlosD> ... there is a subgroup from Silver that will work on taking an method and making it more like an ACT rule
+[10:13] <CarlosD> ... hopefully people from ACT can join
+[10:14] <CarlosD> ... I will join
+[10:14] * Daniel needsto  leave for a sec
+[11:00] <Wilco> Meeting: ACT-Rules CG 
+[11:00] <Wilco> Chair: Wilco
+EOF
+
+cat >$EXPECTED1 <<'EOF'
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>ACT-Rules CG &ndash; </title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+ACT-Rules CG</h1>
+<h2></h2>
+
+<nav id=links>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>anne_thyme, CarlosD, Daniel, Jean-Yves, KatrineGregersen, Wilco</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>Wilco</dd>
+<dt>Scribe</dt><dd>CarlosD</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+<li><a href="#t01">Update from the ACT Task Force   https://<wbr>docs.google.com/<wbr>spreadsheets/<wbr>d/<wbr>1OSkPFocXk4K3zYLnwS78WLsWO4PvE5yRcsauyefuIUI/<wbr>edit?usp=sharing</a></li>
+<li><a href="#t02">ACT/Silver workshop Feedback</a></li>
+</ol>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=t01>Update from the ACT Task Force   <a href="https://docs.google.com/spreadsheets/d/1OSkPFocXk4K3zYLnwS78WLsWO4PvE5yRcsauyefuIUI/edit?usp=sharing">https://<wbr>docs.google.com/<wbr>spreadsheets/<wbr>d/<wbr>1OSkPFocXk4K3zYLnwS78WLsWO4PvE5yRcsauyefuIUI/<wbr>edit?usp=sharing</a></h3>
+<p id=x018 class="phone s01"><cite>Wilco:</cite> provides update on what the TF has been doing<br>
+<span id=x019>… there has been a bit of a slowdown because of the meetings with the Silver TF</span><br>
+<span id=x020>… but there is been good progress with a large number of issues being opened</span></p>
+</section>
+
+<section>
+<h3 id=t02>ACT/Silver workshop Feedback</h3>
+<p id=x024 class="phone s01"><cite>Wilco:</cite> there have been 2 calls with the WCAG 3 TF and AG<br>
+<span id=x025>… what were your thoughts on the meetings?</span></p>
+<p id=x027 class="phone s02"><cite>anne_thyme:</cite> enjoyed the second meeting better than the first<br>
+<span id=x028>… pleased with the way things seemed to be going now</span></p>
+<p id=x030 class="phone s01"><cite>Wilco:</cite> The firs takeaway is that outcomes need to better defined<br>
+<span id=x031>… the second takeaway is that methods can be aligned with ACT rules</span></p>
+<p id=x033 class="phone s03"><cite>CarlosD:</cite> I agree with anne_thyme<br>
+<span id=x034>… need to try to make sure that methods and outcomes are objective as possible</span></p>
+<p id=x035 class="phone s04"><cite>Daniel:</cite> I also agree with anne_thyme and CarlosD</p>
+<p id=x039 class="phone s01"><cite>Wilco:</cite> the next steps will be to have more joint meetings<br>
+<span id=x040>… there is a subgroup from Silver that will work on taking an method and making it more like an ACT rule</span><br>
+<span id=x041>… hopefully people from ACT can join</span><br>
+<span id=x042>… I will join</span></p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+>scribe.perl</a> version 135 (Tue May 25 12:23:05 2021 UTC).</address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl -embed $INPUT >$OUTPUT1 || exit 1
+grep -v version $OUTPUT1 >$OUTPUT2	# Omit version number
+grep -v version $EXPECTED1 >$EXPECTED2
+diff -u $EXPECTED2 $OUTPUT2
