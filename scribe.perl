@@ -162,6 +162,7 @@ my $has_math = 0;		# Set to 1 by to_mathml()
 
 my @parsers = (\&RRSAgent_text_format, \&Bip_Format, \&Mirc_Text_Format,
 	       \&Yahoo_IM_Format, \&Bert_IRSSI_Format, \&Irssi_Format,
+	       \&Qwebirc_paste_format,
 	       \&Quassel_paste_format, \&Plain_Text_Format);
 
 
@@ -289,6 +290,25 @@ sub Irssi_Format($)
       push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
     } else {
       return 0;
+    }
+  }
+  return 1;
+}
+
+
+# Qwebirc_paste_format -- copy-paste from the qwebirc web-based client
+sub Qwebirc_paste_format($$)
+{
+  my ($lines_ref, $records_ref) = @_;
+
+  foreach (@$lines_ref) {
+    next if /^\[[0-9:]+\] ==/;	# Join, quit, change nick, change topic, mode
+    next if /^\[[0-9:]+\] \*/;	# A message with /me
+    next if /^\s*$/;		# Empty line
+    if (/^\[[0-9:]+\] <([^>]+)> (.*)$/) {
+      push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
+    } else {
+      return 0;			# This is not qwebirc
     }
   }
   return 1;
@@ -576,10 +596,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 135 $'
+my $revision = '$Revision: 136 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue May 25 12:23:05 2021 UTC $'
+my $versiondate = '$Date: Thu May 27 13:50:24 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
