@@ -433,12 +433,11 @@ sub to_emph($)
     return to_emph($`) . "⇐" . to_emph($')
 	if /&lt;=(?!=)/;			# "<=" not followed by a "="
     return to_emph($`) . "☺" . to_emph($') if /:-\)/;
-    return to_emph($`) . "😉" . to_emph($') if /;-\)/;
+    return to_emph($`) . "😉\x{FE0E}" . to_emph($') if /;-\)/;
     return to_emph($`) . "☹" . to_emph($') if /:-\(/;
-    return to_emph($`) . "😕" . to_emph($') if m{:-/};
-    return to_emph($`) . "😜" . to_emph($') if /,-\)/;
-    return to_emph($`) . "🙆" . to_emph($') if m{\\o/};
-    return to_emph($`) . "🙎" . to_emph($') if m{/o\\};
+    return to_emph($`) . "😕\x{FE0E}" . to_emph($') if m{:-/};
+    return to_emph($`) . "😜\x{FE0E}" . to_emph($') if /,-\)/;
+    return to_emph($`) . "🙌\x{FE0E}" . to_emph($') if m{\\o/};
     return to_emph($`) . '$' . to_emph($') if /\\\$/;
     return $_;
   }
