@@ -108,6 +108,10 @@
   in other environments. (For use in other environments, see the <a
   href="#input_formats" >Input Formats</a> section.)
 
+  <p>Scribe.perl supports <a href="#links"
+   >links</a>, <a href="#images" >images</a>, <a href="#topic"
+   >subsections</a> and even <a href="#emphasis" >math</a>!
+
   <p>Some sample outputs: <a href="sample-public.html" >default
   style</a>, <a href="sample-member.html" >with option -member</a>, <a
   href="sample-team.html" >with option -team</a> and <a
@@ -681,12 +685,11 @@
       <tr><td><code>--&gt;</code> <td>⟶
       <tr><td><code><code>-&gt;</code> <td>→
       <tr><td><code>:-)</code> <td>☺
-      <tr><td><code>;-)</code> <td>😉
+      <tr><td><code>;-)</code> <td>😉&#xFE0E;
       <tr><td><code>:-(</code> <td>☹
-      <tr><td><code>:-/</code> <td>😕
-      <tr><td><code>,-)</code> <td>😜
-      <tr><td><code>\o/</code> <td>🙆
-      <tr><td><code>/o\</code> <td>🙎
+      <tr><td><code>:-/</code> <td>😕&#xFE0E;
+      <tr><td><code>,-)</code> <td>😜&#xFE0E;
+      <tr><td><code>\o/</code> <td>🙌&#xFE0E;
     </table>
 
     <p>Mathematical formulas use L<sup style="margin-left:
@@ -1040,6 +1043,15 @@ Resolved: next-object does not wrap</pre>
 
   <p>Indicate a decision that the group has made. Both keywords may be
    used interchangeably.
+
+  <pre id="topic" class="command">topic: Food and drink
+subtopic: Morning coffee</pre>
+
+  <p>The first starts a new section with the heading ‘Food and
+   drink’. The second starts a subsection with the heading ‘Morning
+   coffee’. (See also <a href="#dashTopics" >-dashtopics</a>
+   and <a href="useZakimTopics" >-useZakimTopics</a> for alternative
+   syntaxes.)
 
   <!--
   <pre class="command">Log: http://www.w3.org/2002/11/07-ws-arch-irc</pre>
