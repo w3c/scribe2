@@ -10,7 +10,7 @@ TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
 
 cat >$TMP1 <<'EOF'
 <foo> A line without a smiley.
-<foo> A line with seven smileys: :-) ;-) :-( :-/ ,-) \o/ /o\
+<foo> A line with six smileys: :-) ;-) :-( :-/ ,-) \o/
 <foo> A smiley in parentheses: (:-))
 EOF
 
@@ -18,7 +18,7 @@ cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x001 class=summary>A line without a smiley.</p>
-<p id=x002 class=summary>A line with seven smileys: ☺ 😉 ☹ 😕 😜 🙆 🙎</p>
+<p id=x002 class=summary>A line with six smileys: ☺ 😉︎ ☹ 😕︎ 😜︎ 🙌︎</p>
 <p id=x003 class=summary>A smiley in parentheses: (☺)</p>
 </section>
 </main>
