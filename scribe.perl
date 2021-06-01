@@ -597,7 +597,7 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 136 $'
+my $revision = '$Revision $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
 my $versiondate = '$Date: Thu May 27 13:50:24 2021 UTC $'
