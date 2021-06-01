@@ -144,6 +144,7 @@ my $mathjax =			# undef = no math; string is MathJax URL
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
+my @diagnostics;		# Collected warnings and other info
 
 # Each parser takes a reference to an array of text lines (without
 # newlines) and a reference to an array of records. It returns 0
@@ -394,6 +395,7 @@ sub to_mathml($)
   $in =~ s/\$/\\\$/g;
   $in =~ s/\`/\\\`/g;
   $out = `latexmlmath "$in" 2>/dev/null`;
+  push(@diagnostics, "Failed math formula: $s") if $? != 0;
   return $s if $? != 0;		# An error occurred, return original string
   $out =~ s/<\?xml[^>]*\?>//;
   $has_math = 1;
@@ -602,7 +604,6 @@ my $versiondate = '$Date: Thu May 27 13:50:24 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
-my @diagnostics;		# Collected warnings and other info
 my %scribes;			# List of scribes
 my @records;			# Array of parsed lines
 my $date;			# Date of the meeting
