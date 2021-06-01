@@ -18,6 +18,7 @@ cat >$TMP1 <<'EOF'
 <foo> A line with ->http://example.org/1/ $e=mc^2$./
 <foo> A line with an -> $\sin(\pi)$ http://example.org/ not at the end.
 <foo> A line with -> $ax + y^3$ link http://example.org/3/
+<foo> scribeoptions: -emph
 EOF
 
 cat >$TMP4 <<'EOF'
@@ -98,7 +99,7 @@ cat >$TMP4 <<'EOF'
 </main>
 EOF
 
-perl scribe.perl --emphasis $TMP1 >$TMP2
+perl scribe.perl $TMP1 >$TMP2
 
 # Extract just the minutes:
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
