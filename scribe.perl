@@ -600,7 +600,7 @@ sub delete_scribes($$)
 my $revision = '$Revision $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jun  1 16:57:34 2021 UTC $'
+my $versiondate = '$Date: Tue Jun 15 15:59:43 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -968,9 +968,10 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   (/^agendum \d+\. "(.*)" taken up/ ||	   # Old Zakim
-	    /^agendum \d+ -- (.*) -- taken up/)) { # New Zakim
+	    /^agendum \d+ -- (.*)/)) {		   # New Zakim
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
+    $records[$i]->{text} =~ s/ -- taken up \[from.*//;
     $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
@@ -979,15 +980,18 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
-	   /^\.\.\. (.*?),?$/) {
+	   /^\.\.\. (.*)$/) {
     my $s = $1;				# See what this is a continuation of
     my $j = $i - 1;
     $j-- while $j >= 0 && ($records[$j]->{text} =~ /^\.\.\. / ||
 			   $records[$j]->{speaker} ne 'Zakim');
     if ($j >= 0 && $records[$j]->{text} =~ /the attendees (?:were|have been) /){
-      $present{fc $_} = $_ foreach split(/, */, $s);
+      $present{fc $_} = $_ foreach grep($_ ne '', split(/, */, $s));
     } elsif ($j >= 0 && $records[$j]->{text} =~ /, you wanted /) {
       $records[$j]->{text} .= ' ' . $s;
+    } elsif ($j >= 0 && $records[$j]->{type} eq 't') { # Continued agendum
+      $records[$j]->{text} .= ' ' . $s;
+      $records[$j]->{text} =~ s/ -- taken up \[from.*//;
     }
     $records[$i]->{type} = 'o';		# Omit line from output
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Test if Zakim's new agenda announcements are recognized.
+# Test if Zakim's new agenda announcements are recognized, including
+# if Zakim needs two lines for the agendum .
 
 trap 'rm -f $TMP1 $TMP2 $TMP3' 0
 TMP1=`mktemp /tmp/zakim-XXXXXX` || exit 0
@@ -19,6 +20,9 @@ cat >$TMP1 <<EOF
 16:15:18 <alastairc> zakim, take up item 5
 16:15:18 <Zakim> agendum 5 -- https://github.com/w3c/wcag/pull/1500 -- taken up [from alastairc]
 16:16:46 <alastairc> Whether 1.4.1 use of color is ok for links
+15:29:38 <Zakim> agendum 6 -- How should we include the designer's responsibility with regards to promoting accessible media players
+15:29:39 <sloandr> sloandr: For consistency's sake, it may be worth replacing "Ornamental Graphics" with "Decorative Images" as a module topic title
+15:29:41 <Zakim> ... https://deploy-preview-347--wai-curricula.netlify.app/curricula/designer-modules/multimedia-and-animations/ -- taken up [from Daniel]
 EOF
 
 cat >$TMP2 <<EOF
@@ -28,6 +32,7 @@ cat >$TMP2 <<EOF
 <li><a href="#t01">Silver objections</a></li>
 <li><a href="#t02">next week's agenda</a></li>
 <li><a href="#t03">https://<wbr>github.com/<wbr>w3c/<wbr>wcag/<wbr>pull/<wbr>1500</a></li>
+<li><a href="#t04">How should we include the designer's responsibility with regards to promoting accessible media players https://<wbr>deploy-preview-347--wai-curricula.netlify.app/<wbr>curricula/<wbr>designer-modules/<wbr>multimedia-and-animations/</a></li>
 </ol>
 </nav>
 EOF
@@ -35,4 +40,4 @@ EOF
 perl scribe.perl --embed <$TMP1 |
   sed -n -e '/<nav id=toc>/,/<\/nav>/p' >$TMP3
 
-diff -u $TMP3 $TMP2
+diff -u $TMP2 $TMP3
