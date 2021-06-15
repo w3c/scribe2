@@ -22,7 +22,8 @@ cat >$TMP1 <<EOF
 16:16:46 <alastairc> Whether 1.4.1 use of color is ok for links
 15:29:38 <Zakim> agendum 6 -- How should we include the designer's responsibility with regards to promoting accessible media players
 15:29:39 <sloandr> sloandr: For consistency's sake, it may be worth replacing "Ornamental Graphics" with "Decorative Images" as a module topic title
-15:29:41 <Zakim> ... https://deploy-preview-347--wai-curricula.netlify.app/curricula/designer-modules/multimedia-and-animations/ -- taken up [from Daniel]
+15:29:41 <Zakim> ... https://deploy-preview-347--wai-curricula.netlify.app/curricula/designer-modules/multimedia-and-animations/ -- taken up
+15:29:42 <Zakim> ... [from Daniel]
 EOF
 
 cat >$TMP2 <<EOF
