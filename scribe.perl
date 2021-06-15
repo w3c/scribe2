@@ -600,7 +600,7 @@ sub delete_scribes($$)
 my $revision = '$Revision $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jun 15 15:59:43 2021 UTC $'
+my $versiondate = '$Date: Tue Jun 15 16:02:33 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
