@@ -508,7 +508,7 @@ sub esc($;$$$)
 
     # Loop until we found all URLs.
     $replacement = '';
-    while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/) {
+    while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/i) {
       # Look for "->" or "-->" before or after the URL.
       if ($pre =~ /(--?>) *$/p) { # Ralph, Xueyuan or missing anchor text
 	$type = $1;
@@ -597,10 +597,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 144 $'
+my $revision = '$Revision: 147 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jun 15 16:13:31 2021 UTC $'
+my $versiondate = '$Date: Thu Jun 24 22:21:39 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1051,7 +1051,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{id} = $2;
     $records[$i]->{text} = $1;
 
-  } elsif ($records[$i]->{speaker} eq 'trackbot' && /^$urlpat$/) {
+  } elsif ($records[$i]->{speaker} eq 'trackbot' && /^$urlpat$/i) {
     my $j = $i - 1;			# A URL response from trackbot
     $j-- while $j >= 0 && ($records[$j]->{type} eq 'o' ||
 			   $records[$j]->{speaker} ne 'trackbot');
