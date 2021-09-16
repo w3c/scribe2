@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Test if slide insertion works
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Slideset: https://example.org/
+<foo> [Slide 1]
+<foo> Slideset:
+<foo> [Slide 3]
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+cat $TMP2
+
+grep -E '<i-slide src="https://example.org/#1">' $TMP2 || exit 1
+grep -E ' class=summary>\[Slide 3\]</p>' $TMP2 || exit 1
+
+exit 0
