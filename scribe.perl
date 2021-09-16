@@ -91,6 +91,8 @@
 # If type is 'i' (irc), <speaker> is the person who typed <text>.
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
+# If type is 'slideset', <text> is the IRC-formatted link to the slideset
+# If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'T' (subtopic), <text> is the title for a new subtopic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
@@ -141,10 +143,14 @@ my $collapse_limit = 30;	# Longer participant lists are collapsed
 my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
+my $islide =			# undef = no math; string is MathJax URL
+  'https://tidoust.github.io/i-slide/i-slide.js';
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
 my @diagnostics;		# Collected warnings and other info
+
+my $has_slideset = 0;		# Set to 1 when at least one Slideset: is found
 
 # Each parser takes a reference to an array of text lines (without
 # newlines) and a reference to an array of records. It returns 0
@@ -618,6 +624,7 @@ my $agenda = '';		# HTML-formatted link to an agenda
 my %chairs;			# List of meeting chairs
 my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
+my $lastslideset;		# URL of the slideset being presented
 my $topicid = 't00';		# Generates unique ID for each topic
 my $actionid = 'a00';		# Generates unique ID for each action
 my $resolutionid = 'r00';	# Generates unique ID for each resolution
@@ -837,6 +844,23 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *regrets? *-:? *(.*?) *$/i) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif (/^ *slideset *: *(.*?) *$/i) {
+    $records[$i]->{type} = 'slideset';	# Mark as slideset line
+    $records[$i]->{text} = $1;
+    /^(.*?)($urlpat)(.*)$/i;
+    if ($2) {
+        $lastslideset = $2;
+        $has_slideset = 1;
+    } else {
+        $lastslideset = undef;
+    }
+
+  } elsif (/^ *\[ *slide *(\d+) *\] *$/i && $lastslideset) {
+      $records[$i]->{type} = 'slide';	# Mark as slide line
+      my $slidenumber = $1;
+      $records[$i]->{id} = $lastslideset . "#" . ($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber; # special fragment convention for PDF URLs
+      $records[$i]->{text} = "$slidenumber";
 
   } elsif (/^ *topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
@@ -1201,7 +1225,10 @@ my %linepat = (
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
   u => "<p id=%2\$s class=issue><strong>Issue:</strong> %3\$s</p>\n",
   T => "<h4 id=%2\$s>%3\$s</h4>\n",
-  t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
+  t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n",
+  slideset => "<p class=summary>Slideset: %3\$s</p>",
+  slide => "<i-slide src=\"%2\$s\"><p class=summary>[ <a href=\"%2\$s\">Slide %3\$s</a> ]</p></i-slide>"
+    );
 
 my $minutes = '';
 foreach my $p (@records) {
@@ -1261,7 +1288,7 @@ my $style = join("\n",
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
 my $scripts = !$emphasis || !$has_math ? ''
   : "<script src=\"$mathjax\" id=MathJax-script async></script>\n";
-
+$scripts .= ! $has_slideset ? '' : "<script type=\"module\" src=\"$islide\" defer></script>\n";
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
 $logo = '' if !defined $logo && ($styleset eq 'fancy');
 $logo = "<p>$w3clogo</p>\n\n" if !defined $logo;
