@@ -14,4 +14,4 @@ jobs:
       - name: Install latexml
         run: sudo apt-get install latexml
       - name: run tests
-        run: "${GITHUB_WORKSPACE}/.github/runTests.sh"
+        run: "${GITHUB_WORKSPACE}/tests/runTests.sh"
