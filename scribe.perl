@@ -144,7 +144,7 @@ my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			# undef = no math; string is MathJax URL
-  'https://tidoust.github.io/i-slide/i-slide.js';
+  'https://w3c.github.io/i-slide/i-slide.js';
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
