@@ -143,7 +143,7 @@ my $collapse_limit = 30;	# Longer participant lists are collapsed
 my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
-my $islide =			# undef = no math; string is MathJax URL
+my $islide =			#  string is i-slide library URL
   'https://w3c.github.io/i-slide/i-slide-1.js';
 
 # Global variables:
