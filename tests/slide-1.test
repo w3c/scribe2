@@ -18,5 +18,5 @@ perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
 cat $TMP2
 
 grep -E '<i-slide src="https://example.org/#1">' $TMP2 || exit 1
-grep -E '<script type="module" src="https://tidoust.github.io/i-slide/i-slide.js' $TMP2 || exit 1
+grep -E '<script type="module" src="https://w3c.github.io/i-slide/i-slide-1.js' $TMP2 || exit 1
 exit 0
