@@ -1227,7 +1227,7 @@ my %linepat = (
   T => "<h4 id=%2\$s>%3\$s</h4>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n",
   slideset => "<p class=summary>Slideset: %3\$s</p>",
-  slide => "<i-slide src=\"%2\$s\"><p class=summary>[ <a href=\"%2\$s\">Slide %3\$s</a> ]</p></i-slide>"
+  slide => "<p class=summary><i-slide src=\"%2\$s\">[ <a href=\"%2\$s\">Slide %3\$s</a> ]</i-slide></p>"
     );
 
 my $minutes = '';
