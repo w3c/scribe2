@@ -1288,7 +1288,7 @@ my $style = join("\n",
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
 my $scripts = !$emphasis || !$has_math ? ''
   : "<script src=\"$mathjax\" id=MathJax-script async></script>\n";
-$scripts .= ! $has_slideset ? '' : "<script type=\"module\" src=\"$islide\" defer></script>\n";
+$scripts .= ! $has_slideset ? '' : "<script type=\"module\" src=\"$islide\"></script>\n";
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
 $logo = '' if !defined $logo && ($styleset eq 'fancy');
 $logo = "<p>$w3clogo</p>\n\n" if !defined $logo;
