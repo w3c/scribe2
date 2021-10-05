@@ -39,9 +39,9 @@ grep 'Or: 3' $TMP3 && ok=false
 grep 'Need rewording.' $TMP3 && ok=false
 
 # Two new issues marked-up:
-grep '<p id=i01 class=issue><strong>Issue:</strong> Use 1 or 2?</p>' \
+grep '<p id=i01 class=issue><strong>ISSUE:</strong> Use 1 or 2?</p>' \
      $TMP4 || ok=false
-grep '<p id=i02 class=issue><strong>Issue:</strong> Is issue-1 OK?</p>' \
+grep '<p id=i02 class=issue><strong>ISSUE:</strong> Is issue-1 OK?</p>' \
      $TMP4 || ok=false
 
 # Two annotations on numbered issues are not marked specially:
