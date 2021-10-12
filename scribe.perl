@@ -597,10 +597,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 147 $'
+my $revision = '$Revision: 148 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Jun 24 22:21:39 2021 UTC $'
+my $versiondate = '$Date: Tue Oct 12 16:47:40 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1318,7 +1318,7 @@ if ($keeplines) {$issues =~ s/\t/<br>\n… /g;} else {$issues =~ tr/\t/ /;}
 #
 my $topics = '';
 my $prev_level = ' ';
-foreach my $t (grep($_->{type} =~ /[Tt]/, @records)) {
+foreach my $t (grep($_->{type} =~ /^[Tt]$/, @records)) {
   my $s = "<li><a href=\"#" . $t->{id} . "\">" .
       esc($t->{text}, $emphasis, -1, 1) . "</a>";
   if ($prev_level eq $t->{type}) {$topics .= "</li>\n$s"}
