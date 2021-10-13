@@ -2,6 +2,9 @@
 
 # Test the --mathjax option
 
+# Only applicable if latexmlmath is installed:
+if ! type -t latexmlmath >/dev/null; then exit 2; fi
+
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
 TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
