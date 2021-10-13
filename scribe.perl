@@ -1189,17 +1189,17 @@ push @diagnostics, "Maybe present: " .
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
 my %linepat = (
-  a => "<p id=%2\$s class=action><strong>Action:</strong> %3\$s</p>\n",
+  a => "<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n",
   b => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   B => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
   d => "<p id=%5\$s class=summary>%3\$s</p>\n",
   i => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   c => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
-  r => "<p id=%2\$s class=resolution><strong>Resolution:</strong> %3\$s</p>\n",
+  r => "<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",
   s => "<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  u => "<p id=%2\$s class=issue><strong>Issue:</strong> %3\$s</p>\n",
+  u => "<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n",
   T => "<h4 id=%2\$s>%3\$s</h4>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 
