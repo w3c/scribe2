@@ -107,7 +107,7 @@ use warnings;
 use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
 use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
-use locale;			# Sort using current locale
+use locale ':collate';		# Sort using current locale
 use open ':encoding(UTF-8)';	# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
 
@@ -597,10 +597,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 149 $'
+my $revision = '$Revision: 152 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Oct 12 21:11:27 2021 UTC $'
+my $versiondate = '$Date: Thu Oct 14 22:06:59 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
