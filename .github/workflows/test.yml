@@ -1,0 +1,17 @@
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+name: test
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shogo82148/actions-setup-perl@v1
+      - name: Install latexml
+        run: sudo apt-get install latexml
+      - name: run tests
+        run: make check

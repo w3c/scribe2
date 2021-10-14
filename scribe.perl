@@ -110,7 +110,7 @@ use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
 use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
 use locale;			# Sort using current locale
-use open ':utf8';		# Open all files assuming they are UTF-8
+use open ':encoding(UTF-8)';	# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
 
 
@@ -603,10 +603,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 147 $'
+my $revision = '$Revision: 149 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Jun 24 22:21:39 2021 UTC $'
+my $versiondate = '$Date: Tue Oct 12 21:11:27 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1213,17 +1213,17 @@ push @diagnostics, "Maybe present: " .
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
 my %linepat = (
-  a => "<p id=%2\$s class=action><strong>Action:</strong> %3\$s</p>\n",
+  a => "<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n",
   b => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   B => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
   d => "<p id=%5\$s class=summary>%3\$s</p>\n",
   i => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   c => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
-  r => "<p id=%2\$s class=resolution><strong>Resolution:</strong> %3\$s</p>\n",
+  r => "<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",
   s => "<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  u => "<p id=%2\$s class=issue><strong>Issue:</strong> %3\$s</p>\n",
+  u => "<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n",
   T => "<h4 id=%2\$s>%3\$s</h4>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n",
   slideset => "<p class=summary>Slideset: %3\$s</p>",
@@ -1345,7 +1345,7 @@ if ($keeplines) {$issues =~ s/\t/<br>\n… /g;} else {$issues =~ tr/\t/ /;}
 #
 my $topics = '';
 my $prev_level = ' ';
-foreach my $t (grep($_->{type} =~ /[Tt]/, @records)) {
+foreach my $t (grep($_->{type} =~ /^[Tt]$/, @records)) {
   my $s = "<li><a href=\"#" . $t->{id} . "\">" .
       esc($t->{text}, $emphasis, -1, 1) . "</a>";
   if ($prev_level eq $t->{type}) {$topics .= "</li>\n$s"}

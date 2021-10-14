@@ -2,6 +2,6 @@
 
 # Test if quoted inverted Xueyuan links are correctly linked
 
-echo '<foo> https://example.org/test  ->"example (') anchor"  ' | \
+echo '<foo> https://example.org/test  ->"example ('"'"') anchor"  ' | \
   perl scribe.perl | \
-  grep '<a href="https://example.org/test">example (') anchor</a>'
+  grep '<a href="https://example.org/test">example ('"'"') anchor</a>'
