@@ -17,16 +17,24 @@ cat >$TMP1 <<'EOF'
 <foo>          and some quotes ```
 <foo> present+
 <foo> scribe:  bar
-<foo> Line 3]]
-<bar> ```First line
+<foo> [[Line]] 3
+<foo> ]]
+<bar> ```
+<bar> First line
 <bar>   Indented line
 <foo> bar: See example ^^
 <bar> ```
 <baz> Here is another:
-<baz> [[1 2  3    4]]
-<baz> ```4 5  6    8```
+<baz> [[
+<baz> 1 2  3    4
+<baz> ]]
+<baz> ```
+<baz> 4 5  6    8
+<baz> ```
+<foo> ```
 <baz> Like this
-<foo> ```4 5  6    8```
+<foo> 4 5  6    8
+<foo> ```
 <foo> That's it.
 EOF
 
@@ -39,19 +47,20 @@ Line 1   three spaces
          and some quotes ```
 present+
 scribe:  bar
-Line 3
+[[Line]] 3
 </pre>
 <p id=x005 class=irc><cite>&lt;bar&gt;</cite> Here is mine:</p>
-<p id=x010 class=irc><cite>&lt;bar&gt;</cite> <code>First line</code></p>
-<p id=x011 class=irc><cite>&lt;bar&gt;</cite> <code>  Indented line</code></p>
-<p id=x012 class="phone s01"><cite>bar:</cite> See example ^^</p>
-<p id=x014 class=irc><cite>&lt;baz&gt;</cite> Here is another:</p>
-<p id=x015 class=irc><cite>&lt;baz&gt;</cite> <code>1 2  3    4</code></p>
-<p id=x016 class=irc><cite>&lt;baz&gt;</cite> <code>4 5  6    8</code></p>
-<p id=x017 class=irc><cite>&lt;baz&gt;</cite> Like this</p>
-<pre id=x018 class=summary>
-4 5  6    8</pre>
-<p id=x019 class=summary>That's it.</p>
+<p id=x012 class=irc><cite>&lt;bar&gt;</cite> <code>First line</code></p>
+<p id=x013 class=irc><cite>&lt;bar&gt;</cite> <code>  Indented line</code></p>
+<p id=x014 class="phone s01"><cite>bar:</cite> See example ^^</p>
+<p id=x016 class=irc><cite>&lt;baz&gt;</cite> Here is another:</p>
+<p id=x018 class=irc><cite>&lt;baz&gt;</cite> <code>1 2  3    4</code></p>
+<p id=x021 class=irc><cite>&lt;baz&gt;</cite> <code>4 5  6    8</code></p>
+<pre id=x023 class=summary>
+4 5  6    8
+</pre>
+<p id=x024 class=irc><cite>&lt;baz&gt;</cite> Like this</p>
+<p id=x027 class=summary>That's it.</p>
 </section>
 </main>
 EOF

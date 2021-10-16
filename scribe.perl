@@ -50,6 +50,10 @@
 # TODO: Ivan's minutes generator distinguishes participants (present+)
 # from guests (guest+). Should scribe.perl, too?
 #
+# TODO: Syntax highlighting of verbatim text if there is a language
+# indicated after the backquotes (as in GitHub's markdown)? (```java
+# ...```)
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -599,10 +603,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 156 $'
+my $revision = '$Revision: 157 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Oct 16 23:18:01 2021 UTC $'
+my $versiondate = '$Date: Sat Oct 16 23:49:14 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -628,7 +632,7 @@ my $lineid = 'x000';		# Generates unique ID for each line
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
-my %verbatim;			# Nicks in preformatted text mode: ``` or [[
+my %verbatim;			# End of preformatted mode for nick: ``` or ]]
 my $agenda_icon = '<img alt="Agenda." title="Agenda" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
 my $irclog_icon = '<img alt="IRC log." title="IRC log" ' .
@@ -807,38 +811,20 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
 
-  } elsif (/^ *(?:```(.*)```|\[\[(.*)\]\]) *$/ && # Preformatted single line
-      !exists $verbatim{$records[$i]->{speaker}}) {
-    $records[$i]->{text} = $1 // $2;
-    $records[$i]->{type} =
-	is_cur_scribe($records[$i]->{speaker}, \%curscribes) ? 'D' : 'I';
-
-  } elsif (/^ *(```|\[\[)(.*)/ &&	# Start preformatted text
+  } elsif (/^ *(```|\[\[) *$/ &&	# Start preformatted text
       !exists $verbatim{$records[$i]->{speaker}}) {
     $verbatim{$records[$i]->{speaker}} = $1 eq "```" ? "```" : "]]";
     if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
-      $records[$i]->{text} = $2 eq "" ? "" : "$2\n";
+      $records[$i]->{text} = "";	# Next lines will be appended
       $records[$i]->{type} = 'D';	# Preformatted text by scribe
     } else {
-      $records[$i]->{text} = $2;
-      $records[$i]->{type} = $2 eq "" ? 'o' : 'I'; # Omit if no text
+      $records[$i]->{type} = 'o';	# Omit this record
     }
 
-  } elsif (/(.*)(```|\]\]) *$/ &&	# End of preformatted text
-      ($verbatim{$records[$i]->{speaker}} // "") eq $2) {
-    if (!is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
-      $records[$i]->{text} = $1;
-      $records[$i]->{type} = $1 eq "" ? 'o' : 'I'; # Omit if no text
-    } elsif ($1 ne "") {
-      my $j = $i - 1;
-      $j-- while $records[$j]->{type} eq 'o' ||
-	  $records[$j]->{speaker} ne $records[$i]->{speaker};
-      $records[$j]->{text} .= "$1\n";
-      $records[$i]->{type} = 'o';	# Omit this record
-    } else {
-      $records[$i]->{type} = 'o';	# Omit this record
-    }
-    delete $verbatim{$records[$i]->{speaker}}; # Remove verbatim mode
+  } elsif (/ *(```|\]\]) *$/ &&		# End of preformatted text
+      ($verbatim{$records[$i]->{speaker}} // "") eq $1) {
+    $records[$i]->{type} = 'o';			# Omit this record
+    delete $verbatim{$records[$i]->{speaker}};	# Remove verbatim mode
 
   } elsif (exists $verbatim{$records[$i]->{speaker}}) { # Preformatted text
     if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
