@@ -22,6 +22,11 @@ cat >$TMP1 <<'EOF'
 <bar>   Indented line
 <foo> bar: See example ^^
 <bar> ```
+<baz> Here is another:
+<baz> [[1 2  3    4]]
+<baz> ```4 5  6    8```
+<baz> Like this
+<foo> ```4 5  6    8```
 <foo> That's it.
 EOF
 
@@ -40,7 +45,13 @@ Line 3
 <p id=x010 class=irc><cite>&lt;bar&gt;</cite> <code>First line</code></p>
 <p id=x011 class=irc><cite>&lt;bar&gt;</cite> <code>  Indented line</code></p>
 <p id=x012 class="phone s01"><cite>bar:</cite> See example ^^</p>
-<p id=x014 class=summary>That's it.</p>
+<p id=x014 class=irc><cite>&lt;baz&gt;</cite> Here is another:</p>
+<p id=x015 class=irc><cite>&lt;baz&gt;</cite> <code>1 2  3    4</code></p>
+<p id=x016 class=irc><cite>&lt;baz&gt;</cite> <code>4 5  6    8</code></p>
+<p id=x017 class=irc><cite>&lt;baz&gt;</cite> Like this</p>
+<pre id=x018 class=summary>
+4 5  6    8</pre>
+<p id=x019 class=summary>That's it.</p>
 </section>
 </main>
 EOF
