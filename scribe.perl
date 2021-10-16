@@ -599,10 +599,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 154 $'
+my $revision = '$Revision: 155 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Oct 16 22:30:39 2021 UTC $'
+my $versiondate = '$Date: Sat Oct 16 22:50:06 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -628,7 +628,7 @@ my $lineid = 'x000';		# Generates unique ID for each line
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
-my %verbatim;			# Nicks in preformatted text mode: ''' or [[
+my %verbatim;			# Nicks in preformatted text mode: ``` or [[
 my $agenda_icon = '<img alt="Agenda." title="Agenda" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
 my $irclog_icon = '<img alt="IRC log." title="IRC log" ' .
@@ -807,9 +807,9 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
 
-  } elsif (/^ *('''|\[\[)(.*)/ &&	# Start preformatted text
+  } elsif (/^ *(```|\[\[)(.*)/ &&	# Start preformatted text
       !exists $verbatim{$records[$i]->{speaker}}) {
-    $verbatim{$records[$i]->{speaker}} = $1 eq "'''" ? "'''" : "]]";
+    $verbatim{$records[$i]->{speaker}} = $1 eq "```" ? "```" : "]]";
     if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
       $records[$i]->{text} = $2 eq "" ? "" : "$2\n";
       $records[$i]->{type} = 'D';	# Preformatted text by scribe
@@ -818,7 +818,7 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{type} = $2 eq "" ? 'o' : 'I'; # Omit if no text
     }
 
-  } elsif (/(.*)('''|\]\]) *$/ &&	# End of preformatted text
+  } elsif (/(.*)(```|\]\]) *$/ &&	# End of preformatted text
       ($verbatim{$records[$i]->{speaker}} // "") eq $2) {
     if (!is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
       $records[$i]->{text} = $1;

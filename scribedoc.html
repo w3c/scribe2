@@ -1129,23 +1129,23 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <h3 id="verbatim">Verbatim or pasted text</h3>
 
   <p>To include several lines of verbatim text, e.g., to copy-paste
-  program code into the minutes, start with three single quotes
-  (<code>'''</code>) or two square brackets (<code>[[</code>), paste
-  the text and end with three quotes, resp. two square brackets
+  program code into the minutes, start with three single backquotes
+  (<code>```</code>) or two square brackets (<code>[[</code>), paste
+  the text and end with three backquotes, resp. two square brackets
   (<code>]]</code>).
 
   <p>No commands are recognized inside verbatim text: ‘action:’ does
   not create an action, ‘present+’ does not record a participant. etc.
 
-  <p>The text may start immediately after the <code>'''</code>
+  <p>The text may start immediately after the <code>```</code>
   or <code>[[</code>, or on the next line. And similarly the
-  ending <code>'''</code> or <code>]]</code> may be at the end of the
+  ending <code>```</code> or <code>]]</code> may be at the end of the
   last line or on a line of its own. Here are two examples:
 
- <pre class="command">&lt;dbooth&gt; '''function factorial(n) {
+ <pre class="command">&lt;dbooth&gt; ```function factorial(n) {
 &lt;dbooth&gt;   if (n == 1) return 1
 &lt;dbooth&gt;   else return n * factorial(n - 1)
-&lt;dbooth&gt; }'''
+&lt;dbooth&gt; }```
 &lt;momo&gt; [[
 &lt;momo&gt; January    45
 &lt;momo&gt; February  250
@@ -1621,6 +1621,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Sat Oct 16 22:39:44 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Sat Oct 16 22:50:06 2021 UTC $</address>
  </body>
 </html>

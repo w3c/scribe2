@@ -8,30 +8,30 @@ TMP2=`mktemp /tmp/verbatim-XXXXXX` || exit 1
 TMP3=`mktemp /tmp/verbatim-XXXXXX` || exit 1
 TMP4=`mktemp /tmp/verbatim-XXXXXX` || exit 1
 
-cat >$TMP1 <<EOF
+cat >$TMP1 <<'EOF'
 <foo> scribe: foo
 <foo> Here is an example:
 <foo> [[
 <foo> Line 1   three spaces
 <bar> Here is mine:
-<foo>          and some quotes '''
+<foo>          and some quotes ```
 <foo> present+
 <foo> scribe:  bar
 <foo> Line 3]]
-<bar> '''First line
+<bar> ```First line
 <bar>   Indented line
 <foo> bar: See example ^^
-<bar> '''
+<bar> ```
 <foo> That's it.
 EOF
 
-cat >$TMP4 <<EOF
+cat >$TMP4 <<'EOF'
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x002 class=summary>Here is an example:</p>
 <pre id=x003 class=summary>
 Line 1   three spaces
-         and some quotes '''
+         and some quotes ```
 present+
 scribe:  bar
 Line 3
