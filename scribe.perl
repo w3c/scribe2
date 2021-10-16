@@ -599,10 +599,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 155 $'
+my $revision = '$Revision: 156 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Oct 16 22:50:06 2021 UTC $'
+my $versiondate = '$Date: Sat Oct 16 23:18:01 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -806,6 +806,12 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
+
+  } elsif (/^ *(?:```(.*)```|\[\[(.*)\]\]) *$/ && # Preformatted single line
+      !exists $verbatim{$records[$i]->{speaker}}) {
+    $records[$i]->{text} = $1 // $2;
+    $records[$i]->{type} =
+	is_cur_scribe($records[$i]->{speaker}, \%curscribes) ? 'D' : 'I';
 
   } elsif (/^ *(```|\[\[)(.*)/ &&	# Start preformatted text
       !exists $verbatim{$records[$i]->{speaker}}) {
