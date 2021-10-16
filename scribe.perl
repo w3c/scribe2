@@ -50,6 +50,15 @@
 # TODO: Ivan's minutes generator distinguishes participants (present+)
 # from guests (guest+). Should scribe.perl, too?
 #
+# TODO: Syntax highlighting of verbatim text if there is a language
+# indicated after the backquotes (as in GitHub's markdown)? (```java
+# ...```)
+#
+# TODO: Also allow three tildes (~~~) instead of three backquotes, as
+# in Markdown?
+#
+# TODO: A way to include (phrase-level) HTML directly?
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -89,8 +98,10 @@
 #
 # Each record has four fields: {type, speaker, id, text}
 # If type is 'i' (irc), <speaker> is the person who typed <text>.
+# If type is 'I' (irc), <speaker> is the person who typed verbatim <text>.
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
+# If type is 'D' (description) <text> is verbatim text by the scribe.
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'T' (subtopic), <text> is the title for a new subtopic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
@@ -597,10 +608,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 153 $'
+my $revision = '$Revision: 158 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Oct 14 22:13:56 2021 UTC $'
+my $versiondate = '$Date: Sun Oct 17 00:40:18 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -626,6 +637,7 @@ my $lineid = 'x000';		# Generates unique ID for each line
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
+my %verbatim;			# End of preformatted mode for nick: ``` or ]]
 my $agenda_icon = '<img alt="Agenda." title="Agenda" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
 my $irclog_icon = '<img alt="IRC log." title="IRC log" ' .
@@ -803,6 +815,33 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
+
+  } elsif (/^ *(```|\[\[) *$/ &&	# Start preformatted text
+      !exists $verbatim{$records[$i]->{speaker}}) {
+    $verbatim{$records[$i]->{speaker}} = $1 eq "```" ? "```" : "]]";
+    if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+      $records[$i]->{text} = "";	# Next lines will be appended
+      $records[$i]->{type} = 'D';	# Preformatted text by scribe
+    } else {
+      $records[$i]->{type} = 'o';	# Omit this record
+    }
+
+  } elsif (/ *(```|\]\]) *$/ &&		# End of preformatted text
+      ($verbatim{$records[$i]->{speaker}} // "") eq $1) {
+    $records[$i]->{type} = 'o';			# Omit this record
+    delete $verbatim{$records[$i]->{speaker}};	# Remove verbatim mode
+
+  } elsif (exists $verbatim{$records[$i]->{speaker}}) { # Preformatted text
+    if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+      # Scribe's verbatim text is collected into a single record
+      my $j = $i - 1;
+      $j-- while $records[$j]->{type} eq 'o' ||
+	  $records[$j]->{speaker} ne $records[$i]->{speaker};
+      $records[$j]->{text} .= $records[$i]->{text} . "\n"; # Append to 1st line
+      $records[$i]->{type} = 'o';			   # Omit this record
+    } else {
+      $records[$i]->{type} = 'I';		# Mark as preformatted line
+    }
 
   } elsif (/^ *present *[:=] *(.*?) *$/i) {
     if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {} # Ignore Zakim?
@@ -1193,7 +1232,9 @@ my %linepat = (
   b => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   B => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
   d => "<p id=%5\$s class=summary>%3\$s</p>\n",
+  D => "<pre id=%5\$s class=summary>\n%3\$s</pre>\n",
   i => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  I => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n",
   c => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
   r => "<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",
