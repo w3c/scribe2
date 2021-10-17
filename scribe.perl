@@ -54,6 +54,11 @@
 # indicated after the backquotes (as in GitHub's markdown)? (```java
 # ...```)
 #
+# TODO: Also allow three tildes (~~~) instead of three backquotes, as
+# in Markdown?
+#
+# TODO: A way to include (phrase-level) HTML directly?
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -603,10 +608,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 157 $'
+my $revision = '$Revision: 158 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Oct 16 23:49:14 2021 UTC $'
+my $versiondate = '$Date: Sun Oct 17 00:40:18 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
