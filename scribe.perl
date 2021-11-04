@@ -597,10 +597,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 149 $'
+my $revision = '$Revision: 150 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Oct 12 21:11:27 2021 UTC $'
+my $versiondate = '$Date: Thu Nov  4 16:44:13 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -685,6 +685,7 @@ GetOptions(%options) or pod2usage(2);
 #
 do {
   my @input = map tr/\t\r\n/ /dr, <>;
+  $input[0] =~ s/^\x{FEFF}// if scalar @input; # Remove the BOM, if any
   do {@records = (); last if &$_(\@input, \@records);} foreach (@parsers);
   push(@diagnostics,'Input has an unknown format (or is empty).') if !@records;
 };
