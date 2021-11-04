@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Test preformatted text.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/verbatim-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/verbatim-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/verbatim-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/verbatim-XXXXXX` || exit 1
+
+cat >$TMP1 <<'EOF'
+<foo> scribe: foo
+<foo> Here is an example:
+<foo> [[
+<foo> Line 1   three spaces
+<bar> Here is mine:
+<foo>          and some quotes ```
+<foo> present+
+<foo> scribe:  bar
+<foo> [[Line]] 3
+<foo> ]]
+<bar> ```
+<bar> First line
+<bar>   Indented line
+<foo> bar: See example ^^
+<bar> ```
+<baz> Here is another:
+<baz> [[
+<baz> 1 2  3    4
+<baz> ]]
+<baz> ```
+<baz> 4 5  6    8
+<baz> ```
+<foo> ```
+<baz> Like this
+<foo> 4 5  6    8
+<foo> ```
+<foo> That's it.
+EOF
+
+cat >$TMP4 <<'EOF'
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x002 class=summary>Here is an example:</p>
+<pre id=x003 class=summary>
+Line 1   three spaces
+         and some quotes ```
+present+
+scribe:  bar
+[[Line]] 3
+</pre>
+<p id=x005 class=irc><cite>&lt;bar&gt;</cite> Here is mine:</p>
+<p id=x012 class=irc><cite>&lt;bar&gt;</cite> <code>First line</code></p>
+<p id=x013 class=irc><cite>&lt;bar&gt;</cite> <code>  Indented line</code></p>
+<p id=x014 class="phone s01"><cite>bar:</cite> See example ^^</p>
+<p id=x016 class=irc><cite>&lt;baz&gt;</cite> Here is another:</p>
+<p id=x018 class=irc><cite>&lt;baz&gt;</cite> <code>1 2  3    4</code></p>
+<p id=x021 class=irc><cite>&lt;baz&gt;</cite> <code>4 5  6    8</code></p>
+<pre id=x023 class=summary>
+4 5  6    8
+</pre>
+<p id=x024 class=irc><cite>&lt;baz&gt;</cite> Like this</p>
+<p id=x027 class=summary>That's it.</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# Extract just the minutes
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3

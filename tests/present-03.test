@@ -14,12 +14,12 @@ cat >$TMP1 <<EOF
 13:28:56 <bar>  Better: I say nada
 13:29:06 <foo> baz: you say
 13:29:16 <foo> bar: OK
-13:29:17 <foo> present= foo, baz, bar
-13:29:18 <bar> present- baz
+13:29:17 <foo> present= Foo, baz, bar
+13:29:18 <bar> present- Baz
 EOF
 
 cat >$TMP3 <<EOF
-<dt>Present</dt><dd>bar, foo</dd>
+<dt>Present</dt><dd>bar, Foo</dd>
 EOF
 
 perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1

@@ -43,7 +43,7 @@ cat >$TMP4 <<EOF
 <p id=x013 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/community/dpvcg/track/actions/33">action-33</a>:</strong> Harsh to Summarize elements of consent -- due 2018-11-13 -- OPEN</p>
 <p id=x017 class=summary>close action-35</p>
 <p id=x018 class=bot><cite>&lt;trackbot&gt;</cite> Closed action-35.</p>
-<p id=a01 class=action><strong>Action:</strong> eva to look at framework</p>
+<p id=a01 class=action><strong>ACTION:</strong> eva to look at framework</p>
 <p id=x020 class=bot><cite>&lt;trackbot&gt;</cite> Created ACTION-58 - Look at framework [on Eva Siemon - due 2019-01-15].</p>
 <p id=x021 class="phone s01"><cite>Pete:</cite> at least to me.</p>
 </section>

@@ -117,8 +117,8 @@
   href="sample-team.html" >with option -team</a> and <a
   href="sample-fancy.html" >with option -fancy</a>.
 
-  <p>This manual documents scribe.perl version 2, revision 144 (dated
-  15 June 2021). See below for the <a href="#changes" >differences
+  <p>This manual documents scribe.perl version 2, revision 158 (dated
+  17 October 2021). See below for the <a href="#changes" >differences
   with version 1.</a>
 
 
@@ -1126,6 +1126,55 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;jany&gt; * \n = newline
 &lt;jany&gt; * \t = tab</pre>
 
+  <h3 id="verbatim">Verbatim or pasted text</h3>
+
+  <p>To include several lines of verbatim text, e.g., to copy-paste
+  program code into the minutes, start with three single backquotes
+  (<code>```</code>) or two square brackets (<code>[[</code>) on a
+  line by themselves, paste the text and end with a line containing
+  another three backquotes, resp. two square brackets
+  (<code>]]</code>).
+
+  <p>No commands are recognized inside verbatim text: ‘action:’ does
+  not create an action, ‘present+’ does not record a participant. etc.
+  Here are two examples:
+
+  <pre class="command">&lt;dbooth&gt; ```
+&lt;dbooth&gt; function factorial(n) {
+&lt;dbooth&gt;   if (n == 1) return 1
+&lt;dbooth&gt;   else return n * factorial(n - 1)
+&lt;dbooth&gt; }
+&lt;dbooth&gt; ```
+&lt;momo&gt; [[
+&lt;momo&gt; January    45
+&lt;momo&gt; February  250
+&lt;momo&gt; March       2
+&lt;momo&gt; ]]</pre>
+
+  <p>Everybody can use verbatim text, but the effect is slightly
+  different for scribes and for other participants. If the scribe
+  enters verbatim text and other text interrupts the verbatim text,
+  that other text is moved, to keep the scribe's text together. E.g.,
+
+  <pre class="command">&lt;scribe&gt; [[
+&lt;scribe&gt; sub add($$) {
+&lt;scribe&gt;    my ($a, $b) = @_;
+&lt;cecilia&gt; Me too!
+&lt;scribe&gt;    return $a + $b;
+&lt;scribe&gt; }
+&lt;scribe&gt; ]]</pre>
+
+  <p>will yield:
+  <blockquote>
+<pre>sub add($$) {
+   my ($a, $b) = @_;
+   return $a + $b;
+}</pre>
+&lt;cecilia&gt; Me too!
+  </blockquote>
+
+  <p>(The verbatim text feature was suggested by David Booth.)
+
   <h2 id="links">Embedding links</h2>
 
   <p>Scribe.perl automatically recognizes most URLs
@@ -1556,6 +1605,10 @@ Eric agrees.
      href="https://www.w3.org/2005/06/tracker/irc">trackbot</a>.
 
    <li>
+    <p>The ability to escape a command with a backslash to remove its
+    special meaning, and the ability to include verbatim text are new.
+
+   <li>
     <p>The XChat log format is not (yet) supported.
   </ul>
 
@@ -1568,6 +1621,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Tue Jun 15 16:14:43 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Sun Oct 17 01:16:20 2021 UTC $</address>
  </body>
 </html>

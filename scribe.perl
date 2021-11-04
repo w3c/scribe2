@@ -50,6 +50,15 @@
 # TODO: Ivan's minutes generator distinguishes participants (present+)
 # from guests (guest+). Should scribe.perl, too?
 #
+# TODO: Syntax highlighting of verbatim text if there is a language
+# indicated after the backquotes (as in GitHub's markdown)? (```java
+# ...```)
+#
+# TODO: Also allow three tildes (~~~) instead of three backquotes, as
+# in Markdown?
+#
+# TODO: A way to include (phrase-level) HTML directly?
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -89,8 +98,10 @@
 #
 # Each record has four fields: {type, speaker, id, text}
 # If type is 'i' (irc), <speaker> is the person who typed <text>.
+# If type is 'I' (irc), <speaker> is the person who typed verbatim <text>.
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
+# If type is 'D' (description) <text> is verbatim text by the scribe.
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'T' (subtopic), <text> is the title for a new subtopic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
@@ -107,7 +118,7 @@ use warnings;
 use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
 use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
-use locale;			# Sort using current locale
+use locale ':collate';		# Sort using current locale
 use open ':encoding(UTF-8)';	# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
 
@@ -597,10 +608,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 150 $'
+my $revision = '$Revision: 151 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Nov  4 16:44:13 2021 UTC $'
+my $versiondate = '$Date: Thu Nov  4 17:07:41 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -626,6 +637,7 @@ my $lineid = 'x000';		# Generates unique ID for each line
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
+my %verbatim;			# End of preformatted mode for nick: ``` or ]]
 my $agenda_icon = '<img alt="Agenda." title="Agenda" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
 my $irclog_icon = '<img alt="IRC log." title="IRC log" ' .
@@ -804,6 +816,33 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
+
+  } elsif (/^ *(```|\[\[) *$/ &&	# Start preformatted text
+      !exists $verbatim{$records[$i]->{speaker}}) {
+    $verbatim{$records[$i]->{speaker}} = $1 eq "```" ? "```" : "]]";
+    if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+      $records[$i]->{text} = "";	# Next lines will be appended
+      $records[$i]->{type} = 'D';	# Preformatted text by scribe
+    } else {
+      $records[$i]->{type} = 'o';	# Omit this record
+    }
+
+  } elsif (/ *(```|\]\]) *$/ &&		# End of preformatted text
+      ($verbatim{$records[$i]->{speaker}} // "") eq $1) {
+    $records[$i]->{type} = 'o';			# Omit this record
+    delete $verbatim{$records[$i]->{speaker}};	# Remove verbatim mode
+
+  } elsif (exists $verbatim{$records[$i]->{speaker}}) { # Preformatted text
+    if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+      # Scribe's verbatim text is collected into a single record
+      my $j = $i - 1;
+      $j-- while $records[$j]->{type} eq 'o' ||
+	  $records[$j]->{speaker} ne $records[$i]->{speaker};
+      $records[$j]->{text} .= $records[$i]->{text} . "\n"; # Append to 1st line
+      $records[$i]->{type} = 'o';			   # Omit this record
+    } else {
+      $records[$i]->{type} = 'I';		# Mark as preformatted line
+    }
 
   } elsif (/^ *present *[:=] *(.*?) *$/i) {
     if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {} # Ignore Zakim?
@@ -1190,17 +1229,19 @@ push @diagnostics, "Maybe present: " .
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
 my %linepat = (
-  a => "<p id=%2\$s class=action><strong>Action:</strong> %3\$s</p>\n",
+  a => "<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n",
   b => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   B => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
   d => "<p id=%5\$s class=summary>%3\$s</p>\n",
+  D => "<pre id=%5\$s class=summary>\n%3\$s</pre>\n",
   i => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
+  I => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n",
   c => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
   o => '',
-  r => "<p id=%2\$s class=resolution><strong>Resolution:</strong> %3\$s</p>\n",
+  r => "<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",
   s => "<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
   n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  u => "<p id=%2\$s class=issue><strong>Issue:</strong> %3\$s</p>\n",
+  u => "<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n",
   T => "<h4 id=%2\$s>%3\$s</h4>\n",
   t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
 

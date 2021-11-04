@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Test if a BOM is accepted.
+
+LC_ALL=C
+echo $'\xEF'$'\xBB'$'\xBF'"<foo> line 1"$'\n'"<foo> line 2" | \
+  perl scribe.perl | \
+  grep 'line 2'
