@@ -151,9 +151,7 @@ Accessibility Conformance Testing Teleconference</h1>
 <li><a href="#t01">Results of CFC</a></li>
 <li><a href="#t02">aria-* attribute is defined in WAI-ARIA: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results -</a></li>
 <li><a href="#t03">iframe element has accessible name: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results -</a></li>
-<li><a href="#t04">Orientation of page is not restricted using CSS transform:https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTPageOrientation/<wbr>results -</a></li>
-<li><a href="#t05">Proposed solution for: Implementations with mostly &quot;cantTell&quot; results https://<wbr>github.com/<wbr>w3c/<wbr>wcag-act/<wbr>issues/<wbr>458#issuecomment-656637063 -</a></li>
-<li><a href="#t06">Rule tracking table - Revisit list, get status, and update: https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking - Wilco]</a></li>
+<li><a href="#t04">Rule tracking table - Revisit list, get status, and update: https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking - Wilco]</a></li>
 </ol>
 </nav>
 </div>
@@ -199,65 +197,28 @@ Accessibility Conformance Testing Teleconference</h1>
 </section>
 
 <section>
-<h3 id=t04>Orientation of page is not restricted using CSS transform:<a href="https://www.w3.org/2002/09/wbs/93339/ACTPageOrientation/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTPageOrientation/<wbr>results</a> -</h3>
-<p id=x058 class="phone s01"><cite>MJM:</cite> New responses from Kathy.</p>
-<p id=x060 class="phone s04"><cite>KE:</cite> When I read the SC, the SC does not state anything about a control. I don't think that assumption is necessary.<br>
-<span id=x061>… Even if there is a control, it's not a method to meet the SC</span></p>
-<p id=x062 class=summary><a href="https://www.w3.org/WAI/WCAG21/Techniques/general/G214">https://<wbr>www.w3.org/<wbr>WAI/<wbr>WCAG21/<wbr>Techniques/<wbr>general/<wbr>G214</a></p>
-<p id=x064 class="phone s02"><cite>WF:</cite> This probably comes from the technique<br>
-<span id=x065>… This techniques allows it</span></p>
-<p id=x067 class="phone s01"><cite>MJM:</cite> Looks like it is a technique, this rule doesn't take it into account, which is why it is in the assumptions.<br>
-<span id=x068>… if it fails this rule, it may not fail the SC, unless there is a control</span></p>
-<p id=x069 class="phone s01"><cite>MJM:</cite> The sufficient techniques have no links. They are not written.</p>
-<p id=x070 class="phone s04"><cite>KE:</cite> Trying to read through the understanding. I don't see anything there that mentions a control</p>
-<p id=x071 class="phone s01"><cite>MJM:</cite> Should we open an issue with AG, there seems to be a mismatch</p>
-<p id=x072 class="phone s02"><cite>WF:</cite> Think so</p>
-<p id=x073 class="phone s01"><cite>MJM:</cite> We'll ask Charu to open an issue with AG. She's the liaison</p>
-<p id=x075 class="phone s01"><cite>MJM:</cite> Don't see any other comments.<br>
-<span id=x076>… I'll have to reopen the survey to get more responses.</span></p>
-</section>
-
-<section>
-<h3 id=t05>Proposed solution for: Implementations with mostly &quot;cantTell&quot; results <a href="https://github.com/w3c/wcag-act/issues/458#issuecomment-656637063">https://<wbr>github.com/<wbr>w3c/<wbr>wcag-act/<wbr>issues/<wbr>458#issuecomment-656637063</a> -</h3>
-<p id=x080 class="phone s01"><cite>MJM:</cite> Need to get this into survey. Give everyone a chance to read it.<br>
-<span id=x081>… Would be nice to have this in a PR to reference in a survey.</span></p>
-<p id=x083 class="phone s02"><cite>WF:</cite> I'll get a PR open today.<br>
-<span id=x084>… would go into the review process</span></p>
-<p id=x085 class="phone s04"><cite>KE:</cite> For step 3, how would that be, is that a checkbox?</p>
-<p id=x086 class="phone s02"><cite>WF:</cite> Yes</p>
-<p id=x088 class="phone s04"><cite>KE:</cite> I think that's fine. Maybe add some way to indicate that someone else would likely get the same result.<br>
-<span id=x089>… a documented procedure?</span></p>
-<p id=x090 class="phone s01"><cite>MJM:</cite> Could we ask to see it?</p>
-<p id=x092 class="phone s02"><cite>WF:</cite> I don't think we would get it for some of them.<br>
-<span id=x093>… I've updated, better?</span></p>
-<p id=x094 class="phone s04"><cite>KE:</cite> Yes, I like it</p>
-<p id=x095 class="phone s01"><cite>MJM:</cite> Not sure what &quot;previous is true&quot; would be?</p>
-<p id=x096 class="phone s04"><cite>KE:</cite> How about &quot;previous requirement&quot;</p>
-<p id=x098 class="phone s02"><cite>WF:</cite> That looks good, I've updated it.</p>
-<p id=x099 class="phone s02"><cite>WF:</cite> Want to point out that I've adjusted what is semi-automated. It is based on test cases, which are either automated or manual, and if an implementation has both manual and automated that is what makes it semi-automated</p>
-</section>
-
-<section>
-<h3 id=t06>Rule tracking table - Revisit list, get status, and update: <a href="https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking">https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking</a> - Wilco]</h3>
-<p id=x112 class="phone s01"><cite>MJM:</cite> iframe survey is closed<br>
-<span id=x113>… Will update this as we're talking</span></p>
+<h3 id=t04>Rule tracking table - Revisit list, get status, and update: <a href="https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking">https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking</a> - Wilco]</h3>
+<p id=x068 class="phone s01"><cite>MJM:</cite> iframe survey is closed<br>
+<span id=x069>… Will update this as we're talking</span></p>
 </section>
 </main>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a
 href="https://w3c.github.io/scribe2/scribedoc.html"
->scribe.perl</a> version 157 (Thu Nov  4 17:15:09 2021 UTC).</address>
+>scribe.perl</a> version 158 (Fri Nov  5 15:28:57 2021 UTC).</address>
 
 <div class=diagnostics>
 <h2>Diagnostics</h2>
-<p class=warning>Maybe present: KE, MJM, SAZ, WF</p>
+<p class=warning>Maybe present: MJM, SAZ, WF</p>
 </div>
 </body>
 </html>
 EOF
 
 perl scribe.perl --embed -scribeonly $TMP1 >$TMP2 || exit 1
+
+cp $TMP2 tmp.html
 
 # Omit version number:
 grep -v version $TMP2 >$TMP4
