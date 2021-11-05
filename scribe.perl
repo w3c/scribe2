@@ -632,10 +632,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 158 $'
+my $revision = '$Revision: 159 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Nov  5 15:28:57 2021 UTC $'
+my $versiondate = '$Date: Fri Nov  5 17:37:14 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -833,6 +833,7 @@ add_scribes($scribenick, \%curscribes, \%scribes);
 # $lastspeaker is set to foo whenever the scribe writes "foo: ...".
 #
 for (my $i = 0; $i < @records; $i++) {
+  my $is_scribe = is_cur_scribe($records[$i]->{speaker}, \%curscribes);
   $_ = $records[$i]->{text};
 
   if ($records[$i]->{type} eq 'o') {
@@ -844,7 +845,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *(```|\[\[) *$/ &&	# Start preformatted text
       !exists $verbatim{$records[$i]->{speaker}}) {
     $verbatim{$records[$i]->{speaker}} = $1 eq "```" ? "```" : "]]";
-    if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+    if ($is_scribe) {
       $records[$i]->{text} = "";	# Next lines will be appended
       $records[$i]->{type} = 'D';	# Preformatted text by scribe
     } else {
@@ -857,7 +858,7 @@ for (my $i = 0; $i < @records; $i++) {
     delete $verbatim{$records[$i]->{speaker}};	# Remove verbatim mode
 
   } elsif (exists $verbatim{$records[$i]->{speaker}}) { # Preformatted text
-    if (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+    if ($is_scribe) {
       # Scribe's verbatim text is collected into a single record
       my $j = $i - 1;
       $j-- while $records[$j]->{type} eq 'o' ||
@@ -1151,20 +1152,18 @@ for (my $i = 0; $i < @records; $i++) {
       $namedanchors{$a} = 1;
     }
 
-  } elsif (/^ *\Q<$records[$i]->{speaker}\E>/i &&
-	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe && /^ *\Q<$records[$i]->{speaker}\E>/i) {
     # Ralph's escape for a scribe's personal remarks: "<mynick> my opinion"
     $records[$i]->{text} =~ s/^.*?> ?//i;
 
-  } elsif ((/^ *\\(.*)/) &&				# Starts with backslash
-	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe && /^ *\\(.*)/) {			# Starts with backslash
     $records[$i]->{type} = 'd';				# Descriptive text
     $records[$i]->{text} = $1;				# Remove backslash
 
   } elsif (/^ *\\(.*)/) {				# Starts with backslash
     $records[$i]->{text} = $1;				# Remove backslash
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
+  } elsif ($is_scribe &&
 	   (/^($speakerpat) *: *(.*)$/ ||
 	    (!$spacecont && /^ +($speakerpat) *: *(.*)$/)) &&
 	   $records[$i]->{type} ne 'c' &&	# ... and not a failed s///
@@ -1177,8 +1176,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $2;
     $speakers{fc $1} = ++$speakerid if !exists $speakers{fc $1};
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   defined $lastspeaker{$records[$i]->{speaker}} &&
+  } elsif ($is_scribe && defined $lastspeaker{$records[$i]->{speaker}} &&
 	   (/^ *(?:\.\.\.*|…) *(.*?) *$/ ||
 	    ($implicitcont && /^ *(.*?) *$/) ||
 	    ($spacecont && /^ +(.*?) *$/)) &&
@@ -1205,22 +1203,20 @@ for (my $i = 0; $i < @records; $i++) {
     if ($j >= 0 && $records[$j]->{type} =~ /[artTuUd]/) {
       $records[$j]->{text} .= "\t" . $s;
       $records[$i]->{type} = 'o';	# Omit this line from output
-    } elsif (is_cur_scribe($speaker, \%curscribes)) {
+    } elsif ($is_scribe) {
       # Not a continuation of anything, but it is by the scribe.
       $records[$i]->{type} = 'd';		# Mark as descriptive text
-      $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
+      $lastspeaker{$speaker} = undef;		# No continuation expected
     }
 
-  } elsif ($records[$i]->{type} eq 'c' &&
-	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe && $records[$i]->{type} eq 'c') {
     # It's a failed s/// command by the speaker. Leave it as a 'c'.
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   /^ *-> *$urlpat/i) {
+  } elsif ($is_scribe && /^ *-> *$urlpat/i) {
     # If the scribe used a Ralph-link (-> url ...), still allow continuations
     $records[$i]->{type} = 'd';		# Mark as descriptive text
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe) {
     $records[$i]->{type} = 'd';		# Mark as descriptive text
     $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
   }
