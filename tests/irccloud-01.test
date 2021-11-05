@@ -1,0 +1,266 @@
+#!/bin/bash
+
+# Test IRCCloud log format
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<'EOF'
+#wcag-act
+[2020-07-21 17:28:44] → Joined channel #wcag-act
+[2020-07-21 18:21:09] ⇐ shadi quit (shadi@815ad96c.team.cloak): "Leaving"
+[2020-07-22 08:26:53] → shadi joined (shadi@815ad96c.team.cloak)
+[2020-07-22 18:06:29] ⇐ shadi quit (shadi@815ad96c.team.cloak): "Leaving"
+[2020-07-23 08:45:53] → shadi joined (shadi@815ad96c.team.cloak)
+[2020-07-23 14:57:43] → Wilco joined (~Wilco@ef89345d.public.cloak)
+[2020-07-23 14:57:51] → Zakim joined (zakim@815ad96c.team.cloak)
+[2020-07-23 14:57:56] <Wilco> zakim, start meeting
+[2020-07-23 14:57:56] <Zakim> inviting RRSAgent
+[2020-07-23 14:57:56] → RRSAgent joined (rrsagent@815ad96c.team.cloak)
+[2020-07-23 14:57:56] <RRSAgent> logging to https://www.w3.org/2020/07/23-wcag-act-irc
+[2020-07-23 14:57:58] <Zakim> RRSAgent, make logs Public
+[2020-07-23 14:57:58] <RRSAgent> I have made the request, Zakim
+[2020-07-23 14:57:59] <Zakim> Meeting: Accessibility Conformance Testing Teleconference
+[2020-07-23 14:58:28] <Wilco> agenda+ Results of CFC
+[2020-07-23 14:58:28] — Zakim notes agendum 1 added
+[2020-07-23 14:58:39] <Wilco> agenda+ aria-* attribute is defined in WAI-ARIA: https://www.w3.org/2002/09/wbs/93339/ACTARIAAttribute2/results -
+[2020-07-23 14:58:39] — Zakim notes agendum 2 added
+[2020-07-23 14:58:43] <Wilco> agenda+ iframe element has accessible name: https://www.w3.org/2002/09/wbs/93339/ACTiFrameName/results -
+[2020-07-23 14:58:43] — Zakim notes agendum 3 added
+[2020-07-23 14:58:51] <Wilco> agenda+ Orientation of page is not restricted using CSS transform:https://www.w3.org/2002/09/wbs/93339/ACTPageOrientation/results -
+[2020-07-23 14:58:51] — Zakim notes agendum 4 added
+[2020-07-23 14:58:56] <Wilco> agenda+ Proposed solution for: Implementations with mostly "cantTell" results https://github.com/w3c/wcag-act/issues/458#issuecomment-656637063 -
+[2020-07-23 14:58:56] — Zakim notes agendum 5 added
+[2020-07-23 14:59:13] <Wilco> agenda+ Proposed solution for: Implementations with mostly "cantTell" results https://github.com/w3c/wcag-act/issues/458#issuecomment-656637063 which should be added to our review process: https://github.com/w3c/wcag-act/blob/master/wcag-ruleset-review-process.md#implementations -
+[2020-07-23 14:59:13] — Zakim notes agendum 6 added
+[2020-07-23 14:59:18] <Wilco> agenda+ Rule tracking table - Revisit list, get status, and update: https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking -
+[2020-07-23 14:59:18] — Zakim notes agendum 7 added
+[2020-07-23 15:03:35] → kathyeng joined (~kathyeng@ef89345d.public.cloak)
+[2020-07-23 15:06:36] → maryjom joined (~maryjom@ef89345d.public.cloak)
+[2020-07-23 15:06:41] <maryjom> present+
+[2020-07-23 15:07:22] <Wilco> present+
+[2020-07-23 15:07:24] <Wilco> scribe: Wilco
+[2020-07-23 15:07:26] <kathyeng> present+
+[2020-07-23 15:07:27] <Wilco> zakim, take up next
+[2020-07-23 15:07:27] <Zakim> agendum 1. "Results of CFC" taken up [from Wilco]
+[2020-07-23 15:07:40] <Wilco> MJM: only positive responses
+[2020-07-23 15:08:02] <Wilco> ... will be added to the Queue, have 3 rules now
+[2020-07-23 15:08:26] <Wilco> WF: 3 need PRs, 2 other ones
+[2020-07-23 15:08:40] <Wilco> MJM: Getting close to enough for AG
+[2020-07-23 15:08:59] <Wilco> WF: should talk to AG chairs about when to send them another batch
+[2020-07-23 15:09:22] <Wilco> MJM: Next leads meeting on August 5th. Could send then a notice that we've got rules. Will do that
+[2020-07-23 15:09:32] <Wilco> zakim, take up next
+[2020-07-23 15:09:32] <Zakim> agendum 2. "aria-* attribute is defined in WAI-ARIA: https://www.w3.org/2002/09/wbs/93339/ACTARIAAttribute2/results -" taken up [from Wilco]
+[2020-07-23 15:10:31] <Wilco> MJM: 6 responses, only comment is on implementation data
+[2020-07-23 15:10:54] <Wilco> ... Charu said rule does not check if the attributes are valid.
+[2020-07-23 15:11:47] <Wilco> WF: Handled in another rule. We can link between rules. There is an open issue for this in the CG.
+[2020-07-23 15:11:55] <Wilco> ... no composite rule for this needed, IMO
+[2020-07-23 15:12:24] <Wilco> ... Open PR / issue has been closed.
+[2020-07-23 15:13:03] <Wilco> MJM: There are no other concerns. It is done. I don't think the link between rules should block this rule publication.
+[2020-07-23 15:13:27] <Wilco> ... We can send this out for CFC.
+[2020-07-23 15:13:41] <Wilco> WF: This doesn't map to WCAG, we may not want to include this rule for AG.
+[2020-07-23 15:14:01] <Wilco> ... Suggest we acknowledge it is accepted and then park it
+[2020-07-23 15:14:26] <Wilco> MJM: Maybe we can make a tracking table for non-WCAG rules that are complete
+[2020-07-23 15:14:54] <Wilco> ... I don't want it to muddy the water. I can create this table.
+[2020-07-23 15:15:33] <Wilco> SAZ: I think that would be helpful. There are some talks with Matt King about integrating ARIA rules with some other thing they are working on.
+[2020-07-23 15:15:53] <Wilco> MJM: Agreed, there will be a place to publish them associated with ARIA. We may have to come up with a proposal on how to do that.
+[2020-07-23 15:16:09] <Wilco> SAZ: This is a discussion happening between EO and ARIA WG. I'll keep ACT in mind with that.
+[2020-07-23 15:16:28] <Wilco> zakim, take up next
+[2020-07-23 15:16:28] <Zakim> agendum 3. "iframe element has accessible name: https://www.w3.org/2002/09/wbs/93339/ACTiFrameName/results -" taken up [from Wilco]
+[2020-07-23 15:16:47] <Wilco> SAZ: Might be that these ARAI rules could go to the ARIA WG instead of AG
+[2020-07-23 15:17:16] <Wilco> MJM: Might make sense for other specs like for EPUB
+[2020-07-23 15:18:14] <Wilco> MJM: Next one is iframe. There are 4 responses. No new responses. Nothing new to talk about here.
+[2020-07-23 15:18:31] <Wilco> ... Will have to prompt people to fill out the survey.
+[2020-07-23 15:43:36] <Wilco> zakim, take up next
+[2020-07-23 15:43:36] <Zakim> agendum 6. "Proposed solution for: Implementations with mostly "cantTell" results https://github.com/w3c/wcag-act/issues/458#issuecomment-656637063 which should be added to our
+[2020-07-23 15:43:40] <Zakim> ... review process: https://github.com/w3c/wcag-act/blob/master/wcag-ruleset-review-process.md#implementations -" taken up [from Wilco]
+[2020-07-23 15:43:53] <Wilco> zakim, close item 6
+[2020-07-23 15:43:54] <Zakim> agendum 6, Proposed solution for: Implementations with mostly "cantTell" results https://github.com/w3c/wcag-act/issues/458#issuecomment-656637063 which should be added to our
+[2020-07-23 15:43:56] <Zakim> ... review process: https://github.com/w3c/wcag-act/blob/master/wcag-ruleset-review-process.md#implementations -, closed
+[2020-07-23 15:43:56] <Zakim> I see 1 item remaining on the agenda:
+[2020-07-23 15:43:57] <Zakim> 7. Rule tracking table - Revisit list, get status, and update: https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking - [from Wilco]
+[2020-07-23 15:43:58] <Wilco> zakim, take up next
+[2020-07-23 15:44:00] <Zakim> agendum 7. "Rule tracking table - Revisit list, get status, and update: https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking -" taken up [from
+[2020-07-23 15:44:00] <Zakim> ... Wilco]
+[2020-07-23 15:45:27] <Wilco> MJM: iframe survey is closed
+[2020-07-23 15:45:41] <Wilco> ... Will update this as we're talking
+[2020-07-23 15:54:14] ⇐ kathyeng quit (~kathyeng@ef89345d.public.cloak): Ping timeout: 180 seconds
+[2020-07-23 16:05:45] <Wilco> zakim, end meeting
+[2020-07-23 16:05:45] <Zakim> As of this point the attendees have been maryjom, Wilco, kathyeng
+[2020-07-23 16:05:46] <Zakim> RRSAgent, please draft minutes
+[2020-07-23 16:05:46] <RRSAgent> I have made the request to generate https://www.w3.org/2020/07/23-wcag-act-minutes.html Zakim
+[2020-07-23 16:05:51] <Zakim> I am happy to have been of service, Wilco; please remember to excuse RRSAgent.  Goodbye
+[2020-07-23 16:05:55] ← Zakim left (zakim@815ad96c.team.cloak): 
+[2020-07-23 16:12:47] ⇐ Wilco quit (~Wilco@ef89345d.public.cloak): Ping timeout: 180 seconds
+[2020-07-23 16:42:05] ⇐ maryjom quit (~maryjom@ef89345d.public.cloak): Ping timeout: 180 seconds
+[2020-07-23 18:32:42] — RRSAgent excuses himself; his presence no longer seems to be needed
+[2020-07-23 18:32:42] ← RRSAgent left (rrsagent@815ad96c.team.cloak): 
+[2020-07-23 19:25:41] ⇐ shadi quit (shadi@815ad96c.team.cloak): "Leaving"
+[2020-07-23 20:12:34] → shadi joined (shadi@815ad96c.team.cloak)
+[2020-07-27 16:51:25] → shadi_ joined (shadi@815ad96c.team.cloak)
+[2020-07-27 16:54:53] ⇐ shadi quit (shadi@815ad96c.team.cloak): Ping timeout: 180 seconds
+[2020-07-27 16:55:24] * shadi_ → shadi
+EOF
+
+cat >$TMP3 <<'EOF'
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>Accessibility Conformance Testing Teleconference &ndash; 23 July 2020</title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+Accessibility Conformance Testing Teleconference</h1>
+<h2>23 July 2020</h2>
+
+<nav id=links>
+<a href="https://www.w3.org/2020/07/23-wcag-act-irc"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>kathyeng, maryjom, Wilco</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>Wilco</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+<li><a href="#t01">Results of CFC</a></li>
+<li><a href="#t02">aria-* attribute is defined in WAI-ARIA: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results -</a></li>
+<li><a href="#t03">iframe element has accessible name: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results -</a></li>
+<li><a href="#t04">Orientation of page is not restricted using CSS transform:https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTPageOrientation/<wbr>results -</a></li>
+<li><a href="#t05">Proposed solution for: Implementations with mostly &quot;cantTell&quot; results https://<wbr>github.com/<wbr>w3c/<wbr>wcag-act/<wbr>issues/<wbr>458#issuecomment-656637063 -</a></li>
+<li><a href="#t06">Rule tracking table - Revisit list, get status, and update: https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking - Wilco]</a></li>
+</ol>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=t01>Results of CFC</h3>
+<p id=x021 class="phone s01"><cite>MJM:</cite> only positive responses<br>
+<span id=x022>… will be added to the Queue, have 3 rules now</span></p>
+<p id=x023 class="phone s02"><cite>WF:</cite> 3 need PRs, 2 other ones</p>
+<p id=x024 class="phone s01"><cite>MJM:</cite> Getting close to enough for AG</p>
+<p id=x025 class="phone s02"><cite>WF:</cite> should talk to AG chairs about when to send them another batch</p>
+<p id=x026 class="phone s01"><cite>MJM:</cite> Next leads meeting on August 5th. Could send then a notice that we've got rules. Will do that</p>
+</section>
+
+<section>
+<h3 id=t02>aria-* attribute is defined in WAI-ARIA: <a href="https://www.w3.org/2002/09/wbs/93339/ACTARIAAttribute2/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results</a> -</h3>
+<p id=x030 class="phone s01"><cite>MJM:</cite> 6 responses, only comment is on implementation data<br>
+<span id=x031>… Charu said rule does not check if the attributes are valid.</span></p>
+<p id=x034 class="phone s02"><cite>WF:</cite> Handled in another rule. We can link between rules. There is an open issue for this in the CG.<br>
+<span id=x035>… no composite rule for this needed, IMO</span><br>
+<span id=x036>… Open PR / issue has been closed.</span></p>
+<p id=x038 class="phone s01"><cite>MJM:</cite> There are no other concerns. It is done. I don't think the link between rules should block this rule publication.<br>
+<span id=x039>… We can send this out for CFC.</span></p>
+<p id=x041 class="phone s02"><cite>WF:</cite> This doesn't map to WCAG, we may not want to include this rule for AG.<br>
+<span id=x042>… Suggest we acknowledge it is accepted and then park it</span></p>
+<p id=x044 class="phone s01"><cite>MJM:</cite> Maybe we can make a tracking table for non-WCAG rules that are complete<br>
+<span id=x045>… I don't want it to muddy the water. I can create this table.</span></p>
+<p id=x046 class="phone s03"><cite>SAZ:</cite> I think that would be helpful. There are some talks with Matt King about integrating ARIA rules with some other thing they are working on.</p>
+<p id=x047 class="phone s01"><cite>MJM:</cite> Agreed, there will be a place to publish them associated with ARIA. We may have to come up with a proposal on how to do that.</p>
+<p id=x048 class="phone s03"><cite>SAZ:</cite> This is a discussion happening between EO and ARIA WG. I'll keep ACT in mind with that.</p>
+</section>
+
+<section>
+<h3 id=t03>iframe element has accessible name: <a href="https://www.w3.org/2002/09/wbs/93339/ACTiFrameName/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results</a> -</h3>
+<p id=x051 class="phone s03"><cite>SAZ:</cite> Might be that these ARAI rules could go to the ARIA WG instead of AG</p>
+<p id=x052 class="phone s01"><cite>MJM:</cite> Might make sense for other specs like for EPUB</p>
+<p id=x054 class="phone s01"><cite>MJM:</cite> Next one is iframe. There are 4 responses. No new responses. Nothing new to talk about here.<br>
+<span id=x055>… Will have to prompt people to fill out the survey.</span></p>
+</section>
+
+<section>
+<h3 id=t04>Orientation of page is not restricted using CSS transform:<a href="https://www.w3.org/2002/09/wbs/93339/ACTPageOrientation/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTPageOrientation/<wbr>results</a> -</h3>
+<p id=x058 class="phone s01"><cite>MJM:</cite> New responses from Kathy.</p>
+<p id=x060 class="phone s04"><cite>KE:</cite> When I read the SC, the SC does not state anything about a control. I don't think that assumption is necessary.<br>
+<span id=x061>… Even if there is a control, it's not a method to meet the SC</span></p>
+<p id=x062 class=summary><a href="https://www.w3.org/WAI/WCAG21/Techniques/general/G214">https://<wbr>www.w3.org/<wbr>WAI/<wbr>WCAG21/<wbr>Techniques/<wbr>general/<wbr>G214</a></p>
+<p id=x064 class="phone s02"><cite>WF:</cite> This probably comes from the technique<br>
+<span id=x065>… This techniques allows it</span></p>
+<p id=x067 class="phone s01"><cite>MJM:</cite> Looks like it is a technique, this rule doesn't take it into account, which is why it is in the assumptions.<br>
+<span id=x068>… if it fails this rule, it may not fail the SC, unless there is a control</span></p>
+<p id=x069 class="phone s01"><cite>MJM:</cite> The sufficient techniques have no links. They are not written.</p>
+<p id=x070 class="phone s04"><cite>KE:</cite> Trying to read through the understanding. I don't see anything there that mentions a control</p>
+<p id=x071 class="phone s01"><cite>MJM:</cite> Should we open an issue with AG, there seems to be a mismatch</p>
+<p id=x072 class="phone s02"><cite>WF:</cite> Think so</p>
+<p id=x073 class="phone s01"><cite>MJM:</cite> We'll ask Charu to open an issue with AG. She's the liaison</p>
+<p id=x075 class="phone s01"><cite>MJM:</cite> Don't see any other comments.<br>
+<span id=x076>… I'll have to reopen the survey to get more responses.</span></p>
+</section>
+
+<section>
+<h3 id=t05>Proposed solution for: Implementations with mostly &quot;cantTell&quot; results <a href="https://github.com/w3c/wcag-act/issues/458#issuecomment-656637063">https://<wbr>github.com/<wbr>w3c/<wbr>wcag-act/<wbr>issues/<wbr>458#issuecomment-656637063</a> -</h3>
+<p id=x080 class="phone s01"><cite>MJM:</cite> Need to get this into survey. Give everyone a chance to read it.<br>
+<span id=x081>… Would be nice to have this in a PR to reference in a survey.</span></p>
+<p id=x083 class="phone s02"><cite>WF:</cite> I'll get a PR open today.<br>
+<span id=x084>… would go into the review process</span></p>
+<p id=x085 class="phone s04"><cite>KE:</cite> For step 3, how would that be, is that a checkbox?</p>
+<p id=x086 class="phone s02"><cite>WF:</cite> Yes</p>
+<p id=x088 class="phone s04"><cite>KE:</cite> I think that's fine. Maybe add some way to indicate that someone else would likely get the same result.<br>
+<span id=x089>… a documented procedure?</span></p>
+<p id=x090 class="phone s01"><cite>MJM:</cite> Could we ask to see it?</p>
+<p id=x092 class="phone s02"><cite>WF:</cite> I don't think we would get it for some of them.<br>
+<span id=x093>… I've updated, better?</span></p>
+<p id=x094 class="phone s04"><cite>KE:</cite> Yes, I like it</p>
+<p id=x095 class="phone s01"><cite>MJM:</cite> Not sure what &quot;previous is true&quot; would be?</p>
+<p id=x096 class="phone s04"><cite>KE:</cite> How about &quot;previous requirement&quot;</p>
+<p id=x098 class="phone s02"><cite>WF:</cite> That looks good, I've updated it.</p>
+<p id=x099 class="phone s02"><cite>WF:</cite> Want to point out that I've adjusted what is semi-automated. It is based on test cases, which are either automated or manual, and if an implementation has both manual and automated that is what makes it semi-automated</p>
+</section>
+
+<section>
+<h3 id=t06>Rule tracking table - Revisit list, get status, and update: <a href="https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking">https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking</a> - Wilco]</h3>
+<p id=x112 class="phone s01"><cite>MJM:</cite> iframe survey is closed<br>
+<span id=x113>… Will update this as we're talking</span></p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+>scribe.perl</a> version 157 (Thu Nov  4 17:15:09 2021 UTC).</address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Maybe present: KE, MJM, SAZ, WF</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl --embed -scribeonly $TMP1 >$TMP2 || exit 1
+
+# Omit version number:
+grep -v version $TMP2 >$TMP4
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4
