@@ -174,7 +174,7 @@ my @diagnostics;		# Collected warnings and other info
 
 my @parsers = (\&RRSAgent_text_format, \&Bip_Format, \&Mirc_Text_Format,
 	       \&Yahoo_IM_Format, \&Bert_IRSSI_Format, \&Irssi_Format,
-	       \&Qwebirc_paste_format,
+	       \&Qwebirc_paste_format, \&IRCCloud_format,
 	       \&Quassel_paste_format, \&Plain_Text_Format);
 
 
@@ -324,6 +324,30 @@ sub Qwebirc_paste_format($$)
     }
   }
   return 1;
+}
+
+
+# IRCCloud_format - the log format of the IRCCloud web service
+sub IRCCloud_format($$)
+{
+  my ($lines_ref, $records_ref) = @_;
+
+  foreach (@$lines_ref) {
+    next if /^#[^ ]+$/;				# IRC channel name
+    next if /^\[[0-9 :-]+\] → Joined /;	# IRCCloud joined the channel
+    next if /^\[[0-9 :-]+\] → [^ ]+ joined /;	# Somebody joined the channel
+    next if /^\[[0-9 :-]+\] ⇐ [^ ]+ quit /;	# Somebody disconnected
+    next if /^\[[0-9 :-]+\] ⇐ You disconnected/; # User left IRCCloud
+    next if /^\[[0-9 :-]+\] ← [^ ]+ left /;	# Somebody left the channel
+    next if /^\[[0-9 :-]+\] — [^ ]+ /;		# A /me line
+    next if /^\[[0-9 :-]+\] \* [^ ]+ /;		# Changed nick, changed mode...
+    if (/^\[[0-9 :-]+\] <([^>]+)> (.*)$/) {	# $1 said $2
+      push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
+    } else {
+      return 0;					# Not an IRCCloud log line
+    }
+  }
+  return 1;					# All lines recognized
 }
 
 
@@ -608,10 +632,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 157 $'
+my $revision = '$Revision: 158 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Nov  4 17:15:09 2021 UTC $'
+my $versiondate = '$Date: Fri Nov  5 15:28:57 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
