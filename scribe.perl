@@ -438,45 +438,76 @@ sub to_mathml($)
 }
 
 
-# to_emph -- replace smileys, arrows, emphasis marks and math
-sub to_emph($);
-sub to_emph($)
 {
-  for ($_[0]) {
-    return to_emph($`) . to_mathml($&) . to_emph($')
-	if /(?:^|[^\\])\K\$\$[^\$]+\$\$/; # $$...$$ not preceded by a '\'
-    return to_emph($`) . to_mathml($&) . to_emph($')
-	if /(?:^|[^\\])\K\$[^\$]+\$/; # $...$ not preceded by a '\'
-    return to_emph($`) . "<u>$1</u>" . to_emph($')
-	if /(?:^|\s)\K_([^\s_](?:[^_]*[^\s_])?)_(?=\s|$)/;
-    return to_emph($`) . "<em>$1</em>" . to_emph($')
-	if m{(?:^|\s)\K/([^\s/][^/]*[^\s/]|[^\s/])/(?=\s|$)};
-    return to_emph($`) . "<strong>$1</strong>" . to_emph($')
-	if /(?:^|\s)\K\*([^\s*](?:[^*]*[^\s*])?)\*(?=\s|$)/;
-    return to_emph($`) . "⟶" . to_emph($')
-	if /(?:^|[^-])\K--&gt;/;		# "-->" not preceded by a "-"
-    return to_emph($`) . "→" . to_emph($')
-	if /(?:^|[^-])\K-&gt;/;			# "->" not preceded by a "-"
-    return to_emph($`) . "⟹" .  to_emph($')
-	if /(?:^|[^=])\K==&gt;/;		# "==>" not preceded by a "="
-    return to_emph($`) . "⇒" . to_emph($')
-	if /(?:^|[^=])\K=&gt;/;			# "=>" not preceded by a "="
-    return to_emph($`) . "⟵" . to_emph($')
-	if /&lt;--(?!-)/;			# "<--" not followed by a "-"
-    return to_emph($`) . "←" . to_emph($')
-	if /&lt;-(?!-)/;			# "<-" not followed by a "-"
-    return to_emph($`) . "⟸" . to_emph($')
-	if /&lt;==(?!=)/;			# "<==" not followed by a "="
-    return to_emph($`) . "⇐" . to_emph($')
-	if /&lt;=(?!=)/;			# "<=" not followed by a "="
-    return to_emph($`) . "☺" . to_emph($') if /:-\)/;
-    return to_emph($`) . "😉\x{FE0E}" . to_emph($') if /;-\)/;
-    return to_emph($`) . "☹" . to_emph($') if /:-\(/;
-    return to_emph($`) . "😕\x{FE0E}" . to_emph($') if m{:-/};
-    return to_emph($`) . "😜\x{FE0E}" . to_emph($') if /,-\)/;
-    return to_emph($`) . "🙌\x{FE0E}" . to_emph($') if m{\\o/};
-    return to_emph($`) . '$' . to_emph($') if /\\\$/;
-    return $_;
+  my %tag = ('_' => 'u', '/' => 'em', '*' => 'strong', '`' => 'code');
+
+  # to_emph -- replace smileys, arrows, emphasis marks and math
+  sub to_emph($);
+  sub to_emph($)
+  {
+    # Note: $` and $' must be stored in local variables before the
+    # recursive call, because they are global variables and might be
+    # changed in that call.
+    #
+    for ($_[0]) {
+      if (m{(?:^|\s)\K([_/*`])(.+?)\g{1}(?=\s|$)}) {
+	my ($a, $z, $t, $m) = ($`, $', $1, $2);
+	return to_emph($a)."<$tag{$t}>".to_emph($m)."</$tag{$t}>".to_emph($z);
+      } elsif (/(?:^|[^\\])\K\$\$[^\$]+\$\$/) { # $$...$$ not preceded by a '\'
+	my ($a, $m, $z) = ($`, $&, $');
+	return to_emph($a) . to_mathml($m) . to_emph($z);
+      } elsif (/(?:^|[^\\])\K\$[^\$]+\$/) {	# $...$ not preceded by a '\'
+	my ($a, $m, $z) = ($`, $&, $');
+	return to_emph($a) . to_mathml($m) . to_emph($z);
+      } elsif (/(?:^|[^-])\K--&gt;/) {		# "-->" not preceded by a "-"
+	my ($a, $z) = ($`, $');
+	return to_emph($a) .  "⟶" . to_emph($z);
+      } elsif (/(?:^|[^-])\K-&gt;/) {		# "->" not preceded by a "-"
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "→" . to_emph($z);
+      } elsif (/(?:^|[^=])\K==&gt;/) {		# "==>" not preceded by a "="
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "⟹" . to_emph($z);
+      } elsif (/(?:^|[^=])\K=&gt;/) {		# "=>" not preceded by a "="
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "⇒" . to_emph($z);
+      } elsif (/&lt;--(?!-)/) {			# "<--" not followed by a "-"
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "⟵" . to_emph($z);
+      } elsif (/&lt;-(?!-)/) {			# "<-" not followed by a "-"
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "←" . to_emph($z);
+      } elsif (/&lt;==(?!=)/) {			# "<==" not followed by a "="
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "⟸" . to_emph($z);
+      } elsif (/&lt;=(?!=)/) {			# "<=" not followed by a "="
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "⇐" . to_emph($z);
+      } elsif (/:-\)/) {
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "☺" . to_emph($z);
+      } elsif (/;-\)/) {
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "😉\x{FE0E}" . to_emph($z);
+      } elsif (/:-\(/) {
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "☹" . to_emph($z);
+      } elsif (m{:-/}) {
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "😕\x{FE0E}" . to_emph($z);
+      } elsif (/,-\)/) {
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "😜\x{FE0E}" . to_emph($z);
+      } elsif (m{\\o/}) {
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . "🙌\x{FE0E}" . to_emph($z);
+      } elsif (/\\\$/) {
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . '$' . to_emph($z);
+      } else {
+	return $_;
+      }
+    }
   }
 }
 
@@ -632,10 +663,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 159 $'
+my $revision = '$Revision: 160 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Nov  5 17:37:14 2021 UTC $'
+my $versiondate = '$Date: Thu Nov 11 21:42:52 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1246,35 +1277,39 @@ push @diagnostics, "Maybe present: " .
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
 # by the speaker ID and %5$s by a unique ID for the record.
 #
+# The 1 or 0 after the pattern indicates whether the text (%3$) can be
+# parsed for emphasis and math. (Only applicable if --emphasis was
+# specified.)
+#
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
 my %linepat = (
-  a => "<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n",
-  b => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  B => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
-  d => "<p id=%5\$s class=summary>%3\$s</p>\n",
-  D => "<pre id=%5\$s class=summary>\n%3\$s</pre>\n",
-  i => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  I => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n",
-  c => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  o => '',
-  r => "<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",
-  s => "<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
-  n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  u => "<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n",
-  T => "<h4 id=%2\$s>%3\$s</h4>\n",
-  t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n");
+  a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
+  b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
+  B => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n", 0],
+  d => ["<p id=%5\$s class=summary>%3\$s</p>\n", 1],
+  D => ["<pre id=%5\$s class=summary>\n%3\$s</pre>\n", 0],
+  i => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 1],
+  I => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n", 0],
+  c => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
+  o => ['', 0],
+  r => ["<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",, 1],
+  s => ["<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
+  n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n", 0],
+  u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
+  T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
+  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1]);
 
 my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
-  my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
-    esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1, 1),
+  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
+      esc($p->{speaker}), $p->{id}, esc($p->{text},
+	$emphasis && $linepat{$p->{type}}[1], 1, 1),
     $speakers{fc $p->{speaker}} // '', ++$lineid;
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
-    #    $line =~ s|\t|"<br>\n<a id=" . ++$lineid . "></a>… "|ge;
     $line =~ s|\t|"<br>\n<span id=" . ++$lineid . ">… "|e; # First line
     $line =~ s|\t|"</span><br>\n<span id=" . ++$lineid . ">… "|ge; # Others
     $line =~ s|</p>|</span></p>|; # Last line
