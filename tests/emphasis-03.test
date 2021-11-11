@@ -40,8 +40,6 @@ EOF
 
 perl scribe.perl --emphasis $TMP1 >$TMP2
 
-cp $TMP2 tmp.html
-
 # Extract just the minutes:
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
