@@ -117,8 +117,8 @@
   href="sample-team.html" >with option -team</a> and <a
   href="sample-fancy.html" >with option -fancy</a>.
 
-  <p>This manual documents scribe.perl version 2, revision 158 (dated
-  5 November 2021). See below for the <a href="#changes" >differences
+  <p>This manual documents scribe.perl version 2, revision 160 (dated
+  11 November 2021). See below for the <a href="#changes" >differences
   with version 1.</a>
 
 
@@ -655,7 +655,7 @@
    <dt id=emphasis>-emphasis <dd><p>Cause scribe.perl to interpret
     ‘ASCII highlighting’, arrows, smileys and mathematical formulas.
 
-    <p>ASCII highlighting gives underlined, italic and bold text:
+    <p>ASCII highlighting gives underlined, italic, bold and monospaced text:
     <table>
      <thead>
       <tr><th>Input <th>Output
@@ -663,11 +663,12 @@
       <tr><td><code>_underlined_</code> <td><u>underlined</u>
       <tr><td><code>/italic/</code> <td><i>italic</i>
       <tr><td><code>*bold*</code> <td><b>bold</b>
+      <tr><td><code>`monospace`</code> <td><code>monospace</code>
     </table>
 
     <p>Highlighted phrases must be
     surrounded by spaces to be recognized or be at the edge of the
-    line.
+    line. They may be nested: <code> this is */bold italics/*.</code>
 
     <p>The option also causes the replacement of ASCII arrows
      and ASCII smileys:
@@ -1636,6 +1637,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Sun Oct 17 01:16:20 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Thu Nov 11 21:54:35 2021 UTC $</address>
  </body>
 </html>
