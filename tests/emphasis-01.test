@@ -16,6 +16,10 @@ cat >$TMP1 <<EOF
 <foo> A line with *bold* not at the end.
 <foo> A line with _underline at the end._
 <foo> A line with _underline_ not at the end.
+<foo> _Several_ /things/ *in* the same _line._
+<foo> And *some /nested/ things* as well.
+<foo> And *some /even _more_ nested/ things* as well.
+<foo> And */bold italic./*
 EOF
 
 cat >$TMP4 <<EOF
@@ -28,6 +32,10 @@ cat >$TMP4 <<EOF
 <p id=x005 class=summary>A line with <strong>bold</strong> not at the end.</p>
 <p id=x006 class=summary>A line with <u>underline at the end.</u></p>
 <p id=x007 class=summary>A line with <u>underline</u> not at the end.</p>
+<p id=x008 class=summary><u>Several</u> <em>things</em> <strong>in</strong> the same <u>line.</u></p>
+<p id=x009 class=summary>And <strong>some <em>nested</em> things</strong> as well.</p>
+<p id=x010 class=summary>And <strong>some <em>even <u>more</u> nested</em> things</strong> as well.</p>
+<p id=x011 class=summary>And <strong><em>bold italic.</em></strong></p>
 </section>
 </main>
 EOF
