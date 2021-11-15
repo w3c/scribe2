@@ -450,7 +450,21 @@ sub to_mathml($)
     # changed in that call.
     #
     for ($_[0]) {
-      if (m{(?:^|\s)\K([_/*`])(.+?)\g{1}(?=\s|$)}) {
+      s/:-\)/☺/g;
+      s/;-\)/😉\x{FE0E}/g;
+      s/:-\(/☹/g;
+      s{:-/}{😕\x{FE0E}}g;
+      s/,-\)/😜\x{FE0E}/g;
+      s{\\o/}{🙌\x{FE0E}}g;
+      s/(?:^|[^-])\K--&gt;/⟶/g;
+      s/(?:^|[^-])\K-&gt;/→/g;
+      s/(?:^|[^=])\K==&gt;/⟹/g;
+      s/(?:^|[^=])\K=&gt;/⇒/g;
+      s/&lt;--(?!-)/⟵/g;
+      s/&lt;-(?!-)/←/g;
+      s/&lt;==(?!=)/⟸/g;
+      s/&lt;=(?!=)/⇐/g;
+      if (m{(?:^|\s|\p{P})\K([_/*`])(.+?)\g{1}(?=\p{P}|\s|$)}) {
 	my ($a, $z, $t, $m) = ($`, $', $1, $2);
 	return to_emph($a)."<$tag{$t}>".to_emph($m)."</$tag{$t}>".to_emph($z);
       } elsif (/(?:^|[^\\])\K\$\$[^\$]+\$\$/) { # $$...$$ not preceded by a '\'
@@ -459,49 +473,7 @@ sub to_mathml($)
       } elsif (/(?:^|[^\\])\K\$[^\$]+\$/) {	# $...$ not preceded by a '\'
 	my ($a, $m, $z) = ($`, $&, $');
 	return to_emph($a) . to_mathml($m) . to_emph($z);
-      } elsif (/(?:^|[^-])\K--&gt;/) {		# "-->" not preceded by a "-"
-	my ($a, $z) = ($`, $');
-	return to_emph($a) .  "⟶" . to_emph($z);
-      } elsif (/(?:^|[^-])\K-&gt;/) {		# "->" not preceded by a "-"
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "→" . to_emph($z);
-      } elsif (/(?:^|[^=])\K==&gt;/) {		# "==>" not preceded by a "="
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "⟹" . to_emph($z);
-      } elsif (/(?:^|[^=])\K=&gt;/) {		# "=>" not preceded by a "="
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "⇒" . to_emph($z);
-      } elsif (/&lt;--(?!-)/) {			# "<--" not followed by a "-"
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "⟵" . to_emph($z);
-      } elsif (/&lt;-(?!-)/) {			# "<-" not followed by a "-"
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "←" . to_emph($z);
-      } elsif (/&lt;==(?!=)/) {			# "<==" not followed by a "="
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "⟸" . to_emph($z);
-      } elsif (/&lt;=(?!=)/) {			# "<=" not followed by a "="
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "⇐" . to_emph($z);
-      } elsif (/:-\)/) {
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "☺" . to_emph($z);
-      } elsif (/;-\)/) {
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "😉\x{FE0E}" . to_emph($z);
-      } elsif (/:-\(/) {
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "☹" . to_emph($z);
-      } elsif (m{:-/}) {
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "😕\x{FE0E}" . to_emph($z);
-      } elsif (/,-\)/) {
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "😜\x{FE0E}" . to_emph($z);
-      } elsif (m{\\o/}) {
-	my ($a, $z) = ($`, $');
-	return to_emph($a) . "🙌\x{FE0E}" . to_emph($z);
-      } elsif (/\\\$/) {
+      } elsif (/\\\$/) {			# Escaped $
 	my ($a, $z) = ($`, $');
 	return to_emph($a) . '$' . to_emph($z);
       } else {
@@ -663,10 +635,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 160 $'
+my $revision = '$Revision: 161 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Nov 11 21:42:52 2021 UTC $'
+my $versiondate = '$Date: Mon Nov 15 18:05:24 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
