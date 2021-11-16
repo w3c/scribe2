@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test that emphasis marks are recognized in emphasis mode.
+# Test that emphasis marks are recognized next to punctuation.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
@@ -10,32 +10,32 @@ TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
 <foo> A line without emphasis.
-<foo> A line with a /italic the end./
+<foo> A line with /italic before the period/.
 <foo> A line with a /italic/ not at the end.
-<foo> A line with *bold the end.*
-<foo> A line with *bold* not at the end.
-<foo> A line with _underline at the end._
-<foo> A line with _underline_ not at the end.
-<foo> _Several_ /things/ *in* the same _line._
+<foo> A line with *bold*…
+<foo> A line with *bold*, not at the end.
+<foo> A line with _underline at the end_.
+<foo> A line with _underline_, not at the end.
+<foo> _Several_ /things/ *in* the same _line_.
 <foo> And *some /nested/ things* as well.
 <foo> And *some /even _more_ nested/ things* as well.
-<foo> And */bold italic./*
+<foo> And */bold italic/*.
 EOF
 
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x001 class=summary>A line without emphasis.</p>
-<p id=x002 class=summary>A line with a <em>italic the end.</em></p>
+<p id=x002 class=summary>A line with <em>italic before the period</em>.</p>
 <p id=x003 class=summary>A line with a <em>italic</em> not at the end.</p>
-<p id=x004 class=summary>A line with <strong>bold the end.</strong></p>
-<p id=x005 class=summary>A line with <strong>bold</strong> not at the end.</p>
-<p id=x006 class=summary>A line with <u>underline at the end.</u></p>
-<p id=x007 class=summary>A line with <u>underline</u> not at the end.</p>
-<p id=x008 class=summary><u>Several</u> <em>things</em> <strong>in</strong> the same <u>line.</u></p>
+<p id=x004 class=summary>A line with <strong>bold</strong>…</p>
+<p id=x005 class=summary>A line with <strong>bold</strong>, not at the end.</p>
+<p id=x006 class=summary>A line with <u>underline at the end</u>.</p>
+<p id=x007 class=summary>A line with <u>underline</u>, not at the end.</p>
+<p id=x008 class=summary><u>Several</u> <em>things</em> <strong>in</strong> the same <u>line</u>.</p>
 <p id=x009 class=summary>And <strong>some <em>nested</em> things</strong> as well.</p>
 <p id=x010 class=summary>And <strong>some <em>even <u>more</u> nested</em> things</strong> as well.</p>
-<p id=x011 class=summary>And <strong><em>bold italic.</em></strong></p>
+<p id=x011 class=summary>And <strong><em>bold italic</em></strong>.</p>
 </section>
 </main>
 EOF

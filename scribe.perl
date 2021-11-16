@@ -50,6 +50,15 @@
 # TODO: Ivan's minutes generator distinguishes participants (present+)
 # from guests (guest+). Should scribe.perl, too?
 #
+# TODO: Syntax highlighting of verbatim text if there is a language
+# indicated after the backquotes (as in GitHub's markdown)? (```java
+# ...```)
+#
+# TODO: Also allow three tildes (~~~) instead of three backquotes, as
+# in Markdown?
+#
+# TODO: A way to include (phrase-level) HTML directly?
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -89,10 +98,12 @@
 #
 # Each record has four fields: {type, speaker, id, text}
 # If type is 'i' (irc), <speaker> is the person who typed <text>.
+# If type is 'I' (irc), <speaker> is the person who typed verbatim <text>.
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
 # If type is 'slideset', <text> is the IRC-formatted link to the slideset
 # If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
+# If type is 'D' (description) <text> is verbatim text by the scribe.
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'T' (subtopic), <text> is the title for a new subtopic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
@@ -109,7 +120,7 @@ use warnings;
 use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
 use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
-use locale;			# Sort using current locale
+use locale ':collate';		# Sort using current locale
 use open ':encoding(UTF-8)';	# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
 
@@ -169,7 +180,7 @@ my $has_slideset = 0;		# Set to 1 when at least one Slideset: is found
 
 my @parsers = (\&RRSAgent_text_format, \&Bip_Format, \&Mirc_Text_Format,
 	       \&Yahoo_IM_Format, \&Bert_IRSSI_Format, \&Irssi_Format,
-	       \&Qwebirc_paste_format,
+	       \&Qwebirc_paste_format, \&IRCCloud_format,
 	       \&Quassel_paste_format, \&Plain_Text_Format);
 
 
@@ -322,6 +333,30 @@ sub Qwebirc_paste_format($$)
 }
 
 
+# IRCCloud_format - the log format of the IRCCloud web service
+sub IRCCloud_format($$)
+{
+  my ($lines_ref, $records_ref) = @_;
+
+  foreach (@$lines_ref) {
+    next if /^#[^ ]+$/;				# IRC channel name
+    next if /^\[[0-9 :-]+\] → Joined /;	# IRCCloud joined the channel
+    next if /^\[[0-9 :-]+\] → [^ ]+ joined /;	# Somebody joined the channel
+    next if /^\[[0-9 :-]+\] ⇐ [^ ]+ quit /;	# Somebody disconnected
+    next if /^\[[0-9 :-]+\] ⇐ You disconnected/; # User left IRCCloud
+    next if /^\[[0-9 :-]+\] ← [^ ]+ left /;	# Somebody left the channel
+    next if /^\[[0-9 :-]+\] — [^ ]+ /;		# A /me line
+    next if /^\[[0-9 :-]+\] \* [^ ]+ /;		# Changed nick, changed mode...
+    if (/^\[[0-9 :-]+\] <([^>]+)> (.*)$/) {	# $1 said $2
+      push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
+    } else {
+      return 0;					# Not an IRCCloud log line
+    }
+  }
+  return 1;					# All lines recognized
+}
+
+
 # Quassel_paste_format -- copy-paste from the Quassel chat window
 sub Quassel_paste_format($$)
 {
@@ -409,45 +444,48 @@ sub to_mathml($)
 }
 
 
-# to_emph -- replace smileys, arrows, emphasis marks and math
-sub to_emph($);
-sub to_emph($)
 {
-  for ($_[0]) {
-    return to_emph($`) . to_mathml($&) . to_emph($')
-	if /(?:^|[^\\])\K\$\$[^\$]+\$\$/; # $$...$$ not preceded by a '\'
-    return to_emph($`) . to_mathml($&) . to_emph($')
-	if /(?:^|[^\\])\K\$[^\$]+\$/; # $...$ not preceded by a '\'
-    return to_emph($`) . "<u>$1</u>" . to_emph($')
-	if /(?:^|\s)\K_([^\s_](?:[^_]*[^\s_])?)_(?=\s|$)/;
-    return to_emph($`) . "<em>$1</em>" . to_emph($')
-	if m{(?:^|\s)\K/([^\s/][^/]*[^\s/]|[^\s/])/(?=\s|$)};
-    return to_emph($`) . "<strong>$1</strong>" . to_emph($')
-	if /(?:^|\s)\K\*([^\s*](?:[^*]*[^\s*])?)\*(?=\s|$)/;
-    return to_emph($`) . "⟶" . to_emph($')
-	if /(?:^|[^-])\K--&gt;/;		# "-->" not preceded by a "-"
-    return to_emph($`) . "→" . to_emph($')
-	if /(?:^|[^-])\K-&gt;/;			# "->" not preceded by a "-"
-    return to_emph($`) . "⟹" .  to_emph($')
-	if /(?:^|[^=])\K==&gt;/;		# "==>" not preceded by a "="
-    return to_emph($`) . "⇒" . to_emph($')
-	if /(?:^|[^=])\K=&gt;/;			# "=>" not preceded by a "="
-    return to_emph($`) . "⟵" . to_emph($')
-	if /&lt;--(?!-)/;			# "<--" not followed by a "-"
-    return to_emph($`) . "←" . to_emph($')
-	if /&lt;-(?!-)/;			# "<-" not followed by a "-"
-    return to_emph($`) . "⟸" . to_emph($')
-	if /&lt;==(?!=)/;			# "<==" not followed by a "="
-    return to_emph($`) . "⇐" . to_emph($')
-	if /&lt;=(?!=)/;			# "<=" not followed by a "="
-    return to_emph($`) . "☺" . to_emph($') if /:-\)/;
-    return to_emph($`) . "😉\x{FE0E}" . to_emph($') if /;-\)/;
-    return to_emph($`) . "☹" . to_emph($') if /:-\(/;
-    return to_emph($`) . "😕\x{FE0E}" . to_emph($') if m{:-/};
-    return to_emph($`) . "😜\x{FE0E}" . to_emph($') if /,-\)/;
-    return to_emph($`) . "🙌\x{FE0E}" . to_emph($') if m{\\o/};
-    return to_emph($`) . '$' . to_emph($') if /\\\$/;
-    return $_;
+  my %tag = ('_' => 'u', '/' => 'em', '*' => 'strong', '`' => 'code');
+
+  # to_emph -- replace smileys, arrows, emphasis marks and math
+  sub to_emph($);
+  sub to_emph($)
+  {
+    # Note: $` and $' must be stored in local variables before the
+    # recursive call, because they are global variables and might be
+    # changed in that call.
+    #
+    for ($_[0]) {
+      s/:-\)/☺/g;
+      s/;-\)/😉\x{FE0E}/g;
+      s/:-\(/☹/g;
+      s{:-/}{😕\x{FE0E}}g;
+      s/,-\)/😜\x{FE0E}/g;
+      s{\\o/}{🙌\x{FE0E}}g;
+      s/(?:^|[^-])\K--&gt;/⟶/g;
+      s/(?:^|[^-])\K-&gt;/→/g;
+      s/(?:^|[^=])\K==&gt;/⟹/g;
+      s/(?:^|[^=])\K=&gt;/⇒/g;
+      s/&lt;--(?!-)/⟵/g;
+      s/&lt;-(?!-)/←/g;
+      s/&lt;==(?!=)/⟸/g;
+      s/&lt;=(?!=)/⇐/g;
+      if (m{(?:^|\s|\p{P})\K([_/*`])(.+?)\g{1}(?=\p{P}|\s|$)}) {
+	my ($a, $z, $t, $m) = ($`, $', $1, $2);
+	return to_emph($a)."<$tag{$t}>".to_emph($m)."</$tag{$t}>".to_emph($z);
+      } elsif (/(?:^|[^\\])\K\$\$[^\$]+\$\$/) { # $$...$$ not preceded by a '\'
+	my ($a, $m, $z) = ($`, $&, $');
+	return to_emph($a) . to_mathml($m) . to_emph($z);
+      } elsif (/(?:^|[^\\])\K\$[^\$]+\$/) {	# $...$ not preceded by a '\'
+	my ($a, $m, $z) = ($`, $&, $');
+	return to_emph($a) . to_mathml($m) . to_emph($z);
+      } elsif (/\\\$/) {			# Escaped $
+	my ($a, $z) = ($`, $');
+	return to_emph($a) . '$' . to_emph($z);
+      } else {
+	return $_;
+      }
+    }
   }
 }
 
@@ -603,10 +641,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 149 $'
+my $revision = '$Revision: slide-shower-159 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Oct 12 21:11:27 2021 UTC $'
+my $versiondate = '$Date: Tue Nov 16 11:17:44 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -633,6 +671,7 @@ my $lineid = 'x000';		# Generates unique ID for each line
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
+my %verbatim;			# End of preformatted mode for nick: ``` or ]]
 my $agenda_icon = '<img alt="Agenda." title="Agenda" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/chronometer.png">';
 my $irclog_icon = '<img alt="IRC log." title="IRC log" ' .
@@ -692,6 +731,7 @@ GetOptions(%options) or pod2usage(2);
 #
 do {
   my @input = map tr/\t\r\n/ /dr, <>;
+  $input[0] =~ s/^\x{FEFF}// if scalar @input; # Remove the BOM, if any
   do {@records = (); last if &$_(\@input, \@records);} foreach (@parsers);
   push(@diagnostics,'Input has an unknown format (or is empty).') if !@records;
 };
@@ -803,6 +843,7 @@ add_scribes($scribenick, \%curscribes, \%scribes);
 # $lastspeaker is set to foo whenever the scribe writes "foo: ...".
 #
 for (my $i = 0; $i < @records; $i++) {
+  my $is_scribe = is_cur_scribe($records[$i]->{speaker}, \%curscribes);
   $_ = $records[$i]->{text};
 
   if ($records[$i]->{type} eq 'o') {
@@ -810,6 +851,33 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
+
+  } elsif (/^ *(```|\[\[) *$/ &&	# Start preformatted text
+      !exists $verbatim{$records[$i]->{speaker}}) {
+    $verbatim{$records[$i]->{speaker}} = $1 eq "```" ? "```" : "]]";
+    if ($is_scribe) {
+      $records[$i]->{text} = "";	# Next lines will be appended
+      $records[$i]->{type} = 'D';	# Preformatted text by scribe
+    } else {
+      $records[$i]->{type} = 'o';	# Omit this record
+    }
+
+  } elsif (/ *(```|\]\]) *$/ &&		# End of preformatted text
+      ($verbatim{$records[$i]->{speaker}} // "") eq $1) {
+    $records[$i]->{type} = 'o';			# Omit this record
+    delete $verbatim{$records[$i]->{speaker}};	# Remove verbatim mode
+
+  } elsif (exists $verbatim{$records[$i]->{speaker}}) { # Preformatted text
+    if ($is_scribe) {
+      # Scribe's verbatim text is collected into a single record
+      my $j = $i - 1;
+      $j-- while $records[$j]->{type} eq 'o' ||
+	  $records[$j]->{speaker} ne $records[$i]->{speaker};
+      $records[$j]->{text} .= $records[$i]->{text} . "\n"; # Append to 1st line
+      $records[$i]->{type} = 'o';			   # Omit this record
+    } else {
+      $records[$i]->{type} = 'I';		# Mark as preformatted line
+    }
 
   } elsif (/^ *present *[:=] *(.*?) *$/i) {
     if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {} # Ignore Zakim?
@@ -1111,20 +1179,18 @@ for (my $i = 0; $i < @records; $i++) {
       $namedanchors{$a} = 1;
     }
 
-  } elsif (/^ *\Q<$records[$i]->{speaker}\E>/i &&
-	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe && /^ *\Q<$records[$i]->{speaker}\E>/i) {
     # Ralph's escape for a scribe's personal remarks: "<mynick> my opinion"
     $records[$i]->{text} =~ s/^.*?> ?//i;
 
-  } elsif ((/^ *\\(.*)/) &&				# Starts with backslash
-	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe && /^ *\\(.*)/) {			# Starts with backslash
     $records[$i]->{type} = 'd';				# Descriptive text
     $records[$i]->{text} = $1;				# Remove backslash
 
   } elsif (/^ *\\(.*)/) {				# Starts with backslash
     $records[$i]->{text} = $1;				# Remove backslash
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
+  } elsif ($is_scribe &&
 	   (/^($speakerpat) *: *(.*)$/ ||
 	    (!$spacecont && /^ +($speakerpat) *: *(.*)$/)) &&
 	   $records[$i]->{type} ne 'c' &&	# ... and not a failed s///
@@ -1137,8 +1203,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $2;
     $speakers{fc $1} = ++$speakerid if !exists $speakers{fc $1};
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   defined $lastspeaker{$records[$i]->{speaker}} &&
+  } elsif ($is_scribe && defined $lastspeaker{$records[$i]->{speaker}} &&
 	   (/^ *(?:\.\.\.*|…) *(.*?) *$/ ||
 	    ($implicitcont && /^ *(.*?) *$/) ||
 	    ($spacecont && /^ +(.*?) *$/)) &&
@@ -1165,22 +1230,20 @@ for (my $i = 0; $i < @records; $i++) {
     if ($j >= 0 && $records[$j]->{type} =~ /[artTuUd]/) {
       $records[$j]->{text} .= "\t" . $s;
       $records[$i]->{type} = 'o';	# Omit this line from output
-    } elsif (is_cur_scribe($speaker, \%curscribes)) {
+    } elsif ($is_scribe) {
       # Not a continuation of anything, but it is by the scribe.
       $records[$i]->{type} = 'd';		# Mark as descriptive text
-      $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
+      $lastspeaker{$speaker} = undef;		# No continuation expected
     }
 
-  } elsif ($records[$i]->{type} eq 'c' &&
-	   is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe && $records[$i]->{type} eq 'c') {
     # It's a failed s/// command by the speaker. Leave it as a 'c'.
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes) &&
-	   /^ *-> *$urlpat/i) {
+  } elsif ($is_scribe && /^ *-> *$urlpat/i) {
     # If the scribe used a Ralph-link (-> url ...), still allow continuations
     $records[$i]->{type} = 'd';		# Mark as descriptive text
 
-  } elsif (is_cur_scribe($records[$i]->{speaker}, \%curscribes)) {
+  } elsif ($is_scribe) {
     $records[$i]->{type} = 'd';		# Mark as descriptive text
     $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
   }
@@ -1210,36 +1273,42 @@ push @diagnostics, "Maybe present: " .
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
 # by the speaker ID and %5$s by a unique ID for the record.
 #
+# The 1 or 0 after the pattern indicates whether the text (%3$) can be
+# parsed for emphasis and math. (Only applicable if --emphasis was
+# specified.)
+#
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
 my %linepat = (
-  a => "<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n",
-  b => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  B => "<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n",
-  d => "<p id=%5\$s class=summary>%3\$s</p>\n",
-  i => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  c => $scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n",
-  o => '',
-  r => "<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",
-  s => "<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n",
-  n => "<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n",
-  u => "<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n",
-  T => "<h4 id=%2\$s>%3\$s</h4>\n",
-  t => "</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n",
-  slideset => "<p class=summary>Slideset: %3\$s</p>",
-  slide => "<p class=summary><i-slide src=\"%2\$s\">[ <a href=\"%2\$s\">Slide %3\$s</a> ]</i-slide></p>"
+  a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
+  b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
+  B => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n", 0],
+  d => ["<p id=%5\$s class=summary>%3\$s</p>\n", 1],
+  D => ["<pre id=%5\$s class=summary>\n%3\$s</pre>\n", 0],
+  i => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 1],
+  I => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n", 0],
+  c => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
+  o => ['', 0],
+  r => ["<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",, 1],
+  s => ["<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
+  n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n", 0],
+  u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
+  T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
+  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1],
+  slideset => ["<p class=summary>Slideset: %3\$s</p>", 0],
+  slide => ["<p class=summary><i-slide src=\"%2\$s\">[ <a href=\"%2\$s\">Slide %3\$s</a> ]</i-slide></p>", 1],
     );
 
 my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
-  my $line = sprintf $linepat{$p->{type}} . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
-    esc($p->{speaker}), $p->{id}, esc($p->{text}, $emphasis, 1, 1),
+  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
+      esc($p->{speaker}), $p->{id}, esc($p->{text},
+	$emphasis && $linepat{$p->{type}}[1], 1, 1),
     $speakers{fc $p->{speaker}} // '', ++$lineid;
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
-    #    $line =~ s|\t|"<br>\n<a id=" . ++$lineid . "></a>… "|ge;
     $line =~ s|\t|"<br>\n<span id=" . ++$lineid . ">… "|e; # First line
     $line =~ s|\t|"</span><br>\n<span id=" . ++$lineid . ">… "|ge; # Others
     $line =~ s|</p>|</span></p>|; # Last line

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Test of inline code between backquotes.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/arrows-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/arrows-XXXXXX` || exit 1
+
+cat >$TMP1 <<'EOF'
+<foo> A line without code
+<foo> `code` at the start, in the `middle` and at the `end`
+<foo> With ` spaces `
+<foo> Backquotes inside the code: `a`b`
+<foo> Only spaces `   ` in the code.
+<foo> Short code: `q`
+<foo> Verbatim spaces /inside `    ` emphasis./
+<foo> Italics inside code `inside /emphasis./`
+<foo> A -> https://example.org/ `verbatim link`
+<foo> No content, so not matched: ``
+EOF
+
+cat >$TMP4 <<'EOF'
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x001 class=summary>A line without code</p>
+<p id=x002 class=summary><code>code</code> at the start, in the <code>middle</code> and at the <code>end</code></p>
+<p id=x003 class=summary>With <code> spaces </code></p>
+<p id=x004 class=summary>Backquotes inside the code: <code>a`b</code></p>
+<p id=x005 class=summary>Only spaces <code>   </code> in the code.</p>
+<p id=x006 class=summary>Short code: <code>q</code></p>
+<p id=x007 class=summary>Verbatim spaces <em>inside <code>    </code> emphasis.</em></p>
+<p id=x008 class=summary>Italics inside code <code>inside <em>emphasis.</em></code></p>
+<p id=x009 class=summary>A <a href="https://example.org/"><code>verbatim link</code></a></p>
+<p id=x010 class=summary>No content, so not matched: ``</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl --emphasis $TMP1 >$TMP2
+
+# Extract just the minutes:
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3

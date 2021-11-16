@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test that emphasis marks do not interfere with URLs.
+# Test that emphasis marks do not interfere with URLs or with s/// commands.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/arrows-XXXXXX` || exit 1
@@ -16,6 +16,8 @@ cat >$TMP1 <<EOF
 <foo> A line with an -> /ambiguous link http://example.org/
 <foo> A line with a bare URL:http://example.org/_not_underlined_
 <foo> A line with -> *bold link 1* http://example.org/1*
+<foo> s/something /something else/
+<foo> s/something /not _underlined_ here/
 EOF
 
 cat >$TMP4 <<EOF
@@ -28,6 +30,8 @@ cat >$TMP4 <<EOF
 <p id=x005 class=summary>A line with an <a href="http://example.org/">/ambiguous link</a></p>
 <p id=x006 class=summary>A line with a bare URL:<a href="http://example.org/_not_underlined_">http://<wbr>example.org/<wbr>_not_underlined_</a></p>
 <p id=x007 class=summary>A line with <a href="http://example.org/1*"><strong>bold link 1</strong></a></p>
+<p id=x008 class=irc><cite>&lt;foo&gt;</cite> s/something /something else/</p>
+<p id=x009 class=irc><cite>&lt;foo&gt;</cite> s/something /not _underlined_ here/</p>
 </section>
 </main>
 EOF

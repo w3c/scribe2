@@ -117,8 +117,8 @@
   href="sample-team.html" >with option -team</a> and <a
   href="sample-fancy.html" >with option -fancy</a>.
 
-  <p>This manual documents scribe.perl version 2, revision 144 (dated
-  15 June 2021). See below for the <a href="#changes" >differences
+  <p>This manual documents scribe.perl version 2, revision 160 (dated
+  11 November 2021). See below for the <a href="#changes" >differences
   with version 1.</a>
 
 
@@ -655,7 +655,7 @@
    <dt id=emphasis>-emphasis <dd><p>Cause scribe.perl to interpret
     ‘ASCII highlighting’, arrows, smileys and mathematical formulas.
 
-    <p>ASCII highlighting gives underlined, italic and bold text:
+    <p>ASCII highlighting gives underlined, italic, bold and monospaced text:
     <table>
      <thead>
       <tr><th>Input <th>Output
@@ -663,11 +663,12 @@
       <tr><td><code>_underlined_</code> <td><u>underlined</u>
       <tr><td><code>/italic/</code> <td><i>italic</i>
       <tr><td><code>*bold*</code> <td><b>bold</b>
+      <tr><td><code>`monospace`</code> <td><code>monospace</code>
     </table>
 
     <p>Highlighted phrases must be
     surrounded by spaces to be recognized or be at the edge of the
-    line.
+    line. They may be nested: <code> this is */bold italics/*.</code>
 
     <p>The option also causes the replacement of ASCII arrows
      and ASCII smileys:
@@ -1126,6 +1127,55 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;jany&gt; * \n = newline
 &lt;jany&gt; * \t = tab</pre>
 
+  <h3 id="verbatim">Verbatim or pasted text</h3>
+
+  <p>To include several lines of verbatim text, e.g., to copy-paste
+  program code into the minutes, start with three single backquotes
+  (<code>```</code>) or two square brackets (<code>[[</code>) on a
+  line by themselves, paste the text and end with a line containing
+  another three backquotes, resp. two square brackets
+  (<code>]]</code>).
+
+  <p>No commands are recognized inside verbatim text: ‘action:’ does
+  not create an action, ‘present+’ does not record a participant. etc.
+  Here are two examples:
+
+  <pre class="command">&lt;dbooth&gt; ```
+&lt;dbooth&gt; function factorial(n) {
+&lt;dbooth&gt;   if (n == 1) return 1
+&lt;dbooth&gt;   else return n * factorial(n - 1)
+&lt;dbooth&gt; }
+&lt;dbooth&gt; ```
+&lt;momo&gt; [[
+&lt;momo&gt; January    45
+&lt;momo&gt; February  250
+&lt;momo&gt; March       2
+&lt;momo&gt; ]]</pre>
+
+  <p>Everybody can use verbatim text, but the effect is slightly
+  different for scribes and for other participants. If the scribe
+  enters verbatim text and other text interrupts the verbatim text,
+  that other text is moved, to keep the scribe's text together. E.g.,
+
+  <pre class="command">&lt;scribe&gt; [[
+&lt;scribe&gt; sub add($$) {
+&lt;scribe&gt;    my ($a, $b) = @_;
+&lt;cecilia&gt; Me too!
+&lt;scribe&gt;    return $a + $b;
+&lt;scribe&gt; }
+&lt;scribe&gt; ]]</pre>
+
+  <p>will yield:
+  <blockquote>
+<pre>sub add($$) {
+   my ($a, $b) = @_;
+   return $a + $b;
+}</pre>
+&lt;cecilia&gt; Me too!
+  </blockquote>
+
+  <p>(The verbatim text feature was suggested by David Booth.)
+
   <h2 id="links">Embedding links</h2>
 
   <p>Scribe.perl automatically recognizes most URLs
@@ -1266,6 +1316,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
    <li><a href="#Quassel_Paste_Format" >Quassel paste format</a>
 
    <li><a href="#Bert_IRSSI_Format" >Bert IRSSI format</a>
+
+   <li><a href="#IRCCloud_format" >IRCCloud format</a>
   </ul>
 
   <p>Scribe.perl guesses which format you have used by trying each in
@@ -1451,7 +1503,20 @@ Eric agrees.
 13:15             * | Zakim sees no one on the speaker queue
 13:15        scribe | Veronica: Please everyone update the FTMS records.</pre>
 
+  <h3 id="IRCCloud_format">IRCCloud format</h3>
 
+  <p>Downloading a log from the IRCCloud server yields a file similar
+   to this:
+
+   <pre class="command">#wcag-act
+[2020-07-21 17:28:44] → Joined channel #wcag-act
+[2020-07-21 18:21:09] ⇐ shadi quit (shadi@815ad96c.team.cloak): "Leaving"
+[2020-07-23 14:57:43] → Wilco joined (~Wilco@ef89345d.public.cloak)
+[2020-07-23 14:57:51] → Zakim joined (zakim@815ad96c.team.cloak)
+[2020-07-23 14:57:56] <Wilco> zakim, start meeting
+[2020-07-23 14:58:28] — Zakim notes agendum 1 added
+[2020-07-27 16:55:24] * shadi_ → shadi
+[2020-07-30 14:53:38] <Wilco> Meeting: Accessibility Conformance Testing</pre>
 
 
   <h2 id="Environment_Variables">Environment Variables</h2>
@@ -1556,6 +1621,10 @@ Eric agrees.
      href="https://www.w3.org/2005/06/tracker/irc">trackbot</a>.
 
    <li>
+    <p>The ability to escape a command with a backslash to remove its
+    special meaning, and the ability to include verbatim text are new.
+
+   <li>
     <p>The XChat log format is not (yet) supported.
   </ul>
 
@@ -1568,6 +1637,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Tue Jun 15 16:14:43 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Thu Nov 11 21:54:35 2021 UTC $</address>
  </body>
 </html>
