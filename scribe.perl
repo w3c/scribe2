@@ -456,20 +456,6 @@ sub to_mathml($)
     # changed in that call.
     #
     for ($_[0]) {
-      s/:-\)/☺/g;
-      s/;-\)/😉\x{FE0E}/g;
-      s/:-\(/☹/g;
-      s{:-/}{😕\x{FE0E}}g;
-      s/,-\)/😜\x{FE0E}/g;
-      s{\\o/}{🙌\x{FE0E}}g;
-      s/(?:^|[^-])\K--&gt;/⟶/g;
-      s/(?:^|[^-])\K-&gt;/→/g;
-      s/(?:^|[^=])\K==&gt;/⟹/g;
-      s/(?:^|[^=])\K=&gt;/⇒/g;
-      s/&lt;--(?!-)/⟵/g;
-      s/&lt;-(?!-)/←/g;
-      s/&lt;==(?!=)/⟸/g;
-      s/&lt;=(?!=)/⇐/g;
       if (m{(?:^|\s|\p{P})\K([_/*`])(.+?)\g{1}(?=\p{P}|\s|$)}) {
 	my ($a, $z, $t, $m) = ($`, $', $1, $2);
 	return to_emph($a)."<$tag{$t}>".to_emph($m)."</$tag{$t}>".to_emph($z);
@@ -594,7 +580,23 @@ sub esc($;$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
-    $s = to_emph($s) if $emph;
+    if ($emph) {
+      $s =~ s/:-\)/☺/g;
+      $s =~ s/;-\)/😉\x{FE0E}/g;
+      $s =~ s/:-\(/☹/g;
+      $s =~ s{:-/}{😕\x{FE0E}}g;
+      $s =~ s/,-\)/😜\x{FE0E}/g;
+      $s =~ s{\\o/}{🙌\x{FE0E}}g;
+      $s =~ s/(?:^|[^-])\K--&gt;/⟶/g;
+      $s =~ s/(?:^|[^-])\K-&gt;/→/g;
+      $s =~ s/(?:^|[^=])\K==&gt;/⟹/g;
+      $s =~ s/(?:^|[^=])\K=&gt;/⇒/g;
+      $s =~ s/&lt;--(?!-)/⟵/g;
+      $s =~ s/&lt;-(?!-)/←/g;
+      $s =~ s/&lt;==(?!=)/⟸/g;
+      $s =~ s/&lt;=(?!=)/⇐/g;
+      $s = to_emph($s);		# Italics, bold, underline, monospace, math
+    }
   }
   return $s;
 }
@@ -641,10 +643,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: slide-shower-159 $'
+my $revision = '$Revision: slide-shower-170 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Nov 16 11:17:44 2021 UTC $'
+my $versiondate = '$Date: Wed Nov 17 13:04:38 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -927,7 +929,9 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *\[ *slide *(\d+) *\] *$/i && $lastslideset) {
       $records[$i]->{type} = 'slide';	# Mark as slide line
       my $slidenumber = $1;
-      $records[$i]->{id} = $lastslideset . "#" . ($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber; # special fragment convention for PDF URLs
+      # Put link in {id}, with fragment ID "#n" (or #page=n for PDF URLs).
+      $records[$i]->{id} = $lastslideset . "#" .
+	  ($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
       $records[$i]->{text} = "$slidenumber";
 
   } elsif (/^ *topic *: *(.*?) *$/i) {
@@ -1295,8 +1299,8 @@ my %linepat = (
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
   T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1],
-  slideset => ["<p class=summary>Slideset: %3\$s</p>", 0],
-  slide => ["<p class=summary><i-slide src=\"%2\$s\">[ <a href=\"%2\$s\">Slide %3\$s</a> ]</i-slide></p>", 1],
+  slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
+  slide => ["<p class=summary><i-slide src=\"%2\$s\">[ <a href=\"%2\$s\">Slide %3\$s</a> ]</i-slide></p>\n", 1],
     );
 
 my $minutes = '';
