@@ -643,7 +643,7 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 162 $'
+my $revision = '$Revision: 170 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
 my $versiondate = '$Date: Wed Nov 17 13:09:31 2021 UTC $'
@@ -929,7 +929,9 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *\[ *slide *(\d+) *\] *$/i && $lastslideset) {
       $records[$i]->{type} = 'slide';	# Mark as slide line
       my $slidenumber = $1;
-      $records[$i]->{id} = $lastslideset . "#" . ($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber; # special fragment convention for PDF URLs
+      # Put link in {id}, with fragment ID "#n" (or #page=n for PDF URLs).
+      $records[$i]->{id} = $lastslideset . "#" .
+	  ($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
       $records[$i]->{text} = "$slidenumber";
 
   } elsif (/^ *topic *: *(.*?) *$/i) {
@@ -1298,7 +1300,7 @@ my %linepat = (
   T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1]
   slideset => ["<p class=summary>Slideset: %3\$s</p>", 0]
-  slide => ["<i-slide src=\"%2\$s\"><p class=summary>[ <a href=\"%2\$s\">Slide %3\$s</a> ]</p></i-slide>", 0]
+  slide => ["<i-slide src=\"%2\$s\"><p class=summary>[ <a href=\"%2\$s\">Slide %3\$s</a> ]</p></i-slide>", 1]
     );
 
 my $minutes = '';
