@@ -450,20 +450,6 @@ sub to_mathml($)
     # changed in that call.
     #
     for ($_[0]) {
-      s/:-\)/☺/g;
-      s/;-\)/😉\x{FE0E}/g;
-      s/:-\(/☹/g;
-      s{:-/}{😕\x{FE0E}}g;
-      s/,-\)/😜\x{FE0E}/g;
-      s{\\o/}{🙌\x{FE0E}}g;
-      s/(?:^|[^-])\K--&gt;/⟶/g;
-      s/(?:^|[^-])\K-&gt;/→/g;
-      s/(?:^|[^=])\K==&gt;/⟹/g;
-      s/(?:^|[^=])\K=&gt;/⇒/g;
-      s/&lt;--(?!-)/⟵/g;
-      s/&lt;-(?!-)/←/g;
-      s/&lt;==(?!=)/⟸/g;
-      s/&lt;=(?!=)/⇐/g;
       if (m{(?:^|\s|\p{P})\K([_/*`])(.+?)\g{1}(?=\p{P}|\s|$)}) {
 	my ($a, $z, $t, $m) = ($`, $', $1, $2);
 	return to_emph($a)."<$tag{$t}>".to_emph($m)."</$tag{$t}>".to_emph($z);
@@ -588,7 +574,23 @@ sub esc($;$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
-    $s = to_emph($s) if $emph;
+    if ($emph) {
+      $s =~ s/:-\)/☺/g;
+      $s =~ s/;-\)/😉\x{FE0E}/g;
+      $s =~ s/:-\(/☹/g;
+      $s =~ s{:-/}{😕\x{FE0E}}g;
+      $s =~ s/,-\)/😜\x{FE0E}/g;
+      $s =~ s{\\o/}{🙌\x{FE0E}}g;
+      $s =~ s/(?:^|[^-])\K--&gt;/⟶/g;
+      $s =~ s/(?:^|[^-])\K-&gt;/→/g;
+      $s =~ s/(?:^|[^=])\K==&gt;/⟹/g;
+      $s =~ s/(?:^|[^=])\K=&gt;/⇒/g;
+      $s =~ s/&lt;--(?!-)/⟵/g;
+      $s =~ s/&lt;-(?!-)/←/g;
+      $s =~ s/&lt;==(?!=)/⟸/g;
+      $s =~ s/&lt;=(?!=)/⇐/g;
+      $s = to_emph($s);		# Italics, bold, underline, monospace, math
+    }
   }
   return $s;
 }
@@ -635,10 +637,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: 161 $'
+my $revision = '$Revision: 162 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Mon Nov 15 18:05:24 2021 UTC $'
+my $versiondate = '$Date: Wed Nov 17 13:09:31 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
