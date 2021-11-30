@@ -155,7 +155,7 @@ my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			#  string is i-slide library URL
-  'https://w3c.github.io/i-slide/i-slide-1.js';
+  'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
@@ -1298,9 +1298,9 @@ my %linepat = (
   n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n", 0],
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
   T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
-  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1]
-  slideset => ["<p class=summary>Slideset: %3\$s</p>", 0]
-  slide => ["<i-slide src=\"%2\$s\"><p class=summary>[ <a href=\"%2\$s\">Slide %3\$s</a> ]</p></i-slide>", 1]
+  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1],
+  slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
+  slide => ["<p class=summary><a class=islide href=\"%2\$s\">[ Slide %3\$s ]</a></p>\n", 1],
     );
 
 my $minutes = '';
