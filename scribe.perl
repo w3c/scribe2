@@ -643,10 +643,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: slide-shower-182 $'
+my $revision = '$Revision: slide-shower-184 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Nov 30 15:14:50 2021 UTC $'
+my $versiondate = '$Date: Tue Nov 30 23:12:07 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1300,7 +1300,7 @@ my %linepat = (
   T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
-  slide => ["<p class=summary><a class=islide href=\"%2\$s\">[ Slide %3\$s ]</a></p>\n", 1],
+  slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[ Slide %3\$s ]</a></p>\n", 1],
     );
 
 my $minutes = '';
