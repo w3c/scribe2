@@ -36,7 +36,7 @@ check: $(TESTS:.test=)
 # Update the sample minutes whenever scribe.perl changes
 
 samples: sample-public.html sample-member.html sample-team.html \
-	sample-fancy.html
+	sample-fancy.html sample-slides.html
 sample-public.html: sample-public.txt scribe.perl
 	perl scribe.perl --final --embed $< >$@
 sample-member.html: sample-member.txt scribe.perl
@@ -45,6 +45,7 @@ sample-team.html: sample-team.txt scribe.perl
 	perl scribe.perl --embed --team $< >$@
 sample-fancy.html: sample-fancy.txt scribe.perl
 	perl scribe.perl --final --embed --fancy  $< >$@
-
+sample-slides.html: sample-slides.txt scribe.perl
+	perl scribe.perl --final --embed $< >$@
 
 .PHONY: check all samples

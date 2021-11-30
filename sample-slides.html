@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>WebML WG Virtual Meeting at TPAC 2021 - Day 3 &ndash; 28 October 2021</title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+<script type="module" src="https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide"></script>
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>WebML WG Virtual Meeting at TPAC 2021 - Day 3</h1>
+<h2>28 October 2021</h2>
+
+<nav id=links>
+<a href="https://github.com/webmachinelearning/meetings/issues/18"><img alt="Agenda." title="Agenda" src="https://www.w3.org/StyleSheets/scribe2/chronometer.png"></a>
+<a href="https://www.w3.org/2021/10/28-webmachinelearning-irc"><img alt="IRC log." title="IRC log" src="https://www.w3.org/StyleSheets/scribe2/text-plain.png"></a>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>Anssi_Kostiainen, Belem_Zhang, Chai_Chaoweeraprasit, Dom, Eric_Meyer, Feng_Dai, Geun-Hyung, Geun-Hyung_Kim, Judy_Brewer, Junwei_Fu, Ningxin_Hu, Rachel_Yager, Rafael_Cintron, Takio_Yamaoka, Wanming, Zoltan_Kis</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>Anssi</dd>
+<dt>Scribe</dt><dd>Anssi, anssik, dom</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+<li><a href="#t01">Conformance testing of WebNN API</a>
+<ol>
+<li><a href="#t02">Web Platform Tests</a></li>
+</ol>
+</li>
+<li><a href="#t03">Ethical issues in using Machine Learning on the Web</a></li>
+</ol>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=t01>Conformance testing of WebNN API</h3>
+<p id=x030 class="phone s01"><cite>Anssi:</cite> interoperability testing helps ensure compatibility among existing and future implementations<br>
+<span id=x031>… in the context of ML, reaching interop is not necessarily easy given the variety of underlying hardware</span><br>
+<span id=x032>… Chai is involved in Microsoft DirectML and has experience in this space</span></p>
+<p id=x033 class=summary>Slideset: <a href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf">https://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>www-archive/<wbr>2021Oct/<wbr>att-0017/<wbr>Conformance_Testing_of_Machine_Learning_API.pdf</a></p>
+<p id=x034 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=1">[ Slide 1 ]</a></p>
+<p id=x035 class="phone s02"><cite>Chai:</cite> conformance testing of ML APIs is quite important</p>
+<p id=x036 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=2">[ Slide 2 ]</a></p>
+<p id=x050 class="phone s02"><cite>chai:</cite> the problems can be categorized into 3 categories:<br>
+<span id=x051>… the ML models need to run on a wide variety of specialized hardware</span><br>
+<span id=x052>… my work with DirectML is at the lowest level before the hardware in the windows OS</span><br>
+<span id=x053>… windows has a very broad scale of hardware</span><br>
+<span id=x054>… esp with specialized accelerators</span><br>
+<span id=x055>… they don't share the same architecture and have very different approach to computation</span><br>
+<span id=x056>… ensuring the quality of results across this hardware is really important</span><br>
+<span id=x057>… another issue is that most modern AI computation relies on floating point calculation</span><br>
+<span id=x058>… FP calculation with real numbers accumulate errors as you progress in the computation - that's a fact of life</span><br>
+<span id=x059>… there are trimming problems which create challenges in testing the results of ML API across hardware</span><br>
+<span id=x060>… this is a daily issue in my work testing Direct ML</span></p>
+<p id=x061 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=3">[ Slide 3 ]</a></p>
+<p id=x064 class="phone s02"><cite>Chai:</cite> Karen Zack's Animals vs Food prompted a an actual AI challenge<br>
+<span id=x065>… humans don't have too much difficulty doing the difference, but while many models are able to perform, they tend to give results with some level of uncertainty</span><br>
+<span id=x066>… showing the importance of reliability across hardware</span></p>
+<p id=x067 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=4">[ Slide 4 ]</a></p>
+<p id=x077 class="phone s02"><cite>Chai:</cite> when we run the results of ML models, there are 4 groups of variability<br>
+<span id=x078>… the most obvious one is precision differences - half vs double precision will give different results</span><br>
+<span id=x079>… most models run with single precision float, but many will run with half</span><br>
+<span id=x080>… Another bucket is hardware differences - even looking at CPU &amp; GPUs, different chipset may have slightly different ways of computing and calculating FP operations</span><br>
+<span id=x081>… accelerators are often DSP based; some may rely on fixed point calculation, implying conversion, to very different type of formats (e.g. 12.12, 10.10)</span><br>
+<span id=x082>… A third source of variability is linked to algorithmic differences</span><br>
+<span id=x083>… there are different ways of implementing convolutions, leading to different results</span><br>
+<span id=x084>… Finally, there is numerical variability - even on the same hardware, running floating point calculation, there may be slight difference across runs</span><br>
+<span id=x085>… and that can be amplified by issues of lossy conversion between floating point to fixed point,</span><br>
+<span id=x086>… these issues compound one with another, so there is no guarantee of reproducible results</span></p>
+<p id=x087 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=5">[ Slide 5 ]</a></p>
+<p id=x098 class="phone s02"><cite>Chai:</cite> how do we deal with that in testing?<br>
+<span id=x099>… Many test frameworks use fuzzy comparison that provides an upper boundary (called epsilon) to an acceptable margin of differences</span><br>
+<span id=x100>… the problem of that approach in ML is that it doesn't deal with the source of variabilities we identified</span><br>
+<span id=x101>… A better way of comparing floating point values is based on ULP, unit of least precision</span><br>
+<span id=x102>… the distance measured between consecutive floating point values</span><br>
+<span id=x103>… a comparison between the binary representation of different floating point values, applicable to any float point format</span><br>
+<span id=x104>… Using ULP comparison removes the uncertainty on numerical differences</span><br>
+<span id=x105>… it also mitigates the hardware varaibility in terms of architectural differences because it compares the representations</span></p>
+<p id=x106 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=6">[ Slide 6 ]</a></p>
+<p id=x112 class="phone s02"><cite>Chai:</cite> this piece of code illustrates the ULP comparison<br>
+<span id=x113>… the compare function convert the floating point number into a bitwise value that is used to calculate the difference and how much ULP that represents</span><br>
+<span id=x114>… e.g. here, only a difference of 1 ULP is deemed acceptable</span><br>
+<span id=x115>… We use ULP to test DirectML</span><br>
+<span id=x116>… the actual floating point values from the tests are never the same</span></p>
+<p id=x117 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=7">[ Slide 7 ]</a></p>
+<p id=x124 class="phone s02"><cite>Chai:</cite> to make the comparison, you need to define a point of reference, which we call the baseline<br>
+<span id=x125>… the baseline is determined by the best known result for the computation, the ideal result</span><br>
+<span id=x126>… this serves as a stable invariant</span><br>
+<span id=x127>… for directML, we have computed standard results on a well-defined CPU with double precision float</span><br>
+<span id=x128>… we use that as our ideal baseline</span><br>
+<span id=x129>… we then define the tolerance in terms of ULP - the acceptable difference between what is and what should be (the baseline)</span><br>
+<span id=x130>… the key ideas here are #1 use the baseline, #2 define tolerance in terms of ULP</span></p>
+<p id=x131 class=summary><a class=islide href="https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf#page=8">[ Slide 8 ]</a></p>
+<p id=x141 class="phone s02"><cite>Chai:</cite> the strategy of constructing tests can be summarized in 5 recommendations:<br>
+<span id=x142>… we recommend testing both the model and the kernels</span><br>
+<span id=x143>… each operator should be tested separately, and on top of that, a set of models that exercise the API and run the results of the whole model</span><br>
+<span id=x144>… for object classification models, you would want to compare the top K results (e.g. 99% Chiwawa, 75% muffin)</span><br>
+<span id=x145>… making sure e.g. the 3 top answers are similar</span><br>
+<span id=x146>… it's possible to have tests passing at the kernel level, but failing at the model level</span><br>
+<span id=x147>… 2nd point: define an ideal baseline and ULP-based tolerance</span><br>
+<span id=x148>… you might have to fine-tune the tolerance for different kernels</span><br>
+<span id=x149>… e.g. addition should have very low ULP, vs square root or convolution</span></p>
+<p id=x157 class="phone s01"><cite>anssi:</cite> thanks for the presentation<br>
+<span id=x158>… highlights how different from usual Web API testing is in the field</span><br>
+<span id=x159>… most likely similarities are with GPU and graphic APIs</span><br>
+<span id=x160>… We've had some early experimentation with bringing tests to WPT, the cross-browser platform testing project that is integrated with CI</span></p>
+<p id=x161 class="phone s03"><cite>RafaelCintron:</cite> any recommendation in terms of ULP tolerance? what does it depend on?</p>
+<p id=x166 class="phone s02"><cite>Chai:</cite> simple operations like addition, low tolerance (e.g. 1 ULP)<br>
+<span id=x167>… for complex operations, the tolerance needs to be higher</span><br>
+<span id=x168>… sometimes, the specific range arises organically e.g. for convolution we've landed around 2-4</span><br>
+<span id=x169>… different APIs have different ULP tolerance, although they're likely using similar values</span></p>
+<p id=x170 class=irc><cite>&lt;rachel&gt;</cite> is precision testing necessary for all applications?</p>
+<p id=x171 class="phone s02"><cite>Chai:</cite> strategically, the best approach is to start with low tolerance (e.g. 1 ULP), and bump it based on real-world experience</p>
+<p id=x173 class="phone s04"><cite>Rachel:</cite> [from IRC] is precision testing necessary for all applications?</p>
+<p id=x180 class="phone s02"><cite>Chai:</cite> yes and no<br>
+<span id=x181>… you can't test every single model</span><br>
+<span id=x182>… testing the kernel, the implementation of the operators</span><br>
+<span id=x183>… with an extensive enough set of kernel testing, the model itself should end up OK</span><br>
+<span id=x184>… there are rare cases where the kernel tests are passing, but a given model on a given hardware will give slightly different results</span><br>
+<span id=x185>… but the risks of that are lower if the kernels are well tested</span></p>
+<p id=x188 class="phone s05"><cite>Ningxin:</cite> regarding the ideal baseline, for some operators like convolution, there can be different algorithms<br>
+<span id=x189>… what algorithm do you use for the ideal baseline?</span><br>
+<span id=x190>… Applying this to WebNN may be more challenging since there is no reference implementation to use as an ideal baseline</span></p>
+<p id=x197 class="phone s02"><cite>chai:</cite> for DirectML, we implement the reference implementation using the conceptual algorithm in a CPU with double precision<br>
+<span id=x198>… this is not what you would get from a real world implementation, but we use that as a reference</span><br>
+<span id=x199>… For WebNN, we may end up needing a set of reference implementations to serve as a point of comparison</span><br>
+<span id=x200>… there is no shortcut around that</span><br>
+<span id=x201>… having some open source code available somewhere would be good</span><br>
+<span id=x202>… but no matter what, you have to establish the ideal goal post</span></p>
+<h4 id=t02>Web Platform Tests</h4>
+<p id=x204 class="phone s06"><cite>FengDai:</cite> I work on testing for WebNN API and have a few slides on status for WPT tests</p>
+<p id=x205 class=summary>Slideset: fengdaislides</p>
+<p id=x206 class=summary>[slide 3]</p>
+<p id=x209 class="phone s06"><cite>FengDai:</cite> 353 tests available for idlharess<br>
+<span id=x210>… we've ported 800 test cases built for the WebNN polyfill to the WPT harness</span><br>
+<span id=x211>… this includes 740 operator tests (340 from ONNX, 400 from Android NNAPI)</span></p>
+<p id=x212 class=summary><a href="https://brucedai.github.io/wpt/webnn/">WebNN WPT tests (preview in staging)</a></p>
+<p id=x215 class="phone s06"><cite>FengDai:</cite> for 60 models tests use baseline calculated from native frameworks<br>
+<span id=x216>… the tests are available as preview on my github repo</span></p>
+<p id=x217 class=summary>[slide 4]</p>
+<p id=x219 class="phone s01"><cite>Anssi:</cite> thanks for the great work - the pull request is under review, correct?<br>
+<span id=x220>… any blocker?</span></p>
+<p id=x222 class="phone s06"><cite>FengDai:</cite> there are different accuracy settings, data types across tests<br>
+<span id=x223>… this matches the challenges Chai mentioned</span></p>
+<p id=x224 class="phone s01"><cite>Anssi:</cite> the good next step might to join one of the WG meeting to discuss this in more details</p>
+<p id=x230 class="phone s02"><cite>Chai:</cite> thanks Bruce for the work! WPT right now relies on fuzzy comparison<br>
+<span id=x231>… this means we'll need to change WPT to incorporate ULP comparison</span><br>
+<span id=x232>… hopefully that shouldn't be too much code change</span></p>
+<p id=x233 class="phone s06"><cite>FengDai:</cite> thanks, indeed</p>
+</section>
+
+<section>
+<h3 id=t03>Ethical issues in using Machine Learning on the Web</h3>
+<p id=x235 class=summary><a href="https://webmachinelearning.github.io/ethical-webmachinelearning/">Ethical Web Machine Learning Editors draft</a></p>
+<p id=x239 class="phone s01"><cite>Anssi:</cite> this is a document that I put in place a few weeks ago<br>
+<span id=x240>… the WG per its charter is committed to document ethical issues in using ML on the Web as a WG Note</span><br>
+<span id=x241>… this is a first stab</span><br>
+<span id=x242>… big disclaimer: I'M NOT AN EXPERT IN ETHICS</span></p>
+<p id=x243 class=summary><a href="https://webmachinelearning.github.io/ethical-webmachinelearning/">Ethical Web Machine Learning</a></p>
+<p id=x256 class="phone s01"><cite>Anssi:</cite> we're looking for people with expertise to help<br>
+<span id=x257>… this hasn't been reviewed by the group yet</span><br>
+<span id=x258>… [reviews the content of the document]</span><br>
+<span id=x259>… ML is a powerful technology, enables new compelling UX that were thought as magic and are now becoming commonplace</span><br>
+<span id=x260>… these technologies are reshaping the world</span><br>
+<span id=x261>… the algorithms that underline ML are largely invisible to users, opaque and sometimes wrong</span><br>
+<span id=x262>… they cannot be introspected but sometimes are assumed to be always trustworthy</span><br>
+<span id=x263>… this is why it is important to consider ethical issues in the design phase of the technology</span><br>
+<span id=x264>… it's important that we understand the limitations of the technology</span><br>
+<span id=x265>… the document then reviews different branches of ethics: information ethics, computer ethics, machine ethics</span><br>
+<span id=x266>… there is related work in W3C</span><br>
+<span id=x267>… e.g. the horizontal review work on privacy, accessibility</span><br>
+<span id=x268>… and the TAG work on ethical web principles</span></p>
+<p id=x269 class=summary><a href="https://www.w3.org/Privacy/">Privacy-by-design web standards</a></p>
+<p id=x270 class=summary><a href="https://www.w3.org/standards/webdesign/accessibility">Accessibility techniques to support social inclusion</a></p>
+<p id=x271 class=summary><a href="https://w3ctag.github.io/ethical-web-principles/">W3C TAG Ethical Web Principles</a></p>
+<p id=x278 class="phone s01"><cite>Anssi:</cite> the document is focusing on ethical issues at the intersection of Web &amp; ML<br>
+<span id=x279>… there are positive aspects to client-side ML: increased privacy, and reduced risk of single-point-of-failure and distributed control</span><br>
+<span id=x280>… it allows to bring progressive enhancement in this space</span><br>
+<span id=x281>… Browsers may also help increasing transparency, pushing for greater explainability</span><br>
+<span id=x282>… in the spirit of &quot;view source&quot;</span><br>
+<span id=x283>… I've looked at different litterature studies in this space</span></p>
+<p id=x290 class="phone s04"><cite>Rachel:</cite> I'm interested in this and suggesting including a research into thinking of corporations<br>
+<span id=x291>… many companies have efforts for responsible AI, so engaging with them is interesting</span><br>
+<span id=x292>… focusing on human perspective of this may be a good focus</span><br>
+<span id=x293>… can work with W3C Chapter to bring interested folks from that group into this discussion</span></p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+>scribe.perl</a> version slide-shower-184 (Tue Nov 30 23:12:07 2021 UTC).</address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Succeeded: s/Fang/Feng</p>
+<p class=warning>Succeeded: s/fferent/fference/</p>
+<p class=warning>Succeeded: s|chaislides|https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf</p>
+<p class=warning>Succeeded: s/powerful document/powerful technology</p>
+<p class=warning>Maybe present: Anssi, Chai, FengDai, Ningxin, Rachel, RafaelCintron</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+13:50:24 <RRSAgent> RRSAgent has joined #webmachinelearning
+13:50:24 <RRSAgent> logging to https://www.w3.org/2021/10/28-webmachinelearning-irc
+13:50:26 <Zakim> RRSAgent, make logs Public
+13:50:27 <Zakim> please title this meeting ("meeting: ..."), anssik
+13:50:29 <anssik> Meeting: WebML WG Virtual Meeting at TPAC 2021 - Day 3
+13:50:33 <anssik> Chair: Anssi
+13:50:38 <anssik> Agenda: https://github.com/webmachinelearning/meetings/issues/18
+13:50:45 <anssik> Present+ Anssi_Kostiainen
+13:57:41 <anssik> Present+ Eric_Meyer
+13:58:03 <anssik> Present+ Rachel_Yager
+13:58:15 <anssik> Scribe: Anssi
+13:58:19 <anssik> scribeNick: anssik
+13:59:43 <ningxin_hu> ningxin_hu has joined #webmachinelearning
+14:00:23 <anssik> Present+ Ningxin_Hu
+14:01:04 <anssik> Present+ Fang_Dai
+14:01:11 <anssik> Present+ Junwei_Fu
+14:01:23 <anssik> Present+ Rafael_Cintron
+14:01:31 <Geun-Hyung> Geun-Hyung has joined #webmachinelearning
+14:01:31 <anssik> Present+ Wanming
+14:01:34 <RafaelCintron> RafaelCintron has joined #webmachinelearning
+14:01:37 <Geun-Hyung> present+
+14:01:43 <zkis> zkis has joined #webmachinelearning
+14:01:55 <anssik> Present+ Zoltan_Kis
+14:02:16 <anssik> Present+ Chai_Chaoweeraprasit
+14:02:29 <anssik> Present+ Geun-Hyung_Kim
+14:02:38 <anssik> Present+ Belem_Zhang
+14:03:25 <anssik> Present+ Takio_Yamaoka
+14:03:53 <rachel> rachel has joined #webmachinelearning
+14:04:25 <Chai> Chai has joined #webmachinelearning
+14:04:55 <takio> takio has joined #webmachinelearning
+14:06:03 <belem_zhang> belem_zhang has joined #webmachinelearning
+14:06:28 <anssik> Topic: Conformance testing of WebNN API
+14:06:59 <anssik> Present+ Dom
+14:07:01 <dom> scribe+
+14:07:49 <dom> s/Fang/Feng
+14:07:53 <dom> Present+ Wanming
+14:08:19 <dom> Anssi: interoperability testing helps ensure compatibility among existing and future implementations
+14:08:46 <dom> ... in the context of ML, reaching interop is not necessarily easy given the variety of underlying hardware
+14:09:03 <dom> ... Chai is involved in Microsoft DirectML and has experience in this space
+14:09:29 <dom> Slideset: chaislides
+14:09:39 <dom> [slide 1]
+14:09:54 <dom> Chai: conformance testing of ML APIs is quite important
+14:09:56 <dom> [slide 2]
+14:10:07 <dom> chai: the problems can be categorized into 3 categories:
+14:10:22 <dom> ... the ML models need to run on a wide variety of specialized hardware
+14:10:25 <anssik> Present+ Judy_Brewer
+14:10:39 <anssik> RRSAgent, draft minutes
+14:10:39 <RRSAgent> I have made the request to generate https://www.w3.org/2021/10/28-webmachinelearning-minutes.html anssik
+14:10:39 <dom> ... my work with DirectML is at the lowest level before the hardware in the windows OS
+14:10:47 <dom> ... windows has a very broad scale of hardware
+14:10:56 <dom> ... esp with specialized accelerators
+14:11:06 <dom> ... they don't share the same architecture and have very different approach to computation
+14:11:21 <dom> ... ensuring the quality of results across this hardware is really important
+14:11:39 <dom> ... another issue is that most modern AI computation relies on floating point calculation
+14:12:05 <dom> ... FP calculation with real numbers accumulate errors as you progress in the computation - that's a fact of life
+14:12:19 <dom> ... there are trimming problems which create challenges in testing the results of ML API across hardware
+14:12:35 <dom> ... this is a daily issue in my work testing Direct ML
+14:12:39 <dom> [slide 3]
+14:13:10 <dom> Chai: Karen Zack's Animals vs Food prompted a an actual AI challenge
+14:13:50 <dom> ... humans don't have too much difficulty doing the difference, but while many models are able to perform, they tend to give results with some level of uncertainty
+14:13:59 <dom> ... showing the importance of reliability across hardware
+14:14:11 <dom> [slide 4]
+14:14:23 <dom> Chai: when we run the results of ML models, there are 4 groups of variability
+14:14:45 <dom> ... the most obvious one is precision differences - half vs double precision will give different results
+14:15:03 <dom> ... most models run with single precision float, but many will run with half
+14:15:32 <dom> ... Another bucket is hardware differences - even looking at CPU & GPUs, different chipset may have slightly different ways of computing and calculating FP operations
+14:16:21 <dom> ... accelerators are often DSP based; some may rely on fixed point calculation, implying conversion, to very different type of formats (e.g. 12.12, 10.10)
+14:16:37 <dom> ... A third source of variability is linked to algorithmic differences
+14:17:18 <dom> ... there are different ways of implementing convolutions, leading to different results
+14:17:47 <dom> ... Finally, there is numerical variability - even on the same hardware, running floating point calculation, there may be slight difference across runs
+14:18:17 <dom> ... and that can be amplified by issues of lossy conversion between floating point to fixed point,
+14:18:38 <dom> ... these issues compound one with another, so there is no guarantee of reproducible results
+14:18:40 <dom> [slide 5]
+14:18:53 <dom> Chai: how do we deal with that in testing?
+14:19:39 <anssik> q?
+14:19:46 <dom> ... Many test frameworks use fuzzy comparison that provides an upper boundary (called epsilon) to an acceptable margin of differences
+14:20:00 <anssik> q+ to ask how to use the queue :-)
+14:20:06 <anssik> q- anssik
+14:20:19 <dom> ... the problem of that approach in ML is that it doesn't deal with the source of variabilities we identified
+14:21:03 <dom> ... A better way of comparing floating point values is based on ULP, unit of least precision
+14:21:18 <dom> ... the distance measured between consecutive floating point values
+14:21:48 <dom> ... a comparison between the binary representation of different floating point values, applicable to any float point format
+14:22:20 <dom> ... Using ULP comparison removes the uncertainty on numerical differences
+14:22:38 <dom> ... it also mitigates the hardware varaibility in terms of architectural differences because it compares the representations
+14:22:45 <dom> [slide 6]
+14:23:01 <dom> Chai: this piece of code illustrates the ULP comparison
+14:23:40 <dom> ... the compare function convert the floating point number into a bitwise value that is used to calculate the difference and how much ULP that represents
+14:23:58 <dom> ... e.g. here, only a different of 1 ULP is deemed acceptable
+14:24:11 <dom> s/fferent/fference/
+14:24:28 <dom> ... We use ULP to test DirectML
+14:24:43 <dom> ... the actual floating point values from the tests are never the same
+14:24:45 <dom> [slide 7]
+14:25:06 <dom> Chai: to make the comparison, you need to define a point of reference, which we call the baseline
+14:25:31 <dom> ... the baseline is determined by the best known result for the computation, the ideal result
+14:25:38 <dom> ... this serves as a stable invariant
+14:26:11 <dom> ... for directML, we have computed standard results on a well-defined CPU with double precision float
+14:26:20 <dom> ... we use that as our ideal baseline
+14:26:50 <dom> ... we then define the tolerance in terms of ULP - the acceptable difference between what is and what should be (the baseline)
+14:27:16 <dom> ... the key ideas here are #1 use the baseline, #2 define tolerance in terms of ULP
+14:27:35 <dom> [slide 8]
+14:27:54 <dom> Chai: the strategy of constructing tests can be summarized in 5 recommendations:
+14:28:12 <dom> ... we recommend testing both the model and the kernels
+14:28:41 <dom> ... each operator should be tested separately, and on top of that, a set of models that exercise the API and run the results of the whole model
+14:29:11 <dom> ... for object classification models, you would want to compare the top K results (e.g. 99% Chiwawa, 75% muffin)
+14:29:34 <dom> ... making sure e.g. the 3 top answers are similar
+14:30:15 <dom> ... it's possible to have tests passing at the kernel level, but failing at the model level
+14:30:25 <anssik> q?
+14:30:29 <dom> ... 2nd point: define an ideal baseline and ULP-based tolerance
+14:31:17 <dom> ... you might have to fine-tune the tolerance for different kernels
+14:31:40 <dom> ... e.g. addition should have very low ULP, vs square root or convolution
+14:31:45 <anssik> q?
+14:31:54 <RafaelCintron> q+
+14:32:08 <dom> anssi: thanks for the presentation
+14:32:22 <dom> ... highlights how different from usual Web API testing is in the field
+14:32:30 <ningxin_hu> q+
+14:32:40 <dom> ... most likely similarities are with GPU and graphic APIs
+14:33:08 <anssik> ack RafaelCintron
+14:33:09 <dom> ... We've had some early experimentation with bringing tests to WPT, the cross-browser platform testing project that is integrated with CI
+14:34:36 <dom> RafaelCintron: any recommendation in terms of ULP tolerance? what does it depend on?
+14:34:57 <dom> Chai: simple operations like addition, low tolerance (e.g. 1 ULP)
+14:35:06 <dom> ... for complex operations, the tolerance needs to be higher
+14:35:34 <dom> ... sometimes, the specific range arises organically e.g. for convolution we've landed around 2-4
+14:35:36 <rachel> q+
+14:36:01 <dom> ... different APIs have different ULP tolerance, although they're likely using similar values
+14:36:11 <rachel> is precision testing necessary for all applications?
+14:36:59 <dom> Chai: strategically, the best approach is to start with low tolerance (e.g. 1 ULP), and bump it based on real-world experience
+14:37:06 <anssik> ack rachel
+14:37:19 <dom> Rachel: [from IRC] is precision testing necessary for all applications?
+14:37:22 <dom> Chai: yes and no
+14:37:28 <dom> ... you can't test every single model
+14:37:42 <dom> ... testing the kernel, the implementation of the operators
+14:37:55 <dom> ... with an extensive enough set of kernel testing, the model itself should end up OK
+14:38:17 <dom> ... there are rare cases where the kernel tests are passing, but a given model on a given hardware will give slightly different results
+14:39:14 <anssik> ack ningxin_hu
+14:39:24 <dom> ... but the risks of that are lower if the kernels are well tested
+14:39:51 <dom> Ningxin: regarding the ideal baseline, for some operators like convolution, there can be different algorithms
+14:40:00 <dom> ... what algorithm do you use for the ideal baseline?
+14:40:26 <dom> ... Applying this to WebNN may be more challenging since there is no reference implementation to use as an ideal baseline
+14:40:58 <dom> chai: for DirectML, we implement the reference implementation using the conceptual algorithm in a CPU with double precision
+14:41:17 <dom> ... this is not what you would get from a real world implementation, but we use that as a reference
+14:41:30 <dom> ... For WebNN, we may end up needing a set of reference implementations to serve as a point of comparison
+14:41:37 <dom> ... there is no shortcut around that
+14:41:47 <dom> ... having some open source code available somewhere would be good
+14:41:51 <anssik> q?
+14:41:57 <dom> ... but no matter what, you have to establish the ideal goal post
+14:42:45 <dom> Subtopic: Web Platform Tests
+14:43:20 <dom> FengDai: I work on testing for WebNN API and have a few slides on status for WPT tests
+14:43:29 <dom> Slideset: fengdaislides
+14:43:34 <dom> [slide 3]
+14:44:21 <dom> FengDai: 353 tests available for idlharess
+14:44:40 <dom> ... we've ported 800 test cases built for the WebNN polyfill to the WPT harness
+14:45:42 <dom> ... this includes 740 operator tests (340 from ONNX, 400 from Android NNAPI)
+14:45:45 <anssik> -> https://brucedai.github.io/wpt/webnn/ WebNN WPT tests (preview in staging)
+14:45:59 <dom> ... for 60 models tests use baseline calculated from native frameworks
+14:46:04 <anssik> q?
+14:46:15 <dom> ... the tests are available as preview on my github repo
+14:46:24 <dom> [slide 4]
+14:46:38 <dom> Anssi: thanks for the great work - the pull request is under review, correct?
+14:46:53 <dom> ... any blocker?
+14:47:24 <dom> FengDai: there are different accuracy settings, data types across tests
+14:47:29 <dom> ... this matches the challenges Chai mentioned
+14:47:55 <dom> Anssi: the good next step might to join one of the WG meeting to discuss this in more details
+14:48:04 <anssik> q?
+14:48:09 <Chai> q+
+14:48:12 <anssik> ack Chai
+14:48:44 <dom> Chai: thanks Bruce for the work! WPT right now relies on fuzzy comparison
+14:49:00 <dom> ... this means we'll need to change WPT to incorporate ULP comparison
+14:49:07 <dom> ... hopefully that shouldn't be too much code change
+14:49:20 <dom> FengDai: thanks, indeed
+14:49:48 <dom> Topic: Ethical issues in using Machine Learning on the Web
+14:50:20 <dom> -> https://webmachinelearning.github.io/ethical-webmachinelearning/ Ethical Web Machine Learning Editors draft
+14:50:31 <dom> Anssi: this is a document that I put in place a few weeks ago
+14:50:47 <dom> ... the WG per its charter is committed to document ethical issues in using ML on the Web as a WG Note
+14:50:56 <dom> ... this is a first stab
+14:51:05 <dom> ... big disclaimer: I'M NOT AN EXPERT IN ETHICS
+14:51:13 <anssik> -> https://webmachinelearning.github.io/ethical-webmachinelearning/ Ethical Web Machine Learning
+14:51:21 <dom> ... we're looking for people with expertise to help
+14:51:30 <dom> ... this hasn't been reviewed by the group yet
+14:51:43 <dom> ... [reviews the content of the document]
+14:52:09 <dom> ... ML is a powerful document, enables new compelling UX that were thought as magic and are now becoming commonplace
+14:52:26 <dom> ... these technologies are reshaping the world
+14:52:50 <dom> ... the algorithms that underline ML are largely invisible to users, opaque and sometimes wrong
+14:53:06 <dom> ... they cannot be introspected but sometimes are assumed to be always trustworthy
+14:53:55 <dom> ... this is why it is important to consider ethical issues in the design phase of the technology
+14:55:04 <dom> ... it's important that we understand the limitations of the technology
+14:55:19 <dom> ... the document then reviews different branches of ethics: information ethics, computer ethics, machine ethics
+14:57:00 <dom> ... there is related work in W3C
+14:57:16 <dom> ... e.g. the horizontal review work on privacy, accessibility
+14:57:19 <dom> ... and the TAG work on ethical web principles
+14:57:23 <anssik> -> https://www.w3.org/Privacy/ Privacy-by-design web standards
+14:57:28 <anssik> -> https://www.w3.org/standards/webdesign/accessibility Accessibility techniques to support social inclusion
+14:57:33 <anssik> -> https://w3ctag.github.io/ethical-web-principles/ W3C TAG Ethical Web Principles
+14:57:57 <dom> ... the document is focusing on ethical issues at the intersection of Web & ML
+14:58:38 <dom> s|chaislides|https://lists.w3.org/Archives/Public/www-archive/2021Oct/att-0017/Conformance_Testing_of_Machine_Learning_API.pdf
+14:59:17 <dom> ... there are positive aspects to client-side ML: increased privacy, and reduced risk of single-point-of-failure and distributed control
+14:59:31 <dom> ... it allows to bring progressive enhancement in this space
+14:59:47 <dom> ... Browsers may also help increasing transparency, pushing for greater explainability
+14:59:55 <dom> ... in the spirit of "view source"
+15:00:36 <dom> ... I've looked at different litterature studies in this space
+15:03:29 <anssik> q?
+15:05:10 <anssik> Rachel: I'm interested in this and suggesting including a research into thinking of corporations
+15:05:33 <anssik> ... many companies have efforts for responsible AI, so engaging with them is interesting
+15:05:47 <dom> RRSAgent, draft minutes v-slide
+15:05:47 <RRSAgent> I have made the request to generate https://www.w3.org/2021/10/28-webmachinelearning-minutes.html dom
+15:06:43 <anssik> ... focusing on human perspective of this may be a good focus
+15:08:37 <anssik> ... can work with W3C Chapter to bring interested folks from that group into this discussion
+15:18:15 <anssik> RRSAgent, draft minutes v-slide
+15:18:15 <RRSAgent> I have made the request to generate https://www.w3.org/2021/10/28-webmachinelearning-minutes.html anssik
+15:19:12 <anssik> s/powerful document/powerful technology
+15:19:14 <anssik> RRSAgent, draft minutes v-slide
+15:19:14 <RRSAgent> I have made the request to generate https://www.w3.org/2021/10/28-webmachinelearning-minutes.html anssik
+15:21:40 <takio> takio has left #webmachinelearning
+15:24:58 <zkis> zkis has joined #webmachinelearning
+17:26:00 <Zakim> Zakim has left #webmachinelearning
+17:31:05 <zkis> zkis has joined #webmachinelearning
+17:32:35 <zkis> zkis has joined #webmachinelearning
+19:16:25 <zkis> zkis has joined #webmachinelearning
