@@ -630,17 +630,17 @@ sub delete_scribes($$)
   # We may assume $names matches zero or more comma-separated $scribepat
   foreach (split(/ *, */, $names)) {	# Split at commas
     my ($nick, $real) = /^$scribepat$/;	# Split into name and real name
-    my $n = fc($nick =~ s/_+$//r);	# Case-sensitive, without trailing _
+    my $n = fc($nick =~ s/_+$//r);	# Case-insensitive, without trailing _
     delete $$curscribes_ref{$n};	# Remove from curscribes
   }
 }
 
 
 # Main body
-my $revision = '$Revision: 162 $'
+my $revision = '$Revision: 163 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Nov 17 13:09:31 2021 UTC $'
+my $versiondate = '$Date: Tue Nov 30 15:10:46 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
