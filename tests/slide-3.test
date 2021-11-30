@@ -17,6 +17,6 @@ perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
 cat $TMP2
 
 grep -E '<a href="https://example.org/">A slideset</a>' $TMP2 || exit 1
-grep -E '<i-slide src="https://example.org/#1">' $TMP2 || exit 1
-grep -E '<i-slide src="https://example.net/#3">' $TMP2 || exit 1
+grep -E '<a class=islide href="https://example.org/#1">' $TMP2 || exit 1
+grep -E '<a class=islide href="https://example.net/#3">' $TMP2 || exit 1
 exit 0

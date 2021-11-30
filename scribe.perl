@@ -104,6 +104,8 @@
 # If type is 'slideset', <text> is the IRC-formatted link to the slideset
 # If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
 # If type is 'D' (description) <text> is verbatim text by the scribe.
+# If type is 'slideset', <text> is the IRC-formatted link to the slideset
+# If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'T' (subtopic), <text> is the title for a new subtopic.
 # If type is 'a' (action), <text> is an action and <id> is a unique ID.
@@ -155,7 +157,7 @@ my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			#  string is i-slide library URL
-  'https://w3c.github.io/i-slide/i-slide-1.js';
+  'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
@@ -643,10 +645,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: slide-shower-170 $'
+my $revision = '$Revision: slide-shower-171 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Nov 17 13:04:38 2021 UTC $'
+my $versiondate = '$Date: Tue Nov 30 14:07:52 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1300,7 +1302,7 @@ my %linepat = (
   T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
-  slide => ["<p class=summary><i-slide src=\"%2\$s\">[ <a href=\"%2\$s\">Slide %3\$s</a> ]</i-slide></p>\n", 1],
+  slide => ["<p class=summary><a class=islide href=\"%2\$s\">[ Slide %3\$s ]</a></p>\n", 1],
     );
 
 my $minutes = '';
