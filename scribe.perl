@@ -101,8 +101,6 @@
 # If type is 'I' (irc), <speaker> is the person who typed verbatim <text>.
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
-# If type is 'slideset', <text> is the IRC-formatted link to the slideset
-# If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
 # If type is 'D' (description) <text> is verbatim text by the scribe.
 # If type is 'slideset', <text> is the IRC-formatted link to the slideset
 # If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
@@ -645,10 +643,10 @@ sub delete_scribes($$)
 
 
 # Main body
-my $revision = '$Revision: slide-shower-171 $'
+my $revision = '$Revision: slide-shower-180 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Nov 30 14:07:52 2021 UTC $'
+my $versiondate = '$Date: Tue Nov 30 14:20:34 2021 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
