@@ -64,6 +64,8 @@
 
     <li><a href="#images">Embedding images</a> &nbsp;&bull;&nbsp;
 
+    <li><a href="#slides">Embedding slides</a> &nbsp;&bull;&nbsp;
+      
     <li><a href="#editing_the_log">Editing the Log</a>
      &nbsp;&bull;&nbsp;
 
@@ -109,8 +111,8 @@
   href="#input_formats" >Input Formats</a> section.)
 
   <p>Scribe.perl supports <a href="#links"
-   >links</a>, <a href="#images" >images</a>, <a href="#topic"
-   >subsections</a> and even <a href="#emphasis" >math</a>!
+   >links</a>, <a href="#images" >images</a>, <a href="#slides">slides</a>,
+   <a href="#topic">subsections</a> and even <a href="#emphasis" >math</a>!
 
   <p>Some sample outputs: <a href="sample-public.html" >default
   style</a>, <a href="sample-member.html" >with option -member</a>, <a
@@ -1259,6 +1261,21 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
   <p>The anchor text becomes the image's text alternative (‘alt
   text’). There is no way to specify a caption.</p>
+
+  <h2 id="slides">Embedding slides</h2>
+
+  <p>You can embed slides in the minutes if they are in a supported format.
+  The list of supported formats depends on the <a href="https://github.com/w3c/i-slide#supported-slide-formats">i-slide library</a>, and includes PDF, and the HTML-based <a href="https://shwr.me/">Shower</a> and <a href="https://www.w3.org/Talks/Tools/b6plus/">b6+</a>.</p>
+  <p>To use this, the slideset from which the slides will be embedded needs to be set with:</p>
+  <pre class=command>
+&lt;dbooth&gt; Slideset: https://www.w3.org/Talks/Tools/b6plus/
+</pre>
+
+  <p>Then an individual slide can be embedded using the convention <code>[Slide <var>n</var>]</code> where <var>n</var> is the slide number in the slideset.</p>
+<pre class=command>
+&lt;dbooth&gt; [Slide 2]
+&lt;dbooth&gt; Dom: as this slide illustrates, scribing is awesome
+</pre>
 
   <h2 id="editing_the_log">Manually Editing the Log</h2>
 
