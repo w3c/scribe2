@@ -2,7 +2,7 @@
 13:50:24 <RRSAgent> logging to https://www.w3.org/2021/10/28-webmachinelearning-irc
 13:50:26 <Zakim> RRSAgent, make logs Public
 13:50:27 <Zakim> please title this meeting ("meeting: ..."), anssik
-13:50:29 <anssik> Meeting: WebML WG Virtual Meeting at TPAC 2021 - Day 3
+13:50:29 <anssik> Meeting: Sample meeting with slides
 13:50:33 <anssik> Chair: Anssi
 13:50:38 <anssik> Agenda: https://github.com/webmachinelearning/meetings/issues/18
 13:50:45 <anssik> Present+ Anssi_Kostiainen
