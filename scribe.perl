@@ -102,6 +102,7 @@
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
 # If type is 'D' (description) <text> is verbatim text by the scribe.
+# If type is 'recording', <text> is the IRC-formatted link to the recording of the meeting
 # If type is 'slideset', <text> is the IRC-formatted link to the slideset
 # If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
 # If type is 't' (topic), <text> is the title for a new topic.
@@ -123,7 +124,7 @@ use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
 use locale ':collate';		# Sort using current locale
 use open ':encoding(UTF-8)';	# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
-
+use File::Basename;
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
 my $urlpat =
@@ -162,6 +163,7 @@ my $has_math = 0;		# Set to 1 by to_mathml()
 my @diagnostics;		# Collected warnings and other info
 
 my $has_slideset = 0;		# Set to 1 when at least one Slideset: is found
+my $has_recording = 0;		# Set to 1 when a recording is set
 
 # Each parser takes a reference to an array of text lines (without
 # newlines) and a reference to an array of records. It returns 0
@@ -192,8 +194,8 @@ sub RRSAgent_text_format($$)
   foreach (@$lines_ref) {
     if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (?:joined|left|changed the topic to:) /) {
       # Ignore lines like "<jfm> jfm has joined #foo"
-    } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    } elsif (/^(\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
+      push(@$records_ref, {type=>'i', id=>'', speaker=>$2, text=>$3, time=>$1});
     } elsif (/^\s*$/) {
       # Ignore empty lines
     } else {
@@ -214,10 +216,10 @@ sub Bip_Format($$)
       # IRC server message, ignore
     } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d [<>] \* /) {
       # /me message, ignore
-    } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d < ([^ !:]+)![^ :]+: (.*)$/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
-    } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d > ([^ :]+): (.*)$/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    } elsif (/^\d\d-\d\d-\d{4} (\d\d:\d\d:\d\d) < ([^ !:]+)![^ :]+: (.*)$/) {
+      push(@$records_ref, {type=>'i', id=>'', speaker=>$2, text=>$3, time=>$1});
+    } elsif (/^\d\d-\d\d-\d{4} (\d\d:\d\d:\d\d) > ([^ :]+): (.*)$/) {
+      push(@$records_ref, {type=>'i', id=>'', speaker=>$2, text=>$3, time=>$1});
     } elsif (/^\s*$/) {
       # Ignore empty lines
     } else {
@@ -323,8 +325,8 @@ sub Qwebirc_paste_format($$)
     next if /^\[[0-9:]+\] ==/;	# Join, quit, change nick, change topic, mode
     next if /^\[[0-9:]+\] \*/;	# A message with /me
     next if /^\s*$/;		# Empty line
-    if (/^\[[0-9:]+\] <([^>]+)> (.*)$/) {
-      push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
+    if (/^\[([0-9:])+\] <([^>]+)> (.*)$/) {
+      push @$records_ref, {type=>'i', id=>'', speaker=>$2, text=>$3, time=>$1};
     } else {
       return 0;			# This is not qwebirc
     }
@@ -641,6 +643,42 @@ sub delete_scribes($$)
   }
 }
 
+# convert HH:MM:SS to seconds since midnight
+sub timestamp2seconds($)
+{
+  my ($timestamp) = @_;
+  my @comp = split(/:/, $timestamp);
+  return $comp[0]*3600+$comp[1]*60+$comp[2];
+}
+
+sub diff_timestamps($$) {
+  my ($ts1, $ts2) = @_;
+  my $s1 = timestamp2seconds($ts1);
+  my $s2 = timestamp2seconds($ts2);
+  # if the diff is more than 8 hours apart,
+  # we assume we're comparing across midnight
+  if ($s2 - $s1 < 0 && $s1 - $s2 > 8*3600) {
+      return $s2 + 24*3600 - $s1 ;
+  }
+  return $s2 - $s1;
+}
+
+# convert MM to full HH:MM:SS based on a given time reference
+# and assuming it's in the past hour
+sub minutes2timestamp($$)
+{
+  my ($minutes, $ref) = @_;
+  my ($H, $M, $S) = split(/:/, $ref);
+  if ($M < $minutes) {
+      if ($H > 0) {
+          $H -= 1;
+      } else {
+          $H = 23;
+      }
+  }
+  return $H . ":" . $minutes . ":" . $S;
+}
+
 
 # Main body
 my $revision = '$Revision: 185 $'
@@ -665,6 +703,9 @@ my %chairs;			# List of meeting chairs
 my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my $lastslideset;		# URL of the slideset being presented
+my $recording;         		# URL of the recording of the meeting
+my $recordingstart;         	# time of recording start
+my $recordingend;         	# time of recording end
 my $topicid = 't00';		# Generates unique ID for each topic
 my $actionid = 'a00';		# Generates unique ID for each action
 my $resolutionid = 'r00';	# Generates unique ID for each resolution
@@ -925,7 +966,6 @@ for (my $i = 0; $i < @records; $i++) {
     } else {
         $lastslideset = undef;
     }
-
   } elsif (/^ *\[ *slide *(\d+) *\] *$/i && $lastslideset) {
       $records[$i]->{type} = 'slide';	# Mark as slide line
       my $slidenumber = $1;
@@ -934,25 +974,75 @@ for (my $i = 0; $i < @records; $i++) {
 	  ($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
       $records[$i]->{text} = "$slidenumber";
 
+  } elsif (/^ *recording *: *(.*?) *$/i) {
+    $records[$i]->{type} = 'recording';	# Mark as recording line
+    $records[$i]->{text} = $1;
+    /^(.*?)($urlpat)(.*)$/i;
+    if ($2) {
+        $recording = $2;
+        $has_recording = 1;
+    }
+  } elsif (/^ *recording +is +starting *$/i || /^ *recording +starts *$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    if (!defined($recordingstart) && defined($records[$i]->{time})) {
+        $recordingstart = $records[$i]->{time};
+    }
+  } elsif (/^ *recording +started +at +:([0-9][0-9]) *$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    if (defined($records[$i]->{time})) {
+        $recordingstart = minutes2timestamp($1, $records[$i]->{time});
+    }
+
+  } elsif (/^ *recording +ends *$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    if (!defined($recordingend) && defined($records[$i]->{time})) {
+        $recordingend = $records[$i]->{time};
+    }
+  } elsif (/^ *recording +ended at + :([0-9][0-9]) *$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    if (defined($records[$i]->{time})) {
+        $recordingend = minutes2timestamp($1, $records[$i]->{time});
+    }
+
   } elsif (/^ *topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$topicid;	# Unique ID
+    if (defined($recordingstart) && defined($records[$i]->{time})) {
+        my $ts = $records[$i]->{time};
+        if (diff_timestamps($recordingstart, $ts) >= 0 && (!defined($recordingend) || diff_timestamps($ts, $recordingend) >= 0)) {
+            $records[$i]->{recordingoffset} = diff_timestamps($recordingstart, $ts);
+        }
+    }
 
   } elsif (/^ *sub-?topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 'T';		# Mark as subtopic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$topicid;	# Unique ID
+    if (defined($recordingstart) && defined($records[$i]->{time})) {
+        my $ts = $records[$i]->{time};
+        if (diff_timestamps($recordingstart, $ts) >= 0 && (!defined($recordingend) || diff_timestamps($ts, $recordingend) >= 0)) {
+            $records[$i]->{recordingoffset} = diff_timestamps($recordingstart, $ts);
+        }
+    }
 
   } elsif ($dash_topics && /^ *-+ *$/) {
+     my $topicfound = 0;
     for (my $j = $i + 1; $j < @records; $j++) {
       if ($records[$j]->{speaker} eq $records[$i]->{speaker}) {
 	$records[$i]->{type} = 't';
 	$records[$i]->{text} = $records[$j]->{text} =~ s/^ *(.*?) *$/$1/r;
 	$records[$i]->{id} = ++$topicid;
 	$records[$j]->{type} = 'o';
+        $topicfound = 1;
 	last;
       }
+    }
+    if ($topicfound && defined($recordingstart) && defined($records[$i]->{time})) {
+        my $ts = $records[$i]->{time};
+        if (diff_timestamps($recordingstart, $ts) >= 0 && (!defined($recordingend) || diff_timestamps($ts, $recordingend) >= 0)) {
+            $records[$i]->{recordingoffset} = diff_timestamps($recordingstart, $ts);
+        }
     }
 
   } elsif ($records[$i]->{speaker} eq 'RRSAgent' && / to generate ([^ #]+)/) {
@@ -1283,6 +1373,20 @@ push @diagnostics, "Maybe present: " .
 #
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
+my $embeddedRecording = $recording;
+my $canonicalRecording = $recording;
+if (defined($recording)) {
+    if ($recording =~ /^https:\/\/youtu\.be\/(.*)$/) {
+        $canonicalRecording = "https://youtube.com/watch?v=" . $1;
+    }
+    if ($canonicalRecording =~ /youtube\.com\/watch\?v=/) {
+        $embeddedRecording = $canonicalRecording =~ s/watch\?v=/embed\//r;
+        $embeddedRecording .= "?enablejsapi=1";
+    } elsif ($canonicalRecording =~ /watch\.videodelivery\.net\//) {
+        $embeddedRecording = $canonicalRecording =~ s/watch\./iframe\./r;
+    }
+}
+
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
   b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
@@ -1297,19 +1401,24 @@ my %linepat = (
   s => ["<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
   n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n", 0],
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
-  T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
-  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1],
+  T => ["<h4 id=%2\$s>%3\$s%6\$s</h4>\n", 1],
+  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
   slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[ Slide %3\$s ]</a></p>\n", 1],
+  recording => ["<div id=recording class=summary>Recording: %3\$s" . (defined($embeddedRecording) ? "<div class='video'><iframe src='" . $embeddedRecording ."' width=600 height=340 frameborder=0 allowfullscreen allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'></iframe></div>" : "") . "</div>\n", 0],
     );
 
 my $minutes = '';
 foreach my $p (@records) {
+  my $recordingPermalink = '';
+  if (defined($canonicalRecording) && defined($p->{recordingoffset})) {
+      $recordingPermalink = sprintf " <a href='%1\$s#t=%2\$s' rel='permalink' class='recording' title='matching video record'>🎬</a>", $canonicalRecording, $p->{recordingoffset};
+  }
   # The last part generates nothing, but avoids warnings for unused args.
-  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
+  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
       esc($p->{speaker}), $p->{id}, esc($p->{text},
 	$emphasis && $linepat{$p->{type}}[1], 1, 1),
-    $speakers{fc $p->{speaker}} // '', ++$lineid;
+    $speakers{fc $p->{speaker}} // '', ++$lineid, $recordingPermalink;
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
@@ -1362,6 +1471,16 @@ my $style = join("\n",
 my $scripts = !$emphasis || !$has_math ? ''
   : "<script src=\"$mathjax\" id=MathJax-script async></script>\n";
 $scripts .= ! $has_slideset ? '' : "<script type=\"module\" src=\"$islide\"></script>\n";
+if ($has_recording) {
+    open(FH, '<', dirname(__FILE__) . '/includes/videoembed.js') or die $!;
+    $scripts .= "<script type=\"module\">\n";
+    while(<FH>){
+        $scripts .= $_;
+    }
+    $scripts .= "</script>\n";
+    close(FH);
+}
+$style .= ! $has_recording ? '' : '<style>.video iframe { max-width: 100%; max-height: 100%; }  .video.stuck { position: fixed; bottom: 165px; right: 20px; width: 260px; height: 145px; transform: translateY(100%);}</style>';
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
 $logo = '' if !defined $logo && ($styleset eq 'fancy');
 $logo = "<p>$w3clogo</p>\n\n" if !defined $logo;

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Test if slide insertion works
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+12:00:00 <foo> scribeoptions : -dashtopics
+00:00:00 <foo> Recording: https://youtu.be/PjpACM_6IgM
+00:01:02 <foo> recording is starting
+01:03:04 <foo> ---
+01:03:10 <foo> First Topic
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+grep -E '<div id=recording class=summary>Recording: <a href="https://youtu.be/PjpACM_6IgM"' $TMP2 || exit 1
+grep -E "<iframe src='https://youtube.com/embed/PjpACM_6IgM\?enablejsapi=1'" $TMP2 || exit 1
+grep -E "<a href='https://youtube.com/watch\?v=PjpACM_6IgM#t=3722'" $TMP2 || exit 1
+ grep -E '<script type="module">' $TMP2 || exit 1
+exit 0
