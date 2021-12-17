@@ -1371,7 +1371,7 @@ my $embeddedRecording = $recording;
 my $canonicalRecording = $recording;
 if (defined($recording)) {
     if ($recording =~ /^https:\/\/youtu\.be\/(.*)$/) {
-        $canonicalRecording = "https://youtube.com/watch?v=" . $1;
+        $canonicalRecording = "https://www.youtube.com/watch?v=" . $1;
     }
     if ($canonicalRecording =~ /youtube\.com\/watch\?v=/) {
         $embeddedRecording = $canonicalRecording =~ s/watch\?v=/embed\//r;
@@ -1399,7 +1399,7 @@ my %linepat = (
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
   slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[ Slide %3\$s ]</a></p>\n", 1],
-  recording => ["<div id=recording class=summary>Recording: %3\$s" . (defined($embeddedRecording) ? "<div class='video'><iframe src='" . $embeddedRecording ."' width=600 height=340 frameborder=0 allowfullscreen allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'></iframe></div>" : "") . "</div>\n", 0],
+  recording => ["<div id=recording class=summary>Recording: %3\$s" . (defined($embeddedRecording) ? "<div class='video'><iframe src='" . $embeddedRecording ."' width=600 height=340 type='text/html' frameborder=0 allowfullscreen allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'></iframe></div>" : "") . "</div>\n", 0],
     );
 
 my $minutes = '';
@@ -1473,6 +1473,9 @@ my $scripts = !$emphasis || !$has_math ? ''
   : "<script src=\"$mathjax\" id=MathJax-script async></script>\n";
 $scripts .= ! $has_slideset ? '' : "<script type=\"module\" src=\"$islide\"></script>\n";
 if ($has_recording) {
+    if (defined($canonicalRecording) && $canonicalRecording =~ /^https:\/\/(www\.)?youtube\.com\//) {
+        $scripts .= '<script src="https://www.youtube.com/iframe_api"></script>';
+    }
     open(FH, '<', dirname(__FILE__) . '/includes/videoembed.js') or die $!;
     $scripts .= "<script type=\"module\">\n";
     while(<FH>){

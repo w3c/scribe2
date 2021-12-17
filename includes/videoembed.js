@@ -3,6 +3,31 @@ const recordingUrl = document.getElementById("recording")?.querySelector("a")?.h
 const embed = document.getElementById("recording")?.querySelector("iframe");
 let playing = false;
 
+// monitoring player state
+if (embed) {
+  if (embed.src.match(/^https:\/\/(www\.)?youtube\.com\//)) {
+    window.onYouTubeIframeAPIReady = () => {
+      embed.id = "player";
+      window.player = new YT.Player(embed.id);
+      window.player.addEventListener("onStateChange", e => {
+        if (e.data === YT.PlayerState.PLAYING) {
+          playing = true;
+        } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+          playing = false;
+        }
+      });
+    };
+  } else {
+    window.addEventListener("message", e => {
+      if (e.data[0] === "play") {
+        playing = true;
+      } else if (e.data[0] === "pause" || e.data[0] === "ended") {
+        playing = false;
+      }
+    });
+  }
+}
+
 const sendVideoCommand = (command, args) => {
   let msg;
   if (embed.src.match(/^https:\/\/(www\.)?youtube\.com\//)) {
