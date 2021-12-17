@@ -21,5 +21,6 @@ grep -E '<div id=recording class=summary>Recording: <a href="https://youtube.com
 grep -E "<iframe src='https://youtube.com/embed/PjpACM_6IgM\?enablejsapi=1'" $TMP2 || exit 1
 grep -E "<a href='https://youtube.com/watch\?v=PjpACM_6IgM#t=3122'" $TMP2 || exit 1
 grep -E "<a href='https://youtube.com/watch\?v=PjpACM_6IgM#t=3722'" $TMP2 || exit 1
- grep -E '<script type="module">' $TMP2 || exit 1
+grep -E "Second topic</h3>" $TMP2 || exit 1
+grep -E '<script type="module">' $TMP2 || exit 1
 exit 0

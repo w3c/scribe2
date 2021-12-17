@@ -668,7 +668,7 @@ sub diff_timestamps($$) {
 sub minutes2timestamp($$)
 {
   my ($minutes, $ref) = @_;
-  my ($H, $M, $S) = split(/:/, $ref);
+  my ($H, $M) = split(/:/, $ref);
   if ($M < $minutes) {
       if ($H > 0) {
           $H -= 1;
@@ -676,7 +676,7 @@ sub minutes2timestamp($$)
           $H = 23;
       }
   }
-  return $H . ":" . $minutes . ":" . $S;
+  return $H . ":" . $minutes . ":00";
 }
 
 
@@ -998,7 +998,7 @@ for (my $i = 0; $i < @records; $i++) {
     if (!defined($recordingend) && defined($records[$i]->{time})) {
         $recordingend = $records[$i]->{time};
     }
-  } elsif (/^ *recording +ended at + :([0-9][0-9]) *$/i) {
+  } elsif (/^ *recording +ended +at +:([0-9][0-9]) *$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
     if (defined($records[$i]->{time})) {
         $recordingend = minutes2timestamp($1, $records[$i]->{time});
@@ -1008,12 +1008,6 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$topicid;	# Unique ID
-    if (defined($recordingstart) && defined($records[$i]->{time})) {
-        my $ts = $records[$i]->{time};
-        if (diff_timestamps($recordingstart, $ts) >= 0 && (!defined($recordingend) || diff_timestamps($ts, $recordingend) >= 0)) {
-            $records[$i]->{recordingoffset} = diff_timestamps($recordingstart, $ts);
-        }
-    }
 
   } elsif (/^ *sub-?topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 'T';		# Mark as subtopic line
@@ -1411,8 +1405,15 @@ my %linepat = (
 my $minutes = '';
 foreach my $p (@records) {
   my $recordingPermalink = '';
-  if (defined($canonicalRecording) && defined($p->{recordingoffset})) {
-      $recordingPermalink = sprintf " <a href='%1\$s#t=%2\$s' rel='bookmark' class='recording' title='matching video record'>🎬</a>", $canonicalRecording, $p->{recordingoffset};
+  my $offset;
+  if (defined($canonicalRecording) && defined($recordingstart) && defined($p->{time})) {
+      $offset = diff_timestamps($recordingstart, $p->{time});
+      if ($offset < 0 || (defined($recordingend) && diff_timestamps($p->{time}, $recordingend) < 0)) {
+          $offset = undef;
+      }
+  }
+  if (defined($offset)) {
+      $recordingPermalink = sprintf " <a href='%1\$s#t=%2\$s' rel='bookmark' class='recording' title='matching video record'>🎬</a>", $canonicalRecording, $offset;
   }
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
