@@ -1412,7 +1412,7 @@ my $minutes = '';
 foreach my $p (@records) {
   my $recordingPermalink = '';
   if (defined($canonicalRecording) && defined($p->{recordingoffset})) {
-      $recordingPermalink = sprintf " <a href='%1\$s#t=%2\$s' rel='permalink' class='recording' title='matching video record'>🎬</a>", $canonicalRecording, $p->{recordingoffset};
+      $recordingPermalink = sprintf " <a href='%1\$s#t=%2\$s' rel='bookmark' class='recording' title='matching video record'>🎬</a>", $canonicalRecording, $p->{recordingoffset};
   }
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
