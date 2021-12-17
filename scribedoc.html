@@ -65,7 +65,9 @@
     <li><a href="#images">Embedding images</a> &nbsp;&bull;&nbsp;
 
     <li><a href="#slides">Embedding slides</a> &nbsp;&bull;&nbsp;
-      
+
+    <li><a href="#recording">Embedding video recording</a> &nbsp;&bull;&nbsp;
+
     <li><a href="#editing_the_log">Editing the Log</a>
      &nbsp;&bull;&nbsp;
 
@@ -1276,6 +1278,29 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;dbooth&gt; [Slide 2]
 &lt;dbooth&gt; Dom: as this slide illustrates, scribing is awesome
 </pre>
+
+  <h2 id="recording">Embedding Video Recording</h2>
+
+  <p>You can document the video record of the meeting in the minutes: the said video will be embedded at the top of the minutes, and each identified topic and subtopic of the meeting will link to the estimated time of the said video record.</p>
+  <p>With JavaScript enabled, each topic and subtopic will also offer a play button to launch the embedded video at the said time, in which case the video will float at the bottom of the page if it’s not visbible at the current scroll level (assuming the video streaming service uses a recognized <code>postMessage</code> API - this includes YouTube, CloudFlare Stream and StreamFizz).</p>
+  <p>To use this, the recording will be embedded needs to be set with:</p>
+  <pre class=command>
+&lt;dbooth&gt; Recording: https://youtu.be/PjpACM_6IgM
+</pre>
+  <p>The point at which the recording starts also needs to be explicitly set. This can be done live, at the moment when recording is started with with:</p>
+  <pre class=command>
+&lt;dbooth&gt; Recording is starting
+  </pre>
+  <p>This can also be documented after the fact, with:</p>
+  <pre class=command>
+&lt;dbooth&gt; Recording started at :05
+  </pre>
+  <p>(where <code>:05</code> means at 5 minutes from the top of the current hour)</p>
+  <p>If the recording ends before the end of the meeting, the end of that recording can be documented similarly with:</p>
+  <pre class=command>
+&lt;dbooth&gt; Recording ends
+&lt;dbooth&gt; Recording ended at :55
+  </pre>
 
   <h2 id="editing_the_log">Manually Editing the Log</h2>
 
