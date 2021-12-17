@@ -1375,7 +1375,7 @@ if (defined($recording)) {
     }
     if ($canonicalRecording =~ /youtube\.com\/watch\?v=/) {
         $embeddedRecording = $canonicalRecording =~ s/watch\?v=/embed\//r;
-        $embeddedRecording .= "?enablejsapi=1";
+        $embeddedRecording .= "?enablejsapi=1&amp;rel=0&amp;modestbranding=1";
     } elsif ($canonicalRecording =~ /watch\.videodelivery\.net\//) {
         $embeddedRecording = $canonicalRecording =~ s/watch\./iframe\./r;
     }
