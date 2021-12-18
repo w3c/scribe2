@@ -156,6 +156,10 @@ my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			#  string is i-slide library URL
   'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
+my $repobase =			#  default base for deferencing repo names
+  'https://github.com/w3c/';
+my $lastrepo; 		        # URL of the last referenced repository
+
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
@@ -502,9 +506,9 @@ sub mklink($$$$)
   if ($link > 0) {
     my $s = '<a href="' . $url . '">';
     if ($type eq '-->') {
-      $s .= '<img src="' . $url . '" alt="' . esc($anchortext) . '">';
+      $s .= '<img src="' . $url . '" alt="' . esc($anchortext, undef , undef, undef, 1) . '">';
     } elsif ($anchortext ne '') {
-      $s .= esc($anchortext, $emphasis);
+      $s .= esc($anchortext, $emphasis, undef , undef, 1);
     } else {
       $s .= break_url($url); # Otherwise the URL itself is the anchor text
     }
@@ -516,10 +520,10 @@ sub mklink($$$$)
 
 
 # esc -- escape HTML delimiters (<>&"), optionally handle emphasis & Ralph links
-sub esc($;$$$);
-sub esc($;$$$)
+sub esc($;$$$$);
+sub esc($;$$$$)
 {
-  my ($s, $emph, $link, $break_urls) = @_;
+  my ($s, $emph, $link, $break_urls, $in_link) = @_;
   my ($replacement, $pre, $url, $post, $type);
 
   if ($link) {
@@ -580,6 +584,18 @@ sub esc($;$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
+    if (!$in_link && defined($lastrepo) && $s =~ / +(#[0-9]+)/) {
+        my @refs = $s =~ / +((?:issue|pull|PR|pull request)? ?#(?:[0-9]+))/g;
+        for my $ref (@refs) {
+            my $number = $ref =~ s/.*#([0-9]+)[^0-9]?.*/$1/r;
+            my $type = "issues";
+            if ($ref =~ /(pull|PR)/) {
+                $type = "pull";
+            }
+            my $link = mklink(1, '', $lastrepo . $type . "/" . $number, $ref);
+            $s =~ s/$ref/$link/e;
+        }
+    }
     if ($emph) {
       $s =~ s/:-\)/☺/g;
       $s =~ s/;-\)/😉\x{FE0E}/g;
@@ -914,6 +930,26 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *regrets? *-:? *(.*?) *$/i) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
+
+  } elsif (/^ *repo(sitory)? *: *(.*?) *$/i) {
+    $records[$i]->{type} = 'o';	# Mark as slideset line
+    $records[$i]->{text} = $2;
+    if ($records[$i]->{text} =~ /^ *([^\/]+)\/([^\/]+)\/? *$/i) {
+        # e.g. webmachinelearning/webnn
+        my $org = $1;
+        my $repo =$2;
+        $lastrepo = $repobase =~ s/\/[^\/]+\/$//r;
+        print $lastrepo;
+        $lastrepo .= "/" . $org . "/" . $repo . "/";
+    } elsif ($records[$i]->{text} =~ /^ *([^\/]+)\/? *$/i) {
+        # e.g. webrtc-pc
+        $lastrepo = $repobase . $1 . "/";
+    } elsif ($records[$i]->{text} =~ /^(.*?)($urlpat)(.*)$/i) {
+        # full URL
+        $lastrepo = $2;
+    } else {
+        $lastrepo = undef;
+    }
 
   } elsif (/^ *slideset *: *(.*?) *$/i) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line

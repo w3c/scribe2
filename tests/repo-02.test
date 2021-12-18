@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Test if slide insertion works
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Repo: webmachinelearning/webnn
+<foo> Dom: Talking about PR #34
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+grep -E '<a href="https://github.com/webmachinelearning/webnn/pull/34">' $TMP2 || exit 1
+exit 0
