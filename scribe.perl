@@ -59,6 +59,9 @@
 #
 # TODO: A way to include (phrase-level) HTML directly?
 #
+# TODO: When the minutes don't start with "topic:", the first
+# <section> is empty. Remove it.
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -164,18 +167,19 @@ my $lastrepo; 		        # URL of the last referenced repository
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
 my @diagnostics;		# Collected warnings and other info
-
-my $has_slideset = 0;		# Set to 1 when at least one Slideset: is found
+my $recordingstart;         	# Time of recording start
+my $recordingend;         	# Time of recording end
 
 # Each parser takes a reference to an array of text lines (without
 # newlines) and a reference to an array of records. It returns 0
 # (failed to parse) or 1 (success) and it appends successfully parsed
 # lines to the array of records, with {type} set to 'i' and {speaker}
 # and {text} set to the text and the nick of the person who typed that
-# text. It sets {id} to the empty string. It should not try to parse
-# the text futher for actions, resolutions, etc.
+# text. If a line includes a time stamp, the parser puts it in {time}.
+# It should not try to parse the text futher for actions, resolutions,
+# etc.
 #
-# IRC messages ("X joined channel Y"), time stamps, private messages,
+# IRC messages ("X joined channel Y"), private messages,
 # and off-the-record text ("/me waves") are omitted.
 #
 # The parsers are tried in turn until one succeeds, so their order is
@@ -196,8 +200,8 @@ sub RRSAgent_text_format($$)
   foreach (@$lines_ref) {
     if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (?:joined|left|changed the topic to:) /) {
       # Ignore lines like "<jfm> jfm has joined #foo"
-    } elsif (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    } elsif (/^(\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
+      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
     } elsif (/^\s*$/) {
       # Ignore empty lines
     } else {
@@ -218,10 +222,10 @@ sub Bip_Format($$)
       # IRC server message, ignore
     } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d [<>] \* /) {
       # /me message, ignore
-    } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d < ([^ !:]+)![^ :]+: (.*)$/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
-    } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d > ([^ :]+): (.*)$/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    } elsif (/^\d\d-\d\d-\d{4} (\d\d:\d\d:\d\d) < ([^ !:]+)![^ :]+: (.*)$/) {
+      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
+    } elsif (/^\d\d-\d\d-\d{4} (\d\d:\d\d:\d\d) > ([^ :]+): (.*)$/) {
+      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
     } elsif (/^\s*$/) {
       # Ignore empty lines
     } else {
@@ -247,7 +251,7 @@ sub Mirc_Text_Format($$)
     } elsif (/^\s*\*/) {
       # Skip /me lines
     } elsif (/^<([^ >]+)> (.*)$/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+      push(@$records_ref, {type=>'i', speaker=>$1, text=>$2});
     } elsif (/^( .*)$/ && @$records_ref) {	# Continuation line
       $$records_ref[@$records_ref-1]->{text} .= $1;
     } else {
@@ -265,7 +269,7 @@ sub Yahoo_IM_Format($$)
 
   foreach (@$lines_ref) {
     if (/^([^ :]+): (.*)$/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+      push(@$records_ref, {type=>'i', speaker=>$1, text=>$2});
     } elsif (/^\s*$/) {
       # Ignore empty lines
     } else {
@@ -283,13 +287,13 @@ sub Bert_IRSSI_Format($)
 
   foreach (@$lines_ref) {
     next if /^---/;		# IRSSI comment about logging start/stop
-    next if /^[][0-9:]+\s*[<>-]+ \| (\S+).*( has (?:joined|left).*)/;
-    next if /^[][0-9:]+\s*«Quit» \| (\S+).* has signed off/;
-    next if /^[][0-9:]+\s*«[^»]+» \|/; # IRSSI comment about users, topic, etc.
-    next if /^[][0-9:]+\s*\* \|/;      # Skip a /me command
-    next if /^\s*$/;		       # Skip empty line
-    if (/^[][0-9:]+[\s@+%]*(\S+) \| (.*)/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    next if /^[0-9:]+\s*[<>-]+ \| (\S+).*( has (?:joined|left).*)/;
+    next if /^[0-9:]+\s*«Quit» \| (\S+).* has signed off/;
+    next if /^[0-9:]+\s*«[^»]+» \|/; # IRSSI comment about users, topic, etc.
+    next if /^[0-9:]+\s*\* \|/;      # Skip a /me command
+    next if /^\s*$/;		     # Skip empty line
+    if (/^([0-9:]+)[\s@+%]*(\S+) \| (.*)/) {
+      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
     } else {
       return 0;
     }
@@ -308,8 +312,8 @@ sub Irssi_Format($)
     next if /^[0-9:TZ-]+\s+-!-/; # Skip join/leave and other info
     next if /^[0-9:TZ-]+\s+\*/;	 # Skip a /me command
     next if /^\s*$/;		 # Skip empty line
-    if (/^[0-9:TZ-]+\s+<([^>]+)> (.*)/) {
-      push(@$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2});
+    if (/^([0-9:TZ-]+)\s+<([^>]+)> (.*)/) {
+      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
     } else {
       return 0;
     }
@@ -327,8 +331,8 @@ sub Qwebirc_paste_format($$)
     next if /^\[[0-9:]+\] ==/;	# Join, quit, change nick, change topic, mode
     next if /^\[[0-9:]+\] \*/;	# A message with /me
     next if /^\s*$/;		# Empty line
-    if (/^\[[0-9:]+\] <([^>]+)> (.*)$/) {
-      push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
+    if (/^\[([0-9:]+)\] <([^>]+)> (.*)$/) {
+      push @$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1};
     } else {
       return 0;			# This is not qwebirc
     }
@@ -351,8 +355,8 @@ sub IRCCloud_format($$)
     next if /^\[[0-9 :-]+\] ← [^ ]+ left /;	# Somebody left the channel
     next if /^\[[0-9 :-]+\] — [^ ]+ /;		# A /me line
     next if /^\[[0-9 :-]+\] \* [^ ]+ /;		# Changed nick, changed mode...
-    if (/^\[[0-9 :-]+\] <([^>]+)> (.*)$/) {	# $1 said $2
-      push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
+    if (/^\[([0-9 :-]+)\] <([^>]+)> (.*)$/) {	# $2 said $3
+      push @$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1};
     } else {
       return 0;					# Not an IRCCloud log line
     }
@@ -379,8 +383,8 @@ sub Quassel_paste_format($$)
     next if /^\[[0-9:. apm-]+\] \*\*\*/;	# Channel mode change
     next if /^\[[0-9:. apm-]+\] - \{/;	# Message "Day changed to ..."
     next if /^\s*$/;			# Skip empty line
-    if (/^\[[0-9:. apm-]+\] <([^>]+)> (.*)$/) {
-      push @$records_ref, {type=>'i', id=>'', speaker=>$1, text=>$2};
+    if (/^\[([0-9:. apm-]+)\] <([^>]+)> (.*)$/) {
+      push @$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1};
     } else {
       return 0;
     }
@@ -414,7 +418,7 @@ sub Plain_Text_Format($$)
     return 0 if /^[0-9:-]+[:-][0-9:-]/;		# Seems to start w/ a date/time
     return 0 if /^<[^ >]+> /;			# Seems to start with a <nick>
     if (/^(.+)$/) {				# Not empty
-      push (@$records_ref, {type=>'i', id=>'', speaker=>'scribe', text=>$1});
+      push (@$records_ref, {type=>'i', speaker=>'scribe', text=>$1});
     }
   }
   return 1;
@@ -658,11 +662,70 @@ sub delete_scribes($$)
 }
 
 
+# hour_min_sec -- extract hour, minute and second from known time stamp formats
+sub hour_min_sec($)
+{
+  my ($timestamp) = @_;
+  my ($h, $m, $s, $pm) = $timestamp =~
+      /(?<![0-9])([0-9][0-9]?):([0-9][0-9])(?::([0-9][0-9]))?(?: +(pm))?/i;
+  $h = 0 + ($h // 0);
+  $m = 0 + ($m // 0);
+  $s = 0 + ($s // 0);
+  $h += 12 if defined $pm;
+  return ($h, $m, $s);
+}
+
+
+# timestamp_to_seconds - convert HH:MM:SS to seconds since midnight
+sub timestamp_to_seconds($)
+{
+  my ($timestamp) = @_;
+  my ($h, $m, $s) = hour_min_sec($timestamp);
+  return 3600 * $h + 60 * $m + $s;
+}
+
+
+# diff_timestamps -- compute number of seconds between two time stamps
+sub diff_timestamps($$)
+{
+  my ($ts1, $ts2) = @_;
+  my $diff = timestamp_to_seconds($ts1) - timestamp_to_seconds($ts2);
+  # If the diff is more than 8 hours apart,
+  # we assume we're comparing across midnight.
+  return $diff < -8 * 3600 ? $diff + 24 * 3600 : $diff;
+}
+
+
+# minutes_to_timestamp -- convert MM to full HH:MM:SS based on a time reference
+sub minutes_to_timestamp($$)
+{
+  my ($minutes, $ref) = @_;
+  my ($h, $m, $s) = hour_min_sec($ref);
+  $h -= 1 if 0 + $minutes > $m;	# It's in the previous hour
+  $h += 24 if $h < 0;		# That previous hour was yesterday
+  return sprintf "%02d:%02d:00", $h, 0 + $minutes;
+}
+
+
+# link_to_recording -- return an HTML link to the recording at $time, or ""
+sub link_to_recording($$)
+{
+  my ($url, $time) = @_;
+  my $offset;
+
+  return '' if !defined $url || !defined $recordingstart || !defined $time;
+  $offset = diff_timestamps($time, $recordingstart);
+  return '' if $offset < 0;
+  return '' if defined $recordingend && diff_timestamps($recordingend,$time)<0;
+  return sprintf " <a href=\"%1\$s#t=%2\$s\" rel=bookmark class=recording title=\"matching video record\">🎞\x{FE0E}</a>", esc($url), $offset;
+}
+
+
 # Main body
-my $revision = '$Revision: 185 $'
+my $revision = '$Revision: repo-links-187 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Dec  2 18:51:55 2021 UTC $'
+my $versiondate = '$Date: Sat Jan  8 20:22:22 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -680,7 +743,10 @@ my $agenda = '';		# HTML-formatted link to an agenda
 my %chairs;			# List of meeting chairs
 my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
+my $has_slides = 0;		# Set to 1 if there is at least one slideset
 my $lastslideset;		# URL of the slideset being presented
+my $recording;         		# URL of the recording of the meeting
+my $recording_link;		# HTML-formatted link to the recording
 my $topicid = 't00';		# Generates unique ID for each topic
 my $actionid = 'a00';		# Generates unique ID for each action
 my $resolutionid = 'r00';	# Generates unique ID for each resolution
@@ -784,7 +850,7 @@ for (my $i = 0; $i < @records; $i++) {
 			     $records[$j]->{text} =~ /\Q$old2\E/));
       if ($j >= 0) {
 	splice(@records, $j, 0,
-	       {type=>'i',id=>'',speaker=>$records[$i]->{speaker},text=>$new});
+	       {type=>'i',speaker=>$records[$i]->{speaker},text=>$new});
 	$i++;			# All records shifted by the splice
 	$records[$i]->{type} = 'o';
 	push(@diagnostics, 'Succeeded: ' . $records[$i]->{text});
@@ -951,24 +1017,50 @@ for (my $i = 0; $i < @records; $i++) {
         $lastrepo = undef;
     }
 
-  } elsif (/^ *slideset *: *(.*?) *$/i) {
+  } elsif (/^ *slideset *: *(.*?($urlpat).*)$/i) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line
     $records[$i]->{text} = $1;
-    /^(.*?)($urlpat)(.*)$/i;
-    if ($2) {
-        $lastslideset = $2;
-        $has_slideset = 1;
-    } else {
-        $lastslideset = undef;
-    }
+    $lastslideset = $2;
+    $has_slides = 1;
+
+  } elsif (/^ *slideset *:/i) {		# Slideset but without a URL. Error?
+    $records[$i]->{type} = 'd' if $is_scribe;
+    $lastslideset = undef;
 
   } elsif (/^ *\[ *slide *(\d+) *\] *$/i && $lastslideset) {
-      $records[$i]->{type} = 'slide';	# Mark as slide line
-      my $slidenumber = $1;
-      # Put link in {id}, with fragment ID "#n" (or #page=n for PDF URLs).
-      $records[$i]->{id} = $lastslideset . "#" .
-	  ($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
-      $records[$i]->{text} = "$slidenumber";
+    $records[$i]->{type} = 'slide';	# Mark as slide line
+    my $slidenumber = $1;
+    # Put link in {id}, with fragment ID "#n" (or #page=n for PDF URLs).
+    $records[$i]->{id} = $lastslideset . "#" .
+	($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
+    $records[$i]->{text} = "$slidenumber";
+
+  } elsif (/^ *recording *: *(.*?($urlpat).*)$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    $recording_link = esc($1, $emphasis, 1, 1);
+    $recording = $2;
+
+  } elsif (/^ *recording *:/i) {	# Recording but without a URL. Error?
+    $records[$i]->{type} = 'd' if $is_scribe;
+    $recording = undef;
+
+  } elsif (/^ *recording +(?:is +starting|starts)[. ]*$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    $recordingstart = $records[$i]->{time} if defined $records[$i]->{time};
+
+  } elsif (/^ *recording +start(?:ed|s) +at +:([0-9][0-9])[. ]*$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    $recordingstart = minutes_to_timestamp($1, $records[$i]->{time})
+	if defined($records[$i]->{time});
+
+  } elsif (/^ *recording +ends[. ]*$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    $recordingend = $records[$i]->{time} if defined $records[$i]->{time};
+
+  } elsif (/^ *recording +end(?:ed|s) +at +:([0-9][0-9])[. ]*$/i) {
+    $records[$i]->{type} = 'o';		# Omit line from output
+    $recordingend = minutes_to_timestamp($1, $records[$i]->{time})
+	if defined $records[$i]->{time};
 
   } elsif (/^ *topic *: *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
@@ -981,12 +1073,14 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($dash_topics && /^ *-+ *$/) {
+     my $topicfound = 0;
     for (my $j = $i + 1; $j < @records; $j++) {
       if ($records[$j]->{speaker} eq $records[$i]->{speaker}) {
 	$records[$i]->{type} = 't';
 	$records[$i]->{text} = $records[$j]->{text} =~ s/^ *(.*?) *$/$1/r;
 	$records[$i]->{id} = ++$topicid;
 	$records[$j]->{type} = 'o';
+        $topicfound = 1;
 	last;
       }
     }
@@ -1311,7 +1405,8 @@ push @diagnostics, "Maybe present: " .
 #
 # Each type of record is converted to a specific HTML fragment, with
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
-# by the speaker ID and %5$s by a unique ID for the record.
+# by the speaker ID, %5$s by a unique ID for the record and %6$s by a
+# link to a ecording of the meeting, if any.
 #
 # The 1 or 0 after the pattern indicates whether the text (%3$) can be
 # parsed for emphasis and math. (Only applicable if --emphasis was
@@ -1319,6 +1414,21 @@ push @diagnostics, "Maybe present: " .
 #
 # Also replace \t (i.e., placeholders for line breaks) as appropriate.
 #
+my $embedded_recording = $recording;
+my $canonical_recording = $recording;
+if (defined $recording) {
+  # Modify URL for certain known video sites.
+  if ($recording =~ /^https:\/\/youtu\.be\/(.*)$/) {
+    $canonical_recording = "https://www.youtube.com/watch?v=" . $1;
+  }
+  if ($canonical_recording =~ /youtube\.com\/watch\?v=/) {
+    $embedded_recording = $canonical_recording =~ s/watch\?v=/embed\//r;
+    $embedded_recording .= "?enablejsapi=1&amp;rel=0&amp;modestbranding=1";
+  } elsif ($canonical_recording =~ /watch\.videodelivery\.net\//) {
+    $embedded_recording = $canonical_recording =~ s/watch\./iframe\./r;
+  }
+}
+
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
   b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
@@ -1333,19 +1443,22 @@ my %linepat = (
   s => ["<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
   n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n", 0],
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
-  T => ["<h4 id=%2\$s>%3\$s</h4>\n", 1],
-  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s</h3>\n", 1],
+  T => ["<h4 id=%2\$s>%3\$s%6\$s</h4>\n", 1],
+  t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
-  slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[ Slide %3\$s ]</a></p>\n", 1],
+  slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
     );
 
 my $minutes = '';
 foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
-  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s',
-      esc($p->{speaker}), $p->{id}, esc($p->{text},
-	$emphasis && $linepat{$p->{type}}[1], 1, 1),
-    $speakers{fc $p->{speaker}} // '', ++$lineid;
+  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
+      esc($p->{speaker}),					   # %1
+      $p->{id} // '',						   # %2
+      esc($p->{text}, $emphasis && $linepat{$p->{type}}[1], 1, 1), # %3
+      $speakers{fc $p->{speaker}} // '',			   # %4
+      ++$lineid,						   # %5
+      link_to_recording($canonical_recording, $p->{time});	   # %6
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
@@ -1395,9 +1508,21 @@ if ($styleset eq 'team') {
 my $style = join("\n",
   map {"<link rel=\"" . ($_->[0] ? "alternate " : "") . "stylesheet\" " .
     "type=\"text/css\" title=\"$_->[1]\" href=\"$_->[2]\">"} @stylesheets);
-my $scripts = !$emphasis || !$has_math ? ''
-  : "<script src=\"$mathjax\" id=MathJax-script async></script>\n";
-$scripts .= ! $has_slideset ? '' : "<script type=\"module\" src=\"$islide\"></script>\n";
+
+my $scripts = '';
+$scripts .= "<script src=\"$mathjax\" id=MathJax-script async></script>\n"
+    if $emphasis && $has_math;
+$scripts .= "<script type=module src=\"$islide\"></script>\n"
+    if $has_slides;
+
+if (defined $recording) {
+  $scripts .= "<script src=\"https://www.youtube.com/iframe_api\"></script>\n"
+      if $canonical_recording =~ /^https:\/\/(www\.)?youtube\.com\//;
+  # Copy the script whose code is further down between __DATA__ and __END__:
+  $scripts .= $_ while ($_ = <main::DATA>) !~ /^__END__/;
+}
+close main::DATA;
+
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
 $logo = '' if !defined $logo && ($styleset eq 'fancy');
 $logo = "<p>$w3clogo</p>\n\n" if !defined $logo;
@@ -1415,6 +1540,15 @@ my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
   "<div class=diagnostics>\n<h2>Diagnostics<\/h2>\n" .
   join("", map {"<p class=warning>" . esc($_) . "</p>\n"} @diagnostics) .
   "</div>\n";
+my $videoplayer = ! defined $recording ? '' :
+    "<section id=recording>\n" .
+    "<p class=summary>Recording: $recording_link\n" .
+    "<div class=video>\n" .
+    "<iframe src=\"$embedded_recording\" " .
+    "width=600 height=340 type=\"text/html\" frameborder=0 allowfullscreen " .
+    "allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\"></iframe>\n" .
+    "</div>\n" .
+    "</section>\n";
 
 # Collect lists of actions, resolutions and issues from the @records.
 # Wrap each list in a <div> and add a corresponding item in the ToC
@@ -1508,7 +1642,7 @@ $topics$actiontoc$resolutiontoc$issuetoc</ol>
 
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section>$minutes</section>
+$videoplayer<section>$minutes</section>
 </main>
 $actions$resolutions$issues
 
@@ -1522,6 +1656,109 @@ $diagnostics</body>
 
 print STDERR map("* $_\n", @diagnostics) if !$embed_diagnostics;
 
+
+# The Javascript code that adds play/pause buttons when generated
+# minutes with an embedded video are displayed in a browser.
+# The code ends at __END__.
+
+__DATA__
+<script type=module>
+const recordingUrl = document.querySelector("#recording a")?.href;
+const embed = document.querySelector("#recording iframe");
+let playing = false;
+
+// monitoring player state
+if (embed) {
+  if (embed.src.match(/^https:\/\/(www\.)?youtube\.com\//)) {
+    window.onYouTubeIframeAPIReady = () => {
+      embed.id = "player";
+      window.player = new YT.Player(embed.id);
+      window.player.addEventListener("onStateChange", e => {
+        if (e.data === YT.PlayerState.PLAYING)
+          playing = true;
+        else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED)
+          playing = false;
+      });
+    };
+  } else {
+    window.addEventListener("message", e => {
+      if (e.data[0] === "play") playing = true;
+      else if (e.data[0] === "pause" || e.data[0] === "ended") playing = false;
+    });
+  }
+}
+
+function sendVideoCommand(command, args)
+{
+  let msg;
+  if (embed.src.match(/^https:\/\/(www\.)?youtube\.com\//)) {
+    const commands = {'play': 'playVideo', 'pause': 'pauseVideo', 'seek': 'seekTo'};
+    msg = JSON.stringify({
+      event: 'command',
+      func: commands[command],
+      args
+    });
+  } else {
+    msg = [command, ...args];
+  }
+  embed.contentWindow.postMessage(msg, '*');
+}
+
+function showVideoIfNeeded()
+{
+  const windowScrollTop = window.pageYOffset;
+  const {top} = embed.getBoundingClientRect();
+  const videoBottom = parseInt(embed.height, 10) + top;
+  if (windowScrollTop > videoBottom && playing)
+    embed.parentNode.classList.add('stuck');
+  else
+    embed.parentNode.classList.remove('stuck');
+}
+
+function videoPlayHandler(e)
+{
+  if (!embed) return;
+  const el = e.target;
+  const offset = parseInt(el.dataset.offset, 10);
+  if (offset && !isNaN(offset) && !el.dataset.lastHit)
+    sendVideoCommand('seek', [offset]);
+  sendVideoCommand('play');
+  playing = true;
+  showVideoIfNeeded();
+  document.querySelectorAll("button.playBtn").forEach(
+    el => delete el.dataset.lastHit);
+  el.dataset.lastHit = true;	// So we know when the same button is hit twice
+}
+
+function videoPauseHandler(e)
+{
+  if (!embed) return;
+  sendVideoCommand('pause');
+  playing = false;
+}
+
+// Add play & pause buttons
+if (recordingUrl) {
+  document.querySelectorAll("a.recording[href]").forEach(el => {
+    const playBtn = document.createElement("button");
+    playBtn.className = "play";
+    playBtn.dataset.offset = new URL(el.href).hash.split("=")[1];
+    el.insertAdjacentElement("afterend", playBtn);
+    playBtn.addEventListener("click", videoPlayHandler);
+    playBtn.title = "Play embedded recording from this point of the meeting";
+    playBtn.textContent = "▶";
+
+    const pauseBtn = document.createElement("button");
+    playBtn.insertAdjacentElement("afterend", pauseBtn);
+    pauseBtn.className = "pause";
+    pauseBtn.addEventListener("click", videoPauseHandler);
+    pauseBtn.title = "Pause recording";
+    pauseBtn.textContent = "⏸\uFE0E";
+  });
+
+  window.addEventListener("scroll", showVideoIfNeeded, {passive: true});
+}
+</script>
 __END__
 
 =head1 NAME
@@ -1562,3 +1799,4 @@ You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
 with `no' (e.g., --nokeeplines). For the full manual see
 L<https://w3c.github.io/scribe2/scribedoc.html>
+scribedoc.html>

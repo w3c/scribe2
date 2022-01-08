@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Test if incorrect "recording" command is ignored.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+00:00:00 <bar> Recording: not-a-url
+01:03:04 <foo> Topic: First topic
+01:05:02 <foo> recording started at :03
+01:08:05 <foo> recording ends
+01:10:04 <foo> Topic: Second topic
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+cat $TMP2
+echo '---------'
+
+grep -F 'Second topic</h3>' $TMP2 || exit 1
+grep -F '<div id=recording' $TMP2 && exit 1 # grep should fail
+exit 0
