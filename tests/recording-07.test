@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Test links to recording, spanning midnight, qwebirc format
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+[22:59] == Wilco [~Wilco@4a714a7c.public.cloak] has joined #act-r
+[22:59] == Zakim [zakim@899c7108.team.cloak] has joined #act-r
+[22:00] <Wilco> agenda+ Update from the ACT Task Force   https://docs.google.com/spreadsheets/d/1OSkPFocXk4K3zYLnwS78WLsWO4PvE5yRcsauyefuIUI/edit?usp=sharing
+[23:00] * Zakim notes agendum 1 added
+[23:00] <Wilco> agenda+ ACT/Silver workshop Feedback
+[23:00] * Zakim notes agendum 2 added
+[23:00] <Wilco> agenda+ Assigned issues:   https://github.com/act-rules/act-rules.github.io/issues?page=1&q=is%3Aissue+is%3Aopen
+[23:00] * Zakim notes agendum 3 added
+[23:00] <foo> Recording: https://example.com/do-not-use-this
+[23:01] <foo> recording starts
+[23:53] <foo> Topic: First topic
+[23:53] <foo> Joe: Here is some text.
+[23:53] <foo> Joe: Here is some more text.
+[00:03] <foo> Subtopic: First subtopic
+[00:06] <foo> Topic: Second topic
+[01:01] <foo> recording ended at :05
+[03:01] <bar> Recording: https://youtube.com/watch?v=PjpACM_6IgM
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+cat $TMP2
+echo '----------'
+
+grep -F '<section id=recording' $TMP2 || exit 1
+grep -F 'class=summary>Recording: <a href="https://youtube.com/watch?v=PjpACM_6IgM"' $TMP2 || exit 1
+grep -F '<iframe src="https://youtube.com/embed/PjpACM_6IgM?enablejsapi=1' $TMP2 || exit 1
+grep -F '<a href="https://youtube.com/watch?v=PjpACM_6IgM#t=3120"' $TMP2 || exit 1
+grep -F '<a href="https://youtube.com/watch?v=PjpACM_6IgM#t=3720"' $TMP2 || exit 1
+grep -F 'Second topic</h3>' $TMP2 || exit 1
+grep -F '<script type=module>' $TMP2 || exit 1
+exit 0

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Test links to recording for topics and subtopics.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+00:00:00 <foo> Recording: https://example.com/do-not-use-this
+00:01:02 <foo> recording starts
+00:53:04 <foo> Topic: First topic
+00:53:05 <foo> Joe: Here is some text.
+00:53:06 <foo> Joe: Here is some more text.
+01:03:04 <foo> Subtopic: First subtopic
+01:06:04 <foo> Topic: Second topic
+02:01:02 <foo> recording ended at :05
+02:01:03 <foo> Recording: https://youtube.com/watch?v=PjpACM_6IgM
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+cat $TMP2
+echo '----------'
+
+grep -F '<section id=recording' $TMP2 || exit 1
+grep -F 'class=summary>Recording: <a href="https://youtube.com/watch?v=PjpACM_6IgM"' $TMP2 || exit 1
+grep -F '<iframe src="https://youtube.com/embed/PjpACM_6IgM?enablejsapi=1' $TMP2 || exit 1
+grep -F '<a href="https://youtube.com/watch?v=PjpACM_6IgM#t=3122"' $TMP2 || exit 1
+grep -F '<a href="https://youtube.com/watch?v=PjpACM_6IgM#t=3722"' $TMP2 || exit 1
+grep -F 'Second topic</h3>' $TMP2 || exit 1
+grep -F '<script type=module>' $TMP2 || exit 1
+exit 0
