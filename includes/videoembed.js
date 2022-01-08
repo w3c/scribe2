@@ -42,7 +42,7 @@ const sendVideoCommand = (command, args) => {
   }
   embed.contentWindow.postMessage(msg, '*');
 };
-embed.parentNode.parentNode.style.height = "calc(1em + " + embed.height + "px)";
+// embed.parentNode.parentNode.style.height = "calc(1em + " + embed.height + "px)";
 const showVideoIfNeeded = () => {
   const windowScrollTop = window.pageYOffset;
   const {top} = embed.getBoundingClientRect();
@@ -78,18 +78,19 @@ if (recordingUrl) {
   document.querySelectorAll("a.recording[href]").forEach(el => {
     // Add play/pause button
     const playBtn = document.createElement("button");
-    playBtn.className = "playBtn";
+    playBtn.className = "play";
     playBtn.dataset.offset = new URL(el.href).hash.split("=")[1];
     el.insertAdjacentElement("afterend", playBtn);
     playBtn.addEventListener("click", videoPlayHandler);
-    playBtn.title = "Play embedded recording from that point of the meeting";
+    playBtn.title = "Play embedded recording from this point of the meeting";
     playBtn.textContent = "▶";
 
     const pauseBtn = document.createElement("button");
     playBtn.insertAdjacentElement("afterend", pauseBtn);
+    pauseBtn.className = "pause";
     pauseBtn.addEventListener("click", videoPauseHandler);
-    pauseBtn.title = "Pause embedded recording";
-    pauseBtn.textContent = "⏸";
+    pauseBtn.title = "Pause recording";
+    pauseBtn.textContent = "⏸\uFE0E";
   });
 
   window.addEventListener("scroll", showVideoIfNeeded, {passive: true});
