@@ -62,6 +62,11 @@
 # TODO: When the minutes don't start with "topic:", the first
 # <section> is empty. Remove it.
 #
+# TODO: The script needs an external file when a video recording is
+# embedded. That makes the script harder to use: You cannot simply
+# download the script and run it. Can we embed that external file in
+# the script?
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -706,10 +711,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: video-recording-191 $'
+my $revision = '$Revision: 187 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Jan  8 13:18:09 2022 UTC $'
+my $versiondate = '$Date: Sat Jan  8 13:45:35 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1662,3 +1667,4 @@ You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
 with `no' (e.g., --nokeeplines). For the full manual see
 L<https://w3c.github.io/scribe2/scribedoc.html>
+scribedoc.html>
