@@ -62,11 +62,6 @@
 # TODO: When the minutes don't start with "topic:", the first
 # <section> is empty. Remove it.
 #
-# TODO: The script needs an external file when a video recording is
-# embedded. That makes the script harder to use: You cannot simply
-# download the script and run it. Can we embed that external file in
-# the script?
-#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -711,10 +706,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 187 $'
+my $revision = '$Revision: 188 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Jan  8 13:45:35 2022 UTC $'
+my $versiondate = '$Date: Sat Jan  8 18:27:23 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1487,12 +1482,10 @@ $scripts .= "<script type=module src=\"$islide\"></script>\n"
 if (defined $recording) {
   $scripts .= "<script src=\"https://www.youtube.com/iframe_api\"></script>\n"
       if $canonical_recording =~ /^https:\/\/(www\.)?youtube\.com\//;
-  open(FH, '<', dirname(__FILE__) . '/includes/videoembed.js') or die $!;
-  $scripts .= "<script type=module>\n";
-  $scripts .= $_ while <FH>;
-  $scripts .= "</script>\n";
-  close(FH);
+  # Copy the script whose code is further down between __DATA__ and __END__:
+  $scripts .= $_ while ($_ = <main::DATA>) !~ /^__END__/;
 }
+close main::DATA;
 
 $logo = "<p>$logo</p>\n\n" if defined $logo && $logo ne '';
 $logo = '' if !defined $logo && ($styleset eq 'fancy');
@@ -1627,6 +1620,109 @@ $diagnostics</body>
 
 print STDERR map("* $_\n", @diagnostics) if !$embed_diagnostics;
 
+
+# The Javascript code that adds play/pause buttons when generated
+# minutes with an embedded video are displayed in a browser.
+# The code ends at __END__.
+
+__DATA__
+<script type=module>
+const recordingUrl = document.querySelector("#recording a")?.href;
+const embed = document.querySelector("#recording iframe");
+let playing = false;
+
+// monitoring player state
+if (embed) {
+  if (embed.src.match(/^https:\/\/(www\.)?youtube\.com\//)) {
+    window.onYouTubeIframeAPIReady = () => {
+      embed.id = "player";
+      window.player = new YT.Player(embed.id);
+      window.player.addEventListener("onStateChange", e => {
+        if (e.data === YT.PlayerState.PLAYING)
+          playing = true;
+        else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED)
+          playing = false;
+      });
+    };
+  } else {
+    window.addEventListener("message", e => {
+      if (e.data[0] === "play") playing = true;
+      else if (e.data[0] === "pause" || e.data[0] === "ended") playing = false;
+    });
+  }
+}
+
+function sendVideoCommand(command, args)
+{
+  let msg;
+  if (embed.src.match(/^https:\/\/(www\.)?youtube\.com\//)) {
+    const commands = {'play': 'playVideo', 'pause': 'pauseVideo', 'seek': 'seekTo'};
+    msg = JSON.stringify({
+      event: 'command',
+      func: commands[command],
+      args
+    });
+  } else {
+    msg = [command, ...args];
+  }
+  embed.contentWindow.postMessage(msg, '*');
+}
+
+function showVideoIfNeeded()
+{
+  const windowScrollTop = window.pageYOffset;
+  const {top} = embed.getBoundingClientRect();
+  const videoBottom = parseInt(embed.height, 10) + top;
+  if (windowScrollTop > videoBottom && playing)
+    embed.parentNode.classList.add('stuck');
+  else
+    embed.parentNode.classList.remove('stuck');
+}
+
+function videoPlayHandler(e)
+{
+  if (!embed) return;
+  const el = e.target;
+  const offset = parseInt(el.dataset.offset, 10);
+  if (offset && !isNaN(offset) && !el.dataset.lastHit)
+    sendVideoCommand('seek', [offset]);
+  sendVideoCommand('play');
+  playing = true;
+  showVideoIfNeeded();
+  document.querySelectorAll("button.playBtn").forEach(
+    el => delete el.dataset.lastHit);
+  el.dataset.lastHit = true;	// So we know when the same button is hit twice
+}
+
+function videoPauseHandler(e)
+{
+  if (!embed) return;
+  sendVideoCommand('pause');
+  playing = false;
+}
+
+// Add play & pause buttons
+if (recordingUrl) {
+  document.querySelectorAll("a.recording[href]").forEach(el => {
+    const playBtn = document.createElement("button");
+    playBtn.className = "play";
+    playBtn.dataset.offset = new URL(el.href).hash.split("=")[1];
+    el.insertAdjacentElement("afterend", playBtn);
+    playBtn.addEventListener("click", videoPlayHandler);
+    playBtn.title = "Play embedded recording from this point of the meeting";
+    playBtn.textContent = "▶";
+
+    const pauseBtn = document.createElement("button");
+    playBtn.insertAdjacentElement("afterend", pauseBtn);
+    pauseBtn.className = "pause";
+    pauseBtn.addEventListener("click", videoPauseHandler);
+    pauseBtn.title = "Pause recording";
+    pauseBtn.textContent = "⏸\uFE0E";
+  });
+
+  window.addEventListener("scroll", showVideoIfNeeded, {passive: true});
+}
+</script>
 __END__
 
 =head1 NAME
