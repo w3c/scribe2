@@ -1268,9 +1268,13 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
   <p>You can embed slides in the minutes if they are in a supported format.
   The list of supported formats depends on the <a href="https://github.com/w3c/i-slide#supported-slide-formats">i-slide library</a>, and includes PDF, and the HTML-based <a href="https://shwr.me/">Shower</a> and <a href="https://www.w3.org/Talks/Tools/b6plus/">b6+</a>.</p>
-  <p>To use this, the slideset from which the slides will be embedded needs to be set with:</p>
+  <p>To use this, the slideset from which the slides will be embedded
+  needs to be set with a <code>slideset</code> command and a URL,
+  e.g.:</p>
+
   <pre class=command>
 &lt;dbooth&gt; Slideset: https://www.w3.org/Talks/Tools/b6plus/
+&lt;dbooth&gt; Slideset: -> my slides https://www.w3.org/Talks/Tools/b6plus/
 </pre>
 
   <p>Then an individual slide can be embedded using the convention <code>[Slide <var>n</var>]</code> where <var>n</var> is the slide number in the slideset.</p>
@@ -1281,26 +1285,55 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
   <h2 id="recording">Embedding Video Recording</h2>
 
-  <p>You can document the video record of the meeting in the minutes: the said video will be embedded at the top of the minutes, and each identified topic and subtopic of the meeting will link to the estimated time of the said video record.</p>
-  <p>With JavaScript enabled, each topic and subtopic will also offer a play button to launch the embedded video at the said time, in which case the video will float at the bottom of the page if it’s not visbible at the current scroll level (assuming the video streaming service uses a recognized <code>postMessage</code> API - this includes YouTube, CloudFlare Stream and StreamFizz).</p>
-  <p>To use this, the recording will be embedded needs to be set with:</p>
+  <p>You can link to the video record of a meeting in the minutes. The
+  video will be embedded at the top of the minutes and each topic and
+  subtopic of the meeting will link to the approximate time in the
+  video. (This only works for IRC logs that include time stamps, such
+  as RRSAgent's.)</p>
+
+  <p>With JavaScript enabled, each topic and subtopic will also offer
+  a play button to launch the embedded video at the appropriate
+  offset. The video will float at the bottom of the page, if it is not
+  visible at the current scroll level. (Launching the video works for
+  video streaming services that use a
+  recognized <code>postMessage</code> API. This includes YouTube,
+  CloudFlare Stream and StreamFizz).</p>
+
+  <p>To use this, the link to the recording needs to be set
+  with <code>recording</code> and a URL, e.g.:</p>
+
   <pre class=command>
 &lt;dbooth&gt; Recording: https://youtu.be/PjpACM_6IgM
+&lt;dbooth&gt; Recording: -> https://youtu.be/PjpACM_6IgM April meeting video
 </pre>
-  <p>The point at which the recording starts also needs to be explicitly set. This can be done live, at the moment when recording is started with with:</p>
+
+  <p>The point at which the recording starts also needs to be
+  explicitly set. This can be done live, at the moment when recording
+  is started with:</p>
+
   <pre class=command>
 &lt;dbooth&gt; Recording is starting
   </pre>
-  <p>This can also be documented after the fact, with:</p>
+
+  <p>It can also be documented after the fact, with:</p>
+
   <pre class=command>
 &lt;dbooth&gt; Recording started at :05
   </pre>
-  <p>(where <code>:05</code> means at 5 minutes from the top of the current hour)</p>
-  <p>If the recording ends before the end of the meeting, the end of that recording can be documented similarly with:</p>
+
+  <p>where <code>:05</code> means at 5 minutes from the top of the
+  hour.</p>
+
+  <p>If the recording ends before the end of the meeting, the end of
+  that recording can be documented similarly with:</p>
+
   <pre class=command>
 &lt;dbooth&gt; Recording ends
 &lt;dbooth&gt; Recording ended at :55
   </pre>
+
+  <p>There can be only one recording. If the above commands are used
+  multiple times, the last one wins.</p>
 
   <h2 id="editing_the_log">Manually Editing the Log</h2>
 
@@ -1678,6 +1711,6 @@ Eric agrees.
    >original documentation</a> by David Booth. Scribe.perl is available for
    use under the <a
    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Thu Dec  2 10:38:14 2021 UTC $</address>
+   >W3C Software License</a>. $Date: Sat Jan  8 13:18:09 2022 UTC $</address>
  </body>
 </html>
