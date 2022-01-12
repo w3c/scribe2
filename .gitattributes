@@ -1,1 +1,12 @@
 # * filter=dater
+
+# The following files are documentation (category
+# "linguist-documentation") and should not enter into the statistics
+# collected by Linguist:
+
+README          linguist-documentation
+sample-*.html   linguist-documentation
+sample-*.txt    linguist-documentation
+scribedoc.html  linguist-documentation
+rescue.html     linguist-documentation
+tests/*.test    linguist-documentation
