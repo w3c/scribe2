@@ -588,8 +588,8 @@ sub esc($;$$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
-    if (!$in_link && defined($currentrepourl) && $s =~ / +(#[0-9]+)/) {
-        my @refs = $s =~ / +((?:issue|pull|PR|pull request)? ?#(?:[0-9]+))/g;
+    if (!$in_link && defined($currentrepourl) && $s =~ /(?:^|\s)(#[0-9]+)/) {
+        my @refs = $s =~ /(?:^|\s)((?:issue|pull|PR|pull request)? ?#(?:[0-9]+))/g;
         for my $ref (@refs) {
             my $number = $ref =~ s/.*#([0-9]+)[^0-9]?.*/$1/r;
             my $type = "issues";
