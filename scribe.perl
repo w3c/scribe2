@@ -161,7 +161,7 @@ my $islide =			#  string is i-slide library URL
   'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
 my $repobase =			#  default base for deferencing repo names
   'https://github.com/w3c/';
-my $lastrepo; 		        # URL of the last referenced repository
+my $currentrepourl;
 
 
 # Global variables:
@@ -588,7 +588,7 @@ sub esc($;$$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
-    if (!$in_link && defined($lastrepo) && $s =~ / +(#[0-9]+)/) {
+    if (!$in_link && defined($currentrepourl) && $s =~ / +(#[0-9]+)/) {
         my @refs = $s =~ / +((?:issue|pull|PR|pull request)? ?#(?:[0-9]+))/g;
         for my $ref (@refs) {
             my $number = $ref =~ s/.*#([0-9]+)[^0-9]?.*/$1/r;
@@ -596,7 +596,7 @@ sub esc($;$$$$)
             if ($ref =~ /(pull|PR)/) {
                 $type = "pull";
             }
-            my $link = mklink(1, '', $lastrepo . $type . "/" . $number, $ref);
+            my $link = mklink(1, '', $currentrepourl . $type . "/" . $number, $ref);
             $s =~ s/$ref/$link/e;
         }
     }
@@ -998,25 +998,26 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif (/^ *repo(sitory)? *: *(.*?) *$/i) {
-    $records[$i]->{type} = 'o';	# Mark as slideset line
+    $records[$i]->{type} = 'repo';	# Mark as a repo line
     $records[$i]->{text} = $2;
+    my $repourl;
     if ($records[$i]->{text} =~ /^ *([^\/]+)\/([^\/]+)\/? *$/i) {
         # e.g. webmachinelearning/webnn
         my $org = $1;
         my $repo =$2;
-        $lastrepo = $repobase =~ s/\/[^\/]+\/$//r;
-        print $lastrepo;
-        $lastrepo .= "/" . $org . "/" . $repo . "/";
+        $repourl = $repobase =~ s/\/[^\/]+\/$//r;
+        $repourl .= "/" . $org . "/" . $repo . "/";
     } elsif ($records[$i]->{text} =~ /^ *([^\/]+)\/? *$/i) {
         # e.g. webrtc-pc
-        $lastrepo = $repobase . $1 . "/";
+        $repourl = $repobase . $1 . "/";
     } elsif ($records[$i]->{text} =~ /^(.*?)($urlpat)(.*)$/i) {
         # full URL
-        $lastrepo = $2;
-    } else {
-        $lastrepo = undef;
+        $repourl = $2;
+        if (!($repourl  =~ /\/$/)) {
+            $repourl .= '/';
+        }
     }
-
+    $records[$i]->{text} = $repourl;
   } elsif (/^ *slideset *: *(.*?($urlpat).*)$/i) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line
     $records[$i]->{text} = $1;
@@ -1447,10 +1448,14 @@ my %linepat = (
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
   slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
+  repo => ['', 0],
     );
 
 my $minutes = '';
 foreach my $p (@records) {
+  if ($p->{type} eq 'repo') {
+      $currentrepourl = $p->{text};
+  }
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
       esc($p->{speaker}),					   # %1
