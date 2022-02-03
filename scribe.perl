@@ -1455,6 +1455,9 @@ my $minutes = '';
 foreach my $p (@records) {
   if ($p->{type} eq 'repo') {
       $currentrepourl = $p->{text};
+  } elsif (($p->{type} eq 't' || $p->{type} eq 'T')
+           && $p->{text} =~ /https:\/\/github\.com\/([^\/]+)\/([^\/\s]+)/) {
+      $currentrepourl = "https://github.com/" . $1 . "/" . $2 . "/";
   }
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
