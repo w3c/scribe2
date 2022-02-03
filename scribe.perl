@@ -130,7 +130,7 @@ use File::Basename;
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
 my $urlpat =
-  '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]+';
+  '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›\)]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 # A speaker name doesn't contain [ ":>] and doesn't start with "..".
@@ -536,7 +536,8 @@ sub esc($;$$$)
     # 4a) A double-quoted inverted Xueyuan link: ... URL -> "ANCHOR" ...
     # 4b) A single-quoted inverted Xueyuan link: ... URL -> 'ANCHOR' ...
     # 4c) An unquoted inverted Xueyuan link: ... URL -> ANCHOR
-    # 5) A bare URL: ... URL ...
+    # 5) A markdown link: ... [ANCHOR](URL)
+    # 6) A bare URL: ... URL ...
     # With --> instead of ->, the link is embedded as an image (<img>).
     # If $link < 0, omit the <a> tag and just insert the text or image.
 
@@ -570,6 +571,10 @@ sub esc($;$$$)
 	       $post =~ /^ *(--?>) *()/p) { # Inverted Xueyuan link
 	$replacement  .= esc($pre, $emph) . mklink($link, $1, $url, $2);
 	$s = $';
+      } elsif ($post =~ /^\)/ && $pre =~ /(\[([^\]]+)\]\()$/p) {
+        $replacement .= esc($`, $emph)
+	      . mklink($link, "->", $url, $2);
+    	$s = $post =~ s/^\)//r;
       } else {					# Bare URL.
     	$replacement .= esc($pre, $emph) . mklink($link, '->', $url, '');
     	$s = $post;
