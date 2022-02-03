@@ -588,16 +588,35 @@ sub esc($;$$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
-    if (!$in_link && defined($currentrepourl) && $s =~ /(?:^|\s)(#[0-9]+)/) {
-        my @refs = $s =~ /(?:^|\s)((?:issue|pull|PR|pull request)? ?#(?:[0-9]+))/g;
+    if (!$in_link &&
+        # an issue can be designed with the short form webrtc-pc#32
+        ($s =~ /(?:^|\s)([-a-z0-9]+#[0-9]+)/ ||
+        # or without the repo name if a repo base has been set
+         (defined($currentrepourl) && $s =~ /(?:^|\s)([-a-z0-9]*#[0-9]+)/)
+        )) {
+        my @refs = $s =~ /(?:^|\s)((?:issue|pull|PR|pull request)? ?(?:[-a-z0-9]*)#(?:[0-9]+))/g;
         for my $ref (@refs) {
             my $number = $ref =~ s/.*#([0-9]+)[^0-9]?.*/$1/r;
-            my $type = "issues";
-            if ($ref =~ /(pull|PR)/) {
-                $type = "pull";
+            my $reponame;
+            if ($ref =~ /[-a-z0-9]+#[0-9]+/) {
+                $reponame = $ref =~ s/(?:^|\s)([-a-z0-9]+)#[0-9]+.*/$1/r;
             }
-            my $link = mklink(1, '', $currentrepourl . $type . "/" . $number, $ref);
-            $s =~ s/$ref/$link/e;
+            my $localrepourl = $currentrepourl;
+            if ($reponame) {
+                if ($currentrepourl) {
+                    $localrepourl = $currentrepourl =~ s/\/[^\/]+\/$/\/$reponame\//r;
+                } else {
+                    $localrepourl = $repobase . $reponame . "/";
+                }
+            }
+            if (defined($localrepourl)) {
+                my $type = "issues";
+                if ($ref =~ /(pull|PR)/) {
+                    $type = "pull";
+                }
+                my $link = mklink(1, '', $localrepourl . $type . "/" . $number, $ref);
+                $s =~ s/$ref/$link/e;
+            }
         }
     }
     if ($emph) {

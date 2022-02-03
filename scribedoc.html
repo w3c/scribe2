@@ -1250,8 +1250,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
 </pre>
   <p>The <code>Repo</code> (also available as <code>repository</code>) setting can take a simple repo name (in which case it is assumed in the w3c Github organization), a full repo name (<code><var>owner</var>/<var>name</var></code>), or a full URL.</p>
   <p>Alternatively, if a <code>Topic</code> or a <code>Subtopic</code> contains a link to a repository, or a link to a resource under a repository (e.g. an issue or a pull request), that repository will be used as a basis to deference <code>#</code> links.</p>
-
   <p>In both cases, the said repository will be the assumed base for dereferencing issues and pull requests until a new <code>repo</code> is set (or the value is unset altogether with an empty value to the <code>Repo:</code> command).</p>
+  <p>Finally, for one-off references to an issue or in a pull request, the reference <code>webrtc-pc#32</code> will be interpreted as link to issue/pull request #32 in the webrtc-pc repository of the W3C github organization (or in the latest organization mentioned when setting the base repo with above commands).</p>
 
   <h2 id="images">Embedding images</h2>
 
