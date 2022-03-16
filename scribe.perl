@@ -485,6 +485,19 @@ sub break_url($)
 {
   my ($s) = @_;
 
+  # if the url is to a github repo or a github issue / pull request
+  # replace it with a recognizable shorthand
+  if ($s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/?$/) {
+    return $1 . '/' . $2 ;
+  }
+  if ($s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)$/) {
+    return $1 . '/' . $2 . '#' . $4;
+  }
+  if ($s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)#issuecomment-/) {
+    return $1 . '/' . $2 . '#' . $4 . " (comment)";
+  }
+
+
   # HTML delimiters are already escaped.
   if ($url_display eq 'break') {
     $s =~ s|/\b|/<wbr>|g;
