@@ -706,10 +706,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 188 $'
+my $revision = '$Revision: 189 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Jan  8 18:27:23 2022 UTC $'
+my $versiondate = '$Date: Wed Mar 30 16:28:13 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -981,7 +981,7 @@ for (my $i = 0; $i < @records; $i++) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *slideset *: *(.*?($urlpat).*)$/i) {
+  } elsif (/^ *slides(?:et)? *: *(.*?($urlpat).*)$/i) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line
     $records[$i]->{text} = $1;
     $lastslideset = $2;
