@@ -129,8 +129,12 @@ use utf8;			# This script contains characters in UTF-8
 use File::Basename;
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
+# The pattern consists of two alternatives. The first one matches a
+# URL that is not preceded by a "(" and it allows ")" in the URL. The
+# second does not allow ")". This is needed to allow markdown-style
+# links, which use "(" and ")" to delimit the URL.
 my $urlpat =
-  '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›\)]+';
+  '(?:(?<!\()(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]+|(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›)]+)';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 # A speaker name doesn't contain [ ":>] and doesn't start with "..".
@@ -487,7 +491,7 @@ sub break_url($)
 
   # HTML delimiters are already escaped.
   if ($url_display eq 'break') {
-    $s =~ s|/\b|/<wbr>|g;
+    $s =~ s|(/+)(.)|$1<wbr>$2|g;
   } elsif ($url_display eq 'shorten') {
     $s =~ s/^((?:[^&]|&[^;]+;){5})(?:[^&]|&[^;]+;)*((?:[^&]|&[^;]+;){6})$/$1…$2/;
   }
@@ -711,10 +715,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 188 $'
+my $revision = '$Revision: md-links-190 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Jan  8 18:27:23 2022 UTC $'
+my $versiondate = '$Date: Wed Mar 30 16:22:21 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
