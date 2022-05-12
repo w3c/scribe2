@@ -401,7 +401,7 @@ Internationalization Working Group Teleconference</h1>
 <span id=x053>… would prefer if it were in w3c repo before we review</span></p>
 <p id=x055 class="phone s01"><cite>kaz:</cite> updating the draft daily, but generated fixed version using branch<br>
 <span id=x056>… if needed, I can copy the fixed HTML to the www.w3.org server.</span></p>
-<p id=x057 class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">https://<wbr>github.com/<wbr>w3c/<wbr>wot-thing-description/</a></p>
+<p id=x057 class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">w3c/<wbr>wot-thing-description</a></p>
 <p id=x060 class="phone s03"><cite>mathias:</cite> our doc is on github</p>
 <p id=x061 class="phone s04"><cite>sebastian:</cite> would having  a meeting to guide you helpful?</p>
 <p id=x068 class="phone s02"><cite>richard:</cite> if you can review our checklist, that will help you guide us<br>
@@ -467,24 +467,24 @@ Internationalization Working Group Teleconference</h1>
 <h3 id=t02>Action Items</h3>
 <p id=x160 class=summary><a href="https://www.w3.org/International/track/actions/open">https://<wbr>www.w3.org/<wbr>International/<wbr>track/<wbr>actions/<wbr>open</a></p>
 <p id=x161 class=summary>action-764?</p>
-<p id=x162 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/764">action-764</a>:</strong> Addison Phillips to Check if unicode describes backwards deletion clearly and develop doc if not -- due 2018-10-30 -- OPEN</p>
+<p id=x162 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/764">action-764</a></strong> Addison Phillips to Check if unicode describes backwards deletion clearly and develop doc if not -- due 2018-10-30 -- OPEN</p>
 <p id=x164 class="phone s05"><cite>addison:</cite> PR?</p>
 <p id=x165 class=summary>action-774?</p>
-<p id=x166 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/774">action-774</a>:</strong> Richard Ishida to Publish first public working draft of string-meta -- due 2019-02-07 -- OPEN</p>
+<p id=x166 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/774">action-774</a></strong> Richard Ishida to Publish first public working draft of string-meta -- due 2019-02-07 -- OPEN</p>
 <p id=x168 class=summary>close action-774</p>
 <p id=x169 class=bot><cite>&lt;trackbot&gt;</cite> Closed action-774.</p>
 <p id=x170 class=summary>action-795?</p>
-<p id=x171 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/795">action-795</a>:</strong> Addison Phillips to Send issue 521 to css -- due 2019-04-11 -- OPEN</p>
+<p id=x171 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/795">action-795</a></strong> Addison Phillips to Send issue 521 to css -- due 2019-04-11 -- OPEN</p>
 <p id=x173 class=summary>close action-795</p>
 <p id=x174 class=bot><cite>&lt;trackbot&gt;</cite> Closed action-795.</p>
 <p id=x175 class=summary>action-797?</p>
-<p id=x176 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/797">action-797</a>:</strong> Atsushi Shimono to Start writing weekly summary of new/tracked issues -- due 2019-04-18 -- OPEN</p>
+<p id=x176 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/797">action-797</a></strong> Atsushi Shimono to Start writing weekly summary of new/tracked issues -- due 2019-04-18 -- OPEN</p>
 <p id=x179 class="phone s09"><cite>atsushi:</cite> including one line of description</p>
 <p id=x180 class="phone s02"><cite>richard:</cite> including 2 in chinese, one at bottom</p>
 <p id=x181 class="phone s09"><cite>atsushi:</cite> included some from lreqs</p>
 <p id=x182 class="phone s02"><cite>richard:</cite> only include if questions</p>
 <p id=x183 class=summary>action-798?</p>
-<p id=x184 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/798">action-798</a>:</strong> Addison Phillips to Make new autocapitalization issue against html based on today's discussion -- due 2019-04-18 -- OPEN</p>
+<p id=x184 class=bot><cite>&lt;trackbot&gt;</cite> <strong><a href="https://www.w3.org/International/track/actions/798">action-798</a></strong> Addison Phillips to Make new autocapitalization issue against html based on today's discussion -- due 2019-04-18 -- OPEN</p>
 <p id=x186 class=summary>close action-798</p>
 <p id=x187 class=bot><cite>&lt;trackbot&gt;</cite> Closed action-798.</p>
 </section>
