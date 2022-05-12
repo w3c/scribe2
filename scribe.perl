@@ -62,6 +62,8 @@
 # TODO: When the minutes don't start with "topic:", the first
 # <section> is empty. Remove it.
 #
+# TODO: A way to indicate that a phrase is in a particular language?
+#
 # Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -719,10 +721,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 188 $'
+my $revision = '$Revision: 190 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Jan  8 18:27:23 2022 UTC $'
+my $versiondate = '$Date: Wed Mar 30 16:29:31 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -994,7 +996,7 @@ for (my $i = 0; $i < @records; $i++) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *slideset *: *(.*?($urlpat).*)$/i) {
+  } elsif (/^ *slides(?:et)? *: *(.*?($urlpat).*)$/i) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line
     $records[$i]->{text} = $1;
     $lastslideset = $2;
@@ -1205,44 +1207,21 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim') {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
 
-  } elsif ($use_zakim && /^ *zakim,/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *(?:chair +)?(?:ack|recognize)s? \w/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *agg?enda *\d* *[\+\-\=\?]/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
   } elsif ($use_zakim &&
-	   /^ *(?:delete|drop|forget|remove) +agend(?:um|a) +\d+ *$/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim &&
-	   /^ *(?:take +up +|open +|move +to +)?(?:agend(?:um|a) +|next +agend(?:um|a) *$)/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *next +agend(?:um|a) *$/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim &&
-	   /^ *(?:skip|(?:really +)?close) +(?:this +agend(?:um|a) *$|agend(?:um|a) +\d+ *$)/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *q(?:ueue|q)? *[-+=?]/i){
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim &&
-	   /^ *(?:ple?a?se? +)?(?:show +)?(?:the +)?(?:verbose +|full +)?q(?:ueue)?\?? *$/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *(?:vqueue|vq|qv)\?/i){
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *[-+=?] *q(?:ueue|q)?\b/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *(?:ple?a?se? +)?clear +(?:the +)?agenda *$/i) {
+    ( /^ *zakim,/i ||
+      /^ *(?:chair +)?(?:ack|recognize)s? \w/i ||
+      /^ *agg?enda *\d* *[\+\-\=\?]/i ||
+      /^ *(?:delete|drop|forget|remove) +agend(?:um|a) +\d+ *$/i ||
+      /^ *(?:take +up +|open +|move +to +)?(?:agend(?:um|a) +|next +agend(?:um|a))/i ||
+      /^ *next +agend(?:um|a) *$/i ||
+      /^ *(?:skip|(?:really +)?close) +(?:this +agend(?:um|a)|agend(?:um|a) +\d+) *$/i ||
+      /^ *q(?:ueue|q)? *[-+=?]/i ||
+      /^ *(?:ple?a?se? +)?(?:show +)?(?:the +)?(?:verbose +|full +)?q(?:ueue)?\?? *$/i ||
+      /^ *(?:vqueue|vq|qv)\?/i ||
+      /^ *[-+=?] *q(?:ueue|q)?\b/i ||
+      /^ *(?:ple?a?se? +)?clear +(?:the +)?agenda *$/i ||
+      /^ *(?:(?:list|show) +(?:all +)?(?:the +)?questions|questions *\?) *$/i ||
+      /^ *(?:drop|close) +question +[0-9]+ *$/i)) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
 
   } elsif (/^ *trackbot *, *(?:(?:dis)?associate|bye|start|end|status)\b/i) {
