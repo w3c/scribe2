@@ -64,7 +64,9 @@
 #
 # TODO: A way to indicate that a phrase is in a particular language?
 #
-# Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
+# TODO: Recognize the bots if they joined under another nick name.
+#
+# Copyright © 2017-2022 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
 # work is distributed under the W3C® Software License[1] in the hope
@@ -487,25 +489,23 @@ sub break_url($)
 {
   my ($s) = @_;
 
-  # if the url is to a github repo or a github issue / pull request
-  # replace it with a recognizable shorthand
-  if ($s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/?$/) {
-    return $1 . '/' . $2 ;
-  }
-  if ($s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)$/) {
-    return $1 . '/' . $2 . '#' . $4;
-  }
-  if ($s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)#issuecomment-/) {
-    return $1 . '/' . $2 . '#' . $4 . " (comment)";
-  }
-
-
   # HTML delimiters are already escaped.
-  if ($url_display eq 'break') {
-    $s =~ s|/\b|/<wbr>|g;
-  } elsif ($url_display eq 'shorten') {
-    $s =~ s/^((?:[^&]|&[^;]+;){5})(?:[^&]|&[^;]+;)*((?:[^&]|&[^;]+;){6})$/$1…$2/;
-  }
+
+  # If the URL is a well-known one, replace it with an
+  # abbreviation. Otherwise, if the urlDisplay option is 'break',
+  # insert <wbr> tags to make the URL breakable. Otherwise, if the
+  # urlDisplay option is 'shorten', elide the middle part of the
+  # URL. Otherwise return the URL unchanged.
+  return "$1/<wbr>$2"
+      if $s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/?$/;
+  return "$1/<wbr>$2#$4"
+      if $s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)$/;
+  return "$1/<wbr>$2#$4 (comment)"
+      if $s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)#issuecomment-/;
+  return $s =~ s|/\b|/<wbr>|gr
+      if $url_display eq 'break';
+  return $s =~ s/^((?:[^&]|&[^;]+;){5})(?:[^&]|&[^;]+;)*((?:[^&]|&[^;]+;){6})$/$1…$2/r
+      if $url_display eq 'shorten';
   return $s;
 }
 
@@ -721,10 +721,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 190 $'
+my $revision = '$Revision: shorten-githuburl-194 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Mar 30 16:29:31 2022 UTC $'
+my $versiondate = '$Date: Thu May 12 22:26:26 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -768,6 +768,7 @@ my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/' .
 
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
+	    fc('ghurlbot') => 1,
 	    fc('agendabot') => 1,
 	    fc('Zakim') => 1);
 
@@ -1253,6 +1254,18 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *agendabot,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
+  } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
+	   (/^(->.*) (\(.*) ($urlpat)$/ || /^(->.*)() ($urlpat)$/)) {
+    $records[$i]->{type} = 'B';		# A linked issue or name by ghurlbot
+    $records[$i]->{text} = "$1 $3";	# "-> title URL"
+    $records[$i]->{id} = $2;		# Optional other info (author, labels)
+
+  } elsif (/^ *ghurlbot,/i) {
+    $records[$i]->{type} = 'o';		# Ignore most conversations w/ ghurlbot
+
+  } elsif ($records[$i]->{speaker} eq 'ghurlbot') {
+    $records[$i]->{type} = 'o';		# Ignore most conversations w/ ghurlbot
+
   } elsif (/^ *namedanchorhere *: *(.*?) *$/i) {
     my $a = $1 =~ s/ /_/gr;
     if ($a =~ /^$/) {
@@ -1362,7 +1375,7 @@ push @diagnostics, "Maybe present: " .
 # Each type of record is converted to a specific HTML fragment, with
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
 # by the speaker ID, %5$s by a unique ID for the record and %6$s by a
-# link to a ecording of the meeting, if any.
+# link to a recording of the meeting, if any.
 #
 # The 1 or 0 after the pattern indicates whether the text (%3$) can be
 # parsed for emphasis and math. (Only applicable if --emphasis was
@@ -1388,7 +1401,7 @@ if (defined $recording) {
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
   b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
-  B => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n", 0],
+  B => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s</strong> %2\$s</p>\n", 0],
   d => ["<p id=%5\$s class=summary>%3\$s</p>\n", 1],
   D => ["<pre id=%5\$s class=summary>\n%3\$s</pre>\n", 0],
   i => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 1],
