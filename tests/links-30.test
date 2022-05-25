@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test if an inverted Xueyuan link accepts a URL in the anchor text.
+
+echo "<foo> The ftp://example.org/1 -> anchor with ftp://example.org/2" | \
+  perl scribe.perl --urldisplay=full | \
+  grep "The <a href=\"ftp://example.org/1\">anchor with ftp://example.org/2</a>"
