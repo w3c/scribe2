@@ -723,10 +723,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: shorten-githuburl-194 $'
+my $revision = '$Revision: shorten-githuburl-195 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu May 12 22:26:26 2022 UTC $'
+my $versiondate = '$Date: Wed May 25 17:59:06 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1265,10 +1265,10 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
   } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
-	   (/^(->.*) (\(.*) ($urlpat)$/ || /^(->.*)() ($urlpat)$/)) {
+	   (/^($urlpat) (->.*) (\(.*)$/ || /^($urlpat) (->.*)()$/)) {
     $records[$i]->{type} = 'B';		# A linked issue or name by ghurlbot
-    $records[$i]->{text} = "$1 $3";	# "-> title URL"
-    $records[$i]->{id} = $2;		# Optional other info (author, labels)
+    $records[$i]->{text} = "$1 $2";	# "URL -> title"
+    $records[$i]->{id} = $3;		# Optional other info (author, labels)
 
   } elsif (/^ *ghurlbot,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ ghurlbot
