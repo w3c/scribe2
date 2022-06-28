@@ -126,9 +126,10 @@ use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
 use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
 use locale ':collate';		# Sort using current locale
-use open ':encoding(UTF-8)';	# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
 use File::Basename;
+use Encode qw/decode/;		# For decode('UTF-8',...)
+use Encode::Guess;		# For guess_encoding()
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
 my $urlpat =
@@ -441,7 +442,8 @@ sub to_mathml($)
   $in =~ s/\"/\\\"/g;
   $in =~ s/\$/\\\$/g;
   $in =~ s/\`/\\\`/g;
-  $out = `latexmlmath "$in" 2>/dev/null`;
+  # $out = `latexmlmath "$in" 2>/dev/null`;
+  $out = decode('UTF-8', `latexmlmath "$in" 2>/dev/null`);
   push(@diagnostics, "Failed math formula: $s") if $? != 0;
   return $s if $? != 0;		# An error occurred, return original string
   $out =~ s/<\?xml[^>]*\?>//;
@@ -708,10 +710,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 190 $'
+my $revision = '$Revision: 192 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Mar 30 16:29:31 2022 UTC $'
+my $versiondate = '$Date: Tue Jun 28 16:55:30 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -785,10 +787,11 @@ my %options = ("team" => sub {$styleset = 'team'},
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
 
-# The "use open" pragma takes care of setting a UTF8 layer on newly
-# opened files from the command line, but STDIN is already open, so it
-# needs a binmode() command.
-binmode(STDIN, ':utf8');
+# Automatically encode output to stdout and stderr as UTF-8. We do not
+# automatically decode stdin as UTF-8, because the program might
+# occasionally be used on old files that are in Latin-1.
+# guess_encoding() below detects that case.
+#
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 
@@ -800,7 +803,14 @@ GetOptions(%options) or pod2usage(2);
 # parser in turn to parse them into records, until one succeeds.
 #
 do {
-  my @input = map tr/\t\r\n/ /dr, <>;
+  local $/;
+  my $input = <>;
+  # Try to guess the encoding: ASCII, UTF-8/16/32 or Latin-1.
+  my $decoder = guess_encoding($input, 'latin-1');
+  # Decode the input. If not known or ambiguous, try UTF-8.
+  $input = ref($decoder) ? $decoder->decode($input) : decode('UTF-8', $input);
+  # Split into lines, remove newlines, replace tabs by spaces.
+  my @input = map tr/\t/ /r, split(/\r?\n/, $input);
   $input[0] =~ s/^\x{FEFF}// if scalar @input; # Remove the BOM, if any
   do {@records = (); last if &$_(\@input, \@records);} foreach (@parsers);
   push(@diagnostics,'Input has an unknown format (or is empty).') if !@records;
