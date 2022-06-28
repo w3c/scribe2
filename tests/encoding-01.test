@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Test if Latin-1 input is correctly decoded.
+
+# This test needs iconv
+if ! type -t iconv >/dev/null; then exit 2; fi
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+# Input:
+cat >$TMP1 <<EOF
+14:50:48 <foo> Et si on écrivait en français ?
+EOF
+
+# Expected output:
+cat >$TMP5 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x001 class=summary>Et si on écrivait en français ?</p>
+</section>
+</main>
+EOF
+
+# Convert input to Latin-1:
+iconv -f UTF-8 -t ISO-8859-1 $TMP1 >$TMP2
+
+# Run scribe.perl:
+perl scribe.perl $TMP2 >$TMP3
+
+# Extract just the minutes:
+sed -n -e '/<main/,/<\/main>/p' $TMP3 >$TMP4
+
+# Compare to the expected result:
+diff -u $TMP5 $TMP4
