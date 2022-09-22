@@ -64,7 +64,9 @@
 #
 # TODO: A way to indicate that a phrase is in a particular language?
 #
-# Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
+# TODO: Add formatting/styling to Zakim's "question" feature?
+#
+# Copyright © 2017-2022 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
 # work is distributed under the W3C® Software License[1] in the hope
@@ -710,10 +712,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 192 $'
+my $revision = '$Revision: 193 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jun 28 16:55:30 2022 UTC $'
+my $versiondate = '$Date: Thu Sep 22 09:44:17 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
