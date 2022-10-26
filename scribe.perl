@@ -510,9 +510,9 @@ sub mklink($$$$)
   if ($link > 0) {
     my $s = '<a href="' . $url . '">';
     if ($type eq '-->') {
-      $s .= '<img src="' . $url . '" alt="' . esc($anchortext, undef , undef, undef, 1) . '">';
+      $s .= '<img src="' . $url . '" alt="' . esc($anchortext) . '">';
     } elsif ($anchortext ne '') {
-      $s .= esc($anchortext, $emphasis, undef , undef, 1);
+      $s .= esc($anchortext, $emphasis);
     } else {
       $s .= break_url($url); # Otherwise the URL itself is the anchor text
     }
@@ -524,10 +524,10 @@ sub mklink($$$$)
 
 
 # esc -- escape HTML delimiters (<>&"), optionally handle emphasis & Ralph links
-sub esc($;$$$$);
-sub esc($;$$$$)
+sub esc($;$$$);
+sub esc($;$$$)
 {
-  my ($s, $emph, $link, $break_urls, $in_link) = @_;
+  my ($s, $emph, $link, $break_urls) = @_;
   my ($replacement, $pre, $url, $post, $type);
 
   if ($link) {
@@ -546,8 +546,10 @@ sub esc($;$$$$)
 
     # Loop until we found all URLs.
     $replacement = '';
+    my $processed = 0;
     while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/i) {
       # Look for "->" or "-->" before or after the URL.
+      $processed = 1;
       if ($pre =~ /(--?>) *$/p) { # Ralph, Xueyuan or missing anchor text
 	$type = $1;
 	$pre = $`;
@@ -579,7 +581,40 @@ sub esc($;$$$$)
     	$s = $post;
       }
     }
-    $s = $replacement . esc($s, $emph);
+    if (!$processed &&
+	# an issue can be designed with the short form webrtc-pc#32
+	($s =~ /(?:^|\s)([-a-z0-9]+#[0-9]+)/ ||
+	 # or without the repo name if a repo base has been set
+	 (defined($currentrepourl) && $s =~ /(?:^|\s)([-a-z0-9]*#[0-9]+)/)
+	)) {
+	$replacement = $s;
+	my @refs = $s =~ /(?:^|\s)((?:issue|pull|PR|pull request)? ?(?:[-a-z0-9]*)#(?:[0-9]+))/g;
+	for my $ref (@refs) {
+	    my $number = $ref =~ s/.*#([0-9]+)[^0-9]?.*/$1/r;
+	    my $reponame;
+	    if ($ref =~ /[-a-z0-9]+#[0-9]+/) {
+		$reponame = $ref =~ s/(?:^|\s)([-a-z0-9]+)#[0-9]+.*/$1/r;
+	    }
+	    my $localrepourl = $currentrepourl;
+	    if ($reponame) {
+		if ($currentrepourl) {
+		    $localrepourl = $currentrepourl =~ s/\/[^\/]+\/$/\/$reponame\//r;
+		} else {
+		    $localrepourl = $repobase . $reponame . "/";
+		}
+	    }
+	    if (defined($localrepourl)) {
+		my $type = "issues";
+		if ($ref =~ /(pull|PR)/) {
+		    $type = "pull";
+		}
+		my $ghlink = mklink($link, '->', $localrepourl . $type . "/" . $number, $ref);
+		$s =~ s/$ref/$ghlink/e;
+	    }
+	}
+    } else {
+	$s = $replacement . esc($s, $emph);
+    }
   } elsif ($break_urls) {	# Shorten or break URLs
     $s = esc($s, $emph);
     $s =~ s/($urlpat)/break_url($1)/gie;
@@ -588,37 +623,6 @@ sub esc($;$$$$)
     $s =~ s/</&lt;/g;
     $s =~ s/>/&gt;/g;
     $s =~ s/"/&quot;/g;
-    if (!$in_link &&
-        # an issue can be designed with the short form webrtc-pc#32
-        ($s =~ /(?:^|\s)([-a-z0-9]+#[0-9]+)/ ||
-        # or without the repo name if a repo base has been set
-         (defined($currentrepourl) && $s =~ /(?:^|\s)([-a-z0-9]*#[0-9]+)/)
-        )) {
-        my @refs = $s =~ /(?:^|\s)((?:issue|pull|PR|pull request)? ?(?:[-a-z0-9]*)#(?:[0-9]+))/g;
-        for my $ref (@refs) {
-            my $number = $ref =~ s/.*#([0-9]+)[^0-9]?.*/$1/r;
-            my $reponame;
-            if ($ref =~ /[-a-z0-9]+#[0-9]+/) {
-                $reponame = $ref =~ s/(?:^|\s)([-a-z0-9]+)#[0-9]+.*/$1/r;
-            }
-            my $localrepourl = $currentrepourl;
-            if ($reponame) {
-                if ($currentrepourl) {
-                    $localrepourl = $currentrepourl =~ s/\/[^\/]+\/$/\/$reponame\//r;
-                } else {
-                    $localrepourl = $repobase . $reponame . "/";
-                }
-            }
-            if (defined($localrepourl)) {
-                my $type = "issues";
-                if ($ref =~ /(pull|PR)/) {
-                    $type = "pull";
-                }
-                my $link = mklink(1, '', $localrepourl . $type . "/" . $number, $ref);
-                $s =~ s/$ref/$link/e;
-            }
-        }
-    }
     if ($emph) {
       $s =~ s/:-\)/☺/g;
       $s =~ s/;-\)/😉\x{FE0E}/g;
