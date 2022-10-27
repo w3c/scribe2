@@ -5,9 +5,6 @@
 # See scribe2doc.html for the manual.
 # This is a rewrite of David Booth's scribe.perl
 #
-# TODO: Omit failed s/// commands? (But maybe they failed on purpose
-# and should not be removed?)
-#
 # TODO: option --inputFormat to select the format, rather than try
 # each parser in turn.
 #
@@ -712,10 +709,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 194 $'
+my $revision = '$Revision: 196 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Oct 27 16:47:28 2022 UTC $'
+my $versiondate = '$Date: Thu Oct 27 17:06:44 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
