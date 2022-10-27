@@ -710,10 +710,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: 192 $'
+my $revision = '$Revision: 193 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jun 28 16:55:30 2022 UTC $'
+my $versiondate = '$Date: Thu Oct 27 16:41:20 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -898,14 +898,18 @@ foreach my $p (@records) {
 # assume the person who typed most was the scribe. And if nobody typed
 # anything, set the scribe to '*'.
 #
+# The hash %count is also used further down to print the list of
+# people who were active on IRC in the diagnostics.
+#
 my %count;
+foreach (@records) {
+  $count{$_->{speaker}}++ if $_->{type} eq 'i' && !$bots{fc($_->{speaker})};
+}
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
   if ($p->{text} =~ /^ *scribe(?:nick)? * \+:? *$/i) {
     $scribenick = $p->{speaker};
   } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?::|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
     $scribenick = $1;
-  } else {
-    $count{$p->{speaker}}++ if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
   }
 }
 if (!defined $scribenick) {
@@ -1348,11 +1352,17 @@ if (!defined $date && defined $minutes_url &&
   push(@diagnostics, "Found no dated URLs. You may need to use 'Date:'.");
 }
 
-# Add a list of speakers that do not appear in %present, if any.
-my @also = grep !exists($present{fc $_}),
-    fc_uniq(map $_->{speaker}, grep $_->{type} eq 's', @records);
+# Add lists of (1) speakers that do not appear in %present; (2) all
+# speakers; and (3) all people active on IRC.
+#
+my @all_speakers = fc_uniq(map $_->{speaker}, grep $_->{type} eq 's', @records);
+my @also = grep !exists($present{fc $_}), @all_speakers;
 push @diagnostics, "Maybe present: " .
     join(", ", sort {fc($a) cmp fc($b)} @also) if @also;
+push @diagnostics, "All speakers: " .
+    join(", ", sort {fc($a) cmp fc($b)} @all_speakers) if @all_speakers;
+push @diagnostics, "Active on IRC: " .
+    join(", ", sort {fc($a) cmp fc($b)} keys %count) if %count;
 
 # Step 6. Convert records to HTML and then fill a template.
 #
