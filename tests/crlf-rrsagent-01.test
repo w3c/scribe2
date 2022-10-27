@@ -117,6 +117,8 @@ href="https://w3c.github.io/scribe2/scribedoc.html"
 <h2>Diagnostics</h2>
 <p class=warning>Succeeded: s/second base/first base/</p>
 <p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>All speakers: Abbott, Costello</p>
+<p class=warning>Active on IRC: Abbott, Harpo</p>
 </div>
 </body>
 </html>

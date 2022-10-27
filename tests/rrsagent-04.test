@@ -112,6 +112,11 @@ cat >$TMP2 <<EOF
 href="https://w3c.github.io/scribe2/scribedoc.html"
 >scribe.perl</a> version 2.38 (2017/11/07 01:26:47).</a></address>
 
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>All speakers: Charlotte, Eric</p>
+<p class=warning>Active on IRC: James, shawn, yatil</p>
+</div>
 </body>
 </html>
 EOF

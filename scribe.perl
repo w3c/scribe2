@@ -62,7 +62,11 @@
 # TODO: When the minutes don't start with "topic:", the first
 # <section> is empty. Remove it.
 #
-# Copyright © 2017-2021 World Wide Web Consortium, (Massachusetts Institute
+# TODO: A way to indicate that a phrase is in a particular language?
+#
+# TODO: Add formatting/styling to Zakim's "question" feature?
+#
+# Copyright © 2017-2022 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
 # work is distributed under the W3C® Software License[1] in the hope
@@ -124,9 +128,10 @@ use Getopt::Long qw(GetOptionsFromString :config auto_version auto_help);
 use Pod::Usage;
 use v5.16;			# We use "each @ARRAY" (5.012) and fc (5.16)
 use locale ':collate';		# Sort using current locale
-use open ':encoding(UTF-8)';	# Open all files assuming they are UTF-8
 use utf8;			# This script contains characters in UTF-8
-
+use File::Basename;
+use Encode qw/decode/;		# For decode('UTF-8',...)
+use Encode::Guess;		# For guess_encoding()
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
 my $urlpat =
@@ -443,7 +448,8 @@ sub to_mathml($)
   $in =~ s/\"/\\\"/g;
   $in =~ s/\$/\\\$/g;
   $in =~ s/\`/\\\`/g;
-  $out = `latexmlmath "$in" 2>/dev/null`;
+  # $out = `latexmlmath "$in" 2>/dev/null`;
+  $out = decode('UTF-8', `latexmlmath "$in" 2>/dev/null`);
   push(@diagnostics, "Failed math formula: $s") if $? != 0;
   return $s if $? != 0;		# An error occurred, return original string
   $out =~ s/<\?xml[^>]*\?>//;
@@ -745,10 +751,10 @@ sub link_to_recording($$)
 
 
 # Main body
-my $revision = '$Revision: repo-links-187 $'
+my $revision = '$Revision: 194 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Jan  8 20:22:22 2022 UTC $'
+my $versiondate = '$Date: Thu Oct 27 16:47:28 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -822,10 +828,11 @@ my %options = ("team" => sub {$styleset = 'team'},
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
 
-# The "use open" pragma takes care of setting a UTF8 layer on newly
-# opened files from the command line, but STDIN is already open, so it
-# needs a binmode() command.
-binmode(STDIN, ':utf8');
+# Automatically encode output to stdout and stderr as UTF-8. We do not
+# automatically decode stdin as UTF-8, because the program might
+# occasionally be used on old files that are in Latin-1.
+# guess_encoding() below detects that case.
+#
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 
@@ -837,7 +844,14 @@ GetOptions(%options) or pod2usage(2);
 # parser in turn to parse them into records, until one succeeds.
 #
 do {
-  my @input = map tr/\t\r\n/ /dr, <>;
+  local $/;
+  my $input = <>;
+  # Try to guess the encoding: ASCII, UTF-8/16/32 or Latin-1.
+  my $decoder = guess_encoding($input, 'latin-1');
+  # Decode the input. If not known or ambiguous, try UTF-8.
+  $input = ref($decoder) ? $decoder->decode($input) : decode('UTF-8', $input);
+  # Split into lines, remove newlines, replace tabs by spaces.
+  my @input = map tr/\t/ /r, split(/\r?\n/, $input);
   $input[0] =~ s/^\x{FEFF}// if scalar @input; # Remove the BOM, if any
   do {@records = (); last if &$_(\@input, \@records);} foreach (@parsers);
   push(@diagnostics,'Input has an unknown format (or is empty).') if !@records;
@@ -925,14 +939,18 @@ foreach my $p (@records) {
 # assume the person who typed most was the scribe. And if nobody typed
 # anything, set the scribe to '*'.
 #
+# The hash %count is also used further down to print the list of
+# people who were active on IRC in the diagnostics.
+#
 my %count;
+foreach (@records) {
+  $count{$_->{speaker}}++ if $_->{type} eq 'i' && !$bots{fc($_->{speaker})};
+}
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
   if ($p->{text} =~ /^ *scribe(?:nick)? * \+:? *$/i) {
     $scribenick = $p->{speaker};
   } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?::|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
     $scribenick = $1;
-  } else {
-    $count{$p->{speaker}}++ if $p->{type} eq 'i' && !$bots{fc($p->{speaker})};
   }
 }
 if (!defined $scribenick) {
@@ -1041,7 +1059,7 @@ for (my $i = 0; $i < @records; $i++) {
         }
     }
     $records[$i]->{text} = $repourl;
-  } elsif (/^ *slideset *: *(.*?($urlpat).*)$/i) {
+  } elsif (/^ *slides(?:et)? *: *(.*?($urlpat).*)$/i) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line
     $records[$i]->{text} = $1;
     $lastslideset = $2;
@@ -1252,44 +1270,21 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim') {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
 
-  } elsif ($use_zakim && /^ *zakim,/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *(?:chair +)?(?:ack|recognize)s? \w/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *agg?enda *\d* *[\+\-\=\?]/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
   } elsif ($use_zakim &&
-	   /^ *(?:delete|drop|forget|remove) +agend(?:um|a) +\d+ *$/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim &&
-	   /^ *(?:take +up +|open +|move +to +)?(?:agend(?:um|a) +|next +agend(?:um|a) *$)/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *next +agend(?:um|a) *$/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim &&
-	   /^ *(?:skip|(?:really +)?close) +(?:this +agend(?:um|a) *$|agend(?:um|a) +\d+ *$)/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *q(?:ueue|q)? *[-+=?]/i){
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim &&
-	   /^ *(?:ple?a?se? +)?(?:show +)?(?:the +)?(?:verbose +|full +)?q(?:ueue)?\?? *$/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *(?:vqueue|vq|qv)\?/i){
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *[-+=?] *q(?:ueue|q)?\b/i) {
-    $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
-
-  } elsif ($use_zakim && /^ *(?:ple?a?se? +)?clear +(?:the +)?agenda *$/i) {
+    ( /^ *zakim,/i ||
+      /^ *(?:chair +)?(?:ack|recognize)s? \w/i ||
+      /^ *agg?enda *\d* *[\+\-\=\?]/i ||
+      /^ *(?:delete|drop|forget|remove) +agend(?:um|a) +\d+ *$/i ||
+      /^ *(?:take +up +|open +|move +to +)?(?:agend(?:um|a) +|next +agend(?:um|a))/i ||
+      /^ *next +agend(?:um|a) *$/i ||
+      /^ *(?:skip|(?:really +)?close) +(?:this +agend(?:um|a)|agend(?:um|a) +\d+) *$/i ||
+      /^ *q(?:ueue|q)? *[-+=?]/i ||
+      /^ *(?:ple?a?se? +)?(?:show +)?(?:the +)?(?:verbose +|full +)?q(?:ueue)?\?? *$/i ||
+      /^ *(?:vqueue|vq|qv)\?/i ||
+      /^ *[-+=?] *q(?:ueue|q)?\b/i ||
+      /^ *(?:ple?a?se? +)?clear +(?:the +)?agenda *$/i ||
+      /^ *(?:(?:list|show) +(?:all +)?(?:the +)?questions|questions *\?) *$/i ||
+      /^ *(?:drop|close) +question +[0-9]+ *$/i)) {
     $records[$i]->{type} = 'o';		# Ignore most conversations with Zakim
 
   } elsif (/^ *trackbot *, *(?:(?:dis)?associate|bye|start|end|status)\b/i) {
@@ -1419,11 +1414,17 @@ if (!defined $date && defined $minutes_url &&
   push(@diagnostics, "Found no dated URLs. You may need to use 'Date:'.");
 }
 
-# Add a list of speakers that do not appear in %present, if any.
-my @also = grep !exists($present{fc $_}),
-    fc_uniq(map $_->{speaker}, grep $_->{type} eq 's', @records);
+# Add lists of (1) speakers that do not appear in %present; (2) all
+# speakers; and (3) all people active on IRC.
+#
+my @all_speakers = fc_uniq(map $_->{speaker}, grep $_->{type} eq 's', @records);
+my @also = grep !exists($present{fc $_}), @all_speakers;
 push @diagnostics, "Maybe present: " .
     join(", ", sort {fc($a) cmp fc($b)} @also) if @also;
+push @diagnostics, "All speakers: " .
+    join(", ", sort {fc($a) cmp fc($b)} @all_speakers) if @all_speakers;
+push @diagnostics, "Active on IRC: " .
+    join(", ", sort {fc($a) cmp fc($b)} keys %count) if %count;
 
 # Step 6. Convert records to HTML and then fill a template.
 #

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Test the list of speakers, unlisted participants and users of IRC in
+# the diagnostics.
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+# Input
+cat >$TMP1 <<EOF
+<foo> scribe: foo
+<foo> present: foo, Amina, Miryam
+<foo> Pete: Here I am.
+<Pete> Hi!
+<Joe> qq+
+<foo> Amina : Welcome Pete!
+<foo> People greeting each other...
+<xi> xi has joined #channel
+<Pete> Pete has left #channel
+<Joe> Also: welcome!
+<Zakim> I see nothing remaining on the agenda
+<foo> Oleg: @@
+<foo> Foo: Not today.
+<boris-home> Sorry, got a conflict.
+<Joe> Zakim, who is here?
+EOF
+
+# Expected diagnostic output.
+cat >$TMP2 <<EOF
+* Found no dated URLs. You may need to use 'Date:'.
+* Maybe present: Oleg, Pete
+* All speakers: Amina, Foo, Oleg, Pete
+* Active on IRC: boris-home, foo, Joe, Pete
+EOF
+
+# Discard the minutes and capture just the diagnostics.
+perl scribe.perl $TMP1 >/dev/null 2>$TMP3 || exit 1
+
+# Compare.
+diff -u $TMP2 $TMP3
