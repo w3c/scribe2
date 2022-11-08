@@ -46,8 +46,5 @@ cat >$TMP4 <<EOF
 EOF
 
 perl scribe.perl --embed $TMP1 >$TMP2 || exit 1
-
-cp $TMP2 tmp.html
-
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 diff -u $TMP4 $TMP3
