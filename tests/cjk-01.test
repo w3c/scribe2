@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Test if full-width colons (：) are recognized as colons.
+# The first "Alex：" has a full-width colon.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+12:58:24 <alex> zakim, start meeting
+12:58:24 <Zakim> RRSAgent, make logs Team
+12:58:26 <Zakim> Meeting: Events Team
+12:58:29 <alex> Chair: Alex
+12:58:42 <alex> regrets: Ralph, Hiroko
+13:00:06 <alex> Agenda+ TPAC 2022
+13:00:14 <alex> Agenda+ AC 2023 Venues status
+13:00:29 <alex> Agenda+ 2024 and 2025 potential dates
+13:00:43 <alex> Agenda+ Hiroko leaving W3C
+13:08:05 <alex> agenda+ TPAC 2022
+13:08:06 <zhenjie> scribe： zhenjie
+13:08:22 <zhenjie> Alex： TPAC budget finalization
+13:08:42 <zhenjie> ... still wait for Susan's data from MIT
+13:09:10 <naomi> q+
+13:09:36 <zhenjie> ... 58 USD in total, will not change a lot
+13:10:07 <zhenjie> ... will be more than 58 USD, but not too much
+13:10:18 <alex> ack Naomi
+13:10:21 <zhenjie> ... will report this tomorrow
+13:10:28 <jeff> q+
+13:11:16 <zhenjie> Naomi: will be great if we can pay by the end of the Dec, 22 Dec
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x018 class="phone s01"><cite>Alex:</cite> TPAC budget finalization<br>
+<span id=x019>… still wait for Susan's data from MIT</span><br>
+<span id=x020>… 58 USD in total, will not change a lot</span><br>
+<span id=x021>… will be more than 58 USD, but not too much</span><br>
+<span id=x022>… will report this tomorrow</span></p>
+<p id=x024 class="phone s02"><cite>Naomi:</cite> will be great if we can pay by the end of the Dec, 22 Dec</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl --embed $TMP1 >$TMP2 || exit 1
+
+cp $TMP2 tmp.html
+
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3
