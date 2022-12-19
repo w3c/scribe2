@@ -159,6 +159,8 @@ href="https://w3c.github.io/scribe2/scribedoc.html"
 <h2>Diagnostics</h2>
 <p class=warning>No scribenick or scribe found. Guessed: Gert</p>
 <p class=warning>Maybe present: Caitlyn, Raul</p>
+<p class=warning>All speakers: Amee, Caitlyn, Fleming, Raul</p>
+<p class=warning>Active on IRC: Amee, Fleming, Gert, kolec</p>
 </div>
 </body>
 </html>

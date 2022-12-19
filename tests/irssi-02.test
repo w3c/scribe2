@@ -202,6 +202,8 @@ href="https://w3c.github.io/scribe2/scribedoc.html"
 <p class=warning>Failed: s/in respect/in Respec/</p>
 <p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
 <p class=warning>Maybe present: Richard, Steve</p>
+<p class=warning>All speakers: Bert, Richard, Steve</p>
+<p class=warning>Active on IRC: Bert, dmontalvo, koalie, r12a, RealJoshue108_, stevelee</p>
 </div>
 </body>
 </html>

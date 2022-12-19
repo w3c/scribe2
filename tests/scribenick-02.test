@@ -72,6 +72,7 @@ href="https://w3c.github.io/scribe2/scribedoc.html"
 <div class=diagnostics>
 <h2>Diagnostics</h2>
 <p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>Active on IRC: foo</p>
 </div>
 </body>
 </html>

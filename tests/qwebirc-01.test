@@ -144,6 +144,8 @@ href="https://w3c.github.io/scribe2/scribedoc.html"
 <div class=diagnostics>
 <h2>Diagnostics</h2>
 <p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>All speakers: anne_thyme, CarlosD, Daniel, Wilco</p>
+<p class=warning>Active on IRC: anne_thyme, CarlosD, Daniel, Jean-Yves, KatrineGregersen, Wilco</p>
 </div>
 </body>
 </html>
