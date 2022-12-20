@@ -5,9 +5,6 @@
 # See scribe2doc.html for the manual.
 # This is a rewrite of David Booth's scribe.perl
 #
-# TODO: Omit failed s/// commands? (But maybe they failed on purpose
-# and should not be removed?)
-#
 # TODO: option --inputFormat to select the format, rather than try
 # each parser in turn.
 #
@@ -66,6 +63,8 @@
 #
 # TODO: Add formatting/styling to Zakim's "question" feature?
 #
+# TODO: Recognize the bots if they joined under another nick name.
+#
 # Copyright © 2017-2022 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
@@ -121,6 +120,7 @@
 # If type is 'n' (named anchor), the record is a target anchor.
 # If type is 'b' ('bot), the record is info from trackbot.
 # If type is 'B' ('bot), <text> is info from trackbot about an issue <id>.
+# If type is 'repo', <text> is a list of GitHub repositories.
 
 use strict;
 use warnings;
@@ -138,10 +138,13 @@ my $urlpat =
   '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]+';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
-# A speaker name doesn't contain [ ":>] and doesn't start with "..".
-my $speakerpat = '(?:[^. :">]|\\.[^. :">])[^ :">]*';
+# A speaker name doesn't contain [ ":：>] and doesn't start with "..".
+# ("：" is a full-width colon, Unicode U+FF1A.)
+my $speakerpat = '(?:[^. :：">]|\\.[^. :：">])[^ :：">]*';
 # Some words are unlikely to be speaker names
 my $specialpat = '(?:propos(?:ed|al)|issue-\d+|action-\d+|github)';
+# A pattern for a GitHub repository.
+my $githuburl = '\b(?:(?i)https://github.com/[a-z0-9._-]+/[a-z0-9._-]+)';
 
 # Command line options:
 my $styleset = 'public';	# Or 'team', 'member' or 'fancy'
@@ -162,18 +165,16 @@ my $collapse_limit = 30;	# Longer participant lists are collapsed
 my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
-my $islide =			#  string is i-slide library URL
+my $islide =			# String is i-slide library URL
   'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
-my $repobase =			#  default base for deferencing repo names
-  'https://github.com/w3c/';
-my $currentrepourl;
-
+my $github = 1;			# If 1, recognize GitHub issues and make links
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
 my @diagnostics;		# Collected warnings and other info
 my $recordingstart;         	# Time of recording start
 my $recordingend;         	# Time of recording end
+my @repositories = ();		# List of repo URLs for expanding issue refs
 
 # Each parser takes a reference to an array of text lines (without
 # newlines) and a reference to an array of records. It returns 0
@@ -438,6 +439,39 @@ sub fc_uniq(@)
 }
 
 
+# find_matching_repo -- find full URL of a repository
+sub find_matching_repo($$)
+{
+  my ($owner, $name) = @_;
+
+  # 1) If we're looking for the repo of "#8", use the most recently
+  # defined repo, or undef if none.
+  #
+  # 2) If we are looking for the repo of "foo#8", see if there is a
+  # defined repo called "foo", otherwise use the base URL and owner of
+  # the most recently defined repo, or "https://github.com/w3c/" if
+  # none.
+  #
+  # 3) If we are looking for "bar/foo#8", see if there is a defined
+  # repo with that owner and name, otherwise use the base URL of the
+  # most recently defined repo, or "https://github.com/" if none.
+  #
+  if (! $name) {		# Looking for "#8"
+    return @repositories ? $repositories[0] : undef;
+  } elsif (! $owner) {		# Looking for "foo#8"
+    foreach (@repositories) {return $_ if /\/\Q$name\E$/}
+    return @repositories
+	? $repositories[0] =~ s/[a-z0-9._-]+$/$name/ir
+	: "https://github.com/w3c/$name";
+  } else {			# Looking for "bar/foo#8"
+    foreach (@repositories) {return $_ if /\/\Q$owner$name\E$/}
+    return @repositories
+	? $repositories[0] =~ s/[a-z0-9._-]+\/[a-z0-9._-]+$/$owner$name/ir
+	: "https://github.com/$owner$name";
+  }
+}
+
+
 # to_mathml -- call latexmlmath to convert a LaTeX math expression to MathML
 sub to_mathml($)
 {
@@ -452,7 +486,7 @@ sub to_mathml($)
   $out = decode('UTF-8', `latexmlmath "$in" 2>/dev/null`);
   push(@diagnostics, "Failed math formula: $s") if $? != 0;
   return $s if $? != 0;		# An error occurred, return original string
-  $out =~ s/<\?xml[^>]*\?>//;
+  $out =~ s/<\?xml[^>]*\?>\n?//;
   $has_math = 1;
   return $out;
 }
@@ -461,7 +495,7 @@ sub to_mathml($)
 {
   my %tag = ('_' => 'u', '/' => 'em', '*' => 'strong', '`' => 'code');
 
-  # to_emph -- replace smileys, arrows, emphasis marks and math
+  # to_emph -- replace emphasis marks and math
   sub to_emph($);
   sub to_emph($)
   {
@@ -496,11 +530,22 @@ sub break_url($)
   my ($s) = @_;
 
   # HTML delimiters are already escaped.
-  if ($url_display eq 'break') {
-    $s =~ s|/\b|/<wbr>|g;
-  } elsif ($url_display eq 'shorten') {
-    $s =~ s/^((?:[^&]|&[^;]+;){5})(?:[^&]|&[^;]+;)*((?:[^&]|&[^;]+;){6})$/$1…$2/;
-  }
+
+  # If the URL is a well-known one, replace it with an
+  # abbreviation. Otherwise, if the urlDisplay option is 'break',
+  # insert <wbr> tags to make the URL breakable. Otherwise, if the
+  # urlDisplay option is 'shorten', elide the middle part of the
+  # URL. Otherwise return the URL unchanged.
+  return "$1/<wbr>$2"
+      if $s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/?$/;
+  return "$1/<wbr>$2#$4"
+      if $s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)$/;
+  return "$1/<wbr>$2#$4 (comment)"
+      if $s =~ /^https:\/\/github.com\/([^\/]+)\/([^\/]+)\/(issues|pull)\/([0-9]+)#issuecomment-/;
+  return $s =~ s|/\b|/<wbr>|gr
+      if $url_display eq 'break';
+  return $s =~ s/^((?:[^&]|&[^;]+;){5})(?:[^&]|&[^;]+;)*((?:[^&]|&[^;]+;){6})$/$1…$2/r
+      if $url_display eq 'shorten';
   return $s;
 }
 
@@ -530,11 +575,11 @@ sub mklink($$$$)
 
 
 # esc -- escape HTML delimiters (<>&"), optionally handle emphasis & Ralph links
-sub esc($;$$$);
-sub esc($;$$$)
+sub esc($;$$$$);
+sub esc($;$$$$)
 {
-  my ($s, $emph, $link, $break_urls) = @_;
-  my ($replacement, $pre, $url, $post, $type);
+  my ($s, $emph, $link, $break_urls, $github) = @_;
+  my ($replacement, $pre, $url, $post, $type, $r);
 
   if ($link) {
     # Wrap Ralph-links and bare URLs in <a>.
@@ -552,78 +597,59 @@ sub esc($;$$$)
 
     # Loop until we found all URLs.
     $replacement = '';
-    my $processed = 0;
     while (($pre, $url, $post) = $s =~ /^(.*?)($urlpat)(.*)$/i) {
       # Look for "->" or "-->" before or after the URL.
-      $processed = 1;
       if ($pre =~ /(--?>) *$/p) { # Ralph, Xueyuan or missing anchor text
 	$type = $1;
 	$pre = $`;
 	if ($post =~ /^ *"([^"\t]*)"/p || $post =~ /^ *'([^'\t]*)'/p ||
 	    $post =~ /^ *([^'" \t][^\t]*[^ \t]) */p ||
 	    $post =~ /^ *([^'" \t]) */p) { # Ralph link
-	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, $1);
+	  $replacement .= esc($pre, $emph, 0, 0, $github)
+	      . mklink($link, $type, $url, $1);
 	  $s = $';
 	} elsif ($pre =~ / *([^ \t][^\t]*[^ \t]|[^ \t]) *$/p) {	# Xueyuan link
-	  $replacement .= esc($`, $emph)
+	  $replacement .= esc($`, $emph, 0, 0, $github)
 	      . mklink($link, $type, $url,$1);
 	  $s = $post;
 	} else {		# Missing anchor text
-	  $replacement .= esc($pre, $emph) . mklink($link, $type, $url, '');
+	  $replacement .= esc($pre, $emph, 0, 0, $github)
+	      . mklink($link, $type, $url, '');
 	  $s = $post;
 	}
       } elsif ($pre =~ /(--?>) *(.+?) *$/p) { # Ivan link
-	$replacement .= esc($`, $emph) . mklink($link, $1, $url, $2);
+	$replacement .= esc($`, $emph, 0, 0, $github)
+	    . mklink($link, $1, $url, $2);
 	$s = $post;
       } elsif ($post =~ /^ *(--?>) *"([^"\t]*)"/p ||
 	       $post =~ /^ *(--?>) *'([^'\t]*)'/p ||
 	       $post =~ /^ *(--?>) *([^ \t][^\t]*[^ \t]) */p ||
 	       $post =~ /^ *(--?>) *([^ \t]) */p ||
 	       $post =~ /^ *(--?>) *()/p) { # Inverted Xueyuan link
-	$replacement  .= esc($pre, $emph) . mklink($link, $1, $url, $2);
+	$replacement  .= esc($pre, $emph, 0, 0, $github)
+	    . mklink($link, $1, $url, $2);
 	$s = $';
       } else {					# Bare URL.
-    	$replacement .= esc($pre, $emph) . mklink($link, '->', $url, '');
+    	$replacement .= esc($pre, $emph, 0, 0, $github)
+	    . mklink($link, '->', $url, '');
     	$s = $post;
       }
     }
-    if (!$processed &&
-	# an issue can be designed with the short form webrtc-pc#32
-	($s =~ /(?:^|\s)([-a-z0-9]+#[0-9]+)/ ||
-	 # or without the repo name if a repo base has been set
-	 (defined($currentrepourl) && $s =~ /(?:^|\s)([-a-z0-9]*#[0-9]+)/)
-	)) {
-	$replacement = $s;
-	my @refs = $s =~ /(?:^|\s)((?:issue|pull|PR|pull request)? ?(?:[-a-z0-9]*)#(?:[0-9]+))/g;
-	for my $ref (@refs) {
-	    my $number = $ref =~ s/.*#([0-9]+)[^0-9]?.*/$1/r;
-	    my $reponame;
-	    if ($ref =~ /[-a-z0-9]+#[0-9]+/) {
-		$reponame = $ref =~ s/(?:^|\s)([-a-z0-9]+)#[0-9]+.*/$1/r;
-	    }
-	    my $localrepourl = $currentrepourl;
-	    if ($reponame) {
-		if ($currentrepourl) {
-		    $localrepourl = $currentrepourl =~ s/\/[^\/]+\/$/\/$reponame\//r;
-		} else {
-		    $localrepourl = $repobase . $reponame . "/";
-		}
-	    }
-	    if (defined($localrepourl)) {
-		my $type = "issues";
-		if ($ref =~ /(pull|PR)/) {
-		    $type = "pull";
-		}
-		my $ghlink = mklink($link, '->', $localrepourl . $type . "/" . $number, $ref);
-		$s =~ s/$ref/$ghlink/e;
-	    }
-	}
-    } else {
-	$s = $replacement . esc($s, $emph);
-    }
+    $s = $replacement . esc($s, $emph, 0, 0, $github);
   } elsif ($break_urls) {	# Shorten or break URLs
     $s = esc($s, $emph);
     $s =~ s/($urlpat)/break_url($1)/gie;
+  } elsif ($github) {
+    $replacement = '';
+    while ($s =~ /(?:^|\W)\K(?:([a-z0-9._-]+\/)?([a-z0-9._-]+))?#([0-9]+)(?=\W|$)/i) {
+     $s = $';
+     my ($owner, $repo, $issue) = ($1 // '', $2 // '', $3);
+     $replacement .= esc($`, $emph);
+     $replacement .=  ($r = find_matching_repo($owner, $repo))
+      ? '<a href="'.esc("$r/issues/$issue")."\">$owner$repo#$issue</a>"
+      : "$owner$repo#$issue";
+    }
+    $s = $replacement . esc($s, $emph);
   } else {
     $s =~ s/&/&amp;/g;
     $s =~ s/</&lt;/g;
@@ -750,11 +776,43 @@ sub link_to_recording($$)
 }
 
 
+# add_repositories -- expand repository names to full URLs and remember them
+sub add_repositories($)
+{
+  my $repos = shift;
+  my $base_url = "https://github.com/";
+  my $owner = "w3c/";
+
+  # $repos is a comma- or space-separated list of possibly abbreviated
+  # repository names. A full repository URL is "BASE_URL/OWNER/REPO".
+  # If BASE_URL is missing, use the one from the previous repo in the
+  # list, or https://github.com/. If OWNER is missing, use the one
+  # from the previous repo, or "w3c". Prefix the resulting list of
+  # URLs to the global @repositories. E.g., "foo/bar, other/bar, baz"
+  # is expanded to "https://github.com/foo/bar,
+  # https://github.com/other/bar, https://github.com/other/baz".
+  #
+  foreach (split /[ ,]+/, $repos) {
+    if (/^(([a-z]+:\/\/(?:.*\/)?)([a-z0-9._-]+\/)[a-z0-9._-]+)\/?$/i) {
+      unshift @repositories, $1;	# A full URL
+      ($base_url, $owner) = ($2, $3);
+    } elsif (/^(([a-z0-9._-]+\/)[a-z0-9._-]+)$/i) {
+      unshift @repositories, "$base_url$1";
+      $owner = $2;
+    } elsif (/^([a-z0-9._-]+)$/i) {
+      unshift @repositories, "$base_url$owner$1";
+    } else {
+      # Incorrect syntax. What now?
+    }
+  }
+}
+
+
 # Main body
-my $revision = '$Revision: 194 $'
+my $revision = '$Revision: repo-links-204 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Oct 27 16:47:28 2022 UTC $'
+my $versiondate = '$Date: Tue Dec 20 13:42:10 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -798,6 +856,7 @@ my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/' .
 
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
+	    fc('ghurlbot') => 1,
 	    fc('agendabot') => 1,
 	    fc('Zakim') => 1);
 
@@ -819,11 +878,13 @@ my %options = ("team" => sub {$styleset = 'team'},
 	       "scribeOnly!" => \$scribeonly,
 	       "emphasis!" => \$emphasis,
 	       "mathjax=s" => \$mathjax,
+	       "islide=s" => \$islide,
 	       "oldStyle!" => \$old_style,
 	       "stylesheet:s" => \$stylesheet,
 	       "logo:s" => \$logo,
 	       "nologo" => sub {$logo = ''},
 	       "collapseLimit:i" => \$collapse_limit,
+	       "githubIssues!" => \$github,
 	       "minutes=s" => \$minutes_url);
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
@@ -947,9 +1008,9 @@ foreach (@records) {
   $count{$_->{speaker}}++ if $_->{type} eq 'i' && !$bots{fc($_->{speaker})};
 }
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
-  if ($p->{text} =~ /^ *scribe(?:nick)? * \+:? *$/i) {
+  if ($p->{text} =~ /^ *scribe(?:nick)? * \+[:：]? *$/i) {
     $scribenick = $p->{speaker};
-  } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?::|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
+  } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?:[:：]|\+[:：]?) *($scribepat(?:, *$scribepat)*)$/i) {
     $scribenick = $1;
   }
 }
@@ -1004,68 +1065,51 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{type} = 'I';		# Mark as preformatted line
     }
 
-  } elsif (/^ *present *[:=] *(.*?) *$/i) {
+  } elsif (/^ *present *[:：=] *(.*?) *$/i) {
     if ($records[$i]->{speaker} eq 'Zakim' && !$use_zakim) {} # Ignore Zakim?
     elsif ($1 eq '(no one)') {%present = ()}
     else {%present = map {fc($_) => $_} split(/ *, */, $1)}
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *present *\+:? *$/i) {
+  } elsif (/^ *present *\+[:：]? *$/i) {
     $present{fc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *present *\+:? *(.*?) *$/i) {
+  } elsif (/^ *present *\+[:：]? *(.*?) *$/i) {
     $present{fc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *present *-:? *(.*?) *$/i) {
+  } elsif (/^ *present *-[:：]? *(.*?) *$/i) {
     delete $present{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *regrets? *: *(.*?) *$/i) {
+  } elsif (/^ *regrets? *[:：] *(.*?) *$/i) {
     %regrets = map { fc($_) => $_ } split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *regrets? *\+:? *$/i) {
+  } elsif (/^ *regrets? *\+[:：]? *$/i) {
     $regrets{fc $records[$i]->{speaker}} = $records[$i]->{speaker};
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *regrets? *\+:? *(.*?) *$/i) {
+  } elsif (/^ *regrets? *\+[:：]? *(.*?) *$/i) {
     $regrets{fc $_} = $_ foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *regrets? *-:? *(.*?) *$/i) {
+  } elsif (/^ *regrets? *-[:：]? *(.*?) *$/i) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *repo(sitory)? *: *(.*?) *$/i) {
-    $records[$i]->{type} = 'repo';	# Mark as a repo line
-    $records[$i]->{text} = $2;
-    my $repourl;
-    if ($records[$i]->{text} =~ /^ *([^\/]+)\/([^\/]+)\/? *$/i) {
-        # e.g. webmachinelearning/webnn
-        my $org = $1;
-        my $repo =$2;
-        $repourl = $repobase =~ s/\/[^\/]+\/$//r;
-        $repourl .= "/" . $org . "/" . $repo . "/";
-    } elsif ($records[$i]->{text} =~ /^ *([^\/]+)\/? *$/i) {
-        # e.g. webrtc-pc
-        $repourl = $repobase . $1 . "/";
-    } elsif ($records[$i]->{text} =~ /^(.*?)($urlpat)(.*)$/i) {
-        # full URL
-        $repourl = $2;
-        if (!($repourl  =~ /\/$/)) {
-            $repourl .= '/';
-        }
-    }
-    $records[$i]->{text} = $repourl;
-  } elsif (/^ *slides(?:et)? *: *(.*?($urlpat).*)$/i) {
+  } elsif (/^ *repo(?:s|sitory|sitories)? *[:：] *(.*?) *$/i) {
+    $records[$i]->{type} = 'repo';	# Mark as repository line
+    $records[$i]->{text} = $1;
+
+  } elsif (/^ *slides(?:et)? *[:：] *(.*?($urlpat).*)$/i) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line
     $records[$i]->{text} = $1;
     $lastslideset = $2;
     $has_slides = 1;
 
-  } elsif (/^ *slideset *:/i) {		# Slideset but without a URL. Error?
+  } elsif (/^ *slideset *[:：]/i) {		# Slideset but without a URL. Error?
     $records[$i]->{type} = 'd' if $is_scribe;
     $lastslideset = undef;
 
@@ -1077,12 +1121,12 @@ for (my $i = 0; $i < @records; $i++) {
 	($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
     $records[$i]->{text} = "$slidenumber";
 
-  } elsif (/^ *recording *: *(.*?($urlpat).*)$/i) {
+  } elsif (/^ *recording *[:：] *(.*?($urlpat).*)$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
     $recording_link = esc($1, $emphasis, 1, 1);
     $recording = $2;
 
-  } elsif (/^ *recording *:/i) {	# Recording but without a URL. Error?
+  } elsif (/^ *recording *[:：]/i) {	# Recording but without a URL. Error?
     $records[$i]->{type} = 'd' if $is_scribe;
     $recording = undef;
 
@@ -1090,7 +1134,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
     $recordingstart = $records[$i]->{time} if defined $records[$i]->{time};
 
-  } elsif (/^ *recording +start(?:ed|s) +at +:([0-9][0-9])[. ]*$/i) {
+  } elsif (/^ *recording +start(?:ed|s) +at +[:：]([0-9][0-9])[. ]*$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
     $recordingstart = minutes_to_timestamp($1, $records[$i]->{time})
 	if defined($records[$i]->{time});
@@ -1099,23 +1143,23 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
     $recordingend = $records[$i]->{time} if defined $records[$i]->{time};
 
-  } elsif (/^ *recording +end(?:ed|s) +at +:([0-9][0-9])[. ]*$/i) {
+  } elsif (/^ *recording +end(?:ed|s) +at +[:：]([0-9][0-9])[. ]*$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
     $recordingend = minutes_to_timestamp($1, $records[$i]->{time})
 	if defined $records[$i]->{time};
 
-  } elsif (/^ *topic *: *(.*?) *$/i) {
+  } elsif (/^ *topic *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$topicid;	# Unique ID
 
-  } elsif (/^ *sub-?topic *: *(.*?) *$/i) {
+  } elsif (/^ *sub-?topic *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 'T';		# Mark as subtopic line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($dash_topics && /^ *-+ *$/) {
-     my $topicfound = 0;
+    my $topicfound = 0;
     for (my $j = $i + 1; $j < @records; $j++) {
       if ($records[$j]->{speaker} eq $records[$i]->{speaker}) {
 	$records[$i]->{type} = 't';
@@ -1143,94 +1187,94 @@ for (my $i = 0; $i < @records; $i++) {
     # Ignore RRSAgent's list of actions, etc.
     $records[$i]->{type} = 'o';		# Ignore this line
 
-  } elsif (/^ *action *: *(.*?) *$/i ||
-	   /^ *action +(\pL\w* *:.*?) *$/i ||
+  } elsif (/^ *action *[:：] *(.*?) *$/i ||
+	   /^ *action +(\pL\w* *[:：].*?) *$/i ||
 	   /^ *action +([^ ]+ +to\b.*?) *$/i) {
     $records[$i]->{type} = 'a';		# Mark as action line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$actionid;	# Unique ID
 
-  } elsif (/^ *resol(?:ved|ution) *: *(.*?) *$/i) {
+  } elsif (/^ *resol(?:ved|ution) *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 'r';		# Mark as resolution line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$resolutionid;
 
-  } elsif (/^ *issue *: *(.*?) *$/i) {
+  } elsif (/^ *issue *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 'u';		# Mark as issue line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$issueid;	# Unique ID
 
-  } elsif (/^ *agenda *: *($urlpat) *$/i) {
+  } elsif (/^ *agenda *[:：] *($urlpat) *$/i) {
     $agenda = '<a href="' . esc($1) . "\">$agenda_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *agenda *: *(.*?) *$/i) {
+  } elsif (/^ *agenda *[:：] *(.*?) *$/i) {
     push(@diagnostics, "Found 'Agenda:' not followed by a URL: '$1'.");
     # $records[$i]->{type} = 'o';	# Omit line from output
 
-  } elsif (/^ *meeting *: *(.*?) *$/i) {
+  } elsif (/^ *meeting *[:：] *(.*?) *$/i) {
     $meeting = esc($1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *previous +meeting *: *($urlpat) *$/i) {
+  } elsif (/^ *previous +meeting *[:：] *($urlpat) *$/i) {
     $prev_meeting = '<a href="' . esc($1) . "\">$previous_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *next +meeting *: *($urlpat) *$/i) {
+  } elsif (/^ *next +meeting *[:：] *($urlpat) *$/i) {
     $next_meeting = '<a href="' . esc($1) . "\">$next_icon</a>\n";
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *(previous|next) +meeting *: *(.*?) *$/i) {
+  } elsif (/^ *(previous|next) +meeting *[:：] *(.*?) *$/i) {
     push(@diagnostics,"Found '$1 meeting:' not followed by a URL: '$2'.");
     # $records[$i]->{type} = 'o';	# Omit line from output
 
-  } elsif (/^ *chairs? *-:? *$/i) {
+  } elsif (/^ *chairs? *-[:：]? *$/i) {
     delete $chairs{fc $records[$i]->{speaker}}; # Remove speaker from chairs
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *chairs? *-:? *(.*?) *$/i) {
+  } elsif (/^ *chairs? *-[:：]? *(.*?) *$/i) {
     delete $chairs{fc $_} foreach (split(/ *, */, $1)); # Remove given chairs
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *chairs? *\+:? *$/i) {
+  } elsif (/^ *chairs? *\+[:：]? *$/i) {
     my $s = $records[$i]->{speaker};
     $chairs{fc $s} = $s;		# Add to collected chairs
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *chairs? *: *$/i) {
+  } elsif (/^ *chairs? *[:：] *$/i) {
     push(@diagnostics, "Ignored empty command \"$records[$i]->{text}\"");
 
-  } elsif (/^ *chairs? *(:|\+:?) *(.*?) *$/i) {
-    %chairs = () if $1 eq ':';		# Reset the list of chairs
+  } elsif (/^ *chairs? *([:：]|\+[:：]?) *(.*?) *$/i) {
+    %chairs = () if $1 eq ':' || $1 eq '：'; # Reset the list of chairs
     $chairs{fc $_} = $_ foreach (split(/ *, */, $2)); # Add all to chairs list
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *date *: *(\d+ \w+ \d+)/i) {
+  } elsif (/^ *date *[:：] *(\d+ \w+ \d+)/i) {
     $date = $1;
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *scribe(?:nick)? *-:? *$/i) {
+  } elsif (/^ *scribe(?:nick)? *-[:：]? *$/i) {
     delete_scribes($records[$i]->{speaker}, \%curscribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *scribe(?:nick)? *\+:? *$/i) {
+  } elsif (/^ *scribe(?:nick)? *\+[:：]? *$/i) {
     add_scribes($records[$i]->{speaker}, \%curscribes, \%scribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *scribe(?:nick)? *: *$/i) {
+  } elsif (/^ *scribe(?:nick)? *[:：] *$/i) {
     push(@diagnostics, "Ignored empty command \"$records[$i]->{text}\"");
 
-  } elsif (/^ *scribe(?:nick)? *(:|\+:?) *($scribepat(?:, *$scribepat)*)$/i) {
-    %curscribes = () if $1 eq ':';	# Reset scribe nicks
+  } elsif (/^ *scribe(?:nick)? *([:：]|\+[:：]?) *($scribepat(?:, *$scribepat)*)$/i) {
+    %curscribes = () if $1 eq ':' || $1 eq '：'; # Reset scribe nicks
     add_scribes($2, \%curscribes, \%scribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *scribe *: *([^ ].*?) *$/i) {
+  } elsif (/^ *scribe *[:：] *([^ ].*?) *$/i) {
     # Probably an old-fashioned scribe command without a nick
     $scribes{fc $1} = $1;		# Add to collected scribe list
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *scribe(?:nick)? *-:? *([^ ].*)? *$/i) {
+  } elsif (/^ *scribe(?:nick)? *-[:：]? *([^ ].*)? *$/i) {
     delete_scribes($1, \%curscribes);
     $records[$i]->{type} = 'o';		# Omit line from output
 
@@ -1316,7 +1360,28 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *agendabot,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
-  } elsif (/^ *namedanchorhere *: *(.*?) *$/i) {
+  } elsif (/^ *ghurlbot *, *[^#@]*$/i) {
+    $records[$i]->{type} = 'o';		# Ignore ghurlbot commands except issues
+
+  } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
+	   /^($urlpat) -> ((?:Issue |Action |\#)[0-9]+) ?(.*)$/i) {
+    $records[$i]->{type} = 'B';		# A structured response from ghurlbot
+    $records[$i]->{id} = $3;
+    $records[$i]->{text} = "->$1 $2";
+
+  } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
+	   /^($urlpat) -> (@.*)$/i) {	# A link to a GitHub user
+    $records[$i]->{type} = 'b';
+    $records[$i]->{text} = "->$1 $2";
+
+  } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
+	   /^(?:Cannot|Closed|Reopened|Created)/) {
+    $records[$i]->{type} = 'b';
+
+  } elsif ($records[$i]->{speaker} eq 'ghurlbot') {
+    $records[$i]->{type} = 'b';		# Ignore other responses from ghurlbot
+
+  } elsif (/^ *namedanchorhere *[:：] *(.*?) *$/i) {
     my $a = $1 =~ s/ /_/gr;
     if ($a =~ /^$/) {
       push(@diagnostics, "Empty named anchor ignored.");
@@ -1344,11 +1409,11 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $1;				# Remove backslash
 
   } elsif ($is_scribe &&
-	   (/^($speakerpat) *: *(.*)$/ ||
-	    (!$spacecont && /^ +($speakerpat) *: *(.*)$/)) &&
+	   (/^($speakerpat) *[:：] *(.*)$/ ||
+	    (!$spacecont && /^ +($speakerpat) *[:：] *(.*)$/)) &&
 	   $records[$i]->{type} ne 'c' &&	# ... and not a failed s///
 	   ! /^ *$urlpat/i &&			# ... and not a URL
-	   ! /^ *$specialpat *:/i) {		# ... nor special
+	   ! /^ *$specialpat *[:：]/i) {	# ... nor special
     # A speaker line
     $records[$i]->{type} = 's';		# Mark as scribe line
     $lastspeaker{$records[$i]->{speaker}} = $1; # For any continuation lines
@@ -1431,7 +1496,7 @@ push @diagnostics, "Active on IRC: " .
 # Each type of record is converted to a specific HTML fragment, with
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
 # by the speaker ID, %5$s by a unique ID for the record and %6$s by a
-# link to a ecording of the meeting, if any.
+# link to a recording of the meeting, if any.
 #
 # The 1 or 0 after the pattern indicates whether the text (%3$) can be
 # parsed for emphasis and math. (Only applicable if --emphasis was
@@ -1457,7 +1522,7 @@ if (defined $recording) {
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
   b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
-  B => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s:</strong> %2\$s</p>\n", 0],
+  B => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s</strong> %2\$s</p>\n", 0],
   d => ["<p id=%5\$s class=summary>%3\$s</p>\n", 1],
   D => ["<pre id=%5\$s class=summary>\n%3\$s</pre>\n", 0],
   i => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 1],
@@ -1472,25 +1537,31 @@ my %linepat = (
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
   slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
-  repo => ['', 0],
+  repo => [$github?'':"<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
     );
 
 my $minutes = '';
 foreach my $p (@records) {
-  if ($p->{type} eq 'repo') {
-      $currentrepourl = $p->{text};
-  } elsif (($p->{type} eq 't' || $p->{type} eq 'T')
-           && $p->{text} =~ /https:\/\/github\.com\/([^\/]+)\/([^\/\s]+)/) {
-      $currentrepourl = "https://github.com/" . $1 . "/" . $2 . "/";
+  if ($github) {
+    if ($p->{type} eq 'repo' && $p->{text} eq '') {
+      # An empty repo line resets the list of repositories.
+      @repositories = ();
+    } elsif ($p->{type} eq 'repo') {
+      # A repo line adds repositories to use for issues in the next lines.
+      add_repositories($p->{text});
+    } elsif ($p->{type} eq 't' || $p->{type} eq 'T') {
+      # GitHub repositories in topic lines are added to the repositories.
+      add_repositories($1) while $p->{text} =~ /($githuburl)/g;
+    }
   }
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
-      esc($p->{speaker}),					   # %1
-      $p->{id} // '',						   # %2
-      esc($p->{text}, $emphasis && $linepat{$p->{type}}[1], 1, 1), # %3
-      $speakers{fc $p->{speaker}} // '',			   # %4
-      ++$lineid,						   # %5
-      link_to_recording($canonical_recording, $p->{time});	   # %6
+      esc($p->{speaker}),						    # %1
+      $p->{id} // '',							    # %2
+      esc($p->{text}, $emphasis && $linepat{$p->{type}}[1], 1, 1, $github), # %3
+      $speakers{fc $p->{speaker}} // '',				    # %4
+      ++$lineid,							    # %5
+      link_to_recording($canonical_recording, $p->{time});		    # %6
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
@@ -1820,6 +1891,7 @@ scribe.perl [options] [file ...]
   --scribeOnly		Omit all text that is not written by a scribe
   --emphasis		Allow smileys, arrows and inline styles
   --mathjax=URL		Use a specific MathJax (only with --emphasis)
+  --islide=URL		Use a specific i-slide library
   --oldStyle		Use the style of scribe.perl version 1
   --minutes=URL		Used to guess a date if the URL contains YYYY/MM/DD
   --logo=markup		Replace the W3C link and logo with this HTML markup

@@ -179,7 +179,7 @@ cat >$TMP3 <<EOF
 <p id=x061 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/#direction</a></p>
 <p id=x063 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
 <span id=x064>… and numbers of issues that deal with a particular topic</span></p>
-<p id=x065 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">https://<wbr>github.com/<wbr>w3c/<wbr>jlreq/<wbr>issues/<wbr>171</a></p>
+<p id=x065 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">w3c/<wbr>jlreq#171</a></p>
 <p id=x066 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>
 <p id=x067 class=irc><cite>&lt;RealJoshue108_&gt;</cite> It's helpful to disuss!</p>
 <p id=x068 class=irc><cite>&lt;RealJoshue108_&gt;</cite> discuss even..</p>

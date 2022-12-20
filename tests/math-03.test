@@ -24,8 +24,7 @@ cat >$TMP4 <<'EOF'
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=x001 class=summary>A line without emphasis.</p>
-<p id=x002 class=summary>A line with displayed math: 
-<math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\frac{1}{1+x^{2}}" display="block">
+<p id=x002 class=summary>A line with displayed math: <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\frac{1}{1+x^{2}}" display="block">
   <mfrac>
     <mn>1</mn>
     <mrow>

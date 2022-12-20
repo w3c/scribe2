@@ -753,6 +753,9 @@
      regrets is collapsed (with HTML's &lt;details&gt; element). The
      reader needs to click on it to see the whole list. The default is
      30.
+
+   <dt id=githubissues>-nogithubIssues <dd>Do not make links out of
+      text that looks like (GitHub) issues.
   </dl>
 
   <h3 id="options_template">Template Options</h3>
@@ -790,6 +793,10 @@
     script that improves the rendering of mathematical formulas. This
     option only has effect in combination with <code>-emphasis</code>
     and then only if there is any math in the minutes.
+
+   <dt id=islide>-islide <var>URL</var> <dd>Use the given URL to load
+    the i-slide script from, instead of the
+    default. (See <a href="#slides">'Embedding slides’</a>.)
   </dl>
 
   <h3 id="options_scribe_identification">Scribe Identification Options</h3>
@@ -1242,17 +1249,6 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <p>Like Xueyuan links, Ivan links should not have quotes around the
   text (unless you actually want the anchor text to contain quotes).
 
-  <h3 id="repolinks">GitHub Links to Issues and Pull Requests</h3>
-  <p>Shortlinks using the GitHub convention to link to an issue or a pull request à la <code>#42</code> will be interpreted as links if a repository has been associated with the current discussion.</p>
-  <p>This can be accomplished explicitly with the following command:</p>
-<pre class=command>
-&lt;dbooth&gt; Repo: webrtc-pc
-</pre>
-  <p>The <code>Repo</code> (also available as <code>repository</code>) setting can take a simple repo name (in which case it is assumed in the w3c Github organization), a full repo name (<code><var>owner</var>/<var>name</var></code>), or a full URL.</p>
-  <p>Alternatively, if a <code>Topic</code> or a <code>Subtopic</code> contains a link to a repository, or a link to a resource under a repository (e.g. an issue or a pull request), that repository will be used as a basis to deference <code>#</code> links.</p>
-  <p>In both cases, the said repository will be the assumed base for dereferencing issues and pull requests until a new <code>repo</code> is set (or the value is unset altogether with an empty value to the <code>Repo:</code> command).</p>
-  <p>Finally, for one-off references to an issue or in a pull request, the reference <code>webrtc-pc#32</code> will be interpreted as link to issue/pull request #32 in the webrtc-pc repository of the W3C github organization (or in the latest organization mentioned when setting the base repo with above commands).</p>
-
   <h2 id="images">Embedding images</h2>
 
   <p>You can also embed images in the minutes by means of Ralph,
@@ -1274,6 +1270,68 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
   <p>The anchor text becomes the image's text alternative (‘alt
   text’). There is no way to specify a caption.</p>
+
+  <h2 id="issue-links">Links to (GitHub) issues and pull requests</h2>
+
+  <p>Unless disabled (see <a href="#githubissues">-nogithubIssues</a>),
+  text that looks like a reference to a GitHub issue is replaced by a
+  link to that issue:
+
+  <pre class=command>
+&lt;dbooth&gt; Let's talk about w3c/scribe#3
+&lt;dbooth&gt; And transitions#5
+</pre>
+
+  <p>If the owner part is omitted, ‘w3c’ is assumed (thus,
+  ‘transitions#5’ is the same as ‘w3c/transitions#5’). But you can
+  change that by explicitly listing the repositories to use, by means
+  of one or more <code>repo:</code>
+  (or <code>repos</code>, <code>repository</code>
+  or <code>repositories</code>) commands:
+
+  <pre class=command>
+&lt;dbooth&gt; Repo: w3c/scribe, transitions, webn/drafts
+&lt;dbooth&gt; Repo: docs, w3c/scribe2
+...
+&lt;dbooth&gt; Let talk about #3, drafts#7 and tests#1
+</pre>
+
+  <p>The first line defines three repositories:
+  https://github.com/w3c/scribe (if no other web site is given,
+  github.com is assumed), https://github.com/w3c/transitions (the URL
+  and owner are copied from the preceding repository) and
+  https://github.com/webn/drafts (the URL is copied from the preceding
+  repo). The second line defines two additional repositories:
+  https://github.com/webn/docs (again, the initial part is copied from
+  the preceding repository) and https://github.com/w3c/scribe2.
+
+  <p>The ‘#3’ is now a valid issue as well and refers to issue 3 in
+  the last defined repository, which is
+  https://github.com/w3c/scribe2; the ‘drafts#7’ refers to the most
+  recently defined repository called ‘drafts’, i.e.,
+  https://github.com/webn/webn/drafts’; and the ‘test#1’, which does
+  not match any defined repository, is assumed to have the same owner
+  as the last repository, i.e., https://github.com/w3c/tests.
+
+  <p>You can also give full URLs (which is necessary to refer to
+  repositories that are not on GitHub):
+
+  <pre class=command>
+&lt;dbooth&gt; Repo: https://gitlab.example.com/foo/bar, baz
+</pre>
+
+  <p>This defines the repositories https://gitlab.example.com/foo/bar
+  and https://gitlab.example.com/foo/baz.
+
+  <p>Repositories that are mentioned in topic lines are also added to
+  the defined repositories. This only works for repositories on
+  github.com:
+
+  <pre class=command>topic: Discuss https://github.com/w3c/scribe2</pre>
+
+  <p>To remove all repositories, give an empty list:
+
+  <pre class=command>&lt;dbooth&gt; Repo:</pre>
 
   <h2 id="slides">Embedding slides</h2>
 
