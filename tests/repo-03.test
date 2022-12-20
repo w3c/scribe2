@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test if slide insertion works
+# Test of a repo with a full URL.
 
 trap 'rm $TMP1 $TMP2' 0
 TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1

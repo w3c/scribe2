@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test if slide insertion works
+# Test if issues are linked.
 
 trap 'rm $TMP1 $TMP2' 0
 TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
