@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Use shorthand for github repos, issues and pull requests
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/url-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/url-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/url-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/url-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribe+ foo
+<foo> baz: Hi
+<foo> bar: See https://github.com/w3c/webrtc-pc/issues/42
+<foo> bar: This is discussed in the repo https://github.com/webmachinelearning/webnn
+<foo> bar: There is a comment posted on this point https://github.com/w3c/reffy/pull/903#issuecomment-1066899274
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x002 class="phone s01"><cite>baz:</cite> Hi</p>
+<p id=x003 class="phone s02"><cite>bar:</cite> See <a href="https://github.com/w3c/webrtc-pc/issues/42">w3c/<wbr>webrtc-pc#42</a></p>
+<p id=x004 class="phone s02"><cite>bar:</cite> This is discussed in the repo <a href="https://github.com/webmachinelearning/webnn">webmachinelearning/<wbr>webnn</a></p>
+<p id=x005 class="phone s02"><cite>bar:</cite> There is a comment posted on this point <a href="https://github.com/w3c/reffy/pull/903#issuecomment-1066899274">w3c/<wbr>reffy#903 (comment)</a></p>
+</section>
+</main>
+EOF
+
+perl scribe.perl <$TMP1 >$TMP2 || exit 1
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3
