@@ -809,10 +809,10 @@ sub add_repositories($)
 
 
 # Main body
-my $revision = '$Revision: repo-links-204 $'
+my $revision = '$Revision: 205 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Dec 20 13:42:10 2022 UTC $'
+my $versiondate = '$Date: Tue Dec 20 14:06:53 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
