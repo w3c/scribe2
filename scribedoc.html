@@ -742,20 +742,26 @@
     that normally do not break URLs. This is done by inserting
     HTML's &lt;wbr&gt; tags after most slashes (/).
 
-    <dt>-urlDisplay shorten <dd>Long URLs are shortened by displaying
+   <dt>-urlDisplay shorten <dd>Long URLs are shortened by displaying
     just the first and the last few characters, like this:
     ‘http:…c.html’.
 
    <dt>-urlDisplay full <dd>Long URLs are displayed as they are.
 
-   <dt id=collapseLimit>-collapseLimit <var>N</var> <dd>If there are more participants
-     or more regrets than <var>N</var>, the list of participants or
-     regrets is collapsed (with HTML's &lt;details&gt; element). The
-     reader needs to click on it to see the whole list. The default is
-     30.
+   <dt id=collapseLimit>-collapseLimit <var>N</var> <dd>If there are
+    more participants or more regrets than <var>N</var>, the list of
+    participants or regrets is collapsed (with HTML's &lt;details&gt;
+    element). The reader needs to click on it to see the whole
+    list. The default is 30.
 
    <dt id=githubissues>-nogithubIssues <dd>Do not make links out of
-      text that looks like (GitHub) issues.
+    text that looks like (GitHub) issues.
+
+   <dt id=ghurlbot>-noghurlbot <dd>Omit messages from
+    <a href="https://w3c.github.io/GHURLBot/manual.html"
+    >GHURLBot</a>. Messages <em>to</em> ghurlbot are still
+    interpreted, but ghurlbot's responses, such as summaries of issues
+    and actions, are removed.
   </dl>
 
   <h3 id="options_template">Template Options</h3>
