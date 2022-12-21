@@ -809,10 +809,10 @@ sub add_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 205 $'
+my $revision = '$Revision: 206 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Dec 20 14:06:53 2022 UTC $'
+my $versiondate = '$Date: Wed Dec 21 12:23:08 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1109,7 +1109,7 @@ for (my $i = 0; $i < @records; $i++) {
     $lastslideset = $2;
     $has_slides = 1;
 
-  } elsif (/^ *slideset *[:：]/i) {		# Slideset but without a URL. Error?
+  } elsif (/^ *slideset *[:：]/i) {	# Slideset but without a URL. Error?
     $records[$i]->{type} = 'd' if $is_scribe;
     $lastslideset = undef;
 
@@ -1360,11 +1360,11 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *agendabot,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
-  } elsif (/^ *ghurlbot *, *[^#@]*$/i) {
-    $records[$i]->{type} = 'o';		# Ignore ghurlbot commands except issues
+  # } elsif (/^ *ghurlbot *, *[^#@]*$/i) {
+  #   $records[$i]->{type} = 'o';	# Ignore ghurlbot commands except issues
 
   } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
-	   /^($urlpat) -> ((?:Issue |Action |\#)[0-9]+) ?(.*)$/i) {
+	   /^($urlpat) -> ((?:Issue |Action |Pull Request |\#)[0-9]+) ?(.*)$/i) {
     $records[$i]->{type} = 'B';		# A structured response from ghurlbot
     $records[$i]->{id} = $3;
     $records[$i]->{text} = "->$1 $2";
@@ -1378,8 +1378,8 @@ for (my $i = 0; $i < @records; $i++) {
 	   /^(?:Cannot|Closed|Reopened|Created)/) {
     $records[$i]->{type} = 'b';
 
-  } elsif ($records[$i]->{speaker} eq 'ghurlbot') {
-    $records[$i]->{type} = 'b';		# Ignore other responses from ghurlbot
+  # } elsif ($records[$i]->{speaker} eq 'ghurlbot') {
+  #   $records[$i]->{type} = 'o';	# Ignore other responses from ghurlbot
 
   } elsif (/^ *namedanchorhere *[:：] *(.*?) *$/i) {
     my $a = $1 =~ s/ /_/gr;
@@ -1537,7 +1537,8 @@ my %linepat = (
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
   slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
-  repo => [$github?'':"<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
+  # repo => [$github?'':"<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
+  repo => ["<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
     );
 
 my $minutes = '';
