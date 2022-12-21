@@ -32,6 +32,7 @@ cat >$TMP4 <<EOF
 <span id=x011>… I wanted to say.</span><br>
 <span id=x012>… Very important</span><br>
 <span id=x013>… at least to me.</span></p>
+<p id=x014 class=summary>Repository- w3c/scribe2</p>
 <p id=x015 class=summary>Discussions of transition <a href="https://github.com/w3c/transitions/issues/1">#1</a>.</p>
 </section>
 </main>
