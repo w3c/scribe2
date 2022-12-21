@@ -121,7 +121,7 @@
 # If type is 'b' ('bot), the record is info from trackbot.
 # If type is 'B' ('bot), <text> is info from trackbot about an issue <id>.
 # If type is 'repo', <text> is a list of GitHub repositories.
-# If type is 'remove-repo', <text> is a list of GitHub repositories to remove.
+# If type is 'drop', <text> is a list of GitHub repositories to remove.
 
 use strict;
 use warnings;
@@ -791,16 +791,18 @@ sub add_repositories($)
   }
 }
 
-# remove_repository -- remove a repository from the list
-sub remove_repository($)
+# remove_repositories -- remove one or more repositories from the list
+sub remove_repositories($)
 {
-  my ($repo) = @_;
+  my ($repos) = @_;
   my $r;
 
-  if (($r = repository_to_url($repo))) {
-    @repositories = grep $_ ne $r, @repositories;
-  } else {
-    push @diagnostics, "Could not interpret as a repository: $_";
+  foreach (split /[ ,]+/, $repos) {
+    if (($r = repository_to_url($_))) {
+      @repositories = grep $_ ne $r, @repositories;
+    } else {
+      push @diagnostics, "Could not interpret as a repository: $_";
+    }
   }
 }
 
@@ -1097,13 +1099,14 @@ for (my $i = 0; $i < @records; $i++) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *repo(?:s|sitory|sitories)? *[:：] *(.*?) *$/i ||
+  } elsif (/^ *repo(?:s|sitory|sitories)? *(?:[:：]|\+[:：]?) *(.*?) *$/i ||
       /^ *ghurlbot *, *(?:discuss(?:ing)?|use|using|take +up|taking +up|this +(?:will +be|is)) +(.*?) *$/i) {
     $records[$i]->{type} = 'repo';	# Mark as repository line
     $records[$i]->{text} = $1;
 
-  } elsif (/^ *ghurlbot *, *(?:forget|drop|remove|don't +use|do +not +use) +([^ ]+) *$/i) {
-    $records[$i]->{type} = 'remove-repo'; # Mark as remove-repo line
+  } elsif (/^ *repo(?:s|sitory|sitories)? *-[:：]? *(.*?) *$/i ||
+    /^ *ghurlbot *, *(?:forget|drop|remove|don't +use|do +not +use) +([^ ]+) *$/i) {
+    $records[$i]->{type} = 'drop';	# Mark as drop-repository line
     $records[$i]->{text} = $1;
 
   } elsif (/^ *slides(?:et)? *[:：] *(.*?($urlpat).*)$/i) {
@@ -1545,6 +1548,7 @@ my %linepat = (
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
   slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
   repo => ["<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
+  drop => ["<p id=%5\$s class=summary>Repository- %3\$s</p>\n", 1],
     );
 
 my $minutes = '';
@@ -1559,9 +1563,9 @@ foreach my $p (@records) {
     } elsif ($p->{type} eq 't' || $p->{type} eq 'T') {
       # GitHub repositories in topic lines are added to the repositories.
       add_repositories($1) while $p->{text} =~ /($githuburl)/g;
-    } elsif ($p->{type} eq 'remove-repo') {
+    } elsif ($p->{type} eq 'drop') {
       # Remove the given repository.
-      remove_repository($p->{text});
+      remove_repositories($p->{text});
     }
   }
   # The last part generates nothing, but avoids warnings for unused args.
