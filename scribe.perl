@@ -121,6 +121,7 @@
 # If type is 'b' ('bot), the record is info from trackbot.
 # If type is 'B' ('bot), <text> is info from trackbot about an issue <id>.
 # If type is 'repo', <text> is a list of GitHub repositories.
+# If type is 'remove-repo', <text> is a list of GitHub repositories to remove.
 
 use strict;
 use warnings;
@@ -167,7 +168,8 @@ my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			# String is i-slide library URL
   'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
-my $github = 1;			# If 1, recognize GitHub issues and make links
+my $github = 1;			# If 0, don't make links for GitHub issues
+my $ghurlbot = 1;		# If 0, hide conversations with GHURLbot
 
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
@@ -439,36 +441,27 @@ sub fc_uniq(@)
 }
 
 
-# find_matching_repo -- find full URL of a repository
-sub find_matching_repo($$)
+# repository_to_url -- expand a repository name to a full URL, or undef
+sub repository_to_url($)
 {
-  my ($owner, $name) = @_;
+  my ($repo) = @_;
 
-  # 1) If we're looking for the repo of "#8", use the most recently
-  # defined repo, or undef if none.
+  # A full repository URL is "BASE_URL/OWNER/REPO". If BASE_URL is
+  # missing, use the one from the previous repo in the list, or
+  # https://github.com/. If OWNER is missing, use the one from the
+  # previous repo, or "w3c".
   #
-  # 2) If we are looking for the repo of "foo#8", see if there is a
-  # defined repo called "foo", otherwise use the base URL and owner of
-  # the most recently defined repo, or "https://github.com/w3c/" if
-  # none.
-  #
-  # 3) If we are looking for "bar/foo#8", see if there is a defined
-  # repo with that owner and name, otherwise use the base URL of the
-  # most recently defined repo, or "https://github.com/" if none.
-  #
-  if (! $name) {		# Looking for "#8"
-    return @repositories ? $repositories[0] : undef;
-  } elsif (! $owner) {		# Looking for "foo#8"
-    foreach (@repositories) {return $_ if /\/\Q$name\E$/}
-    return @repositories
-	? $repositories[0] =~ s/[a-z0-9._-]+$/$name/ir
-	: "https://github.com/w3c/$name";
-  } else {			# Looking for "bar/foo#8"
-    foreach (@repositories) {return $_ if /\/\Q$owner$name\E$/}
-    return @repositories
-	? $repositories[0] =~ s/[a-z0-9._-]+\/[a-z0-9._-]+$/$owner$name/ir
-	: "https://github.com/$owner$name";
-  }
+  return $repositories[0] if ! $repo; # First repo or undef
+
+  my ($base, $owner, $name) = $repo =~
+      /^([a-z]+:\/\/(?:[^\/?#]*\/)*?)?([^\/?#]+\/)?([^\/?#]+)\/?$/i;
+
+  return "$base$owner$name" if $base;	# Just omit the final /, if any
+  return @repositories ? $repositories[0] =~ s/[^\/]+\/[^\/]+$/$owner$name/r :
+      "https://github.com/$owner$name" if $owner;
+  return undef if ! $name;	# Malformed repo name
+  return "https://github.com/w3c/$name" if ! @repositories; # Assume w3c
+  return $repositories[0] =~ s/[^\/]+$/$name/r;	# Copy base/owner from previous
 }
 
 
@@ -641,13 +634,13 @@ sub esc($;$$$$)
     $s =~ s/($urlpat)/break_url($1)/gie;
   } elsif ($github) {
     $replacement = '';
-    while ($s =~ /(?:^|\W)\K(?:([a-z0-9._-]+\/)?([a-z0-9._-]+))?#([0-9]+)(?=\W|$)/i) {
+    while ($s =~ /(?:^|\W)\K((?:[a-z0-9._-]+\/)?[a-z0-9._-]+)?#([0-9]+)(?=\W|$)/i) {
      $s = $';
-     my ($owner, $repo, $issue) = ($1 // '', $2 // '', $3);
+     my ($repo, $issue) = ($1 // '', $2);
      $replacement .= esc($`, $emph);
-     $replacement .=  ($r = find_matching_repo($owner, $repo))
-      ? '<a href="'.esc("$r/issues/$issue")."\">$owner$repo#$issue</a>"
-      : "$owner$repo#$issue";
+     $replacement .=  ($r = repository_to_url($repo))
+      ? '<a href="'.esc("$r/issues/$issue")."\">$repo#$issue</a>"
+      : "$repo#$issue";
     }
     $s = $replacement . esc($s, $emph);
   } else {
@@ -780,30 +773,34 @@ sub link_to_recording($$)
 sub add_repositories($)
 {
   my $repos = shift;
-  my $base_url = "https://github.com/";
-  my $owner = "w3c/";
+  my $r;
 
   # $repos is a comma- or space-separated list of possibly abbreviated
-  # repository names. A full repository URL is "BASE_URL/OWNER/REPO".
-  # If BASE_URL is missing, use the one from the previous repo in the
-  # list, or https://github.com/. If OWNER is missing, use the one
-  # from the previous repo, or "w3c". Prefix the resulting list of
-  # URLs to the global @repositories. E.g., "foo/bar, other/bar, baz"
-  # is expanded to "https://github.com/foo/bar,
-  # https://github.com/other/bar, https://github.com/other/baz".
+  # repository names. Expand them to full URLs and prefix the
+  # resulting list of URLs to the global @repositories. E.g.,
+  # "foo/bar, other/bar, baz" is expanded to
+  # "https://github.com/foo/bar, https://github.com/other/bar,
+  # https://github.com/other/baz".
   #
   foreach (split /[ ,]+/, $repos) {
-    if (/^(([a-z]+:\/\/(?:.*\/)?)([a-z0-9._-]+\/)[a-z0-9._-]+)\/?$/i) {
-      unshift @repositories, $1;	# A full URL
-      ($base_url, $owner) = ($2, $3);
-    } elsif (/^(([a-z0-9._-]+\/)[a-z0-9._-]+)$/i) {
-      unshift @repositories, "$base_url$1";
-      $owner = $2;
-    } elsif (/^([a-z0-9._-]+)$/i) {
-      unshift @repositories, "$base_url$owner$1";
+    if (($r = repository_to_url($_))) {
+      unshift @repositories, $r;
     } else {
-      # Incorrect syntax. What now?
+      push @diagnostics, "Could not interpret as a repository: $_";
     }
+  }
+}
+
+# remove_repository -- remove a repository from the list
+sub remove_repository($)
+{
+  my ($repo) = @_;
+  my $r;
+
+  if (($r = repository_to_url($repo))) {
+    @repositories = grep $_ ne $r, @repositories;
+  } else {
+    push @diagnostics, "Could not interpret as a repository: $_";
   }
 }
 
@@ -885,6 +882,7 @@ my %options = ("team" => sub {$styleset = 'team'},
 	       "nologo" => sub {$logo = ''},
 	       "collapseLimit:i" => \$collapse_limit,
 	       "githubIssues!" => \$github,
+	       "ghurlbot!" => \$ghurlbot,
 	       "minutes=s" => \$minutes_url);
 my @month = ('', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
 	     'August', 'September', 'October', 'November', 'December');
@@ -1099,8 +1097,13 @@ for (my $i = 0; $i < @records; $i++) {
     delete $regrets{fc $_} foreach split(/ *, */, $1);
     $records[$i]->{type} = 'o';		# Omit line from output
 
-  } elsif (/^ *repo(?:s|sitory|sitories)? *[:：] *(.*?) *$/i) {
+  } elsif (/^ *repo(?:s|sitory|sitories)? *[:：] *(.*?) *$/i ||
+      /^ *ghurlbot *, *(?:discuss(?:ing)?|use|using|take +up|taking +up|this +(?:will +be|is)) +(.*?) *$/i) {
     $records[$i]->{type} = 'repo';	# Mark as repository line
+    $records[$i]->{text} = $1;
+
+  } elsif (/^ *ghurlbot *, *(?:forget|drop|remove|don't +use|do +not +use) +([^ ]+) *$/i) {
+    $records[$i]->{type} = 'remove-repo'; # Mark as remove-repo line
     $records[$i]->{text} = $1;
 
   } elsif (/^ *slides(?:et)? *[:：] *(.*?($urlpat).*)$/i) {
@@ -1360,8 +1363,11 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *agendabot,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
-  # } elsif (/^ *ghurlbot *, *[^#@]*$/i) {
-  #   $records[$i]->{type} = 'o';	# Ignore ghurlbot commands except issues
+  } elsif (! $ghurlbot && /^ *ghurlbot *,/i) {
+    $records[$i]->{type} = 'o';		# Ignore other commands to ghurlbot
+
+  } elsif (! $ghurlbot && $records[$i]->{speaker} eq 'ghurlbot') {
+    $records[$i]->{type} = 'o';		# Ignore if --noghurlbot was set
 
   } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
 	   /^($urlpat) -> ((?:Issue |Action |Pull Request |\#)[0-9]+) ?(.*)$/i) {
@@ -1378,8 +1384,8 @@ for (my $i = 0; $i < @records; $i++) {
 	   /^(?:Cannot|Closed|Reopened|Created)/) {
     $records[$i]->{type} = 'b';
 
-  # } elsif ($records[$i]->{speaker} eq 'ghurlbot') {
-  #   $records[$i]->{type} = 'o';	# Ignore other responses from ghurlbot
+  } elsif ($records[$i]->{speaker} eq 'ghurlbot' && /^(?:[^ ,]+, )?OK\.?/) {
+    $records[$i]->{type} = 'o';		# Ignore "OK" responses from ghurlbot
 
   } elsif (/^ *namedanchorhere *[:：] *(.*?) *$/i) {
     my $a = $1 =~ s/ /_/gr;
@@ -1537,7 +1543,6 @@ my %linepat = (
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
   slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
-  # repo => [$github?'':"<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
   repo => ["<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
     );
 
@@ -1553,6 +1558,9 @@ foreach my $p (@records) {
     } elsif ($p->{type} eq 't' || $p->{type} eq 'T') {
       # GitHub repositories in topic lines are added to the repositories.
       add_repositories($1) while $p->{text} =~ /($githuburl)/g;
+    } elsif ($p->{type} eq 'remove-repo') {
+      # Remove the given repository.
+      remove_repository($p->{text});
     }
   }
   # The last part generates nothing, but avoids warnings for unused args.
