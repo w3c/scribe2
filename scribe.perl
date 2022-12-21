@@ -806,10 +806,10 @@ sub remove_repository($)
 
 
 # Main body
-my $revision = '$Revision: 206 $'
+my $revision = '$Revision: 208 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Dec 21 12:23:08 2022 UTC $'
+my $versiondate = '$Date: Wed Dec 21 15:03:26 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1360,7 +1360,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{speaker} eq 'agendabot') {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
-  } elsif (/^ *agendabot,/i) {
+  } elsif (/^ *agendabot *,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
   } elsif (! $ghurlbot && /^ *ghurlbot *,/i) {
@@ -1377,7 +1377,8 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
 	   /^($urlpat) -> (@.*)$/i) {	# A link to a GitHub user
-    $records[$i]->{type} = 'b';
+    $records[$i]->{type} = 'B';
+    $records[$i]->{id} = '';
     $records[$i]->{text} = "->$1 $2";
 
   } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
@@ -1905,6 +1906,8 @@ scribe.perl [options] [file ...]
   --minutes=URL		Used to guess a date if the URL contains YYYY/MM/DD
   --logo=markup		Replace the W3C link and logo with this HTML markup
   --nologo      	Same as --logo=""
+  --nogithubIssues	Do not make GitHub issue numbers into links
+  --noghurlbot		Omit messages from GHURLBot
   --stylesheet=URL	Use this style sheet instead of the default
   --collapseLimit=n     Collapse the participant list if there are more (30)
 
