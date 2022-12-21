@@ -759,7 +759,7 @@
 
    <dt id=ghurlbot>-noghurlbot <dd>Omit messages from
     <a href="https://w3c.github.io/GHURLBot/manual.html"
-    >GHURLBot</a>. Messages <em>to</em> ghurlbot are still
+    >ghurlbot</a>. Messages <em>to</em> ghurlbot are still
     interpreted, but ghurlbot's responses, such as summaries of issues
     and actions, are removed.
   </dl>
@@ -1302,7 +1302,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;dbooth&gt; Let talk about #3, drafts#7 and tests#1
 </pre>
 
-  <p>The first line defines three repositories:
+  <p>(A <code>+</code> instead of a <code>:</code> also works.) The
+  first line defines three repositories:
   https://github.com/w3c/scribe (if no other web site is given,
   github.com is assumed), https://github.com/w3c/transitions (the URL
   and owner are copied from the preceding repository) and
@@ -1335,9 +1336,26 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
   <pre class=command>topic: Discuss https://github.com/w3c/scribe2</pre>
 
+  <p>Remove repositories from the list with <code>repo-</code>
+  (or <code>repos-</code>, <code>repository-</code>
+  or <code>repositories-</code>):
+
+  <pre class=command>Repo- w3c/scribe2</pre>
+
   <p>To remove all repositories, give an empty list:
 
   <pre class=command>&lt;dbooth&gt; Repo:</pre>
+
+  <p>Scribe.perl also interprets the commands for ghurlbot
+  that <a href="https://w3c.github.io/GHURLBot/manual.html#repo"
+  >add</a>
+  or <a href="https://w3c.github.io/GHURLBot/manual.html#remove"
+  >remove</a> repositories, e.g:
+
+  <pre class=command>
+&lt;dbooth&gt; ghurlbot, this is https://gitlab.example.com/foo/bar
+&lt;dbooth&gt; ghurlbot, drop baz
+</pre>
 
   <h2 id="slides">Embedding slides</h2>
 
