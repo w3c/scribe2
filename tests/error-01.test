@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Test if the syntax error in the input is reported.
+
+trap 'rm $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+14:00:45 <RRSAgent> RRSAgent has joined #ac
+14:00:50 <RRSAgent> logging to https://www.w3.org/2023/01/10-ac-irc
+14:01:08 <florian> present+
+14:01:13 <Zakim> Zakim has joined #ac
+14:01:18 <tzviya> zakim, start the meeting
+14:01:18 <Zakim> RRSAgent, make logs Public
+14:01:20 <Zakim> please title this meeting ("meeting: ..."), tzviya
+14:01:50 <tzviya> Meeting: Meet the AB Candidates
+14:01:57 <tzviya> Chair: Tzviya
+14:02:10 <koalie> present+ Coralie
+14:02:12 <tantek> tantek has joined #ac
+14:03:05 <fantasai> scribenick: fantasai
+Topic: Session 1
+14:03:23 <fantasai> [informal discussion about meeting dates]
+EOF
+
+cat >$TMP3 <<EOF
+* Unrecognized input at line 13: Topic: Session 1
+* No scribenick or scribe found. Guessed: *
+* Found no dated URLs. You may need to use 'Date:'.
+EOF
+
+# Keep just the diagnostics:
+perl scribe.perl $TMP1 >/dev/null 2>$TMP2 || exit 1
+
+diff -u $TMP3 $TMP2
