@@ -2,12 +2,10 @@
 
 # Test if a syntax error in input in Coralie's IRSSI theme is reported.
 
-trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+trap 'rm $TMP1 $TMP2 $TMP3' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
 TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
 TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
-TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
-TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
 --- Log opened 2020-02-04T10:02:59Z Tue Feb 04
