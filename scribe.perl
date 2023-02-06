@@ -135,8 +135,12 @@ use Encode qw/decode/;		# For decode('UTF-8',...)
 use Encode::Guess;		# For guess_encoding()
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
+# The pattern consists of two alternatives. The first one matches a
+# URL that is not preceded by a "(" and it allows ")" in the URL. The
+# second does not allow ")". This is needed to allow markdown-style
+# links, which use "(" and ")" to delimit the URL.
 my $urlpat =
-  '(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]+';
+  '(?:(?<!\()(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]+|(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›)]+)';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 # A speaker name doesn't contain [ ":：>] and doesn't start with "..".
@@ -614,7 +618,8 @@ sub esc($;$$$$)
     # 4a) A double-quoted inverted Xueyuan link: ... URL -> "ANCHOR" ...
     # 4b) A single-quoted inverted Xueyuan link: ... URL -> 'ANCHOR' ...
     # 4c) An unquoted inverted Xueyuan link: ... URL -> ANCHOR
-    # 5) A bare URL: ... URL ...
+    # 5) A markdown link: ... [ANCHOR](URL)
+    # 6) A bare URL: ... URL ...
     # With --> instead of ->, the link is embedded as an image (<img>).
     # If $link < 0, omit the <a> tag and just insert the text or image.
 
@@ -652,6 +657,10 @@ sub esc($;$$$$)
 	$replacement  .= esc($pre, $emph, 0, 0, $github)
 	    . mklink($link, $1, $url, $2);
 	$s = $';
+      } elsif ($post =~ /^\)/ && $pre =~ /(\[([^\]]+)\]\()$/p) { # Markdown
+        $replacement .= esc($`, $emph)
+	      . mklink($link, "->", $url, $2);
+    	$s = $post =~ s/^\)//r;
       } else {					# Bare URL.
     	$replacement .= esc($pre, $emph, 0, 0, $github)
 	    . mklink($link, '->', $url, '');
@@ -838,10 +847,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 210 $'
+my $revision = '$Revision: md-links-190 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Jan 11 19:21:32 2023 UTC $'
+my $versiondate = '$Date: Wed Mar 30 16:22:21 2022 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
