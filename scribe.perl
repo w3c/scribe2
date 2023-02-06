@@ -657,7 +657,7 @@ sub esc($;$$$$)
 	$replacement  .= esc($pre, $emph, 0, 0, $github)
 	    . mklink($link, $1, $url, $2);
 	$s = $';
-      } elsif ($post =~ /^\)/ && $pre =~ /(\[([^\]]+)\]\()$/p) {
+      } elsif ($post =~ /^\)/ && $pre =~ /(\[([^\]]+)\]\()$/p) { # Markdown
         $replacement .= esc($`, $emph)
 	      . mklink($link, "->", $url, $2);
     	$s = $post =~ s/^\)//r;

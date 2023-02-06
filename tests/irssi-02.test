@@ -176,7 +176,7 @@ cat >$TMP3 <<EOF
 <p id=x057 class=irc><cite>&lt;RealJoshue108_&gt;</cite> +1 to GH related fear, it is a problem</p>
 <p id=x059 class="phone s03"><cite>Richard:</cite> example:</p>
 <p id=x060 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/</a></p>
-<p id=x061 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/<wbr>#direction</a></p>
+<p id=x061 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/#direction</a></p>
 <p id=x063 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
 <span id=x064>… and numbers of issues that deal with a particular topic</span></p>
 <p id=x065 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">w3c/<wbr>jlreq#171</a></p>
