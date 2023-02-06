@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Test markdown link
+
+echo "<foo> I like [links with a clear title](ftp://example.org/test/) even [severals at once](https://example.org/#foo)" | \
+  perl scribe.perl --urldisplay=full --emphasis| \
+  grep '<a href="ftp://example.org/test/">links with a clear title</a>' |\
+  grep '<a href="https://example.org/#foo">severals at once</a>'
