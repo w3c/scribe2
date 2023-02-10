@@ -17,8 +17,11 @@ cat >$TMP1 <<EOF
 <foo> bar: Or ‘https://www.example.org/a/long/path’
 <foo> bar: Or “https://www.example.org/a/long/path”
 <foo> bar: Or «https://www.example.org/a/long/path»
+<foo> bar: Or (https://www.example.org/ends/at/paren)
+<foo> bar: Or https://www.example.org/includes/(parens)/also
 <foo> bar: Also ›https://www.example.org/a/long/path‹ and
 <foo> bar: Finally ‹https://www.example.org/a/long/path›
+<foo> ftp://example.org/includes(parens)/too
 EOF
 
 cat >$TMP4 <<EOF
@@ -34,8 +37,11 @@ cat >$TMP4 <<EOF
 <p id=x006 class="phone s02"><cite>bar:</cite> Or ‘<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>’</p>
 <p id=x007 class="phone s02"><cite>bar:</cite> Or “<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>”</p>
 <p id=x008 class="phone s02"><cite>bar:</cite> Or «<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>»</p>
-<p id=x009 class="phone s02"><cite>bar:</cite> Also ›<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>‹ and</p>
-<p id=x010 class="phone s02"><cite>bar:</cite> Finally ‹<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>›</p>
+<p id=x009 class="phone s02"><cite>bar:</cite> Or (<a href="https://www.example.org/ends/at/paren">https://<wbr>www.example.org/<wbr>ends/<wbr>at/<wbr>paren</a>)</p>
+<p id=x010 class="phone s02"><cite>bar:</cite> Or <a href="https://www.example.org/includes/(parens)/also">https://<wbr>www.example.org/<wbr>includes/(parens)/<wbr>also</a></p>
+<p id=x011 class="phone s02"><cite>bar:</cite> Also ›<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>‹ and</p>
+<p id=x012 class="phone s02"><cite>bar:</cite> Finally ‹<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>›</p>
+<p id=x013 class=summary><a href="ftp://example.org/includes(parens)/too">ftp://<wbr>example.org/<wbr>includes(parens)/<wbr>too</a></p>
 </section>
 </main>
 EOF
