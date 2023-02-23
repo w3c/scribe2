@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Test that text after s/../../ is allowed, but ignored.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Topic: topic 1
+<foo> Joe: Original text
+<foo> Joey: More text
+<foo> Jen: Other text
+<foo> --> http://www.example.org/ my image
+<foo> Original text
+<foo> s/Final/Original/G
+<foo> s/Original/Final/G
+<foo> i/Final/Inserted line/
+<foo> i/Inserted line/Another inserted line
+<foo> Original text
+<foo> Anchor text
+<foo> i|Anchor|s/Original/Changed/|
+<foo> s/Joey/Joe/
+<foo> s/Joe:/Josh:/g
+<foo> s/Jen: Other text/Josh: Also my text/
+<foo> s|--> http://www.example.org/|-> http://www.example.org/
+EOF
+
+# And the same, but with text after the substitions:
+
+cat >$TMP2 <<EOF
+<foo> Topic: topic 1
+<foo> Joe: Original text
+<foo> Joey: More text
+<foo> Jen: Other text
+<foo> --> http://www.example.org/ my image
+<foo> Original text
+<foo> s/Final/Original/G Should do nothing
+<foo> s/Original/Final/G(Applies)
+<foo> i/Final/Inserted line/ Should work
+<foo> i/Inserted line/Another inserted line
+<foo> Original text
+<foo> Anchor text
+<foo> i|Anchor|s/Original/Changed/|   Use | as delimiter
+<foo> s/Joey/Joe/--> missspelling
+<foo> s/Joe:/Josh:/g //// still missspelled
+<foo> s/Jen: Other text/Josh: Also my text/ That wasn't Jen
+<foo> s|--> http://www.example.org/|-> http://www.example.org/ not an image
+EOF
+
+# Process both inputs. They should give the same result.
+
+perl scribe.perl $TMP1 >$TMP3 || exit 1
+perl scribe.perl $TMP2 >$TMP4 || exit 1
+diff -u $TMP3 $TMP3
