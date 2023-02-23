@@ -847,10 +847,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 214 $'
+my $revision = '$Revision: 215 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Mon Feb  6 16:46:56 2023 UTC $'
+my $versiondate = '$Date: Thu Feb 23 14:56:49 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -972,18 +972,18 @@ do {
 # become of type 'o' (omit).
 #
 # If people try to use s/// to replace URLs and they copy-paste the
-# URLs from the generated minutes, there will be zero-width non-joiner
+# URLs from certain old minutes, there might be zero-width non-joiner
 # characters in the URLs. Remove them before matching.
 #
 foreach (@records) {
   $_->{type} = 'c' if
-      $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/;
+      $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])?.*)?$/;
 }
 
 for (my $i = 0; $i < @records; $i++) {
 
   if ($records[$i]->{type} eq 'c' &&
-      $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
+      $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])?.*)?$/) {
     my ($cmd, $old, $new, $global) = ($1, $3, $4, $5);
     my $old2 = $old =~ s/\x{200C}//gr;		# Version without any U+200C
 
