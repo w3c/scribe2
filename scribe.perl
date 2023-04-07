@@ -133,6 +133,7 @@ use utf8;			# This script contains characters in UTF-8
 use File::Basename;
 use Encode qw/decode/;		# For decode('UTF-8',...)
 use Encode::Guess;		# For guess_encoding()
+use POSIX 'floor';
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
 # The pattern consists of two alternatives. The first one matches a
@@ -827,10 +828,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 216 $'
+my $revision = '$Revision: 217 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Apr  7 17:12:00 2023 UTC $'
+my $versiondate = '$Date: Fri Apr  7 17:23:01 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1168,7 +1169,7 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *recording +start(?:ed|s) +at +[:：]([0-9][0-9])[. ]*$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
-    $recordingstart = 3600*int(($records[$i]->{time} - 60*$1)/3600) + 60*$1
+    $recordingstart = 3600*floor(($records[$i]->{time} - 60*$1)/3600) + 60*$1
 	if defined($records[$i]->{time});
 
 
@@ -1178,7 +1179,7 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *recording +end(?:ed|s) +at +[:：]([0-9][0-9])[. ]*$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
-    $recordingend = 3600*int(($records[$i]->{time} - 60*$1)/3600) + 60*$1
+    $recordingend = 3600*floor(($records[$i]->{time} - 60*$1)/3600) + 60*$1
 	if defined $records[$i]->{time};
 
   } elsif (/^ *topic *[:：] *(.*?) *$/i) {
