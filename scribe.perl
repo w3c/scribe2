@@ -65,7 +65,7 @@
 #
 # TODO: Recognize the bots if they joined under another nick name.
 #
-# Copyright © 2017-2022 World Wide Web Consortium, (Massachusetts Institute
+# Copyright © 2017-2023 World Wide Web Consortium, (Massachusetts Institute
 # of Technology, European Research Consortium for Informatics and
 # Mathematics, Keio University, Beihang). All Rights Reserved. This
 # work is distributed under the W3C® Software License[1] in the hope
@@ -178,8 +178,8 @@ my $ghurlbot = 1;		# If 0, hide conversations with GHURLbot
 # Global variables:
 my $has_math = 0;		# Set to 1 by to_mathml()
 my @diagnostics;		# Collected warnings and other info
-my $recordingstart;         	# Time of recording start
-my $recordingend;         	# Time of recording end
+my $recordingstart;         	# Time of recording start secs since midnight)
+my $recordingend;         	# Time of recording end (secs since midnight)
 my @repositories = ();		# List of repo URLs for expanding issue refs
 
 # Each parser takes a reference to an array of text lines (without
@@ -187,7 +187,8 @@ my @repositories = ();		# List of repo URLs for expanding issue refs
 # (failed to parse) or 1 (success) and it appends successfully parsed
 # lines to the array of records, with {type} set to 'i' and {speaker}
 # and {text} set to the text and the nick of the person who typed that
-# text. If a line includes a time stamp, the parser puts it in {time}.
+# text. If a line includes a time stamp, the parser converts it to
+# seconds since midnight and puts it in {time}.
 # It should not try to parse the text futher for actions, resolutions,
 # etc.
 #
@@ -215,8 +216,11 @@ sub RRSAgent_text_format($$$$)
     $$err_ref = $_;
     if (/^(?:\d\d:\d\d:\d\d )?<([^ >]+)> \1 has (?:joined|left|changed the topic to:) /) {
       # Ignore lines like "<jfm> jfm has joined #foo"
-    } elsif (/^(\d\d:\d\d:\d\d )?<([^ >]+)> (.*)/) {
-      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
+    } elsif (/^(\d\d):(\d\d):(\d\d) <([^ >]+)> (.*)/) {
+      push(@$records_ref, {type=>'i', speaker=>$4, text=>$5,
+			   time=> 3600 * $1 + 60 * $2 + $3});
+    } elsif (/^<([^ >]+)> (.*)/) {
+      push(@$records_ref, {type=>'i', speaker=>$1, text=>$2});
     } elsif (/^\s*$/) {
       # Ignore empty lines
     } else {
@@ -240,10 +244,12 @@ sub Bip_Format($$$$)
       # IRC server message, ignore
     } elsif (/^\d\d-\d\d-\d{4} \d\d:\d\d:\d\d [<>] \* /) {
       # /me message, ignore
-    } elsif (/^\d\d-\d\d-\d{4} (\d\d:\d\d:\d\d) < ([^ !:]+)![^ :]+: (.*)$/) {
-      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
-    } elsif (/^\d\d-\d\d-\d{4} (\d\d:\d\d:\d\d) > ([^ :]+): (.*)$/) {
-      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
+    } elsif (/^\d\d-\d\d-\d{4} (\d\d):(\d\d):(\d\d) < ([^ !:]+)![^ :]+: (.*)$/){
+      push(@$records_ref, {type=>'i', speaker=>$4, text=>$5,
+			   time=> 3600 * $1 + 60 * $2 + $3});
+    } elsif (/^\d\d-\d\d-\d{4} (\d\d):(\d\d):(\d\d) > ([^ :]+): (.*)$/) {
+      push(@$records_ref, {type=>'i', speaker=>$4, text=>$5,
+			   time=> 3600 * $1 + 60 * $2 + $3});
     } elsif (/^\s*$/) {
       # Ignore empty lines
     } else {
@@ -319,8 +325,9 @@ sub Bert_IRSSI_Format($$$$)
     next if /^[0-9:]+\s*«[^»]+» \|/; # IRSSI comment about users, topic, etc.
     next if /^[0-9:]+\s*\* \|/;      # Skip a /me command
     next if /^\s*$/;		     # Skip empty line
-    if (/^([0-9:]+)[\s@+%]*(\S+) \| (.*)/) {
-      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
+    if (/^(?:\w\w\w\d\d )?\[?(\d\d):(\d\d)\]?[\s@+%]*(\S+) \| (.*)/) {
+      push(@$records_ref, {type=>'i', speaker=>$3, text=>$4,
+			   time=> 3600 * $1 + 60 * $2});
     } else {
       return 0;
     }
@@ -342,8 +349,9 @@ sub Irssi_Format($$$$)
     next if /^[0-9:TZ-]+\s+-!-/; # Skip join/leave and other info
     next if /^[0-9:TZ-]+\s+\*/;	 # Skip a /me command
     next if /^\s*$/;		 # Skip empty line
-    if (/^([0-9:TZ-]+)\s+<([^>]+)> (.*)/) {
-      push(@$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1});
+    if (/^[0-9-]+T(\d\d):(\d\d):(\d\d)Z\s+<([^>]+)> (.*)/) {
+      push(@$records_ref, {type=>'i', speaker=>$4, text=>$5,
+			   time=> 3600 * $1 + 60 * $2 + $3});
     } else {
       return 0;
     }
@@ -364,8 +372,9 @@ sub Qwebirc_paste_format($$$$)
     next if /^\[[0-9:]+\] ==/;	# Join, quit, change nick, change topic, mode
     next if /^\[[0-9:]+\] \*/;	# A message with /me
     next if /^\s*$/;		# Empty line
-    if (/^\[([0-9:]+)\] <([^>]+)> (.*)$/) {
-      push @$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1};
+    if (/^\[(\d\d):(\d\d)\] <([^>]+)> (.*)$/) {
+      push @$records_ref, {type=>'i', speaker=>$3, text=>$4,
+			   time=> 3600 * $1 + 60 * $2};
     } else {
       return 0;			# This is not qwebirc
     }
@@ -391,8 +400,9 @@ sub IRCCloud_format($$$$)
     next if /^\[[0-9 :-]+\] ← [^ ]+ left /;	# Somebody left the channel
     next if /^\[[0-9 :-]+\] — [^ ]+ /;		# A /me line
     next if /^\[[0-9 :-]+\] \* [^ ]+ /;		# Changed nick, changed mode...
-    if (/^\[([0-9 :-]+)\] <([^>]+)> (.*)$/) {	# $2 said $3
-      push @$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1};
+    if (/^\[[0-9-]+ (\d\d):(\d\d):(\d\d)\] <([^>]+)> (.*)$/) { # $4 said $5
+      push @$records_ref, {type=>'i', speaker=>$4, text=>$5,
+			   time=> 3600 * $1 + 60 * $2 + $3};
     } else {
       return 0;					# Not an IRCCloud log line
     }
@@ -408,22 +418,28 @@ sub Quassel_paste_format($$$$)
 
   # In fact, the date and time between the square brackets can be
   # anything, including month names and arbitrary punctuation. We only
-  # accept digits, dots, spaces and am/pm here.
+  # look for hh:mm and hh:mm:ss, with or without pm.
   #
   $$nlines_ref = 0;
   foreach (@$lines_ref) {
     $$nlines_ref++;
     $$err_ref = $_;
-    next if /^\[[0-9:. apm-]+\] -->/;	# Somebody joined the channel
-    next if /^\[[0-9:. apm-]+\] <--/;	# Somebody quit the channel
-    next if /^\[[0-9:. apm-]+\] <->/;	# Somebody changed nick
-    next if /^\[[0-9:. apm-]+\] \* /;	# Change of topic, channel created...
-    next if /^\[[0-9:. apm-]+\] -\*-/;	# Somebody used /me
-    next if /^\[[0-9:. apm-]+\] \*\*\*/;	# Channel mode change
-    next if /^\[[0-9:. apm-]+\] - \{/;	# Message "Day changed to ..."
+    next if /^\[.*?\] -->/;		# Somebody joined the channel
+    next if /^\[.*?\] <--/;		# Somebody quit the channel
+    next if /^\[.*?\] <->/;		# Somebody changed nick
+    next if /^\[.*?\] \* /;		# Change of topic, channel created...
+    next if /^\[.*?\] -\*-/;		# Somebody used /me
+    next if /^\[.*?\] \*\*\*/;		# Channel mode change
+    next if /^\[.*?\] - \{/;		# Message "Day changed to ..."
     next if /^\s*$/;			# Skip empty line
-    if (/^\[([0-9:. apm-]+)\] <([^>]+)> (.*)$/) {
-      push @$records_ref, {type=>'i', speaker=>$2, text=>$3, time=>$1};
+    if (/^\[[^]]*(\d\d?):(\d\d)(?::(\d\d))?\s*pm[^]]*\] <([^>]+)> (.*)$/i) {
+      push @$records_ref, {type=>'i', speaker=>$4, text=>$5,
+			   time=> 3600 * $1 + 60 * (12 + $2) + ($3 // 0)};
+    } elsif (/^\[[^]]*(\d\d?):(\d\d)(?::(\d\d))?[^]]*\] <([^>]+)> (.*)$/){
+      push @$records_ref, {type=>'i', speaker=>$4, text=>$5,
+			   time=> 3600 * $1 + 60 * $2 + ($3 // 0)};
+    } elsif (/^\[.*?\] <([^>]+)> (.*)$/) {
+      push @$records_ref, {type=>'i', speaker=>$1, text=>$2};
     } else {
       return 0;
     }
@@ -749,62 +765,26 @@ sub delete_scribes($$)
 }
 
 
-# hour_min_sec -- extract hour, minute and second from known time stamp formats
-sub hour_min_sec($)
-{
-  my ($timestamp) = @_;
-  my ($h, $m, $s, $pm) = $timestamp =~
-      /(?<![0-9])([0-9][0-9]?):([0-9][0-9])(?::([0-9][0-9]))?(?: +(pm))?/i;
-  $h = 0 + ($h // 0);
-  $m = 0 + ($m // 0);
-  $s = 0 + ($s // 0);
-  $h += 12 if defined $pm;
-  return ($h, $m, $s);
-}
-
-
-# timestamp_to_seconds - convert HH:MM:SS to seconds since midnight
-sub timestamp_to_seconds($)
-{
-  my ($timestamp) = @_;
-  my ($h, $m, $s) = hour_min_sec($timestamp);
-  return 3600 * $h + 60 * $m + $s;
-}
-
-
-# diff_timestamps -- compute number of seconds between two time stamps
-sub diff_timestamps($$)
-{
-  my ($ts1, $ts2) = @_;
-  my $diff = timestamp_to_seconds($ts1) - timestamp_to_seconds($ts2);
-  # If the diff is more than 8 hours apart,
-  # we assume we're comparing across midnight.
-  return $diff < -8 * 3600 ? $diff + 24 * 3600 : $diff;
-}
-
-
-# minutes_to_timestamp -- convert MM to full HH:MM:SS based on a time reference
-sub minutes_to_timestamp($$)
-{
-  my ($minutes, $ref) = @_;
-  my ($h, $m, $s) = hour_min_sec($ref);
-  $h -= 1 if 0 + $minutes > $m;	# It's in the previous hour
-  $h += 24 if $h < 0;		# That previous hour was yesterday
-  return sprintf "%02d:%02d:00", $h, 0 + $minutes;
-}
-
-
 # link_to_recording -- return an HTML link to the recording at $time, or ""
 sub link_to_recording($$)
 {
   my ($url, $time) = @_;
-  my $offset;
+  my ($offset, $endoffset);
 
   return '' if !defined $url || !defined $recordingstart || !defined $time;
-  $offset = diff_timestamps($time, $recordingstart);
-  return '' if $offset < 0;
-  return '' if defined $recordingend && diff_timestamps($recordingend,$time)<0;
-  return sprintf " <a href=\"%1\$s#t=%2\$s\" rel=bookmark class=recording title=\"matching video record\">🎞\x{FE0E}</a>", esc($url), $offset;
+  $offset = $time - $recordingstart;
+  # If they are more than 8 hours apart, we assume we're comparing
+  # across midnight and add 24 hours.
+  $offset += 24 * 3600 if $offset < -8 * 3600;
+  return '' if $offset < 0;	# We're before the start of the recording
+
+  # Check if we are already after the end of the recording.
+  if (defined $recordingend) {
+    $endoffset = $recordingend - $time;
+    $endoffset += 24 * 3600 if $endoffset < -8 * 3600;
+    return '' if $endoffset <= 0;
+  }
+  return sprintf " <a href=\"%1\$s#t=%2\$s\" class=recording title=\"matching video record\">🎞\x{FE0E}</a>", esc($url), $offset;
 }
 
 
@@ -847,10 +827,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 215 $'
+my $revision = '$Revision: 216 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Feb 23 14:56:49 2023 UTC $'
+my $versiondate = '$Date: Fri Apr  7 17:12:00 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1188,8 +1168,9 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *recording +start(?:ed|s) +at +[:：]([0-9][0-9])[. ]*$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
-    $recordingstart = minutes_to_timestamp($1, $records[$i]->{time})
+    $recordingstart = 3600*int(($records[$i]->{time} - 60*$1)/3600) + 60*$1
 	if defined($records[$i]->{time});
+
 
   } elsif (/^ *recording +ends[. ]*$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
@@ -1197,7 +1178,7 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *recording +end(?:ed|s) +at +[:：]([0-9][0-9])[. ]*$/i) {
     $records[$i]->{type} = 'o';		# Omit line from output
-    $recordingend = minutes_to_timestamp($1, $records[$i]->{time})
+    $recordingend = 3600*int(($records[$i]->{time} - 60*$1)/3600) + 60*$1
 	if defined $records[$i]->{time};
 
   } elsif (/^ *topic *[:：] *(.*?) *$/i) {
