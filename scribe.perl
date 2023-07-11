@@ -828,10 +828,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 217 $'
+my $revision = '$Revision: 218 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Apr  7 17:23:01 2023 UTC $'
+my $versiondate = '$Date: Tue Jul 11 19:17:10 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -876,6 +876,7 @@ my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/' .
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
 	    fc('ghurlbot') => 1,
+	    fc('gb') => 1,
 	    fc('agendabot') => 1,
 	    fc('Zakim') => 1);
 
@@ -1127,12 +1128,12 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif (/^ *repo(?:s|sitory|sitories)? *(?:[:：]|\+[:：]?) *(.*?) *$/i ||
-      /^ *ghurlbot *, *(?:discuss(?:ing)?|use|using|take +up|taking +up|this +(?:will +be|is)) +(.*?) *$/i) {
+      /^ *(?:ghurlbot|gb) *, *(?:discuss(?:ing)?|use|using|take +up|taking +up|this +(?:will +be|is)) +(.*?) *$/i) {
     $records[$i]->{type} = 'repo';	# Mark as repository line
     $records[$i]->{text} = $1;
 
   } elsif (/^ *repo(?:s|sitory|sitories)? *-[:：]? *(.*?) *$/i ||
-    /^ *ghurlbot *, *(?:forget|drop|remove|don't +use|do +not +use) +([^ ]+) *$/i) {
+    /^ *(?:ghurlbot|gb) *, *(?:forget|drop|remove|don't +use|do +not +use) +([^ ]+) *$/i) {
     $records[$i]->{type} = 'drop';	# Mark as drop-repository line
     $records[$i]->{text} = $1;
 
@@ -1394,29 +1395,30 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *agendabot *,/i) {
     $records[$i]->{type} = 'o';		# Ignore most conversations w/ agendabot
 
-  } elsif (! $ghurlbot && /^ *ghurlbot *,/i) {
+  } elsif (! $ghurlbot && /^ *(?:ghurlbot|gb) *,/i) {
     $records[$i]->{type} = 'o';		# Ignore other commands to ghurlbot
 
-  } elsif (! $ghurlbot && $records[$i]->{speaker} eq 'ghurlbot') {
+  } elsif (! $ghurlbot && $records[$i]->{speaker} =~ /^ghurlbot$|^gb$/) {
     $records[$i]->{type} = 'o';		# Ignore if --noghurlbot was set
 
-  } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
+  } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
 	   /^($urlpat) -> ((?:Issue |Action |Pull Request |\#)[0-9]+) ?(.*)$/i) {
     $records[$i]->{type} = 'B';		# A structured response from ghurlbot
     $records[$i]->{id} = $3;
     $records[$i]->{text} = "->$1 $2";
 
-  } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
+  } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
 	   /^($urlpat) -> (@.*)$/i) {	# A link to a GitHub user
     $records[$i]->{type} = 'B';
     $records[$i]->{id} = '';
     $records[$i]->{text} = "->$1 $2";
 
-  } elsif ($records[$i]->{speaker} eq 'ghurlbot' &&
+  } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
 	   /^(?:Cannot|Closed|Reopened|Created)/) {
     $records[$i]->{type} = 'b';
 
-  } elsif ($records[$i]->{speaker} eq 'ghurlbot' && /^(?:[^ ,]+, )?OK\.?/) {
+  } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
+  /^(?:[^ ,]+, )?OK\.?/) {
     $records[$i]->{type} = 'o';		# Ignore "OK" responses from ghurlbot
 
   } elsif (/^ *namedanchorhere *[:：] *(.*?) *$/i) {
