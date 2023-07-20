@@ -828,10 +828,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 219 $'
+my $revision = '$Revision: 220 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Jul 20 17:36:20 2023 UTC $'
+my $versiondate = '$Date: Thu Jul 20 23:07:19 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -959,15 +959,20 @@ do {
 #
 foreach (@records) {
   $_->{type} = 'c' if
-      $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])?.*)?$/;
+      $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/;
 }
 
 for (my $i = 0; $i < @records; $i++) {
 
   if ($records[$i]->{type} eq 'c' &&
-      $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])?.*)?$/) {
-    my ($cmd, $old, $new, $global) = ($1, $3, $4, $5);
+      $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
+    my ($cmd, $delim, $old, $new, $global) = ($1, $2, $3, $4, $5);
     my $old2 = $old =~ s/\x{200C}//gr;		# Version without any U+200C
+
+    push(@diagnostics, "Warning: ‘$records[$i]->{text}’ interpreted as replacing ‘$old’ by ‘$new’")
+	if $cmd eq 's' && $new =~ /\Q$delim\E/;
+    push(@diagnostics, "Warning: ‘$records[$i]->{text}’ interpreted as inserting ‘$new’ before ‘$old’")
+	if $cmd eq 'i' && $new =~ /\Q$delim\E/;
 
     if ($cmd eq 'i') {				# i/where/what/
       my $j = $i - 1;
