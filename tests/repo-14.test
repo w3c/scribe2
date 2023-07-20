@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Test definition of repositories via ghurlbot when it is called gb
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribe: foo
+<foo> gb, use  is w3c/transitions
+<foo>  gb, this  is w3c/scribe2
+<foo> Pete: Something else in #7 and #8.
+<foo> .. I wanted to say.
+<foo> ... Very important
+<foo> q+
+<bar> q+
+<baz> q?
+<foo> ..at least to me.
+<foo> gb, drop w3c/scribe2
+<foo> Discussions of transition #1.
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x002 class=summary>Repository: is w3c/transitions</p>
+<p id=x003 class=summary>Repository: w3c/scribe2</p>
+<p id=x010 class="phone s01"><cite>Pete:</cite> Something else in <a href="https://github.com/w3c/scribe2/issues/7">#7</a> and <a href="https://github.com/w3c/scribe2/issues/8">#8</a>.<br>
+<span id=x011>… I wanted to say.</span><br>
+<span id=x012>… Very important</span><br>
+<span id=x013>… at least to me.</span></p>
+<p id=x014 class=summary>Repository- w3c/scribe2</p>
+<p id=x015 class=summary>Discussions of transition <a href="https://github.com/w3c/transitions/issues/1">#1</a>.</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# Extract just the minutes
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
