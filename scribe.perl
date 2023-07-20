@@ -828,10 +828,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 218 $'
+my $revision = '$Revision: 219 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jul 11 19:17:10 2023 UTC $'
+my $versiondate = '$Date: Thu Jul 20 17:36:20 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1223,8 +1223,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore this line
 
   } elsif (/^ *action *[:：] *(.*?) *$/i ||
-	   /^ *action +(\pL\w* *[:：].*?) *$/i ||
-	   /^ *action +([^ ]+ +to\b.*?) *$/i) {
+	   /^ *action +(.*?(?: to |[:：]).*?) *$/i) {
     $records[$i]->{type} = 'a';		# Mark as action line
     $records[$i]->{text} = $1;
     $records[$i]->{id} = ++$actionid;	# Unique ID
