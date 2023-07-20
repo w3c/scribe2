@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Test if actions with mroe than one assignee are recognized
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Not a topic
+<foo>  Action: adam, eve_$ to do this
+<bar> Action ali, cyril, and dd8: do the same
+<baz> action : bar,bar2 do this, too
+<foo>   ACTION foo and bar-50% to stop giving actions
+<foo> action-20: look at the documentation.
+<foo> ActioN: foo,,bar,baz: allow redundant commas
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# New actions must be in the action summary.
+grep '<li><a href="#a01">adam, eve_$ to do this</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a02">ali, cyril, and dd8: do the same</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a03">bar,bar2 do this, too</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a04">foo and bar-50% to stop giving actions</a></li>' $TMP2 || exit 1
+grep '<li><a href="#a05">foo,,bar,baz: allow redundant commas</a></li>' $TMP2 || exit 1
+
+# action-20 is *not* a new action
+grep 'class=summary>action-20: look at the documentation.' $TMP2 || exit 1
