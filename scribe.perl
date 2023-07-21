@@ -828,10 +828,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 220 $'
+my $revision = '$Revision: 221 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Jul 20 23:07:19 2023 UTC $'
+my $versiondate = '$Date: Fri Jul 21 14:01:30 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -877,6 +877,7 @@ my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
 	    fc('ghurlbot') => 1,
 	    fc('gb') => 1,
+	    fc('github-bot') => 1,
 	    fc('agendabot') => 1,
 	    fc('Zakim') => 1);
 
