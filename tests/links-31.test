@@ -2,7 +2,12 @@
 
 # Test markdown link
 
-echo "<foo> I like [links with a clear title](ftp://example.org/test/) even [severals at once](https://example.org/#foo)" | \
+echo "<foo> I like [links with a /clear/ title](ftp://example.org/test/) even [several at once](https://example.org/#foo)" | \
   perl scribe.perl --urldisplay=full --emphasis| \
-  grep '<a href="ftp://example.org/test/">links with a clear title</a>' |\
-  grep '<a href="https://example.org/#foo">severals at once</a>'
+  grep '<a href="ftp://example.org/test/">links with a <em>clear</em> title</a>' |\
+  grep '<a href="https://example.org/#foo">several at once</a>'
+
+echo '<foo> I like ![images with /alt/ text](ftp://example.org/test.gif) even ![several at once](https://example.org/foo)' | \
+  perl scribe.perl --urldisplay=full --emphasis | \
+  grep '<img src="ftp://example.org/test.gif" alt="images with /alt/ text">' |\
+  grep '<img src="https://example.org/foo" alt="several at once">'
