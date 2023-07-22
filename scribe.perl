@@ -674,9 +674,13 @@ sub esc($;$$$$)
 	$replacement  .= esc($pre, $emph, 0, 0, $github)
 	    . mklink($link, $1, $url, $2);
 	$s = $';
-      } elsif ($post =~ /^\)/ && $pre =~ /(\[([^\]]+)\]\()$/p) { # Markdown
-        $replacement .= esc($`, $emph)
-	      . mklink($link, "->", $url, $2);
+      } elsif ($post =~ /^\)/ && $pre =~ /!\[([^\]]+)\]\($/p) { # Markdown image
+	$r = $1;
+        $replacement .= esc($`) . mklink($link, "-->", $url, $r);
+    	$s = $post =~ s/^\)//r;
+      } elsif ($post =~ /^\)/ && $pre =~ /\[([^\]]+)\]\($/p) { # Markdown link
+	$r = $1;
+        $replacement .= esc($`, $emph) . mklink($link, "->", $url, $r);
     	$s = $post =~ s/^\)//r;
       } else {					# Bare URL.
     	$replacement .= esc($pre, $emph, 0, 0, $github)
@@ -828,10 +832,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 221 $'
+my $revision = '$Revision: 222 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Jul 21 14:01:30 2023 UTC $'
+my $versiondate = '$Date: Sat Jul 22 21:57:07 2023 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
