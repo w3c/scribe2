@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Test if a scribe can be added with an i/// command.
+
+trap 'rm $INPUT $OUTPUT $REFERENCE' 0
+INPUT=`mktemp /tmp/scribenick-12-XXXXXX` || exit 1
+OUTPUT=`mktemp /tmp/scribenick-12-XXXXXX` || exit 1
+REFERENCE=`mktemp /tmp/scribenick-12-XXXXXX` || exit 1
+
+# Create an IRC log as input
+cat >$INPUT <<EOF
+<foo> I'm not scribe.
+<foo> I'm really not scribe.
+<bar> foo: I'm not scribe.
+<foo> i/not scribe/scribe: bar
+EOF
+
+# Create the expected HTML output (only the <main> element).
+cat >$REFERENCE <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x001 class=irc><cite>&lt;foo&gt;</cite> I'm not scribe.</p>
+<p id=x002 class=irc><cite>&lt;foo&gt;</cite> I'm really not scribe.</p>
+<p id=x004 class="phone s01"><cite>foo:</cite> I'm not scribe.</p>
+</section>
+</main>
+EOF
+
+# Generate the output.
+perl scribe.perl -embed $INPUT | sed -n -e '/<main/,/<\/main>/p' >$OUTPUT
+
+# Compare the output to the expected output.
+diff -u $REFERENCE $OUTPUT
