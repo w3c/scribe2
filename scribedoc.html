@@ -94,6 +94,12 @@
 
       <li><a href="rescue">⚠ Rescue the minutes when RRSAgent is missing</a>
 
+      <li><a href="https://w3c.github.io/GHURLBot/manual.html" >gb
+      (bot to manage issues &amp; action items on GitHub)</a>
+
+      <li><a href="https://w3c.github.io/AgendaBot/manual.html"
+      >AgendaBot</a>
+
       <li><a
       href="https://www.w3.org/2006/tools/wiki/WebExBestPractices"
       >WebEx Best Practices</a></li>
@@ -144,20 +150,16 @@
      <th>Who?
    <tbody>
     <tr>
-     <td class=command>/invite rrsagent
-     <td class=help>calls RRSAagent to the your IRC channel
-     <td>anybody
-    <tr>
      <td class=command>/invite zakim
      <td class=help>calls Zakim to your IRC channel
      <td>anybody
     <tr>
-     <td class=command>zakim, this will be ws_arch
-     <td class=help>ws_arch will be your meeting name
+     <td class=command>zakim, start meeting
+     <td class=help>this makes Zakim invite RRSAgent and set up other things, depending on the channel
      <td>anybody
   </table>
 
-  <h3 id=start-meeting>Step 2: Start the meeting:</h3>
+  <h3 id=start-meeting>Step 2: Describe the meeting:</h3>
 
   <table>
    <col><col><col>
@@ -179,11 +181,12 @@
      <td>anybody
     <tr>
      <td class=command>Meeting: WS Arch Teleconference
-     <td class=help>Record meeting title
+     <td class=help>Record meeting title.
+     (On some channels, Zakim does this for you.)
      <td>anybody
     <tr>
      <td class=command>Chair: Mike
-     <td class=help>Record who chaired
+     <td class=help>Record who chairs
      <td>anybody
     <tr>
      <td class=command>Previous meeting: http://example.org/20180918
@@ -197,8 +200,15 @@
      <td class=help>Ditto for the next meeting.
      <td>anybody
     <tr>
-     <td class=command>Agenda: http://example.org/agenda<br>
+     <td class=command>Agenda: http://example.org/agenda
      <td class=help>If you want a link to the agenda at the top of the minutes.
+     <td>anybody
+   <tr>
+     <td class=command>rrsagent, make logs public
+     <td class="help">(For public minutes and logs) Change the
+     permissions on the IRC logs. (On some channels, Zakim does this
+     for you.) Note that the permission changes are queued and it may
+     be a minute or so before they take effect.
      <td>anybody
   </table>
 
@@ -325,34 +335,13 @@
 	<th>Who?
    <tbody>
 <tr>
-	<td class="command">zakim, bye</td>
+	<td class="command">zakim, end meeting</td>
 
 	<td class="help">Dismiss zakim bot, which will generate a list
-	of attendees. Use <a href="#present">‘Present: ...’ (described
+	of attendees and instruct RRSAgent to generate minutes.
+	Use <a href="#present">‘Present: ...’ (described
 	below)</a> instead if
 	you aren't using zakim bot.
-
-	<td>anybody
-<tr>
-	<td class="command">rrsagent, make log public</td>
-
-	<td class="help">(For public minutes and logs) Change the
-	permissions on the IRC logs. Note that the permission changes
-	are queued and it may be a minute or so before they take
-	effect.
-
-	<td>anybody
-<tr>
-	<td class="command">rrsagent, draft minutes</td>
-
-	<td class="help">Tell <a
-	href="https://www.w3.org/2002/03/RRSAgent#minutes"
-	>RRSAgent</a> <a
-	href="https://www.w3.org/2002/03/RRSAgent#minutes" >to generate
-	minutes</a> from the log as written so far, inheriting access
-	permissions from the log permissions. Note the location of the
-	generated minutes. Skip this step if you are not using
-	RRSAgent.
 
 	<td>anybody
 <tr>
@@ -754,8 +743,8 @@
 
    <dt id=ghurlbot>-noghurlbot <dd>Omit messages from
     <a href="https://w3c.github.io/GHURLBot/manual.html"
-    >ghurlbot</a>. Messages <em>to</em> ghurlbot are still
-    interpreted, but ghurlbot's responses, such as summaries of issues
+    >gb (a.k.a. ghurlbot)</a>. Messages <em>to</em> gb are still
+    interpreted, but gb's responses, such as summaries of issues
     and actions, are removed.
   </dl>
 
@@ -1020,6 +1009,11 @@ Scribe-</pre>
   <p>Specify the agenda URL (optional). If used multiple times, only
    the last one has effect.
 
+  <p>Hint: If the agenda has been posted to the W3C Group Calendar or
+    to a W3C mailing
+    list, <a href="https://w3c.github.io/AgendaBot/manual.html"
+    >AgendaBot</a> may be able to find the URL for you.
+
   <pre class="command" id=present>Present: Jonathan, Mary, Barbara, Steve</pre>
 
   <p>Indicate who was present.
@@ -1047,7 +1041,7 @@ action Ann: publish report 17
 Action Fred to do something</pre>
 
   <p>Three ways to give an action item: ‘action:’, ‘action name:’ and
-   ‘action name to’. (Other bots, such as Tracker, may require that
+   ‘action name to’. (Other bots, may require that
    only one of these syntaxes is used.)
 
   <pre class="command">RESOLUTION: Issue 42 closed as duplicate of issue 21
@@ -1099,10 +1093,6 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
   <p>You can add a link to the previous and next meeting at the top of
    the minutes.
-
-  <pre class="command">Agenda: http://example.org/2019-02/agenda</pre>
-
-  <p>This adds a link to the meeting agenda at the top of the minutes.
 
   <h3 id="escaped">Escapes</h3>
 
