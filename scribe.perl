@@ -832,10 +832,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 222 $'
+my $revision = '$Revision: 223 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Sat Jul 22 21:57:07 2023 UTC $'
+my $versiondate = '$Date: Thu Apr 18 15:11:55 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1446,8 +1446,9 @@ for (my $i = 0; $i < @records; $i++) {
       $namedanchors{$a} = 1;
     }
 
-  } elsif ($is_scribe && /^ *\Q<$records[$i]->{speaker}\E>/i) {
+  } elsif (/^ *\Q<$records[$i]->{speaker}\E>/i) {
     # Ralph's escape for a scribe's personal remarks: "<mynick> my opinion"
+    # But it also works for non-scribes.
     $records[$i]->{text} =~ s/^.*?> ?//i;
 
   } elsif ($is_scribe && /^ *\\(.*)/) {			# Starts with backslash
