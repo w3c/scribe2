@@ -1,12 +1,8 @@
-scribe.perl is a program to convert an IRC log with meeting minutes to
-HTML.
+scribe.perl is a program to convert an IRC log with meeting minutes to HTML.
 
-It is usually invoked on IRC by RRSAgent[1], but can also be run
-locally by hand. See scribedoc.html[2] for the IRC conventions it
-understands.
+It is usually invoked on IRC by RRSAgent[1], but can also be run locally by hand. See scribedoc.html[2] for the IRC conventions it understands.
 
-This is version 2 of scribe.perl, an improved version of the original
-scribe.perl[3,4] by David Booth.
+This is version 2 of scribe.perl, an improved version of the original scribe.perl[3,4] by David Booth.
 
 [1] https://www.w3.org/2002/03/RRSAgent
 [2] https://w3c.github.io/scribe2/scribedoc.html
