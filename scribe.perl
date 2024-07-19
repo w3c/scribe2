@@ -833,10 +833,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 225 $'
+my $revision = '$Revision: 227 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Jul 19 08:57:50 2024 UTC $'
+my $versiondate = '$Date: Fri Jul 19 09:58:06 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1144,8 +1144,8 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'repo';	# Mark as repository line
     $records[$i]->{text} = $1;
 
-  } elsif (/^ *repo(?:s|sitory|sitories)? *-[:：]? *(.*?) *$/i ||
-    /^ *(?:ghurlbot|gb) *, *(?:forget|drop|remove|don't +use|do +not +use) +([^ ]+) *$/i) {
+  } elsif (/^ *repo(?:s|sitory|sitories)? *-[:：]? *([^ ].*)$/i ||
+    /^ *(?:ghurlbot|gb) *, *(?:forget|drop|remove|don't +use|do +not +use) +([^ ].*)$/i) {
     $records[$i]->{type} = 'drop';	# Mark as drop-repository line
     $records[$i]->{text} = $1;
 
