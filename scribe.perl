@@ -740,18 +740,19 @@ sub is_cur_scribe($$)
 
 
 # add_scribes -- add scribes to the scribe list and the current scribes
-sub add_scribes($$$)
+sub add_scribes($$$$)
 {
-  my ($names, $curscribes_ref, $scribes_ref) = @_;
+  my ($names, $curscribes_ref, $scribes_ref, $scribenames_ref) = @_;
 
   # We may assume $names matches zero or more comma-separated $scribepat
   foreach (split(/ *, */, $names)) {	# Split at commas
     my ($nick, $real) = /^$scribepat$/;	# Split into nick and real name
     my $n = fc($nick =~ s/_+$//r);	# Case-insensitive, without trailing _
-    $$curscribes_ref{$n} = 1;		# Add speaker as scribe
+    $$curscribes_ref{$n} = 1;		# Add nick as current scribe
+    push @$scribes_ref, $n;		# Add nick to overall scribe list
     # Add a new real name, or use the nick as real name if there was none.
-    if ($real) {$$scribes_ref{$n} = $real;}
-    elsif (!$$scribes_ref{$n}) {$$scribes_ref{$n} = $nick;}
+    if ($real) {$$scribenames_ref{$n} = $real;}
+    elsif (!$$scribenames_ref{$n}) {$$scribenames_ref{$n} = $nick;}
   }
 }
 
@@ -832,14 +833,15 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 223 $'
+my $revision = '$Revision: 224 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Apr 18 15:11:55 2024 UTC $'
+my $versiondate = '$Date: Fri Jul 19 08:51:01 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
-my %scribes;			# List of scribes
+my @scribes;			# List of scribes
+my %scribenames;		# Map scribe nicknames to real names
 my @records;			# Array of parsed lines
 my $date;			# Date of the meeting
 my $meeting = "(MEETING TITLE)"; # Name of the meeting (HTML-escaped)
@@ -1046,7 +1048,7 @@ foreach (@records) {
   $count{$_->{speaker}}++ if $_->{type} eq 'i' && !$bots{fc($_->{speaker})};
 }
 while (!defined $scribenick && (my ($i,$p) = each @records)) {
-  if ($p->{text} =~ /^ *scribe(?:nick)? * \+[:：]? *$/i) {
+  if ($p->{text} =~ /^ *scribe(?:nick)? *\+[:：]? *$/i) {
     $scribenick = $p->{speaker};
   } elsif ($p->{text} =~ /^ *scribe(?:nick)? *(?:[:：]|\+[:：]?) *($scribepat(?:, *$scribepat)*)$/i) {
     $scribenick = $1;
@@ -1058,7 +1060,7 @@ if (!defined $scribenick) {
   $scribenick = '*' if !defined $scribenick;
   push(@diagnostics, "No scribenick or scribe found. Guessed: $scribenick");
 }
-add_scribes($scribenick, \%curscribes, \%scribes);
+add_scribes($scribenick, \%curscribes, \@scribes, \%scribenames);
 
 # Step 5: Interpret each record, collect topics, actions, etc.
 #
@@ -1302,7 +1304,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif (/^ *scribe(?:nick)? *\+[:：]? *$/i) {
-    add_scribes($records[$i]->{speaker}, \%curscribes, \%scribes);
+    add_scribes($records[$i]->{speaker}, \%curscribes, \@scribes,\%scribenames);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif (/^ *scribe(?:nick)? *[:：] *$/i) {
@@ -1310,12 +1312,12 @@ for (my $i = 0; $i < @records; $i++) {
 
   } elsif (/^ *scribe(?:nick)? *([:：]|\+[:：]?) *($scribepat(?:, *$scribepat)*)$/i) {
     %curscribes = () if $1 eq ':' || $1 eq '：'; # Reset scribe nicks
-    add_scribes($2, \%curscribes, \%scribes);
+    add_scribes($2, \%curscribes, \@scribes, \%scribenames);
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif (/^ *scribe *[:：] *([^ ].*?) *$/i) {
     # Probably an old-fashioned scribe command without a nick
-    $scribes{fc $1} = $1;		# Add to collected scribe list
+    push @scribes, $1;			# Add to collected scribe list
     $records[$i]->{type} = 'o';		# Omit line from output
 
   } elsif (/^ *scribe(?:nick)? *-[:：]? *([^ ].*)? *$/i) {
@@ -1691,7 +1693,7 @@ $present = "<details><summary>".($present =~ s/,/,<\/summary>/r)."</details>"
 my $regrets = esc(join(", ", map($regrets{$_}, sort keys %regrets))) || '-';
 $regrets = "<details><summary>".($regrets =~ s/,/,<\/summary>/r)."</details>"
   if scalar keys %regrets > $collapse_limit; # Collapsed if the list is long
-my $scribes = esc(join(", ", sort {fc($a) cmp fc($b)} values %scribes)) || '-';
+my $scribes = esc(join(", ",map($scribenames{$_}//$_,fc_uniq(@scribes))))||'-';
 my $chairs = esc(join(", ", sort {fc($a) cmp fc($b)} values %chairs)) || '-';
 my $diagnostics = !$embed_diagnostics || !@diagnostics ? "" :
   "<div class=diagnostics>\n<h2>Diagnostics<\/h2>\n" .
