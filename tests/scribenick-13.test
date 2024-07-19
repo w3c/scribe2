@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Test if the scribes are listed in the order of first appearance.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+13:28:36 <foo> bar: I just say
+13:28:37 <foo> scribe: foo
+13:28:38 <foo> scribe: baz
+13:28:39 <foo> scribe: foo
+13:28:37 <foo> scribe: foo
+13:28:37 <foo> scribe: bar
+13:28:37 <foo> scribe: foo
+13:28:46 <foo> ... I say nothing
+13:28:56 <bar>  Better: I say nada
+13:29:06 <foo> baz: you say
+13:29:16 <foo> bar: OK
+EOF
+
+cat >$TMP4 <<EOF
+<dt>Scribe</dt><dd>foo, baz, bar</dd>
+EOF
+
+perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
+grep -F '<dt>Scribe</dt>' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3
