@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Test the heuristic that "+1" by the scribe is the scribe's own
+# opinion, rather than the scribe's description of meeting.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribe+
+<foo> Pete: Who is in favor?
+<annabel> +1
+<pete> +1
+<grumpy> -1
+<marjan> +100
+<foo> +1
+<foo> +100! if I get to choose the color :-)
+<foo> RESOLVED: proposal is adopted
+<foo> <foo> Phew!
+<foo> Pete: Shall we vote again?
+<foo> -1
+<marjan> -1
+<foo> The meeting ends with people cheering.
+<foo> ... +1 has won.
+EOF
+
+cat >$TMP2 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x002 class="phone s01"><cite>Pete:</cite> Who is in favor?</p>
+<p id=x003 class=irc><cite>&lt;annabel&gt;</cite> +1</p>
+<p id=x004 class=irc><cite>&lt;pete&gt;</cite> +1</p>
+<p id=x005 class=irc><cite>&lt;grumpy&gt;</cite> -1</p>
+<p id=x006 class=irc><cite>&lt;marjan&gt;</cite> +100</p>
+<p id=x007 class=irc><cite>&lt;foo&gt;</cite> +1</p>
+<p id=x008 class=irc><cite>&lt;foo&gt;</cite> +100! if I get to choose the color :-)</p>
+<p id=r01 class=resolution><strong>RESOLUTION:</strong> proposal is adopted</p>
+<p id=x010 class=irc><cite>&lt;foo&gt;</cite> Phew!</p>
+<p id=x011 class="phone s01"><cite>Pete:</cite> Shall we vote again?</p>
+<p id=x012 class=irc><cite>&lt;foo&gt;</cite> -1</p>
+<p id=x013 class=irc><cite>&lt;marjan&gt;</cite> -1</p>
+<p id=x014 class=summary>The meeting ends with people cheering.<br>
+<span id=x015>… +1 has won.</span></p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP3
+sed -n -e '/<main/,/<\/main>/p' $TMP3 >$TMP4
+diff -u $TMP2 $TMP4
