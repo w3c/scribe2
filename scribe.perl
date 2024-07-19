@@ -1513,6 +1513,10 @@ for (my $i = 0; $i < @records; $i++) {
     # If the scribe used a Ralph-link (-> url ...), still allow continuations
     $records[$i]->{type} = 'd';		# Mark as descriptive text
 
+  } elsif ($is_scribe && /^ *[-+]\d+(?:\W.*)?$/) {
+    # Looks like the scribe was trying to say "+1" or similar. Treat
+    # it as IRC text rather than a scribe's summary.
+
   } elsif ($is_scribe) {
     $records[$i]->{type} = 'd';		# Mark as descriptive text
     $lastspeaker{$records[$i]->{speaker}} = undef; # No continuation expected
@@ -1571,6 +1575,9 @@ if (defined $recording) {
   }
 }
 
+# Formats for the different types of lines. 1 = speaker, 2 = ID of a
+# heading, action, etc. or a message by a bot, 3 = text, 4 = the ID of
+# the speaker, 5 = unique ID for the line, 6 = URL of recording
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
   b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
