@@ -30,7 +30,7 @@ EOF
 
 # Expected scribes:
 cat >$TMP3 <<EOF
-<dt>Scribe</dt><dd>Ben Anton Radius, Bo Ad Zero, Flavius O. O'mcintosh, foo</dd>
+<dt>Scribe</dt><dd>foo, Flavius O. O'mcintosh, Ben Anton Radius, Bo Ad Zero</dd>
 EOF
 
 perl scribe.perl $TMP1 >$TMP2

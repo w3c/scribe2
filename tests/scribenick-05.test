@@ -17,7 +17,7 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP3 <<EOF
-<dt>Scribe</dt><dd>John Smith Jr., John Smith Sr.</dd>
+<dt>Scribe</dt><dd>John Smith Sr., John Smith Jr.</dd>
 EOF
 
 perl scribe.perl $TMP1 >$TMP2

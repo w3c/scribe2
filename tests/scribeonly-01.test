@@ -83,7 +83,6 @@ href="https://w3c.github.io/scribe2/scribedoc.html"
 <div class=diagnostics>
 <h2>Diagnostics</h2>
 <p class=warning>Failed: s/failed: /also ignored/</p>
-<p class=warning>No scribenick or scribe found. Guessed: foo</p>
 <p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
 <p class=warning>Maybe present: bar, baz</p>
 <p class=warning>All speakers: bar, baz</p>

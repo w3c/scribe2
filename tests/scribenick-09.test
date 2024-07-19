@@ -16,7 +16,7 @@ EOF
 
 perl scribe.perl -embedDiagnostics $TMP1 >$TMP2 || exit 1
 
-cat $TMP2
+# cat $TMP2
 
 grep 'Ignored empty command &quot;scribe:' $TMP2 || exit 1
 grep 'Ignored empty command &quot;scribenick  :' $TMP2 || exit 1
