@@ -833,10 +833,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 227 $'
+my $revision = '$Revision: 228 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Jul 19 09:58:06 2024 UTC $'
+my $versiondate = '$Date: Tue Jul 23 12:57:54 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1155,7 +1155,7 @@ for (my $i = 0; $i < @records; $i++) {
     $lastslideset = $2;
     $has_slides = 1;
 
-  } elsif (/^ *slideset *[:：]/i) {	# Slideset but without a URL. Error?
+  } elsif (/^ *slides(?:et)? *[:：]/i) { # Forget the slideset
     $records[$i]->{type} = 'd' if $is_scribe;
     $lastslideset = undef;
 
@@ -1493,16 +1493,17 @@ for (my $i = 0; $i < @records; $i++) {
     }
 
   } elsif (/^ *(?:\.\.\.*|…) *(.*?) *$/) {
-    # Is this a continuation of an action/resolution/issue/topic?
+    # Is this a continuation of an action/resolution/issue/topic/description?
     my ($s, $j, $speaker) = ($1, $i - 1, $records[$i]->{speaker});
     $j-- while $j > 0 && ($records[$j]->{type} eq 'o' ||
 			  $records[$j]->{speaker} ne $speaker);
-    if ($j >= 0 && $records[$j]->{type} =~ /[artTuUd]/) {
+    if ($j >= 0 && $records[$j]->{type} =~ /^[artTud]$/) {
       $records[$j]->{text} .= "\t" . $s;
       $records[$i]->{type} = 'o';	# Omit this line from output
     } elsif ($is_scribe) {
       # Not a continuation of anything, but it is by the scribe.
       $records[$i]->{type} = 'd';		# Mark as descriptive text
+      $records[$i]->{text} = $s;		# Remove "..."
       $lastspeaker{$speaker} = undef;		# No continuation expected
     }
 
