@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Continuation lines after things that do not allow continuation.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> scribe: foo
+<foo> slideset: https://example.org/slides
+<foo> .. this continues nothing
+<foo> ... this continues the previous line
+<foo> Ben: a link:
+<foo> ... -> http://example.org/example Example
+<foo> [slide 4]
+<foo> ... this continues Ben's text
+<foo> Everybody claps
+<foo> [slide 5]
+<foo> ... This does not continue anything
+<foo> repo: w3c/test
+<foo> ... Not a continuation.
+<foo> #13
+<foo> repo- w3c/test
+<foo> ... Not a continuation either.
+<foo> ... This continues the previous line.
+<bar> present+ bar
+<baz> q?
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=x002 class=summary>Slideset: <a href="https://example.org/slides">https://<wbr>example.org/<wbr>slides</a></p>
+<p id=x003 class=summary>this continues nothing<br>
+<span id=x004>… this continues the previous line</span></p>
+<p id=x007 class="phone s01"><cite>Ben:</cite> a link:<br>
+<span id=x008>… <a href="http://example.org/example">Example</a></span></p>
+<p id=x009 class=summary><a class=islide href="https://example.org/slides#4">[Slide 4]</a></p>
+<p id=x010 class="phone s01"><cite>Ben:</cite> this continues Ben's text</p>
+<p id=x011 class=summary>Everybody claps</p>
+<p id=x012 class=summary><a class=islide href="https://example.org/slides#5">[Slide 5]</a></p>
+<p id=x013 class=summary>This does not continue anything</p>
+<p id=x014 class=summary>Repository: w3c/test</p>
+<p id=x015 class=summary>Not a continuation.</p>
+<p id=x016 class=summary><a href="https://github.com/w3c/test/issues/13">#13</a></p>
+<p id=x017 class=summary>Repository- w3c/test</p>
+<p id=x018 class=summary>Not a continuation either.<br>
+<span id=x019>… This continues the previous line.</span></p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# Extract just the minutes
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
