@@ -833,10 +833,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 228 $'
+my $revision = '$Revision: 229 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Jul 23 12:57:54 2024 UTC $'
+my $versiondate = '$Date: Thu Jul 25 08:38:54 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
