@@ -134,6 +134,8 @@ use File::Basename;
 use Encode qw/decode/;		# For decode('UTF-8',...)
 use Encode::Guess;		# For guess_encoding()
 use POSIX 'floor';
+use LWP::UserAgent ();
+use MIME::Base64;
 
 # Pattern for URLs. Note: single quote (') does not end a URL.
 # The pattern consists of two alternatives. The first one matches a
@@ -182,6 +184,9 @@ my @diagnostics;		# Collected warnings and other info
 my $recordingstart;         	# Time of recording start secs since midnight)
 my $recordingend;         	# Time of recording end (secs since midnight)
 my @repositories = ();		# List of repo URLs for expanding issue refs
+
+# Used to download slideset when necessary
+my $ua = LWP::UserAgent->new(timeout => 10);
 
 # Each parser takes a reference to an array of text lines (without
 # newlines) and a reference to an array of records. It returns 0
@@ -857,6 +862,9 @@ my %lastspeaker;		# Current speaker (separate for each scribe)
 my $speakerid = 's00';		# Generates unique ID for each speaker
 my $has_slides = 0;		# Set to 1 if there is at least one slideset
 my $lastslideset;		# URL of the slideset being presented
+my $embeddedslideset;           # id of the link element that embeds a data url
+                                # encoding of the slideset (for i-slide)
+my $embeddedslidesetcounter = 0;# counter of embedded slidesets
 my $recording;         		# URL of the recording of the meeting
 my $recording_link;		# HTML-formatted link to the recording
 my $topicid = 't00';		# Generates unique ID for each topic
@@ -1153,15 +1161,33 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'slideset';	# Mark as slideset line
     $records[$i]->{text} = $1;
     $lastslideset = $2;
+    $records[$i]->{archive} = "";
+    # For Google slides, we download a PDF export of the slideset
+    # and store it as base64 data URL
+    if ($lastslideset =~ /https:\/\/docs\.google\.com\/presentation\/d\/[^\/]+\//) {
+	my $pdfexport = $lastslideset;
+	$pdfexport =~ s/(https:\/\/docs\.google\.com\/presentation\/d\/[^\/]+)\/.*$/$1\/export?format=pdf/;
+	my $response = $ua->get($pdfexport);
+	if ($response->is_success) {
+	    $embeddedslidesetcounter++;
+	    $embeddedslideset = "slideset-data-" . $embeddedslidesetcounter;
+	    $records[$i]->{archive} = " (<a id='" . $embeddedslideset ."' download href='data:application/pdf;base64," . encode_base64($response->decoded_content) . "'>download archived PDF copy</a>)";
+	}
+    }
     $has_slides = 1;
 
   } elsif (/^ *slides(?:et)? *[:：]/i) { # Forget the slideset
     $records[$i]->{type} = 'd' if $is_scribe;
     $lastslideset = undef;
+    $embeddedslideset = undef;
 
   } elsif (/^ *\[ *slide *(\d+) *\] *$/i && $lastslideset) {
     $records[$i]->{type} = 'slide';	# Mark as slide line
     my $slidenumber = $1;
+    # Put ref in {archive}, with fragment #page=n for embedded slideset.
+    if ($embeddedslideset) {
+	$records[$i]->{archive} = $embeddedslideset . "#" . "page=" . $slidenumber;
+    }
     # Put link in {id}, with fragment ID "#n" (or #page=n for PDF URLs).
     $records[$i]->{id} = $lastslideset . "#" .
 	($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
@@ -1553,7 +1579,8 @@ push @diagnostics, "Active on IRC: " .
 # Each type of record is converted to a specific HTML fragment, with
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
 # by the speaker ID, %5$s by a unique ID for the record and %6$s by a
-# link to a recording of the meeting, if any.
+# link to a recording of the meeting if any, %7$s by the base64 of an
+# archived downloaded content if any.
 #
 # The 1 or 0 after the pattern indicates whether the text (%3$) can be
 # parsed for emphasis and math. (Only applicable if --emphasis was
@@ -1595,8 +1622,8 @@ my %linepat = (
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
   T => ["<h4 id=%2\$s>%3\$s%6\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
-  slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s</p>\n", 0],
-  slide => ["<p id=%5\$s class=summary><a class=islide href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
+  slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s%7\$s</p>\n", 0],
+  slide => ["<p id=%5\$s class=summary><a class=islide data-islidesrcref=\"%7\$s\" href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
   repo => ["<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
   drop => ["<p id=%5\$s class=summary>Repository- %3\$s</p>\n", 1],
     );
@@ -1619,13 +1646,14 @@ foreach my $p (@records) {
     }
   }
   # The last part generates nothing, but avoids warnings for unused args.
-  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s',
+  my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s%7$.0s',
       esc($p->{speaker}),						    # %1
       $p->{id} // '',							    # %2
       esc($p->{text}, $emphasis && $linepat{$p->{type}}[1], 1, 1, $github), # %3
       $speakers{fc $p->{speaker}} // '',				    # %4
       ++$lineid,							    # %5
-      link_to_recording($canonical_recording, $p->{time});		    # %6
+      link_to_recording($canonical_recording, $p->{time}),		    # %6
+      $p->{archive};                                                        # %7
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
