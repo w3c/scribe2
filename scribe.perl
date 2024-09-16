@@ -174,7 +174,7 @@ my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			# String is i-slide library URL
-  'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
+  '../i-slide/i-slide.js?selector=a.islide';
 my $github = 1;			# If 0, don't make links for GitHub issues
 my $ghurlbot = 1;		# If 0, hide conversations with GHURLbot
 
@@ -1623,7 +1623,7 @@ my %linepat = (
   T => ["<h4 id=%2\$s>%3\$s%6\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
   slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s%7\$s</p>\n", 0],
-  slide => ["<p id=%5\$s class=summary><a class=islide data-islidesrcref=\"%7\$s\" href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
+  slide => ["<p id=%5\$s class=summary><a class=islide data-islide-srcref=\"%7\$s\" href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
   repo => ["<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
   drop => ["<p id=%5\$s class=summary>Repository- %3\$s</p>\n", 1],
     );
