@@ -174,7 +174,7 @@ my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			# String is i-slide library URL
-  '../i-slide/i-slide.js?selector=a.islide';
+  'https://w3c.github.io/i-slide/i-slide.js?selector=a.islide';
 my $github = 1;			# If 0, don't make links for GitHub issues
 my $ghurlbot = 1;		# If 0, hide conversations with GHURLbot
 
@@ -838,10 +838,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: 229 $'
+my $revision = '$Revision: google-slides-232 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Jul 25 08:38:54 2024 UTC $'
+my $versiondate = '$Date: Wed Sep 18 23:49:16 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1653,7 +1653,7 @@ foreach my $p (@records) {
       $speakers{fc $p->{speaker}} // '',				    # %4
       ++$lineid,							    # %5
       link_to_recording($canonical_recording, $p->{time}),		    # %6
-      $p->{archive};                                                        # %7
+      $p->{archive} // '';						    # %7
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
