@@ -1,0 +1,75 @@
+﻿<zakim> Meeting: Accessibility Conformance Testing 
+<zakim> Date: 28 October 2021
+<zakim> Chair: Wilco
+<zakim> Scribe: KarenHerr
+<Wilco> agenda+ CFC: Accept Lang valid tag, and form non-empty name rules
+<Wilco> agenda+ CFC: language input aspect update
+<Wilco> agenda+ Follow-up on First attempt at defining implementations
+<Wilco> agenda+ ACT rules sheet and Surveys
+<Wilco> agenda+ Open ACT pull requests
+<Wilco> agenda+ CFC: Accept Lang valid tag, and form non-empty name rules
+<KarenHerr> present+
+<Wilco> present+
+<kathyeng> present+
+<KarenHerr> zakim, take up item 5
+<Zakim> agendum 5 -- CFC: Accept Lang valid tag, and form non-empty name rules -- taken up [from Wilco]
+<dmontalvo> present+ Daniel
+<kathyeng> present+
+<KarenHerr> wilco: two went to cfc.  don't think I got any objections.
+<KarenHerr> Wilco: two +1s good to go
+<Wilco> proposed RESOLUTION: Accept Lang valid tag, and form non-empty name rules
+<KarenHerr> RESOLUTION: Accept Lang valid tag, and form non-empty name rules
+<KarenHerr> zakim, close item 5
+<Zakim> agendum 5, CFC: Accept Lang valid tag, and form non-empty name rules, closed
+<Zakim> I see 4 items remaining on the agenda; the next one is
+<Zakim> 1. CFC: language input aspect update [from Wilco]
+<KarenHerr> zakim, take up next
+<Zakim> agendum 1 -- CFC: language input aspect update -- taken up [from Wilco]
+<Wilco> https://github.com/w3c/wcag-act/pull/521/files
+<Wilco> proposed RESOLUTION: Accept language input aspect update
+<KarenHerr> Wilco: all approvals, can go in
+<KarenHerr> RESOLUTION: Accept language input aspect update
+<KarenHerr> zakim, take up next
+<Zakim> agendum 2 -- Follow-up on First attempt at defining implementations -- taken up [from Wilco]
+<Wilco> https://github.com/w3c/wcag-act/pull/522/files
+<KarenHerr> Wilco: ok with everyone to review on the pull request?
+<KarenHerr> trevor: if we do all the editing on github and then do survey.   is it all cfc then?
+<KarenHerr> Wilco: it would be cfc.
+<kathyeng> jennifer: minimal category is ok
+<kathyeng> daniel: not opposed to "minimal" term
+<kathyeng> wilco: there is an implementor who wants the minimal category
+<KarenHerr> JennC: Minimal category is ok
+<KarenHerr> dmontalvo: not opposed to "minimal" term
+<KarenHerr> Wilco: here is an implementor who wants the minimal category
+<KarenHerr> Wilco: what to do with approved and proposed rules with implementation
+<KarenHerr> kathyeng: makes sense that approved rules would show list of implementations. where it says "may", we don't currently list any of them.
+<KarenHerr> kathyeng: when we are proposing a rule - we need at least one implementation to get to approved.  when it's approved, we're not listing the implementations that got us to "approved"?
+<KarenHerr> Wilco: I think we are.  but we don't do it for previous versions
+<KarenHerr> Wilco: doesn't seem useful.  just look at latest version
+<KarenHerr> Wilco: in our policy, we need a complete implementation
+<KarenHerr> Wilco: before we send it to AG
+<KarenHerr> kathyeng: are we keeping  history somewhere?
+<KarenHerr> Wilco: no
+<KarenHerr> kathyeng: would be useful to have background
+<KarenHerr> Wilco: github has history, do we need more?  do we want that level of detail
+<KarenHerr> kathyeng: make sense to have implementation section for rules moving forward, at least implementations that got the rule approvied
+<KarenHerr> Wilco: section already exists, but is different from changes
+<KarenHerr> Wilco: do the implementations need to report the accessibility requirements?
+<KarenHerr> Wilco: for example, my tool reports a rule as a best practice, where ACT says it's a violation of WCAG.  is that a rule we want to say is consistent?
+<KarenHerr> kathyeng: in one way, it is recording the issue
+<KarenHerr> Wilco: do we want to enforce in some way that an implementation reports in a consistent way to what the rule says?  we haven't so far
+<KarenHerr> Wilco: as far as harmonization goes, it seems like something we should consider
+<KarenHerr> Wilco: implementation tests image buttons in the same way they test buttons - it may not fail 1.1.1.
+<KarenHerr> trevor: not as strong as failing a requirement.
+<KarenHerr> Wilco: the big problem that's created from getting this wrong, is that the numbers can look quite different.
+<KarenHerr> Wilco: if tool a reports a criteria under one , but tool b reports it under several.
+<KarenHerr> Wilco: message from mike gower at ibm. considering adding only success criteria to each issue
+<KarenHerr> Wilco: can be confusing to see one fix solving more than one problem.
+<trevor> 0
+<KarenHerr> Wilco: poll - +1 if in favor of adding a requirement for consistent mapping for success criteria
+<KarenHerr> +1
+<kathyeng> +1
+<dmontalvo> +1
+<KarenHerr> Wilco: we need the implementors to be on board with what it means to be consistent
+<KarenHerr> Wilco: follow up question - is that a thing we want to do for the highest level of consistency
+<JennC> +1

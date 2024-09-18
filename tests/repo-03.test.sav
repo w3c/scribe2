@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Test of a repo with a full URL.
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Repo: https://github.com/w3ctag/design-principles/
+<foo> Dom: Talking about issue #32
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+grep -E '<a href="https://github.com/w3ctag/design-principles/issues/32">' $TMP2 || exit 1
+exit 0

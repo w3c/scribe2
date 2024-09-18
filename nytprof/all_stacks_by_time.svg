@@ -1,0 +1,2195 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="1200" height="210" onload="init(evt)" viewBox="0 0 1200 210" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples. -->
+<defs >
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	.func_g:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+</style>
+<script type="text/ecmascript">
+<![CDATA[
+	var details, svg;
+	function init(evt) { 
+		details = document.getElementById("details").firstChild; 
+		svg = document.getElementsByTagName("svg")[0];
+		searching = 0;
+	}
+
+	// mouse-over for info
+	function s(info) { details.nodeValue = "sub " + info; }
+	function c() { details.nodeValue = ' '; }
+
+	// functions
+	function find_child(parent, name, attr) {
+		var children = parent.childNodes;
+		for (var i=0; i<children.length;i++) {
+			if (children[i].tagName == name)
+				return (attr != undefined) ? children[i].attributes[attr].value : children[i];
+		}
+		return;
+	}
+	function orig_save(e, attr, val) {
+		if (e.attributes["_orig_"+attr] != undefined) return;
+		if (e.attributes[attr] == undefined) return;
+		if (val == undefined) val = e.attributes[attr].value;
+		e.setAttribute("_orig_"+attr, val);
+	}
+	function orig_load(e, attr) {
+		if (e.attributes["_orig_"+attr] == undefined) return;
+		e.attributes[attr].value = e.attributes["_orig_"+attr].value;
+		e.removeAttribute("_orig_"+attr);
+	}
+	function update_text(e) {
+		var r = find_child(e, "rect");
+		var t = find_child(e, "text");
+		var w = parseFloat(r.attributes["width"].value) -3;
+		var txt = find_child(e, "title").textContent.replace(/\([^(]*\)/,"");
+		t.attributes["x"].value = parseFloat(r.attributes["x"].value) +3;
+		
+		// Smaller than this size won't fit anything
+		if (w < 2*12*0.59) {
+			t.textContent = "";
+			return;
+		}
+		
+		t.textContent = txt;
+		// Fit in full text width
+		if (/^ *$/.test(txt) || t.getSubStringLength(0, txt.length) < w)
+			return;
+		
+		for (var x=txt.length-2; x>0; x--) {
+			if (t.getSubStringLength(0, x+2) <= w) { 
+				t.textContent = txt.substring(0,x) + "..";
+				return;
+			}
+		}
+		t.textContent = "";
+	}
+
+	// zoom
+	function zoom_reset(e) {
+		if (e.attributes != undefined) {
+			orig_load(e, "x");
+			orig_load(e, "width");
+		}
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_reset(c[i]);
+		}
+	}
+	function zoom_child(e, x, ratio) {
+		if (e.attributes != undefined) {
+			if (e.attributes["x"] != undefined) {
+				orig_save(e, "x");
+				e.attributes["x"].value = (parseFloat(e.attributes["x"].value) - x - 10) * ratio + 10;
+				if(e.tagName == "text") e.attributes["x"].value = find_child(e.parentNode, "rect", "x") + 3;
+			}
+			if (e.attributes["width"] != undefined) {
+				orig_save(e, "width");
+				e.attributes["width"].value = parseFloat(e.attributes["width"].value) * ratio;
+			}
+		}
+		
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_child(c[i], x-10, ratio);
+		}
+	}
+	function zoom_parent(e) {
+		if (e.attributes) {
+			if (e.attributes["x"] != undefined) {
+				orig_save(e, "x");
+				e.attributes["x"].value = 10;
+			}
+			if (e.attributes["width"] != undefined) {
+				orig_save(e, "width");
+				e.attributes["width"].value = parseInt(svg.width.baseVal.value) - (10*2);
+			}
+		}
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_parent(c[i]);
+		}
+	}
+	function zoom(node) { 
+		var attr = find_child(node, "rect").attributes;
+		var width = parseFloat(attr["width"].value);
+		var xmin = parseFloat(attr["x"].value);
+		var xmax = parseFloat(xmin + width);
+		var ymin = parseFloat(attr["y"].value);
+		var ratio = (svg.width.baseVal.value - 2*10) / width;
+		
+		// XXX: Workaround for JavaScript float issues (fix me)
+		var fudge = 0.0001;
+		
+		var unzoombtn = document.getElementById("unzoom");
+		unzoombtn.style["opacity"] = "1.0";
+		
+		var el = document.getElementsByTagName("g");
+		for(var i=0;i<el.length;i++){
+			var e = el[i];
+			var a = find_child(e, "rect").attributes;
+			var ex = parseFloat(a["x"].value);
+			var ew = parseFloat(a["width"].value);
+			// Is it an ancestor
+			if (0 == 0) {
+				var upstack = parseFloat(a["y"].value) > ymin;
+			} else {
+				var upstack = parseFloat(a["y"].value) < ymin;
+			}
+			if (upstack) {
+				// Direct ancestor
+				if (ex <= xmin && (ex+ew+fudge) >= xmax) {
+					e.style["opacity"] = "0.5";
+					zoom_parent(e);
+					e.onclick = function(e){unzoom(); zoom(this);};
+					update_text(e);
+				}
+				// not in current path
+				else
+					e.style["display"] = "none";
+			}
+			// Children maybe
+			else {
+				// no common path
+				if (ex < xmin || ex + fudge >= xmax) {
+					e.style["display"] = "none";
+				}
+				else {
+					zoom_child(e, xmin, ratio);
+					e.onclick = function(e){zoom(this);};
+					update_text(e);
+				}
+			}
+		}
+	}
+	function unzoom() {
+		var unzoombtn = document.getElementById("unzoom");
+		unzoombtn.style["opacity"] = "0.0";
+		
+		var el = document.getElementsByTagName("g");
+		for(i=0;i<el.length;i++) {
+			el[i].style["display"] = "block";
+			el[i].style["opacity"] = "1";
+			zoom_reset(el[i]);
+			update_text(el[i]);
+		}
+	}	
+
+	// search
+	function reset_search() {
+		var el = document.getElementsByTagName("rect");
+		for (var i=0; i < el.length; i++){
+			orig_load(el[i], "fill")
+		}
+	}
+	function search_prompt() {
+		if (!searching) {
+			var term = prompt("Enter a search term (regexp " +
+			    "allowed, eg: ^ext4_)", "");
+			if (term != null) {
+				search(term)
+			}
+		} else {
+			reset_search();
+			searching = 0;
+			var searchbtn = document.getElementById("search");
+			searchbtn.style["opacity"] = "0.1";
+			searchbtn.firstChild.nodeValue = "Search"
+		}
+	}
+	function search(term) {
+		var re = new RegExp(term);
+		var el = document.getElementsByTagName("g");
+		for (var i=0; i < el.length; i++){
+			var e = el[i];
+			if (e.attributes["class"].value == "func_g") {
+				// Scrape the function name from the onmouseover
+				// callback text. This is a little dirty.
+				var func = e.attributes["onmouseover"].value;
+				if (func != null) {
+					func = func.substr(3);
+					func = func.replace(/ .*/, "");
+					var r = find_child(e, "rect");
+					if (r == null) {
+						// the rect might be wrapped in an anchor
+						// if nameattr href is being used
+						if (r = find_child(e, "a")) {
+						    r = find_child(r, "rect");
+						}
+					}
+				}
+				if (func != null && r != null &&
+				    func.match(re)) {
+					orig_save(r, "fill");
+					r.attributes["fill"].value =
+					    "rgb(230,0,230)";
+					searching = 1;
+				}
+			}
+		}
+		if (searching) {
+			var searchbtn = document.getElementById("search");
+			searchbtn.style["opacity"] = "1.0";
+			searchbtn.firstChild.nodeValue = "Reset Search"
+		}
+	}
+	function searchover(e) {
+		var searchbtn = document.getElementById("search");
+		searchbtn.style["opacity"] = "1.0";
+	}
+	function searchout(e) {
+		var searchbtn = document.getElementById("search");
+		if (searching) {
+			searchbtn.style["opacity"] = "1.0";
+		} else {
+			searchbtn.style["opacity"] = "0.1";
+		}
+	}
+]]>
+</script>
+<rect x="0.0" y="0" width="1200.0" height="210.0" fill="url(#background)"  />
+<text text-anchor="middle" x="600.00" y="24" font-size="17" font-family="Verdana" fill="rgb(0,0,0)"  >Flame Graph</text>
+<text text-anchor="" x="10.00" y="193" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="details" > </text>
+<text text-anchor="" x="10.00" y="24" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="unzoom" onclick="unzoom()" style="opacity:0.0;cursor:pointer" >Reset Zoom</text>
+<text text-anchor="" x="1090.00" y="24" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="search" onmouseover="searchover()" onmouseout="searchout()" onclick="search_prompt()" style="opacity:0.1;cursor:pointer" >Search</text>
+<g class="func_g" onmouseover="s('LWP::UserAgent::new (1,382 microseconds, 0.81%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::new (1,382 microseconds, 0.81%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#23" target="_top"><rect x="28.8" y="145" width="9.6" height="15.0" fill="rgb(235,105,33)" rx="2" ry="2" />
+<text text-anchor="" x="31.82" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::BEGIN@24 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::BEGIN@24 (16 microseconds, 0.01%)</title><a xlink:href="Pod-Simple-BlackBox-pm-36-line.html#24" target="_top"><rect x="431.2" y="65" width="0.1" height="15.0" fill="rgb(242,212,40)" rx="2" ry="2" />
+<text text-anchor="" x="434.21" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Config::BEGIN@43 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Config::BEGIN@43 (17 microseconds, 0.01%)</title><a xlink:href="HTTP-Config-pm-94-line.html#43" target="_top"><rect x="38.0" y="81" width="0.1" height="15.0" fill="rgb(241,178,40)" rx="2" ry="2" />
+<text text-anchor="" x="40.97" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('URI::Escape::BEGIN@4 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>URI::Escape::BEGIN@4 (20 microseconds, 0.01%)</title><a xlink:href="URI-Escape-pm-81-line.html#4" target="_top"><rect x="698.6" y="65" width="0.1" height="15.0" fill="rgb(237,161,35)" rx="2" ry="2" />
+<text text-anchor="" x="701.57" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::register::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::register::import (16 microseconds, 0.01%)</title><a xlink:href="warnings-register-pm-5-line.html#18" target="_top"><rect x="119.8" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="122.79" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::Protocol::BEGIN@3 (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::Protocol::BEGIN@3 (22 microseconds, 0.01%)</title><a xlink:href="LWP-Protocol-pm-88-line.html#3" target="_top"><rect x="608.3" y="113" width="0.1" height="15.0" fill="rgb(239,105,37)" rx="2" ry="2" />
+<text text-anchor="" x="611.29" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Escapes::BEGIN@6 (65 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Escapes::BEGIN@6 (65 microseconds, 0.04%)</title><a xlink:href="Pod-Escapes-pm-34-line.html#6" target="_top"><rect x="372.0" y="81" width="0.4" height="15.0" fill="rgb(233,212,31)" rx="2" ry="2" />
+<text text-anchor="" x="374.97" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="273.1" y="65" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="276.08" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@220 (1,282 microseconds, 0.75%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@220 (1,282 microseconds, 0.75%)</title><a xlink:href="Getopt-Long-pm-3-line.html#220" target="_top"><rect x="111.4" y="129" width="8.9" height="15.0" fill="rgb(233,186,30)" rx="2" ry="2" />
+<text text-anchor="" x="114.43" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (20 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="682.5" y="65" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="685.48" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="309.3" y="65" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="312.33" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (17 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="195.1" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="198.06" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('URI::Escape::BEGIN@191 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>URI::Escape::BEGIN@191 (18 microseconds, 0.01%)</title><a xlink:href="URI-Escape-pm-81-line.html#191" target="_top"><rect x="698.4" y="65" width="0.1" height="15.0" fill="rgb(236,161,34)" rx="2" ry="2" />
+<text text-anchor="" x="701.39" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::unimport (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::unimport (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#381" target="_top"><rect x="440.1" y="65" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="443.13" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::BEGIN@145 (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::BEGIN@145 (29 microseconds, 0.02%)</title><a xlink:href="overload-pm-8-line.html#145" target="_top"><rect x="135.6" y="113" width="0.2" height="15.0" fill="rgb(240,165,38)" rx="2" ry="2" />
+<text text-anchor="" x="138.64" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::find_encoding (178 microseconds, 0.10%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::find_encoding (178 microseconds, 0.10%)</title><a xlink:href="Encode-pm-23-line.html#151" target="_top"><rect x="21.2" y="113" width="1.3" height="15.0" fill="rgb(243,148,42)" rx="2" ry="2" />
+<text text-anchor="" x="24.22" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('POSIX::load_imports (354 microseconds, 0.21%)')" onmouseout="c()" onclick="zoom(this)">
+<title>POSIX::load_imports (354 microseconds, 0.21%)</title><a xlink:href="POSIX-pm-60-line.html#250" target="_top"><rect x="467.7" y="97" width="2.5" height="15.0" fill="rgb(235,184,33)" rx="2" ry="2" />
+<text text-anchor="" x="470.71" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('AutoLoader::BEGIN@3 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>AutoLoader::BEGIN@3 (18 microseconds, 0.01%)</title><a xlink:href="AutoLoader-pm-78-line.html#3" target="_top"><rect x="689.0" y="65" width="0.1" height="15.0" fill="rgb(239,128,37)" rx="2" ry="2" />
+<text text-anchor="" x="692.00" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (39 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (39 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="120.0" y="113" width="0.3" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="123.04" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (64 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (64 microseconds, 0.04%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="163.4" y="129" width="0.4" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="166.36" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::import (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::import (17 microseconds, 0.01%)</title><a xlink:href="parent-pm-28-line.html#6" target="_top"><rect x="586.0" y="97" width="0.1" height="15.0" fill="rgb(238,149,36)" rx="2" ry="2" />
+<text text-anchor="" x="589.01" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@26 (652 microseconds, 0.38%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@26 (652 microseconds, 0.38%)</title><a xlink:href="Getopt-Long-pm-3-line.html#26" target="_top"><rect x="122.1" y="129" width="4.5" height="15.0" fill="rgb(238,186,37)" rx="2" ry="2" />
+<text text-anchor="" x="125.08" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (33 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (33 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="306.8" y="49" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="309.81" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@241 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@241 (18 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#241" target="_top"><rect x="121.6" y="129" width="0.1" height="15.0" fill="rgb(229,186,26)" rx="2" ry="2" />
+<text text-anchor="" x="124.55" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Time::Local::BEGIN@10 (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Time::Local::BEGIN@10 (22 microseconds, 0.01%)</title><a xlink:href="Time-Local-pm-86-line.html#10" target="_top"><rect x="586.0" y="113" width="0.1" height="15.0" fill="rgb(232,164,30)" rx="2" ry="2" />
+<text text-anchor="" x="588.98" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (16 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="586.8" y="97" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="589.83" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::ParseOptionSpec (210 microseconds, 0.12%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::ParseOptionSpec (210 microseconds, 0.12%)</title><a xlink:href="Getopt-Long-pm-3-line.html#802" target="_top"><rect x="27.4" y="129" width="1.4" height="15.0" fill="rgb(234,186,32)" rx="2" ry="2" />
+<text text-anchor="" x="30.36" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (157 microseconds, 0.09%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (157 microseconds, 0.09%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="292.7" y="65" width="1.1" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="295.68" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::BEGIN@9 (225 microseconds, 0.13%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::BEGIN@9 (225 microseconds, 0.13%)</title><a xlink:href="Encode-pm-23-line.html#9" target="_top"><rect x="300.1" y="97" width="1.5" height="15.0" fill="rgb(228,148,26)" rx="2" ry="2" />
+<text text-anchor="" x="303.06" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (31 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (31 microseconds, 0.02%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="127.5" y="113" width="0.3" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="130.54" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Alias::define_alias (110 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Alias::define_alias (110 microseconds, 0.06%)</title><a xlink:href="Encode-Alias-pm-24-line.html#78" target="_top"><rect x="274.6" y="65" width="0.8" height="15.0" fill="rgb(230,148,27)" rx="2" ry="2" />
+<text text-anchor="" x="277.63" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@128 (13,515 microseconds, 7.93%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@128 (13,515 microseconds, 7.93%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#128" target="_top"><rect x="56.8" y="145" width="93.6" height="15.0" fill="rgb(237,83,35)" rx="2" ry="2" />
+<text text-anchor="" x="59.77" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >main::BEGIN..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (28 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (28 microseconds, 0.02%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="56.6" y="129" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="59.57" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('URI::Escape::BEGIN@147 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>URI::Escape::BEGIN@147 (21 microseconds, 0.01%)</title><a xlink:href="URI-Escape-pm-81-line.html#147" target="_top"><rect x="698.2" y="65" width="0.2" height="15.0" fill="rgb(236,161,34)" rx="2" ry="2" />
+<text text-anchor="" x="701.23" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Usage::BEGIN@16 (3,969 microseconds, 2.33%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Usage::BEGIN@16 (3,969 microseconds, 2.33%)</title><a xlink:href="Pod-Usage-pm-11-line.html#16" target="_top"><rect x="163.9" y="129" width="27.5" height="15.0" fill="rgb(239,212,38)" rx="2" ry="2" />
+<text text-anchor="" x="166.89" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >P..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::import (31 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::import (31 microseconds, 0.02%)</title><a xlink:href="parent-pm-28-line.html#6" target="_top"><rect x="571.9" y="97" width="0.2" height="15.0" fill="rgb(238,149,36)" rx="2" ry="2" />
+<text text-anchor="" x="574.93" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (36 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (36 microseconds, 0.02%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="138.8" y="81" width="0.3" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="141.85" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (30 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (30 microseconds, 0.02%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="127.8" y="113" width="0.2" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="130.78" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (19 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="307.1" y="49" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="310.14" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::CORE:regcomp (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::CORE:regcomp (22 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#Getopt__Long__CORE_regcomp" target="_top"><rect x="26.3" y="129" width="0.2" height="15.0" fill="rgb(238,186,36)" rx="2" ry="2" />
+<text text-anchor="" x="29.30" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::heavy_export (28 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::heavy_export (28 microseconds, 0.02%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#25" target="_top"><rect x="163.5" y="113" width="0.2" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="166.51" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@9 (10,489 microseconds, 6.16%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@9 (10,489 microseconds, 6.16%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#9" target="_top"><rect x="626.7" y="129" width="72.6" height="15.0" fill="rgb(228,105,26)" rx="2" ry="2" />
+<text text-anchor="" x="629.66" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >LWP::Use..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::BEGIN@6 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::BEGIN@6 (20 microseconds, 0.01%)</title><a xlink:href="Encode-pm-23-line.html#6" target="_top"><rect x="299.7" y="97" width="0.2" height="15.0" fill="rgb(233,148,31)" rx="2" ry="2" />
+<text text-anchor="" x="302.74" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::esc (74 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::esc (74 microseconds, 0.04%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#630" target="_top"><rect x="880.1" y="113" width="0.5" height="15.0" fill="rgb(230,83,27)" rx="2" ry="2" />
+<text text-anchor="" x="883.12" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::is_cur_scribe (424 microseconds, 0.25%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::is_cur_scribe (424 microseconds, 0.25%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#741" target="_top"><rect x="880.8" y="145" width="2.9" height="15.0" fill="rgb(236,83,34)" rx="2" ry="2" />
+<text text-anchor="" x="883.79" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (18 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="608.6" y="113" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="611.61" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::heavy_export_to_level (102 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::heavy_export_to_level (102 microseconds, 0.06%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#200" target="_top"><rect x="624.9" y="65" width="0.7" height="15.0" fill="rgb(231,94,29)" rx="2" ry="2" />
+<text text-anchor="" x="627.92" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Try::Tiny::BEGIN@8 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Try::Tiny::BEGIN@8 (17 microseconds, 0.01%)</title><a xlink:href="Try-Tiny-pm-91-line.html#8" target="_top"><rect x="607.9" y="97" width="0.1" height="15.0" fill="rgb(230,174,28)" rx="2" ry="2" />
+<text text-anchor="" x="610.91" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@131 (4,741 microseconds, 2.78%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@131 (4,741 microseconds, 2.78%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#131" target="_top"><rect x="440.9" y="145" width="32.9" height="15.0" fill="rgb(230,83,28)" rx="2" ry="2" />
+<text text-anchor="" x="443.95" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >ma..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::getEncoding (174 microseconds, 0.10%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::getEncoding (174 microseconds, 0.10%)</title><a xlink:href="Encode-pm-23-line.html#114" target="_top"><rect x="21.3" y="97" width="1.2" height="15.0" fill="rgb(243,148,42)" rx="2" ry="2" />
+<text text-anchor="" x="24.25" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Headers::BEGIN@8 (1,129 microseconds, 0.66%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Headers::BEGIN@8 (1,129 microseconds, 0.66%)</title><a xlink:href="HTTP-Headers-pm-76-line.html#8" target="_top"><rect x="682.6" y="81" width="7.8" height="15.0" fill="rgb(230,178,28)" rx="2" ry="2" />
+<text text-anchor="" x="685.62" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::my_qr (152 microseconds, 0.09%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::my_qr (152 microseconds, 0.09%)</title><a xlink:href="Pod-Simple-BlackBox-pm-36-line.html#28" target="_top"><rect x="439.3" y="97" width="1.1" height="15.0" fill="rgb(237,212,35)" rx="2" ry="2" />
+<text text-anchor="" x="442.30" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Symbol::BEGIN@88 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Symbol::BEGIN@88 (21 microseconds, 0.01%)</title><a xlink:href="Symbol-pm-56-line.html#88" target="_top"><rect x="359.5" y="65" width="0.1" height="15.0" fill="rgb(240,202,39)" rx="2" ry="2" />
+<text text-anchor="" x="362.48" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@52 (34 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@52 (34 microseconds, 0.02%)</title><a xlink:href="Getopt-Long-pm-3-line.html#52" target="_top"><rect x="127.8" y="129" width="0.2" height="15.0" fill="rgb(242,186,41)" rx="2" ry="2" />
+<text text-anchor="" x="130.75" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Carp::BEGIN@168 (69 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Carp::BEGIN@168 (69 microseconds, 0.04%)</title><a xlink:href="Carp-pm-12-line.html#168" target="_top"><rect x="188.9" y="113" width="0.5" height="15.0" fill="rgb(232,109,30)" rx="2" ry="2" />
+<text text-anchor="" x="191.95" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::register_categories (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::register_categories (17 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#526" target="_top"><rect x="135.7" y="81" width="0.1" height="15.0" fill="rgb(237,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="138.73" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Usage::BEGIN@18 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Usage::BEGIN@18 (17 microseconds, 0.01%)</title><a xlink:href="Pod-Usage-pm-11-line.html#18" target="_top"><rect x="195.4" y="129" width="0.1" height="15.0" fill="rgb(236,212,34)" rx="2" ry="2" />
+<text text-anchor="" x="198.42" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::heavy_export (48 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::heavy_export (48 microseconds, 0.03%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#25" target="_top"><rect x="297.8" y="49" width="0.3" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="300.80" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::TiedOutFH::BEGIN@4 (887 microseconds, 0.52%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::TiedOutFH::BEGIN@4 (887 microseconds, 0.52%)</title><a xlink:href="Pod-Simple-TiedOutFH-pm-55-line.html#4" target="_top"><rect x="353.5" y="81" width="6.1" height="15.0" fill="rgb(237,212,35)" rx="2" ry="2" />
+<text text-anchor="" x="356.48" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Alias::find_alias (162 microseconds, 0.10%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Alias::find_alias (162 microseconds, 0.10%)</title><a xlink:href="Encode-Alias-pm-24-line.html#20" target="_top"><rect x="21.3" y="81" width="1.1" height="15.0" fill="rgb(230,148,27)" rx="2" ry="2" />
+<text text-anchor="" x="24.32" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (22 microseconds, 0.01%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="111.3" y="113" width="0.1" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="114.27" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('URI::BEGIN@43 (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>URI::BEGIN@43 (29 microseconds, 0.02%)</title><a xlink:href="URI-pm-80-line.html#43" target="_top"><rect x="698.7" y="81" width="0.2" height="15.0" fill="rgb(241,161,40)" rx="2" ry="2" />
+<text text-anchor="" x="701.73" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@235 (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@235 (22 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#235" target="_top"><rect x="120.8" y="129" width="0.1" height="15.0" fill="rgb(240,186,39)" rx="2" ry="2" />
+<text text-anchor="" x="123.79" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@138 (515 microseconds, 0.30%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@138 (515 microseconds, 0.30%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#138" target="_top"><rect x="699.3" y="145" width="3.6" height="15.0" fill="rgb(236,83,34)" rx="2" ry="2" />
+<text text-anchor="" x="702.31" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:match (12,655 microseconds, 7.43%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:match (12,655 microseconds, 7.43%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_match" target="_top"><rect x="775.5" y="129" width="87.7" height="15.0" fill="rgb(242,83,41)" rx="2" ry="2" />
+<text text-anchor="" x="778.50" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >main::CORE..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::_bits (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::_bits (22 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#323" target="_top"><rect x="138.9" y="65" width="0.2" height="15.0" fill="rgb(233,93,31)" rx="2" ry="2" />
+<text text-anchor="" x="141.94" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (15 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="121.8" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="124.84" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::BEGIN@54 (474 microseconds, 0.28%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::BEGIN@54 (474 microseconds, 0.28%)</title><a xlink:href="Encode-pm-23-line.html#54" target="_top"><rect x="275.4" y="97" width="3.3" height="15.0" fill="rgb(238,148,37)" rx="2" ry="2" />
+<text text-anchor="" x="278.40" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Status::BEGIN@8 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Status::BEGIN@8 (20 microseconds, 0.01%)</title><a xlink:href="HTTP-Status-pm-83-line.html#8" target="_top"><rect x="571.1" y="97" width="0.2" height="15.0" fill="rgb(230,178,28)" rx="2" ry="2" />
+<text text-anchor="" x="574.14" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Storable::BEGIN@42 (40 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Storable::BEGIN@42 (40 microseconds, 0.02%)</title><a xlink:href="Storable-pm-26-line.html#42" target="_top"><rect x="293.8" y="81" width="0.3" height="15.0" fill="rgb(243,166,42)" rx="2" ry="2" />
+<text text-anchor="" x="296.78" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::BEGIN@53 (1,812 microseconds, 1.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::BEGIN@53 (1,812 microseconds, 1.06%)</title><a xlink:href="Encode-pm-23-line.html#53" target="_top"><rect x="262.8" y="97" width="12.6" height="15.0" fill="rgb(240,148,39)" rx="2" ry="2" />
+<text text-anchor="" x="265.85" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::export (14 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::export (14 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#21" target="_top"><rect x="163.7" y="113" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="166.70" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:readline (55 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:readline (55 microseconds, 0.03%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_readline" target="_top"><rect x="742.5" y="145" width="0.4" height="15.0" fill="rgb(246,83,46)" rx="2" ry="2" />
+<text text-anchor="" x="745.51" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@27 (30 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@27 (30 microseconds, 0.02%)</title><a xlink:href="Getopt-Long-pm-3-line.html#27" target="_top"><rect x="126.6" y="129" width="0.2" height="15.0" fill="rgb(236,186,35)" rx="2" ry="2" />
+<text text-anchor="" x="129.60" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Time::Local::BEGIN@6 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Time::Local::BEGIN@6 (21 microseconds, 0.01%)</title><a xlink:href="Time-Local-pm-86-line.html#6" target="_top"><rect x="586.8" y="113" width="0.1" height="15.0" fill="rgb(233,164,31)" rx="2" ry="2" />
+<text text-anchor="" x="589.80" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="299.8" y="81" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="302.77" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (17 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="495.8" y="113" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="498.80" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::BEGIN@7 (219 microseconds, 0.13%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::BEGIN@7 (219 microseconds, 0.13%)</title><a xlink:href="vars-pm-4-line.html#7" target="_top"><rect x="109.7" y="113" width="1.5" height="15.0" fill="rgb(232,101,29)" rx="2" ry="2" />
+<text text-anchor="" x="112.69" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Carp::BEGIN@742 (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Carp::BEGIN@742 (25 microseconds, 0.01%)</title><a xlink:href="Carp-pm-12-line.html#742" target="_top"><rect x="190.6" y="113" width="0.2" height="15.0" fill="rgb(241,109,39)" rx="2" ry="2" />
+<text text-anchor="" x="193.62" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::my_qr (852 microseconds, 0.50%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::my_qr (852 microseconds, 0.50%)</title><a xlink:href="Pod-Simple-BlackBox-pm-36-line.html#28" target="_top"><rect x="433.3" y="65" width="5.9" height="15.0" fill="rgb(237,212,35)" rx="2" ry="2" />
+<text text-anchor="" x="436.26" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (15 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="571.0" y="81" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="574.04" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (18 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="698.9" y="65" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="701.93" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('locale::import (4,263 microseconds, 2.50%)')" onmouseout="c()" onclick="zoom(this)">
+<title>locale::import (4,263 microseconds, 2.50%)</title><a xlink:href="locale-pm-59-line.html#22" target="_top"><rect x="444.3" y="129" width="29.5" height="15.0" fill="rgb(238,151,36)" rx="2" ry="2" />
+<text text-anchor="" x="447.26" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >lo..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::esc (1,935 microseconds, 1.14%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::esc (1,935 microseconds, 1.14%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#630" target="_top"><rect x="865.7" y="129" width="13.4" height="15.0" fill="rgb(230,83,27)" rx="2" ry="2" />
+<text text-anchor="" x="868.72" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@135 (1,849 microseconds, 1.09%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@135 (1,849 microseconds, 1.09%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#135" target="_top"><rect x="482.9" y="145" width="12.8" height="15.0" fill="rgb(241,83,40)" rx="2" ry="2" />
+<text text-anchor="" x="485.89" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Carp::BEGIN@572 (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Carp::BEGIN@572 (23 microseconds, 0.01%)</title><a xlink:href="Carp-pm-12-line.html#572" target="_top"><rect x="189.8" y="113" width="0.2" height="15.0" fill="rgb(251,109,51)" rx="2" ry="2" />
+<text text-anchor="" x="192.81" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::OVERLOAD (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::OVERLOAD (18 microseconds, 0.01%)</title><a xlink:href="overload-pm-8-line.html#32" target="_top"><rect x="375.1" y="49" width="0.1" height="15.0" fill="rgb(225,165,22)" rx="2" ry="2" />
+<text text-anchor="" x="378.06" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::OVERLOAD (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::OVERLOAD (15 microseconds, 0.01%)</title><a xlink:href="overload-pm-8-line.html#32" target="_top"><rect x="698.8" y="49" width="0.1" height="15.0" fill="rgb(225,165,22)" rx="2" ry="2" />
+<text text-anchor="" x="701.82" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@46 (61 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@46 (61 microseconds, 0.04%)</title><a xlink:href="Getopt-Long-pm-3-line.html#46" target="_top"><rect x="126.8" y="129" width="0.5" height="15.0" fill="rgb(236,186,34)" rx="2" ry="2" />
+<text text-anchor="" x="129.83" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::break_url (75 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::break_url (75 microseconds, 0.04%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#579" target="_top"><rect x="879.6" y="113" width="0.5" height="15.0" fill="rgb(230,83,27)" rx="2" ry="2" />
+<text text-anchor="" x="882.60" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::set_my_handler (1,285 microseconds, 0.75%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::set_my_handler (1,285 microseconds, 0.75%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#871" target="_top"><rect x="29.5" y="113" width="8.9" height="15.0" fill="rgb(245,105,44)" rx="2" ry="2" />
+<text text-anchor="" x="32.49" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::guess (2,090 microseconds, 1.23%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::guess (2,090 microseconds, 1.23%)</title><a xlink:href="Encode-Guess-pm-65-line.html#66" target="_top"><rect x="10.0" y="129" width="14.5" height="15.0" fill="rgb(237,148,35)" rx="2" ry="2" />
+<text text-anchor="" x="13.04" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('locale::BEGIN@4 (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>locale::BEGIN@4 (29 microseconds, 0.02%)</title><a xlink:href="locale-pm-59-line.html#4" target="_top"><rect x="444.0" y="129" width="0.2" height="15.0" fill="rgb(237,151,35)" rx="2" ry="2" />
+<text text-anchor="" x="446.97" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@3 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@3 (16 microseconds, 0.01%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#3" target="_top"><rect x="608.8" y="129" width="0.2" height="15.0" fill="rgb(239,105,37)" rx="2" ry="2" />
+<text text-anchor="" x="611.85" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (50 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (50 microseconds, 0.03%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="470.5" y="97" width="0.3" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="473.49" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:match (5,579 microseconds, 3.27%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:match (5,579 microseconds, 3.27%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_match" target="_top"><rect x="703.0" y="145" width="38.6" height="15.0" fill="rgb(242,83,41)" rx="2" ry="2" />
+<text text-anchor="" x="705.98" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >mai..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::heavy_export (41 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::heavy_export (41 microseconds, 0.02%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#25" target="_top"><rect x="139.7" y="97" width="0.3" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="142.74" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BEGIN@11 (1,367 microseconds, 0.80%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BEGIN@11 (1,367 microseconds, 0.80%)</title><a xlink:href="Pod-Simple-pm-32-line.html#11" target="_top"><rect x="350.3" y="97" width="9.5" height="15.0" fill="rgb(231,212,28)" rx="2" ry="2" />
+<text text-anchor="" x="353.31" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (193 microseconds, 0.11%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (193 microseconds, 0.11%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="599.9" y="97" width="1.3" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="602.87" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Config::BEGIN@10 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Config::BEGIN@10 (21 microseconds, 0.01%)</title><a xlink:href="Config-pm-17-line.html#10" target="_top"><rect x="195.0" y="113" width="0.2" height="15.0" fill="rgb(232,162,30)" rx="2" ry="2" />
+<text text-anchor="" x="198.03" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::import (35 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::import (35 microseconds, 0.02%)</title><a xlink:href="overload-pm-8-line.html#57" target="_top"><rect x="374.9" y="65" width="0.3" height="15.0" fill="rgb(238,165,36)" rx="2" ry="2" />
+<text text-anchor="" x="377.94" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (36 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (36 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="228.5" y="97" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="231.47" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::mklink (218 microseconds, 0.13%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::mklink (218 microseconds, 0.13%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#605" target="_top"><rect x="879.1" y="129" width="1.5" height="15.0" fill="rgb(236,83,34)" rx="2" ry="2" />
+<text text-anchor="" x="882.12" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::BEGIN@8 (30 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::BEGIN@8 (30 microseconds, 0.02%)</title><a xlink:href="Encode-Guess-pm-65-line.html#8" target="_top"><rect x="495.1" y="129" width="0.2" height="15.0" fill="rgb(230,148,28)" rx="2" ry="2" />
+<text text-anchor="" x="498.09" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::unimport (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::unimport (15 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#381" target="_top"><rect x="190.7" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="193.69" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@16 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@16 (18 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#16" target="_top"><rect x="150.3" y="129" width="0.1" height="15.0" fill="rgb(239,83,38)" rx="2" ry="2" />
+<text text-anchor="" x="153.26" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Text::BEGIN@23 (37 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Text::BEGIN@23 (37 microseconds, 0.02%)</title><a xlink:href="Pod-Text-pm-22-line.html#23" target="_top"><rect x="248.9" y="113" width="0.2" height="15.0" fill="rgb(243,212,42)" rx="2" ry="2" />
+<text text-anchor="" x="251.86" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::MIME::Name::BEGIN@3 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::MIME::Name::BEGIN@3 (20 microseconds, 0.01%)</title><a xlink:href="Encode-MIME-Name-pm-25-line.html#3" target="_top"><rect x="278.5" y="81" width="0.2" height="15.0" fill="rgb(239,148,37)" rx="2" ry="2" />
+<text text-anchor="" x="281.52" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (36 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (36 microseconds, 0.02%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="701.4" y="113" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="704.37" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::as_heavy (1,432 microseconds, 0.84%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::as_heavy (1,432 microseconds, 0.84%)</title><a xlink:href="Exporter-pm-6-line.html#12" target="_top"><rect x="140.1" y="81" width="9.9" height="15.0" fill="rgb(243,94,42)" rx="2" ry="2" />
+<text text-anchor="" x="143.05" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::BEGIN@4 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::BEGIN@4 (16 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#4" target="_top"><rect x="119.8" y="113" width="0.1" height="15.0" fill="rgb(237,146,35)" rx="2" ry="2" />
+<text text-anchor="" x="122.79" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::guess_encoding (2,096 microseconds, 1.23%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::guess_encoding (2,096 microseconds, 1.23%)</title><a xlink:href="Encode-Guess-pm-65-line.html#62" target="_top"><rect x="10.0" y="145" width="14.5" height="15.0" fill="rgb(243,148,42)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (621 microseconds, 0.36%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (621 microseconds, 0.36%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="463.4" y="97" width="4.3" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="466.37" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Carp::BEGIN@95 (46 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Carp::BEGIN@95 (46 microseconds, 0.03%)</title><a xlink:href="Carp-pm-12-line.html#95" target="_top"><rect x="190.9" y="113" width="0.3" height="15.0" fill="rgb(244,109,43)" rx="2" ry="2" />
+<text text-anchor="" x="193.85" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::Protocol::BEGIN@12 (1,023 microseconds, 0.60%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::Protocol::BEGIN@12 (1,023 microseconds, 0.60%)</title><a xlink:href="LWP-Protocol-pm-88-line.html#12" target="_top"><rect x="601.2" y="113" width="7.1" height="15.0" fill="rgb(246,105,45)" rx="2" ry="2" />
+<text text-anchor="" x="604.21" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Copy::BEGIN@1 (846 microseconds, 0.50%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Copy::BEGIN@1 (846 microseconds, 0.50%)</title><a xlink:href="(eval 27)[File-Copy-pm-19]-71-line.html#1" target="_top"><rect x="620.8" y="97" width="5.9" height="15.0" fill="rgb(225,199,22)" rx="2" ry="2" />
+<text text-anchor="" x="623.80" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Request::BEGIN@4 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Request::BEGIN@4 (18 microseconds, 0.01%)</title><a xlink:href="HTTP-Request-pm-74-line.html#4" target="_top"><rect x="630.6" y="113" width="0.2" height="15.0" fill="rgb(237,178,35)" rx="2" ry="2" />
+<text text-anchor="" x="633.63" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (23 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="599.6" y="81" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="602.63" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@11 (2,147 microseconds, 1.26%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@11 (2,147 microseconds, 1.26%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#11" target="_top"><rect x="572.1" y="129" width="14.9" height="15.0" fill="rgb(231,105,28)" rx="2" ry="2" />
+<text text-anchor="" x="575.14" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:subst (26 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:subst (26 microseconds, 0.02%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_subst" target="_top"><rect x="879.9" y="97" width="0.2" height="15.0" fill="rgb(237,83,35)" rx="2" ry="2" />
+<text text-anchor="" x="882.94" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Headers::header (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Headers::header (20 microseconds, 0.01%)</title><a xlink:href="HTTP-Headers-pm-76-line.html#78" target="_top"><rect x="29.2" y="97" width="0.2" height="15.0" fill="rgb(243,178,41)" rx="2" ry="2" />
+<text text-anchor="" x="32.22" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Text::BEGIN@26 (18,928 microseconds, 11.11%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Text::BEGIN@26 (18,928 microseconds, 11.11%)</title><a xlink:href="Pod-Text-pm-22-line.html#26" target="_top"><rect x="309.8" y="113" width="131.1" height="15.0" fill="rgb(238,212,37)" rx="2" ry="2" />
+<text text-anchor="" x="312.80" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pod::Text::BEGIN..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Config::BEGIN@7 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Config::BEGIN@7 (16 microseconds, 0.01%)</title><a xlink:href="Encode-Config-pm-31-line.html#7" target="_top"><rect x="301.6" y="97" width="0.1" height="15.0" fill="rgb(232,148,29)" rx="2" ry="2" />
+<text text-anchor="" x="304.62" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Symbol::BEGIN@59 (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Symbol::BEGIN@59 (25 microseconds, 0.01%)</title><a xlink:href="Symbol-pm-56-line.html#59" target="_top"><rect x="359.2" y="65" width="0.2" height="15.0" fill="rgb(230,202,27)" rx="2" ry="2" />
+<text text-anchor="" x="362.24" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::heavy_export (56 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::heavy_export (56 microseconds, 0.03%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#25" target="_top"><rect x="489.8" y="97" width="0.4" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="492.83" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::CORE:match (81 microseconds, 0.05%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::CORE:match (81 microseconds, 0.05%)</title><a xlink:href="Pod-Simple-BlackBox-pm-36-line.html#Pod__Simple__BlackBox__CORE_match" target="_top"><rect x="438.6" y="49" width="0.5" height="15.0" fill="rgb(242,212,41)" rx="2" ry="2" />
+<text text-anchor="" x="441.56" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (14 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (14 microseconds, 0.01%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="439.2" y="65" width="0.1" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="442.20" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (31 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (31 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="608.1" y="81" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="611.08" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:match (110 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:match (110 microseconds, 0.06%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_match" target="_top"><rect x="870.0" y="113" width="0.7" height="15.0" fill="rgb(242,83,41)" rx="2" ry="2" />
+<text text-anchor="" x="872.97" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Spec::Unix::BEGIN@119 (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Spec::Unix::BEGIN@119 (29 microseconds, 0.02%)</title><a xlink:href="File-Spec-Unix-pm-19-line.html#119" target="_top"><rect x="207.8" y="113" width="0.2" height="15.0" fill="rgb(236,199,34)" rx="2" ry="2" />
+<text text-anchor="" x="210.78" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:unpack (374 microseconds, 0.22%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:unpack (374 microseconds, 0.22%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_unpack" target="_top"><rect x="912.6" y="129" width="2.6" height="15.0" fill="rgb(242,83,40)" rx="2" ry="2" />
+<text text-anchor="" x="915.60" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::_rebuild_cache (59 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::_rebuild_cache (59 microseconds, 0.03%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#14" target="_top"><rect x="625.2" y="33" width="0.4" height="15.0" fill="rgb(245,94,44)" rx="2" ry="2" />
+<text text-anchor="" x="628.18" y="43.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (27 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (27 microseconds, 0.02%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="292.5" y="81" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="295.45" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@134 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@134 (18 microseconds, 0.01%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#134" target="_top"><rect x="482.8" y="145" width="0.1" height="15.0" fill="rgb(243,83,41)" rx="2" ry="2" />
+<text text-anchor="" x="485.77" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (18 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="120.8" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="123.82" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::CallBack::BEGIN@1573 (1,618 microseconds, 0.95%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::CallBack::BEGIN@1573 (1,618 microseconds, 0.95%)</title><a xlink:href="Getopt-Long-pm-3-line.html#1573" target="_top"><rect x="128.1" y="129" width="11.2" height="15.0" fill="rgb(249,186,49)" rx="2" ry="2" />
+<text text-anchor="" x="131.06" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::Configure (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::Configure (19 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#1336" target="_top"><rect x="150.0" y="113" width="0.1" height="15.0" fill="rgb(242,186,41)" rx="2" ry="2" />
+<text text-anchor="" x="152.97" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@127 (2,633 microseconds, 1.55%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@127 (2,633 microseconds, 1.55%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#127" target="_top"><rect x="38.5" y="145" width="18.3" height="15.0" fill="rgb(239,83,37)" rx="2" ry="2" />
+<text text-anchor="" x="41.53" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::BEGIN@85 (415 microseconds, 0.24%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::BEGIN@85 (415 microseconds, 0.24%)</title><a xlink:href="overload-pm-8-line.html#85" target="_top"><rect x="136.3" y="113" width="2.8" height="15.0" fill="rgb(245,165,44)" rx="2" ry="2" />
+<text text-anchor="" x="139.26" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (18 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="463.2" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="466.15" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Alias::init_aliases (274 microseconds, 0.16%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Alias::init_aliases (274 microseconds, 0.16%)</title><a xlink:href="Encode-Alias-pm-24-line.html#137" target="_top"><rect x="273.5" y="81" width="1.9" height="15.0" fill="rgb(239,148,37)" rx="2" ry="2" />
+<text text-anchor="" x="276.50" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (20 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="208.0" y="97" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="211.02" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Try::Tiny::BEGIN@16 (241 microseconds, 0.14%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Try::Tiny::BEGIN@16 (241 microseconds, 0.14%)</title><a xlink:href="Try-Tiny-pm-91-line.html#16" target="_top"><rect x="606.1" y="97" width="1.7" height="15.0" fill="rgb(239,174,38)" rx="2" ry="2" />
+<text text-anchor="" x="609.13" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Try::Tiny::ScopeGuard::BEGIN@167 (38 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Try::Tiny::ScopeGuard::BEGIN@167 (38 microseconds, 0.02%)</title><a xlink:href="Try-Tiny-pm-91-line.html#167" target="_top"><rect x="608.0" y="97" width="0.3" height="15.0" fill="rgb(234,174,32)" rx="2" ry="2" />
+<text text-anchor="" x="611.03" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Response::BEGIN@10 (5,282 microseconds, 3.10%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Response::BEGIN@10 (5,282 microseconds, 3.10%)</title><a xlink:href="HTTP-Response-pm-82-line.html#10" target="_top"><rect x="535.1" y="113" width="36.5" height="15.0" fill="rgb(232,178,30)" rx="2" ry="2" />
+<text text-anchor="" x="538.05" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >HTT..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Storable::BEGIN@83 (732 microseconds, 0.43%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Storable::BEGIN@83 (732 microseconds, 0.43%)</title><a xlink:href="Storable-pm-26-line.html#83" target="_top"><rect x="294.7" y="81" width="5.0" height="15.0" fill="rgb(249,166,48)" rx="2" ry="2" />
+<text text-anchor="" x="297.66" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (15 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="121.4" y="113" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="124.45" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@232 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@232 (21 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#232" target="_top"><rect x="120.5" y="129" width="0.2" height="15.0" fill="rgb(245,186,45)" rx="2" ry="2" />
+<text text-anchor="" x="123.51" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Spec::Unix::BEGIN@127 (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Spec::Unix::BEGIN@127 (25 microseconds, 0.01%)</title><a xlink:href="File-Spec-Unix-pm-19-line.html#127" target="_top"><rect x="208.0" y="113" width="0.2" height="15.0" fill="rgb(239,199,37)" rx="2" ry="2" />
+<text text-anchor="" x="210.99" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Status::CORE:match (43 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Status::CORE:match (43 microseconds, 0.03%)</title><a xlink:href="HTTP-Status-pm-83-line.html#HTTP__Status__CORE_match" target="_top"><rect x="571.3" y="97" width="0.3" height="15.0" fill="rgb(242,178,41)" rx="2" ry="2" />
+<text text-anchor="" x="574.29" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Sub::Util::BEGIN@8 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Sub::Util::BEGIN@8 (17 microseconds, 0.01%)</title><a xlink:href="Sub-Util-pm-92-line.html#8" target="_top"><rect x="607.7" y="81" width="0.1" height="15.0" fill="rgb(230,164,28)" rx="2" ry="2" />
+<text text-anchor="" x="610.66" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Time::Local::BEGIN@35 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Time::Local::BEGIN@35 (18 microseconds, 0.01%)</title><a xlink:href="Time-Local-pm-86-line.html#35" target="_top"><rect x="586.5" y="113" width="0.1" height="15.0" fill="rgb(239,164,37)" rx="2" ry="2" />
+<text text-anchor="" x="589.51" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (35 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (35 microseconds, 0.02%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="293.8" y="65" width="0.3" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="296.82" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (30 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (30 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="495.1" y="113" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="498.09" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (212 microseconds, 0.12%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (212 microseconds, 0.12%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="300.1" y="81" width="1.5" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="303.15" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::unimport (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::unimport (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#381" target="_top"><rect x="149.7" y="49" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="152.72" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (46 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (46 microseconds, 0.03%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="359.8" y="81" width="0.3" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="362.81" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (16 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="126.5" y="113" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="129.49" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (129 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (129 microseconds, 0.08%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="494.2" y="113" width="0.9" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="497.20" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Spec::Unix::BEGIN@63 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Spec::Unix::BEGIN@63 (21 microseconds, 0.01%)</title><a xlink:href="File-Spec-Unix-pm-19-line.html#63" target="_top"><rect x="228.9" y="113" width="0.1" height="15.0" fill="rgb(239,199,37)" rx="2" ry="2" />
+<text text-anchor="" x="231.88" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Status::BEGIN@4 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Status::BEGIN@4 (18 microseconds, 0.01%)</title><a xlink:href="HTTP-Status-pm-83-line.html#4" target="_top"><rect x="571.0" y="97" width="0.1" height="15.0" fill="rgb(237,178,35)" rx="2" ry="2" />
+<text text-anchor="" x="574.02" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Spec::Unix::BEGIN@4 (2,915 microseconds, 1.71%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Spec::Unix::BEGIN@4 (2,915 microseconds, 1.71%)</title><a xlink:href="File-Spec-Unix-pm-19-line.html#4" target="_top"><rect x="208.2" y="113" width="20.2" height="15.0" fill="rgb(237,199,35)" rx="2" ry="2" />
+<text text-anchor="" x="211.23" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::unimport (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::unimport (17 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#381" target="_top"><rect x="438.4" y="33" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="441.44" y="43.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::BEGIN@16 (27 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::BEGIN@16 (27 microseconds, 0.02%)</title><a xlink:href="Encode-Guess-pm-65-line.html#16" target="_top"><rect x="489.3" y="129" width="0.2" height="15.0" fill="rgb(239,148,38)" rx="2" ry="2" />
+<text text-anchor="" x="492.30" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Text::BEGIN@21 (38 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Text::BEGIN@21 (38 microseconds, 0.02%)</title><a xlink:href="Pod-Text-pm-22-line.html#21" target="_top"><rect x="248.6" y="113" width="0.3" height="15.0" fill="rgb(229,212,27)" rx="2" ry="2" />
+<text text-anchor="" x="251.59" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Spec::Unix::BEGIN@60 (24 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Spec::Unix::BEGIN@60 (24 microseconds, 0.01%)</title><a xlink:href="File-Spec-Unix-pm-19-line.html#60" target="_top"><rect x="228.7" y="113" width="0.2" height="15.0" fill="rgb(227,199,24)" rx="2" ry="2" />
+<text text-anchor="" x="231.71" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Message::BEGIN@750 (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Message::BEGIN@750 (19 microseconds, 0.01%)</title><a xlink:href="HTTP-Message-pm-75-line.html#750" target="_top"><rect x="690.6" y="81" width="0.1" height="15.0" fill="rgb(226,178,23)" rx="2" ry="2" />
+<text text-anchor="" x="693.62" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:subst (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:subst (18 microseconds, 0.01%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_subst" target="_top"><rect x="880.5" y="97" width="0.1" height="15.0" fill="rgb(237,83,35)" rx="2" ry="2" />
+<text text-anchor="" x="883.50" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Time::Local::BEGIN@36 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Time::Local::BEGIN@36 (20 microseconds, 0.01%)</title><a xlink:href="Time-Local-pm-86-line.html#36" target="_top"><rect x="586.6" y="113" width="0.2" height="15.0" fill="rgb(237,164,35)" rx="2" ry="2" />
+<text text-anchor="" x="589.64" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@8 (2,434 microseconds, 1.43%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@8 (2,434 microseconds, 1.43%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#8" target="_top"><rect x="609.8" y="129" width="16.9" height="15.0" fill="rgb(230,105,28)" rx="2" ry="2" />
+<text text-anchor="" x="612.80" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@236 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@236 (18 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#236" target="_top"><rect x="120.9" y="129" width="0.2" height="15.0" fill="rgb(238,186,37)" rx="2" ry="2" />
+<text text-anchor="" x="123.95" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::CORE:subst (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::CORE:subst (16 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#Exporter__CORE_subst" target="_top"><rect x="358.9" y="49" width="0.1" height="15.0" fill="rgb(237,94,35)" rx="2" ry="2" />
+<text text-anchor="" x="361.85" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Headers::BEGIN@4 (24 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Headers::BEGIN@4 (24 microseconds, 0.01%)</title><a xlink:href="HTTP-Headers-pm-76-line.html#4" target="_top"><rect x="682.4" y="81" width="0.2" height="15.0" fill="rgb(237,178,35)" rx="2" ry="2" />
+<text text-anchor="" x="685.45" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::register_categories (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::register_categories (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#526" target="_top"><rect x="111.1" y="81" width="0.1" height="15.0" fill="rgb(237,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="114.09" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::BEGIN@3 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::BEGIN@3 (17 microseconds, 0.01%)</title><a xlink:href="overload-pm-8-line.html#3" target="_top"><rect x="135.8" y="113" width="0.2" height="15.0" fill="rgb(239,165,37)" rx="2" ry="2" />
+<text text-anchor="" x="138.84" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::export (1,436 microseconds, 0.84%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::export (1,436 microseconds, 0.84%)</title><a xlink:href="Exporter-pm-6-line.html#21" target="_top"><rect x="140.0" y="97" width="10.0" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="143.02" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Text::BEGIN@24 (8,759 microseconds, 5.14%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Text::BEGIN@24 (8,759 microseconds, 5.14%)</title><a xlink:href="Pod-Text-pm-22-line.html#24" target="_top"><rect x="249.1" y="113" width="60.7" height="15.0" fill="rgb(242,212,40)" rx="2" ry="2" />
+<text text-anchor="" x="252.11" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pod::T..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::LinkSection::BEGIN@7 (9,226 microseconds, 5.42%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::LinkSection::BEGIN@7 (9,226 microseconds, 5.42%)</title><a xlink:href="Pod-Simple-LinkSection-pm-35-line.html#7" target="_top"><rect x="375.3" y="81" width="63.9" height="15.0" fill="rgb(232,212,29)" rx="2" ry="2" />
+<text text-anchor="" x="378.26" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pod::Si..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('strict::unimport (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>strict::unimport (19 microseconds, 0.01%)</title><a xlink:href="strict-pm-96-line.html#65" target="_top"><rect x="359.3" y="49" width="0.1" height="15.0" fill="rgb(238,140,36)" rx="2" ry="2" />
+<text text-anchor="" x="362.29" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::register::import (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::register::import (22 microseconds, 0.01%)</title><a xlink:href="warnings-register-pm-5-line.html#18" target="_top"><rect x="111.0" y="97" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="114.05" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Unicode::BEGIN@4 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Unicode::BEGIN@4 (16 microseconds, 0.01%)</title><a xlink:href="Encode-Unicode-pm-66-line.html#4" target="_top"><rect x="493.6" y="113" width="0.1" height="15.0" fill="rgb(237,148,35)" rx="2" ry="2" />
+<text text-anchor="" x="496.62" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Text::BEGIN@19 (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Text::BEGIN@19 (25 microseconds, 0.01%)</title><a xlink:href="Pod-Text-pm-22-line.html#19" target="_top"><rect x="248.4" y="113" width="0.2" height="15.0" fill="rgb(234,212,32)" rx="2" ry="2" />
+<text text-anchor="" x="251.42" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Basename::BEGIN@14 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Basename::BEGIN@14 (18 microseconds, 0.01%)</title><a xlink:href="File-Basename-pm-64-line.html#14" target="_top"><rect x="482.3" y="129" width="0.1" height="15.0" fill="rgb(243,199,42)" rx="2" ry="2" />
+<text text-anchor="" x="485.29" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Request::BEGIN@8 (9,898 microseconds, 5.81%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Request::BEGIN@8 (9,898 microseconds, 5.81%)</title><a xlink:href="HTTP-Request-pm-74-line.html#8" target="_top"><rect x="630.8" y="113" width="68.5" height="15.0" fill="rgb(230,178,28)" rx="2" ry="2" />
+<text text-anchor="" x="633.75" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >HTTP::R..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::define_encoding (51 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::define_encoding (51 microseconds, 0.03%)</title><a xlink:href="Encode-pm-23-line.html#98" target="_top"><rect x="493.8" y="113" width="0.4" height="15.0" fill="rgb(243,148,42)" rx="2" ry="2" />
+<text text-anchor="" x="496.85" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::import (9,892 microseconds, 5.81%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::import (9,892 microseconds, 5.81%)</title><a xlink:href="parent-pm-28-line.html#6" target="_top"><rect x="630.8" y="97" width="68.5" height="15.0" fill="rgb(238,149,36)" rx="2" ry="2" />
+<text text-anchor="" x="633.79" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >parent:..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (23 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="701.1" y="129" width="0.2" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="704.10" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (19 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="359.1" y="49" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="362.11" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@133 (1,077 microseconds, 0.63%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@133 (1,077 microseconds, 0.63%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#133" target="_top"><rect x="475.3" y="145" width="7.5" height="15.0" fill="rgb(244,83,43)" rx="2" ry="2" />
+<text text-anchor="" x="478.31" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (20 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="228.7" y="97" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="231.74" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:regcomp (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:regcomp (29 microseconds, 0.02%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_regcomp" target="_top"><rect x="765.1" y="129" width="0.2" height="15.0" fill="rgb(238,83,36)" rx="2" ry="2" />
+<text text-anchor="" x="768.11" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::import (554 microseconds, 0.33%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::import (554 microseconds, 0.33%)</title><a xlink:href="parent-pm-28-line.html#6" target="_top"><rect x="303.5" y="81" width="3.8" height="15.0" fill="rgb(238,149,36)" rx="2" ry="2" />
+<text text-anchor="" x="306.48" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('POSIX::BEGIN@11 (98 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>POSIX::BEGIN@11 (98 microseconds, 0.06%)</title><a xlink:href="POSIX-pm-60-line.html#11" target="_top"><rect x="462.3" y="113" width="0.7" height="15.0" fill="rgb(231,184,28)" rx="2" ry="2" />
+<text text-anchor="" x="465.31" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@13 (65 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@13 (65 microseconds, 0.04%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#13" target="_top"><rect x="587.0" y="129" width="0.5" height="15.0" fill="rgb(244,105,43)" rx="2" ry="2" />
+<text text-anchor="" x="590.02" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::BEGIN@289 (242 microseconds, 0.14%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::BEGIN@289 (242 microseconds, 0.14%)</title><a xlink:href="Pod-Simple-BlackBox-pm-36-line.html#289" target="_top"><rect x="431.4" y="65" width="1.7" height="15.0" fill="rgb(240,212,38)" rx="2" ry="2" />
+<text text-anchor="" x="434.44" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:subst (40 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:subst (40 microseconds, 0.02%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_subst" target="_top"><rect x="883.5" y="129" width="0.2" height="15.0" fill="rgb(237,83,35)" rx="2" ry="2" />
+<text text-anchor="" x="886.45" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@238 (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@238 (22 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#238" target="_top"><rect x="121.2" y="129" width="0.1" height="15.0" fill="rgb(235,186,33)" rx="2" ry="2" />
+<text text-anchor="" x="124.20" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@15 (3,046 microseconds, 1.79%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@15 (3,046 microseconds, 1.79%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#15" target="_top"><rect x="587.5" y="129" width="21.1" height="15.0" fill="rgb(241,105,40)" rx="2" ry="2" />
+<text text-anchor="" x="590.48" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('MIME::Base64::BEGIN@4 (40 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>MIME::Base64::BEGIN@4 (40 microseconds, 0.02%)</title><a xlink:href="MIME-Base64-pm-93-line.html#4" target="_top"><rect x="701.3" y="129" width="0.3" height="15.0" fill="rgb(237,122,35)" rx="2" ry="2" />
+<text text-anchor="" x="704.34" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::BEGIN@1.17 (24 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::BEGIN@1.17 (24 microseconds, 0.01%)</title><a xlink:href="(eval 23)[Pod-Simple-BlackBox-pm-40]-57-line.html#1" target="_top"><rect x="440.1" y="81" width="0.1" height="15.0" fill="rgb(233,212,31)" rx="2" ry="2" />
+<text text-anchor="" x="443.08" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (48 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (48 microseconds, 0.03%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="309.5" y="97" width="0.3" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="312.45" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::register::import (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::register::import (18 microseconds, 0.01%)</title><a xlink:href="warnings-register-pm-5-line.html#18" target="_top"><rect x="470.9" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="473.88" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::CORE:match (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::CORE:match (29 microseconds, 0.02%)</title><a xlink:href="Encode-Guess-pm-65-line.html#Encode__Guess__CORE_match" target="_top"><rect x="19.3" y="113" width="0.2" height="15.0" fill="rgb(242,148,41)" rx="2" ry="2" />
+<text text-anchor="" x="22.26" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::TiedOutFH::BEGIN@6 (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::TiedOutFH::BEGIN@6 (19 microseconds, 0.01%)</title><a xlink:href="Pod-Simple-TiedOutFH-pm-55-line.html#6" target="_top"><rect x="359.6" y="81" width="0.2" height="15.0" fill="rgb(233,212,31)" rx="2" ry="2" />
+<text text-anchor="" x="362.64" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:match (218 microseconds, 0.13%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:match (218 microseconds, 0.13%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_match" target="_top"><rect x="763.3" y="129" width="1.5" height="15.0" fill="rgb(242,83,41)" rx="2" ry="2" />
+<text text-anchor="" x="766.34" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@126 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@126 (20 microseconds, 0.01%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#126" target="_top"><rect x="38.4" y="145" width="0.1" height="15.0" fill="rgb(240,83,39)" rx="2" ry="2" />
+<text text-anchor="" x="41.39" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::import (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::import (20 microseconds, 0.01%)</title><a xlink:href="parent-pm-28-line.html#6" target="_top"><rect x="489.3" y="113" width="0.2" height="15.0" fill="rgb(238,149,36)" rx="2" ry="2" />
+<text text-anchor="" x="492.35" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::import (15 microseconds, 0.01%)</title><a xlink:href="parent-pm-28-line.html#6" target="_top"><rect x="608.3" y="97" width="0.1" height="15.0" fill="rgb(238,149,36)" rx="2" ry="2" />
+<text text-anchor="" x="611.34" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (25 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="689.4" y="65" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="692.36" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Encoding::renewed (46 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Encoding::renewed (46 microseconds, 0.03%)</title><a xlink:href="Encode-Encoding-pm-29-line.html#39" target="_top"><rect x="24.2" y="97" width="0.3" height="15.0" fill="rgb(245,148,44)" rx="2" ry="2" />
+<text text-anchor="" x="27.20" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@230 (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@230 (25 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#230" target="_top"><rect x="120.3" y="129" width="0.2" height="15.0" fill="rgb(231,186,29)" rx="2" ry="2" />
+<text text-anchor="" x="123.34" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:regcomp (268 microseconds, 0.16%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:regcomp (268 microseconds, 0.16%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_regcomp" target="_top"><rect x="863.2" y="129" width="1.8" height="15.0" fill="rgb(238,83,36)" rx="2" ry="2" />
+<text text-anchor="" x="866.16" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (32 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (32 microseconds, 0.02%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="127.3" y="113" width="0.2" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="130.29" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (29 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="699.1" y="65" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="702.09" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('URI::BEGIN@41 (1,124 microseconds, 0.66%)')" onmouseout="c()" onclick="zoom(this)">
+<title>URI::BEGIN@41 (1,124 microseconds, 0.66%)</title><a xlink:href="URI-pm-80-line.html#41" target="_top"><rect x="690.9" y="81" width="7.8" height="15.0" fill="rgb(227,161,25)" rx="2" ry="2" />
+<text text-anchor="" x="693.94" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::make_id (4,407 microseconds, 2.59%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::make_id (4,407 microseconds, 2.59%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#843" target="_top"><rect x="884.7" y="145" width="30.5" height="15.0" fill="rgb(240,83,39)" rx="2" ry="2" />
+<text text-anchor="" x="887.66" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >ma..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@240 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@240 (18 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#240" target="_top"><rect x="121.4" y="129" width="0.2" height="15.0" fill="rgb(230,186,28)" rx="2" ry="2" />
+<text text-anchor="" x="124.43" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Tie::Hash::BEGIN@6 (24 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Tie::Hash::BEGIN@6 (24 microseconds, 0.01%)</title><a xlink:href="Tie-Hash-pm-61-line.html#6" target="_top"><rect x="470.8" y="113" width="0.2" height="15.0" fill="rgb(233,151,31)" rx="2" ry="2" />
+<text text-anchor="" x="473.84" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (15 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="371.8" y="65" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="374.81" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::add_scribes (68 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::add_scribes (68 microseconds, 0.04%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#750" target="_top"><rect x="764.8" y="145" width="0.5" height="15.0" fill="rgb(242,83,41)" rx="2" ry="2" />
+<text text-anchor="" x="767.85" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@234 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@234 (20 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#234" target="_top"><rect x="120.7" y="129" width="0.1" height="15.0" fill="rgb(242,186,41)" rx="2" ry="2" />
+<text text-anchor="" x="123.66" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Alias::CORE:qr (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Alias::CORE:qr (17 microseconds, 0.01%)</title><a xlink:href="Encode-Alias-pm-24-line.html#Encode__Alias__CORE_qr" target="_top"><rect x="274.5" y="65" width="0.1" height="15.0" fill="rgb(237,148,36)" rx="2" ry="2" />
+<text text-anchor="" x="277.52" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::_accessorize (80 microseconds, 0.05%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::_accessorize (80 microseconds, 0.05%)</title><a xlink:href="Pod-Simple-pm-32-line.html#1516" target="_top"><rect x="440.4" y="97" width="0.5" height="15.0" fill="rgb(245,212,44)" rx="2" ry="2" />
+<text text-anchor="" x="443.35" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::utf8::BEGIN@229 (245 microseconds, 0.14%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::utf8::BEGIN@229 (245 microseconds, 0.14%)</title><a xlink:href="Encode-pm-23-line.html#229" target="_top"><rect x="307.8" y="97" width="1.7" height="15.0" fill="rgb(234,148,32)" rx="2" ry="2" />
+<text text-anchor="" x="310.75" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:sort (52 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:sort (52 microseconds, 0.03%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_sort" target="_top"><rect x="756.0" y="145" width="0.3" height="15.0" fill="rgb(238,83,36)" rx="2" ry="2" />
+<text text-anchor="" x="758.99" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (15 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="121.0" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="123.97" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::unimport (26 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::unimport (26 microseconds, 0.02%)</title><a xlink:href="warnings-pm-2-line.html#381" target="_top"><rect x="136.1" y="97" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="139.08" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::BEGIN@56 (3,039 microseconds, 1.78%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::BEGIN@56 (3,039 microseconds, 1.78%)</title><a xlink:href="Encode-pm-23-line.html#56" target="_top"><rect x="278.7" y="97" width="21.0" height="15.0" fill="rgb(235,148,33)" rx="2" ry="2" />
+<text text-anchor="" x="281.68" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Usage::BEGIN@19 (4,845 microseconds, 2.84%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Usage::BEGIN@19 (4,845 microseconds, 2.84%)</title><a xlink:href="Pod-Usage-pm-11-line.html#19" target="_top"><rect x="195.5" y="129" width="33.6" height="15.0" fill="rgb(234,212,32)" rx="2" ry="2" />
+<text text-anchor="" x="198.54" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Po..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('URI::BEGIN@4 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>URI::BEGIN@4 (18 microseconds, 0.01%)</title><a xlink:href="URI-pm-80-line.html#4" target="_top"><rect x="698.9" y="81" width="0.2" height="15.0" fill="rgb(237,161,35)" rx="2" ry="2" />
+<text text-anchor="" x="701.93" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (61 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (61 microseconds, 0.04%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="372.0" y="65" width="0.4" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="375.00" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('List::Util::BEGIN@10 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>List::Util::BEGIN@10 (18 microseconds, 0.01%)</title><a xlink:href="List-Util-pm-90-line.html#10" target="_top"><rect x="599.4" y="97" width="0.1" height="15.0" fill="rgb(232,129,30)" rx="2" ry="2" />
+<text text-anchor="" x="602.36" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Encoding::BEGIN@14 (37 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Encoding::BEGIN@14 (37 microseconds, 0.02%)</title><a xlink:href="Encode-Encoding-pm-29-line.html#14" target="_top"><rect x="306.8" y="65" width="0.2" height="15.0" fill="rgb(243,148,42)" rx="2" ry="2" />
+<text text-anchor="" x="309.78" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Copy::BEGIN@19 (872 microseconds, 0.51%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Copy::BEGIN@19 (872 microseconds, 0.51%)</title><a xlink:href="File-Copy-pm-69-line.html#19" target="_top"><rect x="620.6" y="113" width="6.1" height="15.0" fill="rgb(234,199,32)" rx="2" ry="2" />
+<text text-anchor="" x="623.61" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (34 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (34 microseconds, 0.02%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="248.6" y="97" width="0.3" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="251.62" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Cwd::BEGIN@3 (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Cwd::BEGIN@3 (15 microseconds, 0.01%)</title><a xlink:href="Cwd-pm-20-line.html#3" target="_top"><rect x="227.1" y="97" width="0.1" height="15.0" fill="rgb(239,115,37)" rx="2" ry="2" />
+<text text-anchor="" x="230.08" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@132 (219 microseconds, 0.13%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@132 (219 microseconds, 0.13%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#132" target="_top"><rect x="473.8" y="145" width="1.5" height="15.0" fill="rgb(246,83,45)" rx="2" ry="2" />
+<text text-anchor="" x="476.79" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (21 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="120.4" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="123.37" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="493.6" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="496.62" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('bytes::BEGIN@4 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>bytes::BEGIN@4 (20 microseconds, 0.01%)</title><a xlink:href="bytes-pm-30-line.html#4" target="_top"><rect x="309.3" y="81" width="0.1" height="15.0" fill="rgb(237,140,35)" rx="2" ry="2" />
+<text text-anchor="" x="312.30" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BEGIN@9 (9,649 microseconds, 5.66%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BEGIN@9 (9,649 microseconds, 5.66%)</title><a xlink:href="Pod-Simple-pm-32-line.html#9" target="_top"><rect x="372.5" y="97" width="66.8" height="15.0" fill="rgb(228,212,26)" rx="2" ry="2" />
+<text text-anchor="" x="375.46" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pod::Si..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::Protocol::BEGIN@11 (1,022 microseconds, 0.60%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::Protocol::BEGIN@11 (1,022 microseconds, 0.60%)</title><a xlink:href="LWP-Protocol-pm-88-line.html#11" target="_top"><rect x="594.1" y="113" width="7.1" height="15.0" fill="rgb(231,105,28)" rx="2" ry="2" />
+<text text-anchor="" x="597.12" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Encoding::BEGIN@5 (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Encoding::BEGIN@5 (23 microseconds, 0.01%)</title><a xlink:href="Encode-Encoding-pm-29-line.html#5" target="_top"><rect x="307.1" y="65" width="0.2" height="15.0" fill="rgb(235,148,33)" rx="2" ry="2" />
+<text text-anchor="" x="310.11" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::add_handler (1,269 microseconds, 0.74%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::add_handler (1,269 microseconds, 0.74%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#861" target="_top"><rect x="29.6" y="97" width="8.8" height="15.0" fill="rgb(245,105,44)" rx="2" ry="2" />
+<text text-anchor="" x="32.58" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (182 microseconds, 0.11%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (182 microseconds, 0.11%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="701.6" y="129" width="1.3" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="704.62" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::GetOptionsFromArray (524 microseconds, 0.31%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::GetOptionsFromArray (524 microseconds, 0.31%)</title><a xlink:href="Getopt-Long-pm-3-line.html#287" target="_top"><rect x="25.2" y="145" width="3.6" height="15.0" fill="rgb(239,186,37)" rx="2" ry="2" />
+<text text-anchor="" x="28.19" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Escapes::BEGIN@3 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Escapes::BEGIN@3 (18 microseconds, 0.01%)</title><a xlink:href="Pod-Escapes-pm-34-line.html#3" target="_top"><rect x="371.8" y="81" width="0.1" height="15.0" fill="rgb(239,212,37)" rx="2" ry="2" />
+<text text-anchor="" x="374.79" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (14 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (14 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="121.6" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="124.57" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Carp::BEGIN@6 (28 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Carp::BEGIN@6 (28 microseconds, 0.02%)</title><a xlink:href="Carp-pm-12-line.html#6" target="_top"><rect x="190.1" y="113" width="0.2" height="15.0" fill="rgb(233,109,31)" rx="2" ry="2" />
+<text text-anchor="" x="193.10" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::import (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::import (19 microseconds, 0.01%)</title><a xlink:href="overload-pm-8-line.html#57" target="_top"><rect x="139.1" y="113" width="0.2" height="15.0" fill="rgb(238,165,36)" rx="2" ry="2" />
+<text text-anchor="" x="142.14" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Basename::CORE:regcomp (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Basename::CORE:regcomp (20 microseconds, 0.01%)</title><a xlink:href="File-Basename-pm-64-line.html#File__Basename__CORE_regcomp" target="_top"><rect x="482.6" y="113" width="0.2" height="15.0" fill="rgb(238,199,36)" rx="2" ry="2" />
+<text text-anchor="" x="485.63" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::LinkSection::BEGIN@11 (40 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::LinkSection::BEGIN@11 (40 microseconds, 0.02%)</title><a xlink:href="Pod-Simple-LinkSection-pm-35-line.html#11" target="_top"><rect x="374.9" y="81" width="0.3" height="15.0" fill="rgb(231,212,28)" rx="2" ry="2" />
+<text text-anchor="" x="377.90" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Config::BEGIN@8 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Config::BEGIN@8 (20 microseconds, 0.01%)</title><a xlink:href="Encode-Config-pm-31-line.html#8" target="_top"><rect x="301.7" y="97" width="0.2" height="15.0" fill="rgb(230,148,28)" rx="2" ry="2" />
+<text text-anchor="" x="304.73" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::FindOption (132 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::FindOption (132 microseconds, 0.08%)</title><a xlink:href="Getopt-Long-pm-3-line.html#924" target="_top"><rect x="26.5" y="129" width="0.9" height="15.0" fill="rgb(247,186,46)" rx="2" ry="2" />
+<text text-anchor="" x="29.45" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (25 microseconds, 0.01%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="126.6" y="113" width="0.2" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="129.63" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (31 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (31 microseconds, 0.02%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="248.9" y="97" width="0.2" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="251.89" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (25 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="482.0" y="129" width="0.2" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="485.03" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::onBOOT (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::onBOOT (29 microseconds, 0.02%)</title><a xlink:href="Encode-pm-23-line.html#Encode__onBOOT" target="_top"><rect x="307.5" y="97" width="0.2" height="15.0" fill="rgb(240,148,39)" rx="2" ry="2" />
+<text text-anchor="" x="310.46" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@136 (34 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@136 (34 microseconds, 0.02%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#136" target="_top"><rect x="495.7" y="145" width="0.2" height="15.0" fill="rgb(239,83,38)" rx="2" ry="2" />
+<text text-anchor="" x="498.70" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (202 microseconds, 0.12%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (202 microseconds, 0.12%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="296.8" y="65" width="1.4" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="299.82" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (18 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="228.9" y="97" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="231.91" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Carp::BEGIN@137 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Carp::BEGIN@137 (16 microseconds, 0.01%)</title><a xlink:href="Carp-pm-12-line.html#137" target="_top"><rect x="188.8" y="113" width="0.1" height="15.0" fill="rgb(237,109,36)" rx="2" ry="2" />
+<text text-anchor="" x="191.84" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('builtin::BEGIN@4 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>builtin::BEGIN@4 (16 microseconds, 0.01%)</title><a xlink:href="builtin-pm-70-line.html#4" target="_top"><rect x="620.3" y="97" width="0.1" height="15.0" fill="rgb(237,101,35)" rx="2" ry="2" />
+<text text-anchor="" x="623.28" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Time::Local::BEGIN@34 (46 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Time::Local::BEGIN@34 (46 microseconds, 0.03%)</title><a xlink:href="Time-Local-pm-86-line.html#34" target="_top"><rect x="586.2" y="113" width="0.3" height="15.0" fill="rgb(241,164,39)" rx="2" ry="2" />
+<text text-anchor="" x="589.19" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@49 (36 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@49 (36 microseconds, 0.02%)</title><a xlink:href="Getopt-Long-pm-3-line.html#49" target="_top"><rect x="127.5" y="129" width="0.3" height="15.0" fill="rgb(231,186,28)" rx="2" ry="2" />
+<text text-anchor="" x="130.50" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::BEGIN@67 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::BEGIN@67 (17 microseconds, 0.01%)</title><a xlink:href="Pod-Simple-BlackBox-pm-36-line.html#67" target="_top"><rect x="433.1" y="65" width="0.2" height="15.0" fill="rgb(232,212,30)" rx="2" ry="2" />
+<text text-anchor="" x="436.14" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (24 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (24 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="605.7" y="97" width="0.2" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="608.70" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::BEGIN@1 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::BEGIN@1 (17 microseconds, 0.01%)</title><a xlink:href="(eval 6)[Pod-Simple-BlackBox-pm-40]-38-line.html#1" target="_top"><rect x="438.4" y="49" width="0.2" height="15.0" fill="rgb(225,212,22)" rx="2" ry="2" />
+<text text-anchor="" x="441.44" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (92 microseconds, 0.05%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (92 microseconds, 0.05%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="462.3" y="97" width="0.7" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="465.35" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@259 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@259 (20 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#259" target="_top"><rect x="121.9" y="129" width="0.2" height="15.0" fill="rgb(231,186,29)" rx="2" ry="2" />
+<text text-anchor="" x="124.94" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::import (105 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::import (105 microseconds, 0.06%)</title><a xlink:href="parent-pm-28-line.html#6" target="_top"><rect x="609.1" y="113" width="0.7" height="15.0" fill="rgb(238,149,36)" rx="2" ry="2" />
+<text text-anchor="" x="612.06" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Alias::BEGIN@5 (31 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Alias::BEGIN@5 (31 microseconds, 0.02%)</title><a xlink:href="Encode-Alias-pm-24-line.html#5" target="_top"><rect x="273.2" y="81" width="0.2" height="15.0" fill="rgb(235,148,33)" rx="2" ry="2" />
+<text text-anchor="" x="276.19" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::utf8::decode (296 microseconds, 0.17%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::utf8::decode (296 microseconds, 0.17%)</title><a xlink:href="Encode-pm-23-line.html#Encode__utf8__decode" target="_top"><rect x="22.5" y="113" width="2.0" height="15.0" fill="rgb(250,148,49)" rx="2" ry="2" />
+<text text-anchor="" x="25.46" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@47 (36 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@47 (36 microseconds, 0.02%)</title><a xlink:href="Getopt-Long-pm-3-line.html#47" target="_top"><rect x="127.3" y="129" width="0.2" height="15.0" fill="rgb(234,186,32)" rx="2" ry="2" />
+<text text-anchor="" x="130.26" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (20 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="248.5" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="251.45" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::BEGIN@5 (31 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::BEGIN@5 (31 microseconds, 0.02%)</title><a xlink:href="overload-pm-8-line.html#5" target="_top"><rect x="136.0" y="113" width="0.3" height="15.0" fill="rgb(235,165,33)" rx="2" ry="2" />
+<text text-anchor="" x="139.05" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:substcont (143 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:substcont (143 microseconds, 0.08%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_substcont" target="_top"><rect x="758.9" y="145" width="0.9" height="15.0" fill="rgb(242,83,41)" rx="2" ry="2" />
+<text text-anchor="" x="761.86" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Usage::BEGIN@17 (584 microseconds, 0.34%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Usage::BEGIN@17 (584 microseconds, 0.34%)</title><a xlink:href="Pod-Usage-pm-11-line.html#17" target="_top"><rect x="191.4" y="129" width="4.0" height="15.0" fill="rgb(238,212,36)" rx="2" ry="2" />
+<text text-anchor="" x="194.38" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (199 microseconds, 0.12%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (199 microseconds, 0.12%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="298.4" y="65" width="1.3" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="301.35" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Cwd::BEGIN@630 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Cwd::BEGIN@630 (17 microseconds, 0.01%)</title><a xlink:href="Cwd-pm-20-line.html#630" target="_top"><rect x="227.2" y="97" width="0.1" height="15.0" fill="rgb(229,115,26)" rx="2" ry="2" />
+<text text-anchor="" x="230.21" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@129 (41,944 microseconds, 24.62%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@129 (41,944 microseconds, 24.62%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#129" target="_top"><rect x="150.4" y="145" width="290.5" height="15.0" fill="rgb(235,83,33)" rx="2" ry="2" />
+<text text-anchor="" x="153.38" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >main::BEGIN@129</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('vars::import (57 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>vars::import (57 microseconds, 0.03%)</title><a xlink:href="vars-pm-4-line.html#10" target="_top"><rect x="126.9" y="113" width="0.4" height="15.0" fill="rgb(238,101,36)" rx="2" ry="2" />
+<text text-anchor="" x="129.86" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (17 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="120.5" y="113" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="123.54" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::XS::decode (250 microseconds, 0.15%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::XS::decode (250 microseconds, 0.15%)</title><a xlink:href="Encode-pm-23-line.html#Encode__XS__decode" target="_top"><rect x="19.5" y="113" width="1.7" height="15.0" fill="rgb(250,148,49)" rx="2" ry="2" />
+<text text-anchor="" x="22.49" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Copy::BEGIN@14 (121 microseconds, 0.07%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Copy::BEGIN@14 (121 microseconds, 0.07%)</title><a xlink:href="File-Copy-pm-69-line.html#14" target="_top"><rect x="619.6" y="113" width="0.8" height="15.0" fill="rgb(243,199,42)" rx="2" ry="2" />
+<text text-anchor="" x="622.57" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('utf8::BEGIN@4 (26 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>utf8::BEGIN@4 (26 microseconds, 0.02%)</title><a xlink:href="utf8-pm-63-line.html#4" target="_top"><rect x="475.1" y="129" width="0.2" height="15.0" fill="rgb(237,124,35)" rx="2" ry="2" />
+<text text-anchor="" x="478.11" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::import (1,555 microseconds, 0.91%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::import (1,555 microseconds, 0.91%)</title><a xlink:href="Getopt-Long-pm-3-line.html#103" target="_top"><rect x="139.3" y="129" width="10.8" height="15.0" fill="rgb(238,186,36)" rx="2" ry="2" />
+<text text-anchor="" x="142.33" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (16 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="120.7" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="123.68" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Symbol::BEGIN@4 (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Symbol::BEGIN@4 (23 microseconds, 0.01%)</title><a xlink:href="Symbol-pm-56-line.html#4" target="_top"><rect x="359.1" y="65" width="0.1" height="15.0" fill="rgb(237,202,35)" rx="2" ry="2" />
+<text text-anchor="" x="362.09" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Copy::BEGIN@12.19 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Copy::BEGIN@12.19 (18 microseconds, 0.01%)</title><a xlink:href="File-Copy-pm-69-line.html#12" target="_top"><rect x="619.3" y="113" width="0.1" height="15.0" fill="rgb(230,199,27)" rx="2" ry="2" />
+<text text-anchor="" x="622.28" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::CORE:match (26 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::CORE:match (26 microseconds, 0.02%)</title><a xlink:href="Getopt-Long-pm-3-line.html#Getopt__Long__CORE_match" target="_top"><rect x="28.6" y="113" width="0.2" height="15.0" fill="rgb(242,186,41)" rx="2" ry="2" />
+<text text-anchor="" x="31.63" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::XS::BEGIN@210 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::XS::BEGIN@210 (17 microseconds, 0.01%)</title><a xlink:href="Encode-pm-23-line.html#210" target="_top"><rect x="307.3" y="97" width="0.1" height="15.0" fill="rgb(234,148,32)" rx="2" ry="2" />
+<text text-anchor="" x="310.31" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::BEGIN@81 (689 microseconds, 0.40%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::BEGIN@81 (689 microseconds, 0.40%)</title><a xlink:href="Encode-Guess-pm-65-line.html#81" target="_top"><rect x="490.3" y="129" width="4.8" height="15.0" fill="rgb(235,148,33)" rx="2" ry="2" />
+<text text-anchor="" x="493.32" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Message::BEGIN@4 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Message::BEGIN@4 (16 microseconds, 0.01%)</title><a xlink:href="HTTP-Message-pm-75-line.html#4" target="_top"><rect x="690.5" y="81" width="0.1" height="15.0" fill="rgb(237,178,35)" rx="2" ry="2" />
+<text text-anchor="" x="693.51" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BEGIN@8 (1,647 microseconds, 0.97%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BEGIN@8 (1,647 microseconds, 0.97%)</title><a xlink:href="Pod-Simple-pm-32-line.html#8" target="_top"><rect x="361.1" y="97" width="11.4" height="15.0" fill="rgb(230,212,28)" rx="2" ry="2" />
+<text text-anchor="" x="364.05" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::heavy_export (72 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::heavy_export (72 microseconds, 0.04%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#25" target="_top"><rect x="467.1" y="81" width="0.5" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="470.09" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@20 (688 microseconds, 0.40%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@20 (688 microseconds, 0.40%)</title><a xlink:href="Getopt-Long-pm-3-line.html#20" target="_top"><rect x="106.7" y="129" width="4.7" height="15.0" fill="rgb(231,186,29)" rx="2" ry="2" />
+<text text-anchor="" x="109.66" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('all (170,357 microseconds, 100%)')" onmouseout="c()" onclick="zoom(this)">
+<title>all (170,357 microseconds, 100%)</title><rect x="10.0" y="161" width="1180.0" height="15.0" fill="rgb(255,230,55)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="171.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s('POSIX::import (993 microseconds, 0.58%)')" onmouseout="c()" onclick="zoom(this)">
+<title>POSIX::import (993 microseconds, 0.58%)</title><a xlink:href="POSIX-pm-60-line.html#174" target="_top"><rect x="463.3" y="113" width="6.9" height="15.0" fill="rgb(238,184,36)" rx="2" ry="2" />
+<text text-anchor="" x="466.28" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (125 microseconds, 0.07%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (125 microseconds, 0.07%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="625.8" y="81" width="0.9" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="628.79" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Try::Tiny::BEGIN@13 (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Try::Tiny::BEGIN@13 (25 microseconds, 0.01%)</title><a xlink:href="Try-Tiny-pm-91-line.html#13" target="_top"><rect x="606.0" y="97" width="0.1" height="15.0" fill="rgb(244,174,43)" rx="2" ry="2" />
+<text text-anchor="" x="608.96" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('POSIX::BEGIN@3 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>POSIX::BEGIN@3 (21 microseconds, 0.01%)</title><a xlink:href="POSIX-pm-60-line.html#3" target="_top"><rect x="463.1" y="113" width="0.2" height="15.0" fill="rgb(239,184,37)" rx="2" ry="2" />
+<text text-anchor="" x="466.13" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (20 microseconds, 0.01%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="606.0" y="81" width="0.1" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="608.99" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (15 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="121.7" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="124.70" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@137 (29,362 microseconds, 17.24%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@137 (29,362 microseconds, 17.24%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#137" target="_top"><rect x="495.9" y="145" width="203.4" height="15.0" fill="rgb(237,83,36)" rx="2" ry="2" />
+<text text-anchor="" x="498.93" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >main::BEGIN@137</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Time::HiRes::import (138 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Time::HiRes::import (138 microseconds, 0.08%)</title><a xlink:href="Time-HiRes-pm-72-line.html#76" target="_top"><rect x="624.8" y="81" width="1.0" height="15.0" fill="rgb(238,164,36)" rx="2" ry="2" />
+<text text-anchor="" x="627.84" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@10 (6,688 microseconds, 3.93%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@10 (6,688 microseconds, 3.93%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#10" target="_top"><rect x="525.8" y="129" width="46.3" height="15.0" fill="rgb(232,105,30)" rx="2" ry="2" />
+<text text-anchor="" x="528.82" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >LWP:..</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overloading::BEGIN@2 (45 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overloading::BEGIN@2 (45 microseconds, 0.03%)</title><a xlink:href="overloading-pm-9-line.html#2" target="_top"><rect x="138.8" y="97" width="0.3" height="15.0" fill="rgb(240,165,39)" rx="2" ry="2" />
+<text text-anchor="" x="141.78" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (21 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="38.1" y="65" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="41.08" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Alias::BEGIN@3 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Alias::BEGIN@3 (20 microseconds, 0.01%)</title><a xlink:href="Encode-Alias-pm-24-line.html#3" target="_top"><rect x="273.1" y="81" width="0.1" height="15.0" fill="rgb(239,148,37)" rx="2" ry="2" />
+<text text-anchor="" x="276.05" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (144 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (144 microseconds, 0.08%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="227.4" y="97" width="1.0" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="230.42" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::agent (53 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::agent (53 microseconds, 0.03%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#825" target="_top"><rect x="29.1" y="129" width="0.3" height="15.0" fill="rgb(241,105,39)" rx="2" ry="2" />
+<text text-anchor="" x="32.07" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (42 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (42 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="586.2" y="97" width="0.3" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="589.22" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:regcomp (1,892 microseconds, 1.11%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:regcomp (1,892 microseconds, 1.11%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_regcomp" target="_top"><rect x="742.9" y="145" width="13.1" height="15.0" fill="rgb(238,83,36)" rx="2" ry="2" />
+<text text-anchor="" x="745.88" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::parse_head (1,292 microseconds, 0.76%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::parse_head (1,292 microseconds, 0.76%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#748" target="_top"><rect x="29.4" y="129" width="9.0" height="15.0" fill="rgb(241,105,40)" rx="2" ry="2" />
+<text text-anchor="" x="32.44" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('parent::CORE:subst (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>parent::CORE:subst (20 microseconds, 0.01%)</title><a xlink:href="parent-pm-28-line.html#parent__CORE_subst" target="_top"><rect x="572.0" y="81" width="0.1" height="15.0" fill="rgb(237,149,35)" rx="2" ry="2" />
+<text text-anchor="" x="575.01" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (17 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="619.4" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="622.40" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (26 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (26 microseconds, 0.02%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="273.2" y="65" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="276.22" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (19 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="121.2" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="124.22" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:subst (362 microseconds, 0.21%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:subst (362 microseconds, 0.21%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_subst" target="_top"><rect x="756.3" y="145" width="2.6" height="15.0" fill="rgb(237,83,35)" rx="2" ry="2" />
+<text text-anchor="" x="759.35" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Response::BEGIN@8 (35 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Response::BEGIN@8 (35 microseconds, 0.02%)</title><a xlink:href="HTTP-Response-pm-82-line.html#8" target="_top"><rect x="571.9" y="113" width="0.2" height="15.0" fill="rgb(230,178,28)" rx="2" ry="2" />
+<text text-anchor="" x="574.90" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::CORE:regcomp (25 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::CORE:regcomp (25 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#Getopt__Long__CORE_regcomp" target="_top"><rect x="27.1" y="113" width="0.2" height="15.0" fill="rgb(238,186,36)" rx="2" ry="2" />
+<text text-anchor="" x="30.13" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('POSIX::import (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>POSIX::import (29 microseconds, 0.02%)</title><a xlink:href="POSIX-pm-60-line.html#174" target="_top"><rect x="495.7" y="129" width="0.2" height="15.0" fill="rgb(238,184,36)" rx="2" ry="2" />
+<text text-anchor="" x="498.73" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (1,522 microseconds, 0.89%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (1,522 microseconds, 0.89%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="139.4" y="113" width="10.6" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="142.43" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@18 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@18 (16 microseconds, 0.01%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#18" target="_top"><rect x="608.7" y="129" width="0.1" height="15.0" fill="rgb(236,105,34)" rx="2" ry="2" />
+<text text-anchor="" x="611.74" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Storable::BEGIN@66 (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Storable::BEGIN@66 (19 microseconds, 0.01%)</title><a xlink:href="Storable-pm-26-line.html#66" target="_top"><rect x="294.5" y="81" width="0.2" height="15.0" fill="rgb(234,166,32)" rx="2" ry="2" />
+<text text-anchor="" x="297.53" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@17 (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@17 (23 microseconds, 0.01%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#17" target="_top"><rect x="608.6" y="129" width="0.1" height="15.0" fill="rgb(238,105,36)" rx="2" ry="2" />
+<text text-anchor="" x="611.58" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::link_to_recording (134 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::link_to_recording (134 microseconds, 0.08%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#782" target="_top"><rect x="883.7" y="145" width="1.0" height="15.0" fill="rgb(243,83,42)" rx="2" ry="2" />
+<text text-anchor="" x="886.73" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (17 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="122.0" y="113" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="124.96" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (15 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="586.5" y="97" width="0.1" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="589.53" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@248 (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@248 (19 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#248" target="_top"><rect x="121.7" y="129" width="0.1" height="15.0" fill="rgb(234,186,32)" rx="2" ry="2" />
+<text text-anchor="" x="124.67" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::import (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::import (22 microseconds, 0.01%)</title><a xlink:href="Encode-Guess-pm-65-line.html#24" target="_top"><rect x="495.3" y="129" width="0.2" height="15.0" fill="rgb(238,148,36)" rx="2" ry="2" />
+<text text-anchor="" x="498.31" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Carp::BEGIN@5 (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Carp::BEGIN@5 (19 microseconds, 0.01%)</title><a xlink:href="Carp-pm-12-line.html#5" target="_top"><rect x="190.0" y="113" width="0.1" height="15.0" fill="rgb(235,109,33)" rx="2" ry="2" />
+<text text-anchor="" x="192.97" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (24 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (24 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="207.8" y="97" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="210.82" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (35 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (35 microseconds, 0.02%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="599.1" y="97" width="0.3" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="602.12" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::BEGIN@7 (26 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::BEGIN@7 (26 microseconds, 0.02%)</title><a xlink:href="Encode-pm-23-line.html#7" target="_top"><rect x="299.9" y="97" width="0.2" height="15.0" fill="rgb(232,148,29)" rx="2" ry="2" />
+<text text-anchor="" x="302.88" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('overload::import (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>overload::import (21 microseconds, 0.01%)</title><a xlink:href="overload-pm-8-line.html#57" target="_top"><rect x="698.8" y="65" width="0.1" height="15.0" fill="rgb(238,165,36)" rx="2" ry="2" />
+<text text-anchor="" x="701.78" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (17 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="301.7" y="81" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="304.75" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (16 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="278.5" y="65" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="281.55" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('constant::import (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>constant::import (22 microseconds, 0.01%)</title><a xlink:href="constant-pm-7-line.html#55" target="_top"><rect x="299.9" y="81" width="0.2" height="15.0" fill="rgb(238,146,36)" rx="2" ry="2" />
+<text text-anchor="" x="302.90" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::unimport (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::unimport (15 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#381" target="_top"><rect x="619.3" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="622.30" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (29 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (29 microseconds, 0.02%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="191.2" y="113" width="0.2" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="194.18" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Config::BEGIN@4 (21 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Config::BEGIN@4 (21 microseconds, 0.01%)</title><a xlink:href="HTTP-Config-pm-94-line.html#4" target="_top"><rect x="38.1" y="81" width="0.1" height="15.0" fill="rgb(237,178,35)" rx="2" ry="2" />
+<text text-anchor="" x="41.08" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('HTTP::Response::BEGIN@4 (27 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>HTTP::Response::BEGIN@4 (27 microseconds, 0.02%)</title><a xlink:href="HTTP-Response-pm-82-line.html#4" target="_top"><rect x="571.7" y="113" width="0.2" height="15.0" fill="rgb(237,178,35)" rx="2" ry="2" />
+<text text-anchor="" x="574.72" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::BEGIN@15 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::BEGIN@15 (20 microseconds, 0.01%)</title><a xlink:href="Encode-pm-23-line.html#15" target="_top"><rect x="262.6" y="97" width="0.2" height="15.0" fill="rgb(241,148,40)" rx="2" ry="2" />
+<text text-anchor="" x="265.64" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:subst (584 microseconds, 0.34%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:subst (584 microseconds, 0.34%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_subst" target="_top"><rect x="875.0" y="97" width="4.1" height="15.0" fill="rgb(237,83,35)" rx="2" ry="2" />
+<text text-anchor="" x="878.05" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:subst (101 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:subst (101 microseconds, 0.06%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_subst" target="_top"><rect x="865.0" y="129" width="0.7" height="15.0" fill="rgb(237,83,35)" rx="2" ry="2" />
+<text text-anchor="" x="868.02" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (131 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (131 microseconds, 0.08%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="689.5" y="65" width="0.9" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="692.53" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::XS::decode (94 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::XS::decode (94 microseconds, 0.06%)</title><a xlink:href="Encode-pm-23-line.html#Encode__XS__decode" target="_top"><rect x="24.5" y="145" width="0.7" height="15.0" fill="rgb(250,148,49)" rx="2" ry="2" />
+<text text-anchor="" x="27.52" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Storable::BEGIN@44 (60 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Storable::BEGIN@44 (60 microseconds, 0.04%)</title><a xlink:href="Storable-pm-26-line.html#44" target="_top"><rect x="294.1" y="81" width="0.4" height="15.0" fill="rgb(239,166,38)" rx="2" ry="2" />
+<text text-anchor="" x="297.06" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BEGIN@14 (50 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BEGIN@14 (50 microseconds, 0.03%)</title><a xlink:href="Pod-Simple-pm-32-line.html#14" target="_top"><rect x="359.8" y="97" width="0.3" height="15.0" fill="rgb(243,212,42)" rx="2" ry="2" />
+<text text-anchor="" x="362.78" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (46 microseconds, 0.03%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (46 microseconds, 0.03%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="358.6" y="65" width="0.4" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="361.64" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (22 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (22 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="444.0" y="113" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="447.02" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::register::import (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::register::import (23 microseconds, 0.01%)</title><a xlink:href="warnings-register-pm-5-line.html#18" target="_top"><rect x="135.7" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="138.68" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::fc_uniq (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::fc_uniq (23 microseconds, 0.01%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#495" target="_top"><rect x="880.6" y="145" width="0.2" height="15.0" fill="rgb(241,83,40)" rx="2" ry="2" />
+<text text-anchor="" x="883.63" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::LinkSection::BEGIN@8 (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::LinkSection::BEGIN@8 (19 microseconds, 0.01%)</title><a xlink:href="Pod-Simple-LinkSection-pm-35-line.html#8" target="_top"><rect x="439.2" y="81" width="0.1" height="15.0" fill="rgb(230,212,28)" rx="2" ry="2" />
+<text text-anchor="" x="442.17" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::default_header (35 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::default_header (35 microseconds, 0.02%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#818" target="_top"><rect x="29.2" y="113" width="0.2" height="15.0" fill="rgb(243,105,41)" rx="2" ry="2" />
+<text text-anchor="" x="32.20" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::esc (16,647 microseconds, 9.77%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::esc (16,647 microseconds, 9.77%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#630" target="_top"><rect x="765.3" y="145" width="115.3" height="15.0" fill="rgb(230,83,27)" rx="2" ry="2" />
+<text text-anchor="" x="768.32" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >main::esc</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Copy::BEGIN@12 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Copy::BEGIN@12 (17 microseconds, 0.01%)</title><a xlink:href="File-Copy-pm-69-line.html#12" target="_top"><rect x="619.4" y="113" width="0.1" height="15.0" fill="rgb(246,199,45)" rx="2" ry="2" />
+<text text-anchor="" x="622.40" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (19 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (19 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="190.0" y="97" width="0.1" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="192.97" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::CORE:print (128 microseconds, 0.08%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::CORE:print (128 microseconds, 0.08%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#main__CORE_print" target="_top"><rect x="741.6" y="145" width="0.9" height="15.0" fill="rgb(238,83,36)" rx="2" ry="2" />
+<text text-anchor="" x="744.62" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::BEGIN@3 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::BEGIN@3 (17 microseconds, 0.01%)</title><a xlink:href="Encode-Guess-pm-65-line.html#3" target="_top"><rect x="489.6" y="129" width="0.1" height="15.0" fill="rgb(239,148,37)" rx="2" ry="2" />
+<text text-anchor="" x="492.62" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('URI::BEGIN@9 (34 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>URI::BEGIN@9 (34 microseconds, 0.02%)</title><a xlink:href="URI-pm-80-line.html#9" target="_top"><rect x="699.1" y="81" width="0.2" height="15.0" fill="rgb(228,161,26)" rx="2" ry="2" />
+<text text-anchor="" x="702.05" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BlackBox::BEGIN@273 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BlackBox::BEGIN@273 (18 microseconds, 0.01%)</title><a xlink:href="Pod-Simple-BlackBox-pm-36-line.html#273" target="_top"><rect x="431.3" y="65" width="0.1" height="15.0" fill="rgb(251,212,51)" rx="2" ry="2" />
+<text text-anchor="" x="434.32" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::BEGIN@188 (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::BEGIN@188 (23 microseconds, 0.01%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#188" target="_top"><rect x="149.7" y="65" width="0.1" height="15.0" fill="rgb(242,94,41)" rx="2" ry="2" />
+<text text-anchor="" x="152.67" y="75.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Usage::BEGIN@25 (30,579 microseconds, 17.95%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Usage::BEGIN@25 (30,579 microseconds, 17.95%)</title><a xlink:href="Pod-Usage-pm-11-line.html#25" target="_top"><rect x="229.1" y="129" width="211.8" height="15.0" fill="rgb(240,212,38)" rx="2" ry="2" />
+<text text-anchor="" x="232.10" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pod::Usage::BEGIN@25</text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Spec::Unix::BEGIN@57 (42 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Spec::Unix::BEGIN@57 (42 microseconds, 0.02%)</title><a xlink:href="File-Spec-Unix-pm-19-line.html#57" target="_top"><rect x="228.4" y="113" width="0.3" height="15.0" fill="rgb(233,199,31)" rx="2" ry="2" />
+<text text-anchor="" x="231.42" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::UTF_EBCDIC::BEGIN@178 (784 microseconds, 0.46%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::UTF_EBCDIC::BEGIN@178 (784 microseconds, 0.46%)</title><a xlink:href="Encode-pm-23-line.html#178" target="_top"><rect x="301.9" y="97" width="5.4" height="15.0" fill="rgb(243,148,42)" rx="2" ry="2" />
+<text text-anchor="" x="304.89" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Guess::BEGIN@4 (79 microseconds, 0.05%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Guess::BEGIN@4 (79 microseconds, 0.05%)</title><a xlink:href="Encode-Guess-pm-65-line.html#4" target="_top"><rect x="489.7" y="129" width="0.6" height="15.0" fill="rgb(237,148,35)" rx="2" ry="2" />
+<text text-anchor="" x="492.74" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::Heavy::heavy_export (91 microseconds, 0.05%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::Heavy::heavy_export (91 microseconds, 0.05%)</title><a xlink:href="Exporter-Heavy-pm-10-line.html#25" target="_top"><rect x="625.0" y="49" width="0.6" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="627.96" y="59.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@249 (20 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@249 (20 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#249" target="_top"><rect x="121.8" y="129" width="0.1" height="15.0" fill="rgb(232,186,30)" rx="2" ry="2" />
+<text text-anchor="" x="124.81" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('XSLoader::load (399 microseconds, 0.23%)')" onmouseout="c()" onclick="zoom(this)">
+<title>XSLoader::load (399 microseconds, 0.23%)</title><a xlink:href="XSLoader-pm-97-line.html#19" target="_top"><rect x="471.0" y="113" width="2.8" height="15.0" fill="rgb(243,122,41)" rx="2" ry="2" />
+<text text-anchor="" x="474.01" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (23 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="475.1" y="113" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="478.14" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('warnings::import (23 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>warnings::import (23 microseconds, 0.01%)</title><a xlink:href="warnings-pm-2-line.html#359" target="_top"><rect x="571.7" y="97" width="0.2" height="15.0" fill="rgb(238,93,36)" rx="2" ry="2" />
+<text text-anchor="" x="574.74" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Tie::Hash::BEGIN@5 (98 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Tie::Hash::BEGIN@5 (98 microseconds, 0.06%)</title><a xlink:href="Tie-Hash-pm-61-line.html#5" target="_top"><rect x="470.2" y="113" width="0.6" height="15.0" fill="rgb(235,151,33)" rx="2" ry="2" />
+<text text-anchor="" x="473.16" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('LWP::UserAgent::BEGIN@5 (109 microseconds, 0.06%)')" onmouseout="c()" onclick="zoom(this)">
+<title>LWP::UserAgent::BEGIN@5 (109 microseconds, 0.06%)</title><a xlink:href="LWP-UserAgent-pm-67-line.html#5" target="_top"><rect x="609.0" y="129" width="0.8" height="15.0" fill="rgb(235,105,33)" rx="2" ry="2" />
+<text text-anchor="" x="612.03" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Storable::BEGIN@109 (163 microseconds, 0.10%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Storable::BEGIN@109 (163 microseconds, 0.10%)</title><a xlink:href="Storable-pm-26-line.html#109" target="_top"><rect x="292.6" y="81" width="1.2" height="15.0" fill="rgb(237,166,35)" rx="2" ry="2" />
+<text text-anchor="" x="295.64" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BEGIN@7 (92 microseconds, 0.05%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BEGIN@7 (92 microseconds, 0.05%)</title><a xlink:href="Pod-Simple-pm-32-line.html#7" target="_top"><rect x="360.4" y="97" width="0.7" height="15.0" fill="rgb(232,212,29)" rx="2" ry="2" />
+<text text-anchor="" x="363.41" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Getopt::Long::BEGIN@237 (18 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Getopt::Long::BEGIN@237 (18 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#237" target="_top"><rect x="121.1" y="129" width="0.1" height="15.0" fill="rgb(237,186,35)" rx="2" ry="2" />
+<text text-anchor="" x="124.07" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Scalar::Util::BEGIN@10 (26 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Scalar::Util::BEGIN@10 (26 microseconds, 0.02%)</title><a xlink:href="Scalar-Util-pm-89-line.html#10" target="_top"><rect x="599.6" y="97" width="0.2" height="15.0" fill="rgb(232,202,30)" rx="2" ry="2" />
+<text text-anchor="" x="602.61" y="107.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Encode::Unicode::BEGIN@45 (17 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Encode::Unicode::BEGIN@45 (17 microseconds, 0.01%)</title><a xlink:href="Encode-Unicode-pm-66-line.html#45" target="_top"><rect x="493.5" y="113" width="0.1" height="15.0" fill="rgb(238,148,36)" rx="2" ry="2" />
+<text text-anchor="" x="496.50" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Exporter::import (76 microseconds, 0.04%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Exporter::import (76 microseconds, 0.04%)</title><a xlink:href="Exporter-pm-6-line.html#25" target="_top"><rect x="489.8" y="113" width="0.5" height="15.0" fill="rgb(238,94,36)" rx="2" ry="2" />
+<text text-anchor="" x="492.76" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::esc (1,204 microseconds, 0.71%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::esc (1,204 microseconds, 0.71%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#630" target="_top"><rect x="870.7" y="113" width="8.4" height="15.0" fill="rgb(230,83,27)" rx="2" ry="2" />
+<text text-anchor="" x="873.75" y="123.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::BEGIN@13 (16 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::BEGIN@13 (16 microseconds, 0.01%)</title><a xlink:href="Getopt-Long-pm-3-line.html#13" target="_top"><rect x="150.1" y="129" width="0.1" height="15.0" fill="rgb(244,83,43)" rx="2" ry="2" />
+<text text-anchor="" x="153.10" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('File::Basename::fileparse_set_fstype (42 microseconds, 0.02%)')" onmouseout="c()" onclick="zoom(this)">
+<title>File::Basename::fileparse_set_fstype (42 microseconds, 0.02%)</title><a xlink:href="File-Basename-pm-64-line.html#189" target="_top"><rect x="482.5" y="129" width="0.3" height="15.0" fill="rgb(250,199,49)" rx="2" ry="2" />
+<text text-anchor="" x="485.47" y="139.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('Pod::Simple::BEGIN@2 (15 microseconds, 0.01%)')" onmouseout="c()" onclick="zoom(this)">
+<title>Pod::Simple::BEGIN@2 (15 microseconds, 0.01%)</title><a xlink:href="Pod-Simple-TiedOutFH-pm-55-line.html#2" target="_top"><rect x="353.4" y="81" width="0.1" height="15.0" fill="rgb(240,212,39)" rx="2" ry="2" />
+<text text-anchor="" x="356.37" y="91.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+<g class="func_g" onmouseover="s('main::RRSAgent_text_format (722 microseconds, 0.42%)')" onmouseout="c()" onclick="zoom(this)">
+<title>main::RRSAgent_text_format (722 microseconds, 0.42%)</title><a xlink:href="home-bert-Work-scribe2-scribe-perl-1-line.html#217" target="_top"><rect x="759.8" y="145" width="5.0" height="15.0" fill="rgb(233,83,31)" rx="2" ry="2" />
+<text text-anchor="" x="762.85" y="155.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</a>
+</g>
+</svg>

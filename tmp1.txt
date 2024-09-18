@@ -1,0 +1,153 @@
+09:00:48 <RRSAgent> RRSAgent has joined &weum
+09:00:48 <RRSAgent> logging to https://www.w3.org/2022/10/25-weum-irc
+09:00:50 <Zakim> RRSAgent, make logs Team
+09:00:52 <Zakim> Meeting: W3C/ERCIM Teleconference
+09:00:53 <Bert> agendabot, find agenda
+09:00:53 <agendabot> Bert, OK. This may take a minute...
+09:00:56 <agendabot> agenda: https://lists.w3.org/Archives/Team/w3t-europe/2022Oct/0004.html
+09:00:56 <agendabot> clear agenda
+09:00:56 <agendabot> agenda+ Scribe
+09:00:56 <agendabot> agenda+ Agenda
+09:00:56 <agendabot> agenda+ Actions
+09:00:58 <agendabot> agenda+ W3M-* debrief & Legal Entity updates
+09:01:01 <agendabot> agenda+ W3C Function round robin
+09:01:03 <agendabot> agenda+ Around Europe
+09:01:05 <agendabot> agenda+ W3C/Europe membership monitor
+09:01:08 <agendabot> agenda+ EU Projects infoshare
+09:01:10 <agendabot> agenda+ Two minutes round the table
+09:01:13 <agendabot> agenda+ Geek Week reports
+09:01:15 <agendabot> agenda+ Next WEUM
+09:01:17 <agendabot> agenda+ AOB
+09:04:12 <dom> Present+
+09:04:53 <Bert> present+
+09:07:11 <alex> present+
+09:07:13 <kevin> kevin has joined &weum
+09:07:22 <pchampin> present+
+09:07:27 <dmontalvo> present+ Daniel
+09:07:35 <kevin> present+
+09:08:25 <alex> scribe+
+09:08:52 <alex> Zakim, take up agendum 4
+09:08:52 <Zakim> agendum 4 -- W3M-* debrief & Legal Entity updates -- taken up [from agendabot]
+09:08:58 <dom> [no w3m meetings due to Geek Week]
+09:08:58 <dom> -> https://lists.w3.org/Archives/Member/w3c-ac-forum/2022OctDec/0051.html First BoD meeting report
+09:08:58 <dom> ->  https://www.w3.org/governance/board/ BoD homepage
+09:09:00 <dom> Governance task force closing
+09:09:03 <alex> No meeting last week due to geek week
+09:09:10 <alex> we had our first board of directors meeting
+09:09:22 <alex> David is going to be the chair of the board
+09:09:35 <alex> governance TF, finance, personnel
+09:09:50 <alex> we'll be meeting every other week for the full board
+09:10:01 <alex> we'll be defining the charters
+09:10:16 <marie> present+
+09:10:54 <alex> Dom: in terms of the board meeting, the next meeting will be next Thursday, we have all started some of the committee meeting this week
+09:11:01 <Bert> q?
+09:11:04 <alex> bert: questions?
+09:11:31 <alex> Zakim, take up agendum 5
+09:11:31 <Zakim> agendum 5 -- W3C Function round robin -- taken up [from agendabot]
+09:11:44 <alex> Dom: there were some big WAi announcements last week
+09:12:09 <alex> Kevin: I started last week, sure that Jessica and Pascale are happy to move the Eu project forward
+09:12:23 <alex> ... Judy stepping away from W3C is a big change
+09:12:36 <alex> ... Michael and myself are looking at what do we need
+09:12:57 <alex> ...michael stepped up to ensure the stabiility of the delivery of the Working groups
+09:13:25 <alex> ... working as needed in place of Judy
+09:13:46 <alex> ... we just need to take a step back
+09:14:12 <alex> Bert: other changes?
+09:14:40 <alex> .. I should schedule some presentations, last one was in April
+09:15:00 <alex> Zakim, take up agendum 6
+09:15:00 <Zakim> agendum 6 -- Around Europe -- taken up [from agendabot]
+09:16:14 <alex> Bert: I was in Paris and took the train to Paris, we could order online our meal in the train, it worked! but a bit overkill ;)
+09:16:30 <alex> ... Web is working even on the train
+09:16:54 <alex> Zakim, take up agendum 7
+09:16:54 <Zakim> agendum 7 -- W3C/Europe membership monitor -- taken up [from agendabot]
+09:17:07 <alex> q+
+09:17:13 <dom> scribe+
+09:17:16 <Bert> ack alex
+09:17:31 <dom> alex: got a resignation from a startup as of April 2023, Tripons
+09:17:48 <dom> ... didn't seem very satisfied with the work happening in W3C - will follow up with Pierre-Antoine, Dom & MCF
+09:18:35 <dom> ... Worldpay is supposed to move to US as of Jan, but may stay with Europe - Ian is in the loop
+09:18:43 <dom> ... we're supposed to invoice them in Dec
+09:18:43 <dom> q+
+09:18:45 <dom> scribe-
+09:18:54 <Bert> ack dom
+09:20:18 <Bert> q?
+09:20:58 <alex> Dom: Pierre-Antoine did you know about Tripons?
+09:21:11 <marie> q+
+09:21:18 <alex> Pierre-Antoine: No, I'll look for information
+09:21:28 <Bert> ack mar
+09:21:47 <alex> Marie: their website is a just a page with a logo, we should not spend a lot of time with them
+09:22:00 <alex> Zakim, take up agendum 8
+09:22:00 <Zakim> agendum 8 -- EU Projects infoshare -- taken up [from agendabot]
+09:22:15 <marie> s/a logo/a logo since the beginning (April 2022)
+09:22:35 <dom> Regrets+ Caroline
+09:23:47 <alex> Bert: Trapeze project: came back with an item action, add a list of threads and counteractions as part of the knowledge base
+09:23:53 <marie> q+
+09:24:03 <Bert> ack mar
+09:24:23 <alex> Marie: this month is full of surprises, I agreed to be involved in Nefele which started in October
+09:24:39 <alex> .. and then we have Glaciation and Cirpass
+09:24:49 <Bert> s/thread/threat/
+09:25:01 <marie> s/Nefele/NEPHELE
+09:25:10 <r12a> r12a has joined &weum
+09:25:18 <alex> should work on dissemination, not sure when as it is quiet new
+09:25:44 <marie> s/dissemination/dissemination and communication
+09:25:46 <dom> s/quiet/quite
+09:25:46 <alex> Zakim, take up agendum 9
+09:25:46 <Zakim> agendum 9 -- Two minutes round the table -- taken up [from agendabot]
+09:25:51 <Bert> zakim, who is on the phone?
+09:25:51 <Zakim> Present: dom, Bert, alex, pchampin, Daniel, kevin, marie
+09:26:08 <dom> -> https://lists.w3.org/Archives/Team/team-2minutes/2022Oct/0002.html Dom's 2 minutes
+09:26:15 <alex> present+ Richard
+09:26:17 <r12a> present+
+09:28:33 <alex> Bert: Last week was geek week: first two days: tpac schedule page worked with Alex, philippe and Jean-Gui,
+09:28:52 <alex> ... the rest of the week was the trapeze meeting in Paris: very good to have that meeting finally
+09:31:30 <alex> Pierre-Antoine: Geek week was not productive but make some progress on the rdfs validator, we are getting there
+09:31:49 <alex> ...finally got in touch with the chairs of the IRDF star WG
+09:32:04 <alex> we'll be sending a doodle to have a kickoff in December
+09:32:06 <dom> s/IRDF/RDF/
+09:32:09 <Bert> s/ make / made /
+09:32:20 <alex> ... will also be off next week
+09:32:23 <dmontalvo> https://lists.w3.org/Archives/Team/team-2minutes/2022Oct/0003.html
+09:33:09 <alex> Daniel: did not have time for geek week as we are focuing on the WAI changes we are facing
+09:34:40 <alex> Daniel: will take more staff contact responsibilities, will be reading a lot recently
+09:35:08 <alex> Kevin: Started last week, got covid
+09:35:41 <alex> ...wai coop: deliverables are in good shape
+09:35:57 <alex> ...waiguide stuff are due end of this year, number of deliverables are not really ready
+09:36:09 <alex> ..the ones Daniel is working are valuable,
+09:36:18 <alex> ...20 videos to create
+09:36:23 <alex> ...the scripts are created for those
+09:36:32 <alex> ...pull together a request for porposals
+09:36:59 <alex> ... will be quite challenging in terms of timing
+09:37:09 <alex> s/porposals/proposals
+09:37:18 <marie> -> https://lists.w3.org/Archives/Team/w3t-europe/2022Oct/0006.html MCF's 2 minutes
+09:38:27 <alex> Marie: meetup videos: https://www.youtube.com/playlist?list=PLNhYw8KaLq2UvTKATVZOY9mQSkDZAEZ5h
+09:39:57 <alex> Marie: waiting for news to extend web accessibility introduction work: end is Dec. 2022
+09:40:55 <alex> Richard: Before geek week, covid jab, light work for geeking
+09:41:11 <alex> .. working on the code base for my tools that I use all the time
+09:41:19 <alex> ... won't see a lot of differences
+09:41:47 <alex> .. Tuesday was a bit crazy, did I tell you I lost my internet connexion, the new router did not work, took a whole day
+09:42:40 <alex> ... but fortunately, got sorted out
+09:43:07 <alex> ...otherwise I would have waited 11 days to repair the wifi
+09:43:19 <r12a> https://www.w3.org/blog/International/2022/10/25/for-review-font-styles-font-fallback/
+09:43:26 <alex> .. would consider if W3C would pay a better rate for internet connexion
+09:44:16 <alex> ... you might find this link an interesting reading, not too technical
+09:44:31 <alex> Zakim, take up agendum 10
+09:44:31 <Zakim> agendum 10 -- Geek Week reports -- taken up [from agendabot]
+09:45:14 <alex> Bert: Xueyuan will ask you for reports later
+09:45:31 <alex> Bert: no meeting next week - all Saints day, ERCIM is closed
+09:45:39 <alex> ...next meeting: November 8th
+09:45:59 <alex> No change of timing: still at 11:00, and 10:00 in UK
+09:46:06 <alex> Bert: any other business?
+09:46:34 <alex> Richard: will continue the same time, right?
+09:46:50 <alex> Bert: Yes, meeting sets on Paris time
+09:47:02 <alex> Richard: is Coralie back?
+09:47:16 <alex> Bert: Officially, her leave ends today, she should be back tomorrow
+09:48:15 <dom> https://thelounge.w3.org can be used to keep a permanent connection
+09:48:57 <alex> Dom: the Lounge is an irc client which enables to connect permanently
+09:49:25 <alex> ...You can also use a mobile app, if someone pings you
+09:50:14 <alex> q+
+09:51:28 <dom> -> https://www.w3.org/2002/09/wbs/35125/tpac2022-Hybrid/ TPAC Feedback survey (opened until Nov 1st)
+09:51:29 <alex> q-
+11:21:20 <kevin_> kevin_ has joined &weum
+00:00:00 <Bert> Chair:   Bert
+00:00:00 <Bert> Previous meeting: https://www.w3.org/2022/09/20-weum-minutes.html
+00:00:00 <Bert> Next meeting: https://www.w3.org/2022/11/08-weum-minutes.html
+
