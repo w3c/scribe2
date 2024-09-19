@@ -174,7 +174,7 @@ my $stylesheet;			# URL of style sheet, undef = use defaults
 my $mathjax =			# undef = no math; string is MathJax URL
   'https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js';
 my $islide =			# String is i-slide library URL
-  'https://w3c.github.io/i-slide/i-slide.js?selector=a.islide';
+  'https://w3c.github.io/i-slide/i-slide-2.js?selector=a.islide';
 my $github = 1;			# If 0, don't make links for GitHub issues
 my $ghurlbot = 1;		# If 0, hide conversations with GHURLbot
 
