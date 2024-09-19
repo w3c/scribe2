@@ -38,10 +38,10 @@ cat >$TMP4 <<EOF
 <span id=x004>… this continues the previous line</span></p>
 <p id=x007 class="phone s01"><cite>Ben:</cite> a link:<br>
 <span id=x008>… <a href="http://example.org/example">Example</a></span></p>
-<p id=x009 class=summary><a class=islide href="https://example.org/slides#4">[Slide 4]</a></p>
+<p id=x009 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#4">[Slide 4]</a></p>
 <p id=x010 class="phone s01"><cite>Ben:</cite> this continues Ben's text</p>
 <p id=x011 class=summary>Everybody claps</p>
-<p id=x012 class=summary><a class=islide href="https://example.org/slides#5">[Slide 5]</a></p>
+<p id=x012 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#5">[Slide 5]</a></p>
 <p id=x013 class=summary>This does not continue anything</p>
 <p id=x014 class=summary>Repository: w3c/test</p>
 <p id=x015 class=summary>Not a continuation.</p>

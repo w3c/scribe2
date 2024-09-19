@@ -14,5 +14,5 @@ EOF
 perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
 cat $TMP2
 
-grep -E '<a class=islide href="https://example.org/slides.pdf#page=1">' $TMP2 || exit 1
+grep -E '<a class=islide data-islide-srcref="" href="https://example.org/slides.pdf#page=1">' $TMP2 || exit 1
 exit 0
