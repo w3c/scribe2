@@ -851,10 +851,10 @@ sub make_id($)
 
 
 # Main body
-my $revision = '$Revision: HEAD-232 $'
+my $revision = '$Revision: hash-ids-233 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Sep 19 18:48:52 2024 UTC $'
+my $versiondate = '$Date: Thu Sep 19 19:33:56 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1999,4 +1999,3 @@ You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
 with `no' (e.g., --nokeeplines). For the full manual see
 L<https://w3c.github.io/scribe2/scribedoc.html>
-ml>
