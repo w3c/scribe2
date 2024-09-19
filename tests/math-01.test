@@ -24,8 +24,8 @@ EOF
 cat >$TMP4 <<'EOF'
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>A line without emphasis.</p>
-<p id=x002 class=summary>A line with displayed math: <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\frac{1}{1+x^{2}}" display="block">
+<section><p id=0a0c class=summary>A line without emphasis.</p>
+<p id=b6e8 class=summary>A line with displayed math: <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\frac{1}{1+x^{2}}" display="block">
   <mfrac>
     <mn>1</mn>
     <mrow>
@@ -39,7 +39,7 @@ cat >$TMP4 <<'EOF'
   </mfrac>
 </math>
 </p>
-<p id=x003 class=summary>A line with inline math: <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\sqrt{\frac{1}{x}}" display="inline">
+<p id=0ac5 class=summary>A line with inline math: <math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\sqrt{\frac{1}{x}}" display="inline">
   <msqrt>
     <mfrac>
       <mn>1</mn>
@@ -48,7 +48,7 @@ cat >$TMP4 <<'EOF'
   </msqrt>
 </math>
 </p>
-<p id=x004 class=summary>A line with <a href="http://example.org/1/"><math xmlns="http://www.w3.org/1998/Math/MathML" alttext="e=mc^{2}" display="inline">
+<p id=2727 class=summary>A line with <a href="http://example.org/1/"><math xmlns="http://www.w3.org/1998/Math/MathML" alttext="e=mc^{2}" display="inline">
   <mrow>
     <mi>e</mi>
     <mo>=</mo>
@@ -63,7 +63,7 @@ cat >$TMP4 <<'EOF'
   </mrow>
 </math>
 ./</a></p>
-<p id=x005 class=summary>A line with an <a href="http://example.org/"><math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\sin(\pi)" display="inline">
+<p id=3a08 class=summary>A line with an <a href="http://example.org/"><math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\sin(\pi)" display="inline">
   <mrow>
     <mi>sin</mi>
     <mo>⁡</mo>
@@ -75,7 +75,7 @@ cat >$TMP4 <<'EOF'
   </mrow>
 </math>
 </a> not at the end.</p>
-<p id=x006 class=summary>A line with <a href="http://example.org/3/"><math xmlns="http://www.w3.org/1998/Math/MathML" alttext="ax+y^{3}" display="inline">
+<p id=acab class=summary>A line with <a href="http://example.org/3/"><math xmlns="http://www.w3.org/1998/Math/MathML" alttext="ax+y^{3}" display="inline">
   <mrow>
     <mrow>
       <mi>a</mi>

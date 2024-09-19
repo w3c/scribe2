@@ -62,31 +62,31 @@ cat >$TMP2 <<-EOF
 	<nav id=toc>
 	<h2>Contents</h2>
 	<ol>
-	<li><a href="#t01">HTML 10.2</a></li>
-	<li><a href="#t02">HTML 11.0</a></li>
-	<li><a href="#t03">HTML 2.1</a></li>
+	<li><a href="#58ea">HTML 10.2</a></li>
+	<li><a href="#1680">HTML 11.0</a></li>
+	<li><a href="#25b1">HTML 2.1</a></li>
 	</ol>
 	</nav>
 	</div>
 	
 	<main id=meeting class=meeting>
 	<h2>Meeting minutes</h2>
-	<section><p id=x002 class=summary>Welcome</p>
+	<section><p id=a076 class=summary>Welcome</p>
 	</section>
 	
 	<section>
-	<h3 id=t01>HTML 10.2</h3>
-	<p id=x005 class="phone s01"><cite>Ben:</cite> I'm still on 2.0</p>
+	<h3 id=58ea>HTML 10.2</h3>
+	<p id=5301 class="phone s01"><cite>Ben:</cite> I'm still on 2.0</p>
 	</section>
 	
 	<section>
-	<h3 id=t02>HTML 11.0</h3>
-	<p id=x008 class="phone s01"><cite>Ben:</cite> How about 2.1?</p>
+	<h3 id=1680>HTML 11.0</h3>
+	<p id=333a class="phone s01"><cite>Ben:</cite> How about 2.1?</p>
 	</section>
 	
 	<section>
-	<h3 id=t03>HTML 2.1</h3>
-	<p id=x011 class="phone s02"><cite>plh:</cite> Good idea!</p>
+	<h3 id=25b1>HTML 2.1</h3>
+	<p id=04a3 class="phone s02"><cite>plh:</cite> Good idea!</p>
 	</section>
 	</main>
 	

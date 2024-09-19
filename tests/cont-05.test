@@ -23,11 +23,11 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x004 class="phone s01"><cite>Pete:</cite> Something else<br>
-<span id=x005>… I wanted to say.</span><br>
-<span id=x006>… Very important</span></p>
-<p id=x007 class=summary><a href="http://example.org/example">Example</a></p>
-<p id=x008 class="phone s01"><cite>Pete:</cite> This is a continuation.</p>
+<section><p id=2192 class="phone s01"><cite>Pete:</cite> Something else<br>
+<span id=f93f>… I wanted to say.</span><br>
+<span id=ba85>… Very important</span></p>
+<p id=d682 class=summary><a href="http://example.org/example">Example</a></p>
+<p id=7073 class="phone s01"><cite>Pete:</cite> This is a continuation.</p>
 </section>
 </main>
 EOF

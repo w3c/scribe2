@@ -28,15 +28,15 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=r01 class=resolution><strong>RESOLUTION:</strong> We do as<br>
-<span id=x003>… I wanted to say.</span><br>
-<span id=x004>… Very important</span><br>
-<span id=x005>… This is part of it.</span></p>
-<p id=a01 class=action><strong>ACTION:</strong> Pete: Write an action<br>
-<span id=x012>… over two lines.</span></p>
-<p id=i01 class=issue><strong>ISSUE:</strong> This is an issue<br>
-<span id=x016>… which is very important.</span></p>
-<p id=x017 class=irc><cite>&lt;foo&gt;</cite> s/hmmm/hmm/</p>
+<section><p id= class=resolution><strong>RESOLUTION:</strong> We do as<br>
+<span id=f93f>… I wanted to say.</span><br>
+<span id=f378>… Very important</span><br>
+<span id=9a9b>… This is part of it.</span></p>
+<p id=8b4a class=action><strong>ACTION:</strong> Pete: Write an action<br>
+<span id=7f0c>… over two lines.</span></p>
+<p id=633a class=issue><strong>ISSUE:</strong> This is an issue<br>
+<span id=484b>… which is very important.</span></p>
+<p id=f8dd class=irc><cite>&lt;foo&gt;</cite> s/hmmm/hmm/</p>
 </section>
 </main>
 EOF
@@ -46,4 +46,4 @@ perl scribe.perl $TMP1 >$TMP2 || exit 1
 # Extract just the minutes
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
 
-diff -u $TMP3 $TMP4
+diff -u $TMP4 $TMP3
