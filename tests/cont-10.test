@@ -33,22 +33,22 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x002 class=summary>Slideset: <a href="https://example.org/slides">https://<wbr>example.org/<wbr>slides</a></p>
-<p id=x003 class=summary>this continues nothing<br>
-<span id=x004>… this continues the previous line</span></p>
-<p id=x007 class="phone s01"><cite>Ben:</cite> a link:<br>
-<span id=x008>… <a href="http://example.org/example">Example</a></span></p>
-<p id=x009 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#4">[Slide 4]</a></p>
-<p id=x010 class="phone s01"><cite>Ben:</cite> this continues Ben's text</p>
-<p id=x011 class=summary>Everybody claps</p>
-<p id=x012 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#5">[Slide 5]</a></p>
-<p id=x013 class=summary>This does not continue anything</p>
-<p id=x014 class=summary>Repository: w3c/test</p>
-<p id=x015 class=summary>Not a continuation.</p>
-<p id=x016 class=summary><a href="https://github.com/w3c/test/issues/13">#13</a></p>
-<p id=x017 class=summary>Repository- w3c/test</p>
-<p id=x018 class=summary>Not a continuation either.<br>
-<span id=x019>… This continues the previous line.</span></p>
+<section><p id=3ef0 class=summary>Slideset: <a href="https://example.org/slides">https://<wbr>example.org/<wbr>slides</a></p>
+<p id=322f class=summary>this continues nothing<br>
+<span id=a613>… this continues the previous line</span></p>
+<p id=a852 class="phone s01"><cite>Ben:</cite> a link:<br>
+<span id=e2fa>… <a href="http://example.org/example">Example</a></span></p>
+<p id=f067 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#4">[Slide 4]</a></p>
+<p id=3c6d class="phone s01"><cite>Ben:</cite> this continues Ben's text</p>
+<p id=8842 class=summary>Everybody claps</p>
+<p id=3067 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#5">[Slide 5]</a></p>
+<p id=3cb6 class=summary>This does not continue anything</p>
+<p id=1a92 class=summary>Repository: w3c/test</p>
+<p id=a232 class=summary>Not a continuation.</p>
+<p id=5b9b class=summary><a href="https://github.com/w3c/test/issues/13">#13</a></p>
+<p id=1993 class=summary>Repository- w3c/test</p>
+<p id=5b9a class=summary>Not a continuation either.<br>
+<span id=766c>… This continues the previous line.</span></p>
 </section>
 </main>
 EOF

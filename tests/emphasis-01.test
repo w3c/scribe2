@@ -25,17 +25,17 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>A line without emphasis.</p>
-<p id=x002 class=summary>A line with a <em>italic the end.</em></p>
-<p id=x003 class=summary>A line with a <em>italic</em> not at the end.</p>
-<p id=x004 class=summary>A line with <strong>bold the end.</strong></p>
-<p id=x005 class=summary>A line with <strong>bold</strong> not at the end.</p>
-<p id=x006 class=summary>A line with <u>underline at the end.</u></p>
-<p id=x007 class=summary>A line with <u>underline</u> not at the end.</p>
-<p id=x008 class=summary><u>Several</u> <em>things</em> <strong>in</strong> the same <u>line.</u></p>
-<p id=x009 class=summary>And <strong>some <em>nested</em> things</strong> as well.</p>
-<p id=x010 class=summary>And <strong>some <em>even <u>more</u> nested</em> things</strong> as well.</p>
-<p id=x011 class=summary>And <strong><em>bold italic.</em></strong></p>
+<section><p id=0a0c class=summary>A line without emphasis.</p>
+<p id=30ab class=summary>A line with a <em>italic the end.</em></p>
+<p id=1932 class=summary>A line with a <em>italic</em> not at the end.</p>
+<p id=2c8e class=summary>A line with <strong>bold the end.</strong></p>
+<p id=d250 class=summary>A line with <strong>bold</strong> not at the end.</p>
+<p id=7e3f class=summary>A line with <u>underline at the end.</u></p>
+<p id=cc34 class=summary>A line with <u>underline</u> not at the end.</p>
+<p id=79bf class=summary><u>Several</u> <em>things</em> <strong>in</strong> the same <u>line.</u></p>
+<p id=2323 class=summary>And <strong>some <em>nested</em> things</strong> as well.</p>
+<p id=6013 class=summary>And <strong>some <em>even <u>more</u> nested</em> things</strong> as well.</p>
+<p id=7cbf class=summary>And <strong><em>bold italic.</em></strong></p>
 </section>
 </main>
 EOF

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Test github links à la webrtc-pc#32
+
+trap 'rm $TMP1 $TMP2' 0
+TMP1=`mktemp /tmp/slide-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/slide-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Dom: I like webrtc-pc#32 and mediacapture-main#42
+<foo> Repo: https://github.com/webmachinelearning/webnn
+<foo> Dom: Talking about pull #34
+<foo> Dom: compare it to model-loader#12
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+grep -E '<a href="https://github.com/w3c/webrtc-pc/issues/32">' $TMP2 || exit 1
+grep -E '<a href="https://github.com/webmachinelearning/webnn/issues/34">' $TMP2 || exit 1
+grep -E '<a href="https://github.com/webmachinelearning/model-loader/issues/12">' $TMP2 || exit 1
+exit 0

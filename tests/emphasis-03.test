@@ -24,16 +24,16 @@ EOF
 cat >$TMP4 <<'EOF'
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>A line without code</p>
-<p id=x002 class=summary><code>code</code> at the start, in the <code>middle</code> and at the <code>end</code></p>
-<p id=x003 class=summary>With <code> spaces </code></p>
-<p id=x004 class=summary>Backquotes inside the code: <code>a`b</code></p>
-<p id=x005 class=summary>Only spaces <code>   </code> in the code.</p>
-<p id=x006 class=summary>Short code: <code>q</code></p>
-<p id=x007 class=summary>Verbatim spaces <em>inside <code>    </code> emphasis.</em></p>
-<p id=x008 class=summary>Italics inside code <code>inside <em>emphasis.</em></code></p>
-<p id=x009 class=summary>A <a href="https://example.org/"><code>verbatim link</code></a></p>
-<p id=x010 class=summary>No content, so not matched: ``</p>
+<section><p id=75cf class=summary>A line without code</p>
+<p id=7242 class=summary><code>code</code> at the start, in the <code>middle</code> and at the <code>end</code></p>
+<p id=714b class=summary>With <code> spaces </code></p>
+<p id=960a class=summary>Backquotes inside the code: <code>a`b</code></p>
+<p id=6791 class=summary>Only spaces <code>   </code> in the code.</p>
+<p id=46da class=summary>Short code: <code>q</code></p>
+<p id=046f class=summary>Verbatim spaces <em>inside <code>    </code> emphasis.</em></p>
+<p id=9608 class=summary>Italics inside code <code>inside <em>emphasis.</em></code></p>
+<p id=9b00 class=summary>A <a href="https://example.org/"><code>verbatim link</code></a></p>
+<p id=8155 class=summary>No content, so not matched: ``</p>
 </section>
 </main>
 EOF

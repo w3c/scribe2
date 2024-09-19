@@ -184,7 +184,6 @@ my @diagnostics;		# Collected warnings and other info
 my $recordingstart;         	# Time of recording start secs since midnight)
 my $recordingend;         	# Time of recording end (secs since midnight)
 my @repositories = ();		# List of repo URLs for expanding issue refs
-my %ids;			# All IDs (used to ensure unique IDs)
 
 # Used to download slideset when necessary
 my $ua = LWP::UserAgent->new(timeout => 10);
@@ -838,23 +837,11 @@ sub remove_repositories($)
 }
 
 
-# make_id -- make a unique ID based using a hash of a given text
-sub make_id($)
-{
-  my $hash = 0;
-  $hash = (($hash + $_) << 7) + ($hash >> 11) foreach unpack('c*', $_[0]);
-  $hash &= 0xFFFF;
-  $hash++ while exists $ids{$hash};
-  $ids{$hash} = 1;
-  return sprintf "%04x", $hash;
-}
-
-
 # Main body
-my $revision = '$Revision: hash-ids-233 $'
+my $revision = '$Revision: 231 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Sep 19 19:33:56 2024 UTC $'
+my $versiondate = '$Date: Thu Sep 19 15:31:01 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -880,6 +867,11 @@ my $embeddedslideset;           # id of the link element that embeds a data url
 my $embeddedslidesetcounter = 0;# counter of embedded slidesets
 my $recording;         		# URL of the recording of the meeting
 my $recording_link;		# HTML-formatted link to the recording
+my $topicid = 't00';		# Generates unique ID for each topic
+my $actionid = 'a00';		# Generates unique ID for each action
+my $resolutionid = 'r00';	# Generates unique ID for each resolution
+my $issueid = 'i00';		# Generates unique ID for each issue
+my $lineid = 'x000';		# Generates unique ID for each line
 my %speakers;			# Unique ID for each speaker
 my %namedanchors;		# Set of already used IDs for NamedAnchorsHere
 my %curscribes;			# Indexes are the current scribenicks
@@ -1087,7 +1079,6 @@ add_scribes($scribenick, \%curscribes, \@scribes, \%scribenames);
 for (my $i = 0; $i < @records; $i++) {
   my $is_scribe = is_cur_scribe($records[$i]->{speaker}, \%curscribes);
   $_ = $records[$i]->{text};
-  $records[$i]->{id} = make_id($_);
 
   if ($records[$i]->{type} eq 'o') {
     # This record was already processed
@@ -1197,8 +1188,8 @@ for (my $i = 0; $i < @records; $i++) {
     if ($embeddedslideset) {
 	$records[$i]->{archive} = $embeddedslideset . "#" . "page=" . $slidenumber;
     }
-    # Put link in {data}, with fragment ID "#n" (or #page=n for PDF URLs).
-    $records[$i]->{data} = $lastslideset . "#" .
+    # Put link in {id}, with fragment ID "#n" (or #page=n for PDF URLs).
+    $records[$i]->{id} = $lastslideset . "#" .
 	($lastslideset =~ /\.pdf/ ? "page=" : "") . $slidenumber;
     $records[$i]->{text} = "$slidenumber";
 
@@ -1233,10 +1224,12 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *topic *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
+    $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif (/^ *sub-?topic *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 'T';		# Mark as subtopic line
     $records[$i]->{text} = $1;
+    $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($dash_topics && /^ *-+ *$/) {
     my $topicfound = 0;
@@ -1244,6 +1237,7 @@ for (my $i = 0; $i < @records; $i++) {
       if ($records[$j]->{speaker} eq $records[$i]->{speaker}) {
 	$records[$i]->{type} = 't';
 	$records[$i]->{text} = $records[$j]->{text} =~ s/^ *(.*?) *$/$1/r;
+	$records[$i]->{id} = ++$topicid;
 	$records[$j]->{type} = 'o';
         $topicfound = 1;
 	last;
@@ -1270,14 +1264,17 @@ for (my $i = 0; $i < @records; $i++) {
 	   /^ *action +(.*?(?: to |[:：]).*?) *$/i) {
     $records[$i]->{type} = 'a';		# Mark as action line
     $records[$i]->{text} = $1;
+    $records[$i]->{id} = ++$actionid;	# Unique ID
 
   } elsif (/^ *resol(?:ved|ution) *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 'r';		# Mark as resolution line
     $records[$i]->{text} = $1;
+    $records[$i]->{id} = ++$resolutionid;
 
   } elsif (/^ *issue *[:：] *(.*?) *$/i) {
     $records[$i]->{type} = 'u';		# Mark as issue line
     $records[$i]->{text} = $1;
+    $records[$i]->{id} = ++$issueid;	# Unique ID
 
   } elsif (/^ *agenda *[:：] *($urlpat) *$/i) {
     $agenda = '<a href="' . esc($1) . "\">$agenda_icon</a>\n";
@@ -1359,6 +1356,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 't';		# Mark as topic line
     $records[$i]->{text} = $1;
     $records[$i]->{text} =~ s/ -- taken up \[from.*//;
+    $records[$i]->{id} = ++$topicid;	# Unique ID
 
   } elsif ($use_zakim && $records[$i]->{speaker} eq 'Zakim' &&
 	   /the attendees (?:were|have been) (.*?),?$/){
@@ -1411,7 +1409,7 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{speaker} eq 'trackbot' &&
 	   /^([a-zA-Z]+-[0-9]+) -- (.*)$/) {
     $records[$i]->{type} = 'B';		# A structured response from trackbot
-    $records[$i]->{data} = $2;
+    $records[$i]->{id} = $2;
     $records[$i]->{text} = $1;
 
   } elsif ($records[$i]->{speaker} eq 'trackbot' && /^$urlpat$/i) {
@@ -1443,13 +1441,13 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
 	   /^($urlpat) -> ((?:Issue |Action |Pull Request |\#)[0-9]+) ?(.*)$/i) {
     $records[$i]->{type} = 'B';		# A structured response from ghurlbot
-    $records[$i]->{data} = $3;
+    $records[$i]->{id} = $3;
     $records[$i]->{text} = "->$1 $2";
 
   } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
 	   /^($urlpat) -> (@.*)$/i) {	# A link to a GitHub user
     $records[$i]->{type} = 'B';
-    $records[$i]->{data} = '';
+    $records[$i]->{id} = '';
     $records[$i]->{text} = "->$1 $2";
 
   } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
@@ -1472,7 +1470,7 @@ for (my $i = 0; $i < @records; $i++) {
       push(@diagnostics, "Duplicate named anchor \"$a\" ignored.");
     } else {
       $records[$i]->{type} = 'n';
-      $records[$i]->{data} = esc($a);
+      $records[$i]->{id} = esc($a);
       $namedanchors{$a} = 1;
     }
 
@@ -1580,7 +1578,7 @@ push @diagnostics, "Active on IRC: " .
 #
 # Each type of record is converted to a specific HTML fragment, with
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
-# by the speaker ID, %5$s by the record's data (if any), %6$s by a
+# by the speaker ID, %5$s by a unique ID for the record, %6$s by a
 # link to a recording of the meeting if any, and %7$s by the base64 of an
 # archived downloaded content if any.
 #
@@ -1610,24 +1608,24 @@ if (defined $recording) {
 # the speaker, 5 = unique ID for the line, 6 = URL of recording
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
-  b => ["<p id=%2\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
-  B => ["<p id=%2\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s</strong> %5\$s</p>\n", 0],
-  d => ["<p id=%2\$s class=summary>%3\$s</p>\n", 1],
-  D => ["<pre id=%2\$s class=summary>\n%3\$s</pre>\n", 0],
-  i => [$scribeonly ? '' : "<p id=%2\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 1],
-  I => [$scribeonly ? '' : "<p id=%2\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n", 0],
-  c => [$scribeonly ? '' : "<p id=%2\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
+  b => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
+  B => ["<p id=%5\$s class=bot><cite>&lt;%1\$s&gt;</cite> <strong>%3\$s</strong> %2\$s</p>\n", 0],
+  d => ["<p id=%5\$s class=summary>%3\$s</p>\n", 1],
+  D => ["<pre id=%5\$s class=summary>\n%3\$s</pre>\n", 0],
+  i => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 1],
+  I => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n", 0],
+  c => [$scribeonly ? '' : "<p id=%5\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
   o => ['', 0],
-  r => ["<p id=%5\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",, 1],
-  s => ["<p id=%2\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
-  n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%5\$s\">⚓</a></p>\n", 0],
+  r => ["<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",, 1],
+  s => ["<p id=%5\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
+  n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%2\$s\">⚓</a></p>\n", 0],
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
   T => ["<h4 id=%2\$s>%3\$s%6\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
-  slideset => ["<p id=%2\$s class=summary>Slideset: %3\$s%7\$s</p>\n", 0],
-  slide => ["<p id=%2\$s class=summary><a class=islide data-islide-srcref=\"%7\$s\" href=\"%5\$s\">[Slide %3\$s]</a></p>\n", 1],
-  repo => ["<p id=%2\$s class=summary>Repository: %3\$s</p>\n", 0],
-  drop => ["<p id=%2\$s class=summary>Repository- %3\$s</p>\n", 1],
+  slideset => ["<p id=%5\$s class=summary>Slideset: %3\$s%7\$s</p>\n", 0],
+  slide => ["<p id=%5\$s class=summary><a class=islide data-islide-srcref=\"%7\$s\" href=\"%2\$s\">[Slide %3\$s]</a></p>\n", 1],
+  repo => ["<p id=%5\$s class=summary>Repository: %3\$s</p>\n", 0],
+  drop => ["<p id=%5\$s class=summary>Repository- %3\$s</p>\n", 1],
     );
 
 my $minutes = '';
@@ -1650,17 +1648,17 @@ foreach my $p (@records) {
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s%7$.0s',
       esc($p->{speaker}),						    # %1
-      $p->{id},								    # %2
+      $p->{id} // '',							    # %2
       esc($p->{text}, $emphasis && $linepat{$p->{type}}[1], 1, 1, $github), # %3
       $speakers{fc $p->{speaker}} // '',				    # %4
-      $p->{data} // '',							    # %5
+      ++$lineid,							    # %5
       link_to_recording($canonical_recording, $p->{time}),		    # %6
       $p->{archive} // '';						    # %7
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
-    $line =~ s|\t([^\t]*)|"<br>\n<span id=" . make_id($1) . ">… $1"|e; # 1st \t
-    $line =~ s|\t([^\t]*)|"</span><br>\n<span id=" . make_id($1) . ">… $1"|ge;
+    $line =~ s|\t|"<br>\n<span id=" . ++$lineid . ">… "|e; # First line
+    $line =~ s|\t|"</span><br>\n<span id=" . ++$lineid . ">… "|ge; # Others
     $line =~ s|</p>|</span></p>|; # Last line
   }
   $minutes .= $line;
@@ -1999,3 +1997,5 @@ You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
 with `no' (e.g., --nokeeplines). For the full manual see
 L<https://w3c.github.io/scribe2/scribedoc.html>
+scribedoc.html>
+ribedoc.html>

@@ -23,15 +23,15 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>A line without emphasis.</p>
-<p id=x002 class=summary>A line with <a href="http://example.org/1/"><em>italic link 1.</em></a></p>
-<p id=x003 class=summary>A line with an <a href="http://example.org/"><em>italic link</em></a> not at the end.</p>
-<p id=x004 class=summary>A line with <a href="http://example.org/3/"><em>italic link 3</em> link</a></p>
-<p id=x005 class=summary>A line with an <a href="http://example.org/">/ambiguous link</a></p>
-<p id=x006 class=summary>A line with a bare URL:<a href="http://example.org/_not_underlined_">http://<wbr>example.org/<wbr>_not_underlined_</a></p>
-<p id=x007 class=summary>A line with <a href="http://example.org/1*"><strong>bold link 1</strong></a></p>
-<p id=x008 class=irc><cite>&lt;foo&gt;</cite> s/something /something else/</p>
-<p id=x009 class=irc><cite>&lt;foo&gt;</cite> s/something /not _underlined_ here/</p>
+<section><p id=0a0c class=summary>A line without emphasis.</p>
+<p id=fcef class=summary>A line with <a href="http://example.org/1/"><em>italic link 1.</em></a></p>
+<p id=d83a class=summary>A line with an <a href="http://example.org/"><em>italic link</em></a> not at the end.</p>
+<p id=daea class=summary>A line with <a href="http://example.org/3/"><em>italic link 3</em> link</a></p>
+<p id=674b class=summary>A line with an <a href="http://example.org/">/ambiguous link</a></p>
+<p id=4b01 class=summary>A line with a bare URL:<a href="http://example.org/_not_underlined_">http://<wbr>example.org/<wbr>_not_underlined_</a></p>
+<p id=533f class=summary>A line with <a href="http://example.org/1*"><strong>bold link 1</strong></a></p>
+<p id=1a1e class=irc><cite>&lt;foo&gt;</cite> s/something /something else/</p>
+<p id=ba23 class=irc><cite>&lt;foo&gt;</cite> s/something /not _underlined_ here/</p>
 </section>
 </main>
 EOF
