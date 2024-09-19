@@ -838,10 +838,10 @@ sub remove_repositories($)
 
 
 # Main body
-my $revision = '$Revision: google-slides-232 $'
+my $revision = '$Revision: 231 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Sep 18 23:49:16 2024 UTC $'
+my $versiondate = '$Date: Thu Sep 19 15:31:01 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1171,7 +1171,7 @@ for (my $i = 0; $i < @records; $i++) {
 	if ($response->is_success) {
 	    $embeddedslidesetcounter++;
 	    $embeddedslideset = "slideset-data-" . $embeddedslidesetcounter;
-	    $records[$i]->{archive} = " (<a id='" . $embeddedslideset ."' download href='data:application/pdf;base64," . encode_base64($response->decoded_content) . "'>download archived PDF copy</a>)";
+	    $records[$i]->{archive} = " (<a id='" . $embeddedslideset ."' href='data:application/pdf;base64," . encode_base64($response->decoded_content) . "'>archived PDF copy</a>)";
 	}
     }
     $has_slides = 1;
@@ -1578,8 +1578,8 @@ push @diagnostics, "Active on IRC: " .
 #
 # Each type of record is converted to a specific HTML fragment, with
 # %1$s replaced by the speaker, %2$s by the ID, %3$s by the text, %4$s
-# by the speaker ID, %5$s by a unique ID for the record and %6$s by a
-# link to a recording of the meeting if any, %7$s by the base64 of an
+# by the speaker ID, %5$s by a unique ID for the record, %6$s by a
+# link to a recording of the meeting if any, and %7$s by the base64 of an
 # archived downloaded content if any.
 #
 # The 1 or 0 after the pattern indicates whether the text (%3$) can be
@@ -1998,3 +1998,4 @@ case-insensitive and can be abbreviated. Some options can be negated
 with `no' (e.g., --nokeeplines). For the full manual see
 L<https://w3c.github.io/scribe2/scribedoc.html>
 scribedoc.html>
+ribedoc.html>
