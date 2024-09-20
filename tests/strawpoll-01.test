@@ -30,20 +30,20 @@ EOF
 cat >$TMP2 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x002 class="phone s01"><cite>Pete:</cite> Who is in favor?</p>
-<p id=x003 class=irc><cite>&lt;annabel&gt;</cite> +1</p>
-<p id=x004 class=irc><cite>&lt;pete&gt;</cite> +1</p>
-<p id=x005 class=irc><cite>&lt;grumpy&gt;</cite> -1</p>
-<p id=x006 class=irc><cite>&lt;marjan&gt;</cite> +100</p>
-<p id=x007 class=irc><cite>&lt;foo&gt;</cite> +1</p>
-<p id=x008 class=irc><cite>&lt;foo&gt;</cite> +100! if I get to choose the color :-)</p>
-<p id=r01 class=resolution><strong>RESOLUTION:</strong> proposal is adopted</p>
-<p id=x010 class=irc><cite>&lt;foo&gt;</cite> Phew!</p>
-<p id=x011 class="phone s01"><cite>Pete:</cite> Shall we vote again?</p>
-<p id=x012 class=irc><cite>&lt;foo&gt;</cite> -1</p>
-<p id=x013 class=irc><cite>&lt;marjan&gt;</cite> -1</p>
-<p id=x014 class=summary>The meeting ends with people cheering.<br>
-<span id=x015>… +1 has won.</span></p>
+<section><p id=c492 class="phone s01"><cite>Pete:</cite> Who is in favor?</p>
+<p id=d882 class=irc><cite>&lt;annabel&gt;</cite> +1</p>
+<p id=d883 class=irc><cite>&lt;pete&gt;</cite> +1</p>
+<p id=5882 class=irc><cite>&lt;grumpy&gt;</cite> -1</p>
+<p id=f30b class=irc><cite>&lt;marjan&gt;</cite> +100</p>
+<p id=d884 class=irc><cite>&lt;foo&gt;</cite> +1</p>
+<p id=85fd class=irc><cite>&lt;foo&gt;</cite> +100! if I get to choose the color :-)</p>
+<p id= class=resolution><strong>RESOLUTION:</strong> proposal is adopted</p>
+<p id=5139 class=irc><cite>&lt;foo&gt;</cite> Phew!</p>
+<p id=2cba class="phone s01"><cite>Pete:</cite> Shall we vote again?</p>
+<p id=5883 class=irc><cite>&lt;foo&gt;</cite> -1</p>
+<p id=5884 class=irc><cite>&lt;marjan&gt;</cite> -1</p>
+<p id=897e class=summary>The meeting ends with people cheering.<br>
+<span id=285a>… +1 has won.</span></p>
 </section>
 </main>
 EOF

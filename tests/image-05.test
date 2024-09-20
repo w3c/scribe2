@@ -13,12 +13,11 @@ url2="https://www.w3.org/Icons/www24.png"
 title2="WWW logo"
 
 # Expected line.
-echo "<section><p id=x001 class=summary>  And here are some images:    <a href=\"$url1\"><img src=\"$url1\" alt=\"$title1\"></a>   <a href=\"$url2\"><img src=\"$url2\" alt=\"$title2\"></a></p>" >$TMP1
+echo "<section><p id=9a22 class=summary>  And here are some images:    <a href=\"https://www.w3.org/Icons/w3c_48x48.png\"><img src=\"https://www.w3.org/Icons/w3c_48x48.png\" alt=\"W3C logo\"></a>   <a href=\"https://www.w3.org/Icons/www24.png\"><img src=\"https://www.w3.org/Icons/www24.png\" alt=\"WWW logo\"></a></p>" >$TMP1
 
 # Get the generated line:
 echo "<foo>   And here are some images:    -->$title1  $url1   -->   $title2 $url2" | \
   perl scribe.perl >$TMP3
-cat $TMP3
 grep "$url1" $TMP3 >$TMP2
 
 # Compare:

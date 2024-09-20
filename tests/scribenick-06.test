@@ -18,10 +18,10 @@ EOF
 cat >$TMP2 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>The meeting starts.</p>
-<p id=x002 class="phone s01"><cite>Rob:</cite> I'm here.</p>
-<p id=x004 class="phone s01"><cite>Rob:</cite> Or am I?</p>
-<p id=x005 class=summary>The meeting ends.</p>
+<section><p id=b107 class=summary>The meeting starts.</p>
+<p id=bcb5 class="phone s01"><cite>Rob:</cite> I'm here.</p>
+<p id=5d7c class="phone s01"><cite>Rob:</cite> Or am I?</p>
+<p id=9a63 class=summary>The meeting ends.</p>
 </section>
 </main>
 EOF

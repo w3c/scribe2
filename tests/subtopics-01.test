@@ -22,26 +22,24 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>Not a topic</p>
-<h4 id=t01>This is a subtopic</h4>
-<p id=x003 class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
+<section><p id=ac74 class=summary>Not a topic</p>
+<h4 id=24ec>This is a subtopic</h4>
+<p id=f088 class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
 </section>
 
 <section>
-<h3 id=t02>First topic</h3>
+<h3 id=206f>First topic</h3>
 </section>
 
 <section>
-<h3 id=t03>Second one</h3>
-<h4 id=t04>This is 2.1</h4>
-<p id=x007 class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
-<h4 id=t05>This is 2.2</h4>
+<h3 id=4b7c>Second one</h3>
+<h4 id=cbeb>This is 2.1</h4>
+<p id=f089 class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
+<h4 id=cfb4>This is 2.2</h4>
 </section>
 </main>
 EOF
 perl scribe.perl $TMP1 >$TMP2 || exit 1
-
-cat $TMP2
 
 # Extract just the minutes
 sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3

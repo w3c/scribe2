@@ -17,7 +17,7 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x002 class=summary><a href="http://www.example.org/">my image</a></p>
+<section><p id=59b0 class=summary><a href="http://www.example.org/">my image</a></p>
 </section>
 </main>
 EOF

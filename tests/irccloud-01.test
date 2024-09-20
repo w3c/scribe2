@@ -148,10 +148,10 @@ Accessibility Conformance Testing Teleconference</h1>
 <nav id=toc>
 <h2>Contents</h2>
 <ol>
-<li><a href="#t01">Results of CFC</a></li>
-<li><a href="#t02">aria-* attribute is defined in WAI-ARIA: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results -</a></li>
-<li><a href="#t03">iframe element has accessible name: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results -</a></li>
-<li><a href="#t04">Rule tracking table - Revisit list, get status, and update: https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking - Wilco]</a></li>
+<li><a href="#6161">Results of CFC</a></li>
+<li><a href="#e6c2">aria-* attribute is defined in WAI-ARIA: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results -</a></li>
+<li><a href="#0592">iframe element has accessible name: https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results -</a></li>
+<li><a href="#d051">Rule tracking table - Revisit list, get status, and update: https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking - Wilco]</a></li>
 </ol>
 </nav>
 </div>
@@ -161,45 +161,45 @@ Accessibility Conformance Testing Teleconference</h1>
 <section></section>
 
 <section>
-<h3 id=t01>Results of CFC</h3>
-<p id=x021 class="phone s01"><cite>MJM:</cite> only positive responses<br>
-<span id=x022>… will be added to the Queue, have 3 rules now</span></p>
-<p id=x023 class="phone s02"><cite>WF:</cite> 3 need PRs, 2 other ones</p>
-<p id=x024 class="phone s01"><cite>MJM:</cite> Getting close to enough for AG</p>
-<p id=x025 class="phone s02"><cite>WF:</cite> should talk to AG chairs about when to send them another batch</p>
-<p id=x026 class="phone s01"><cite>MJM:</cite> Next leads meeting on August 5th. Could send then a notice that we've got rules. Will do that</p>
+<h3 id=6161>Results of CFC</h3>
+<p id=7611 class="phone s01"><cite>MJM:</cite> only positive responses<br>
+<span id=d1f8>… will be added to the Queue, have 3 rules now</span></p>
+<p id=bcd1 class="phone s02"><cite>WF:</cite> 3 need PRs, 2 other ones</p>
+<p id=19b9 class="phone s01"><cite>MJM:</cite> Getting close to enough for AG</p>
+<p id=5b6d class="phone s02"><cite>WF:</cite> should talk to AG chairs about when to send them another batch</p>
+<p id=0aac class="phone s01"><cite>MJM:</cite> Next leads meeting on August 5th. Could send then a notice that we've got rules. Will do that</p>
 </section>
 
 <section>
-<h3 id=t02>aria-* attribute is defined in WAI-ARIA: <a href="https://www.w3.org/2002/09/wbs/93339/ACTARIAAttribute2/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results</a> -</h3>
-<p id=x030 class="phone s01"><cite>MJM:</cite> 6 responses, only comment is on implementation data<br>
-<span id=x031>… Charu said rule does not check if the attributes are valid.</span></p>
-<p id=x034 class="phone s02"><cite>WF:</cite> Handled in another rule. We can link between rules. There is an open issue for this in the CG.<br>
-<span id=x035>… no composite rule for this needed, IMO</span><br>
-<span id=x036>… Open PR / issue has been closed.</span></p>
-<p id=x038 class="phone s01"><cite>MJM:</cite> There are no other concerns. It is done. I don't think the link between rules should block this rule publication.<br>
-<span id=x039>… We can send this out for CFC.</span></p>
-<p id=x041 class="phone s02"><cite>WF:</cite> This doesn't map to WCAG, we may not want to include this rule for AG.<br>
-<span id=x042>… Suggest we acknowledge it is accepted and then park it</span></p>
-<p id=x044 class="phone s01"><cite>MJM:</cite> Maybe we can make a tracking table for non-WCAG rules that are complete<br>
-<span id=x045>… I don't want it to muddy the water. I can create this table.</span></p>
-<p id=x046 class="phone s03"><cite>SAZ:</cite> I think that would be helpful. There are some talks with Matt King about integrating ARIA rules with some other thing they are working on.</p>
-<p id=x047 class="phone s01"><cite>MJM:</cite> Agreed, there will be a place to publish them associated with ARIA. We may have to come up with a proposal on how to do that.</p>
-<p id=x048 class="phone s03"><cite>SAZ:</cite> This is a discussion happening between EO and ARIA WG. I'll keep ACT in mind with that.</p>
+<h3 id=e6c2>aria-* attribute is defined in WAI-ARIA: <a href="https://www.w3.org/2002/09/wbs/93339/ACTARIAAttribute2/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results</a> -</h3>
+<p id=87ec class="phone s01"><cite>MJM:</cite> 6 responses, only comment is on implementation data<br>
+<span id=1427>… Charu said rule does not check if the attributes are valid.</span></p>
+<p id=b706 class="phone s02"><cite>WF:</cite> Handled in another rule. We can link between rules. There is an open issue for this in the CG.<br>
+<span id=721e>… no composite rule for this needed, IMO</span><br>
+<span id=67c3>… Open PR / issue has been closed.</span></p>
+<p id=6d87 class="phone s01"><cite>MJM:</cite> There are no other concerns. It is done. I don't think the link between rules should block this rule publication.<br>
+<span id=9449>… We can send this out for CFC.</span></p>
+<p id=78a6 class="phone s02"><cite>WF:</cite> This doesn't map to WCAG, we may not want to include this rule for AG.<br>
+<span id=e699>… Suggest we acknowledge it is accepted and then park it</span></p>
+<p id=d443 class="phone s01"><cite>MJM:</cite> Maybe we can make a tracking table for non-WCAG rules that are complete<br>
+<span id=169a>… I don't want it to muddy the water. I can create this table.</span></p>
+<p id=1b23 class="phone s03"><cite>SAZ:</cite> I think that would be helpful. There are some talks with Matt King about integrating ARIA rules with some other thing they are working on.</p>
+<p id=8340 class="phone s01"><cite>MJM:</cite> Agreed, there will be a place to publish them associated with ARIA. We may have to come up with a proposal on how to do that.</p>
+<p id=4dac class="phone s03"><cite>SAZ:</cite> This is a discussion happening between EO and ARIA WG. I'll keep ACT in mind with that.</p>
 </section>
 
 <section>
-<h3 id=t03>iframe element has accessible name: <a href="https://www.w3.org/2002/09/wbs/93339/ACTiFrameName/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results</a> -</h3>
-<p id=x051 class="phone s03"><cite>SAZ:</cite> Might be that these ARAI rules could go to the ARIA WG instead of AG</p>
-<p id=x052 class="phone s01"><cite>MJM:</cite> Might make sense for other specs like for EPUB</p>
-<p id=x054 class="phone s01"><cite>MJM:</cite> Next one is iframe. There are 4 responses. No new responses. Nothing new to talk about here.<br>
-<span id=x055>… Will have to prompt people to fill out the survey.</span></p>
+<h3 id=0592>iframe element has accessible name: <a href="https://www.w3.org/2002/09/wbs/93339/ACTiFrameName/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results</a> -</h3>
+<p id=66e8 class="phone s03"><cite>SAZ:</cite> Might be that these ARAI rules could go to the ARIA WG instead of AG</p>
+<p id=b332 class="phone s01"><cite>MJM:</cite> Might make sense for other specs like for EPUB</p>
+<p id=3aba class="phone s01"><cite>MJM:</cite> Next one is iframe. There are 4 responses. No new responses. Nothing new to talk about here.<br>
+<span id=0d8c>… Will have to prompt people to fill out the survey.</span></p>
 </section>
 
 <section>
-<h3 id=t04>Rule tracking table - Revisit list, get status, and update: <a href="https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking">https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking</a> - Wilco]</h3>
-<p id=x068 class="phone s01"><cite>MJM:</cite> iframe survey is closed<br>
-<span id=x069>… Will update this as we're talking</span></p>
+<h3 id=d051>Rule tracking table - Revisit list, get status, and update: <a href="https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking">https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking</a> - Wilco]</h3>
+<p id=34ff class="phone s01"><cite>MJM:</cite> iframe survey is closed<br>
+<span id=4ce5>… Will update this as we're talking</span></p>
 </section>
 </main>
 

@@ -90,17 +90,17 @@ cat >$TMP3 <<EOF
 
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x002 class=irc><cite>&lt;abram&gt;</cite> I use mosh (instead of plain ssh) out of habit and because at times it's been helpful with network latency and buffering</p>
-<p id=x003 class=irc><cite>&lt;abram&gt;</cite> BUT,</p>
-<p id=x004 class=irc><cite>&lt;abram&gt;</cite> ... every now and then, it replaces what I'm typing in irssi by something I have typed before</p>
-<p id=x005 class=irc><cite>&lt;abram&gt;</cite> In most cases I notice</p>
-<p id=x006 class=irc><cite>&lt;abram&gt;</cite> what I typed before hitting enter is lost every time, though</p>
-<p id=x007 class=irc><cite>&lt;abram&gt;</cite> but at times I don't notice</p>
-<p id=x008 class=irc><cite>&lt;abram&gt;</cite> and the result can be seemingly a randomly generated sentence</p>
-<p id=x009 class=irc><cite>&lt;abram&gt;</cite> such as &quot;… wrote mail to speakers n Twitter: Tzviya asked [...]&quot;</p>
-<p id=x010 class=irc><cite>&lt;abram&gt;</cite> anyone even remotely familiar with this particular side-effect of mosh? (could be mosh + screen?)</p>
-<p id=x011 class=irc><cite>&lt;sysbot&gt;</cite> new group formed: Metaverse Interoperability Community Group <a href="https://www.w3.org/2011/06/proposed_groups/?pgid=899">https://<wbr>www.w3.org/<wbr>2011/<wbr>06/<wbr>proposed_groups/?pgid=899</a></p>
-<p id=x012 class=irc><cite>&lt;Ralph&gt;</cite> vivien++</p>
+<section><p id=def5 class=irc><cite>&lt;abram&gt;</cite> I use mosh (instead of plain ssh) out of habit and because at times it's been helpful with network latency and buffering</p>
+<p id=2b2d class=irc><cite>&lt;abram&gt;</cite> BUT,</p>
+<p id=4c82 class=irc><cite>&lt;abram&gt;</cite> ... every now and then, it replaces what I'm typing in irssi by something I have typed before</p>
+<p id=d217 class=irc><cite>&lt;abram&gt;</cite> In most cases I notice</p>
+<p id=4e59 class=irc><cite>&lt;abram&gt;</cite> what I typed before hitting enter is lost every time, though</p>
+<p id=1e63 class=irc><cite>&lt;abram&gt;</cite> but at times I don't notice</p>
+<p id=f1fb class=irc><cite>&lt;abram&gt;</cite> and the result can be seemingly a randomly generated sentence</p>
+<p id=2133 class=irc><cite>&lt;abram&gt;</cite> such as &quot;… wrote mail to speakers n Twitter: Tzviya asked [...]&quot;</p>
+<p id=f144 class=irc><cite>&lt;abram&gt;</cite> anyone even remotely familiar with this particular side-effect of mosh? (could be mosh + screen?)</p>
+<p id=437d class=irc><cite>&lt;sysbot&gt;</cite> new group formed: Metaverse Interoperability Community Group <a href="https://www.w3.org/2011/06/proposed_groups/?pgid=899">https://<wbr>www.w3.org/<wbr>2011/<wbr>06/<wbr>proposed_groups/?pgid=899</a></p>
+<p id=db83 class=irc><cite>&lt;Ralph&gt;</cite> vivien++</p>
 </section>
 </main>
 

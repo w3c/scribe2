@@ -18,10 +18,10 @@ EOF
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 # New actions must be in the action summary.
-grep '<li><a href="#a01">bar to do this</a></li>' $TMP2 || exit 1
-grep '<li><a href="#a02">baz: do the same</a></li>' $TMP2 || exit 1
-grep '<li><a href="#a03">bar do this, too</a></li>' $TMP2 || exit 1
-grep '<li><a href="#a04">foo to stop giving actions</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">bar to do this</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">baz: do the same</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">bar do this, too</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">foo to stop giving actions</a></li>' $TMP2 || exit 1
 
 # The annotation on action-20 is not marked specially.
 grep 'class=summary>action-20: look at the documentation.' $TMP2 || exit 1

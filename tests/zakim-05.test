@@ -30,10 +30,10 @@ cat >$TMP2 <<EOF
 <nav id=toc>
 <h2>Contents</h2>
 <ol>
-<li><a href="#t01">Silver objections</a></li>
-<li><a href="#t02">next week's agenda</a></li>
-<li><a href="#t03">w3c/<wbr>wcag#1500</a></li>
-<li><a href="#t04">How should we include the designer's responsibility with regards to promoting accessible media players https://<wbr>deploy-preview-347--wai-curricula.netlify.app/<wbr>curricula/<wbr>designer-modules/<wbr>multimedia-and-animations/</a></li>
+<li><a href="#a99e">Silver objections</a></li>
+<li><a href="#6469">next week's agenda</a></li>
+<li><a href="#2c82">w3c/<wbr>wcag#1500</a></li>
+<li><a href="#62dd">How should we include the designer's responsibility with regards to promoting accessible media players https://<wbr>deploy-preview-347--wai-curricula.netlify.app/<wbr>curricula/<wbr>designer-modules/<wbr>multimedia-and-animations/</a></li>
 </ol>
 </nav>
 EOF

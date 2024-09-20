@@ -2,19 +2,9 @@
 
 # Test of inverted Xueyuan links without anchor text.
 
-trap 'rm $TMP1 $TMP2' 0
-TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
-TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
-
 url="ftp://example.org/test"
 
 # Get the generated line:
 echo "<foo> $url ->     " | \
   perl scribe.perl --urldisplay=full | \
-  grep "$url" >$TMP2
-
-# Expected line:
-echo "<section><p id=x001 class=summary><a href=\"$url\">$url</a></p>" >$TMP1
-
-# Compare:
-diff -u $TMP1 $TMP2
+  grep -E "<section><p.* class=summary><a href=\"$url\">$url</a></p>"

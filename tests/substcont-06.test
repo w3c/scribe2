@@ -18,10 +18,10 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x002 class="phone s01"><cite>Joe:</cite> Original text<br>
-<span id=x003>… First implicit continuation</span></p>
-<p id=x004 class=irc><cite>&lt;foo&gt;</cite> s/Pete: text/Josh: There's no Pete/</p>
-<p id=x005 class="phone s01"><cite>Joe:</cite> Second implicit continuation</p>
+<section><p id=1fb7 class="phone s01"><cite>Joe:</cite> Original text<br>
+<span id=c928>… First implicit continuation</span></p>
+<p id=07ad class=irc><cite>&lt;foo&gt;</cite> s/Pete: text/Josh: There's no Pete/</p>
+<p id=0553 class="phone s01"><cite>Joe:</cite> Second implicit continuation</p>
 </section>
 </main>
 EOF

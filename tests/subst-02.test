@@ -20,15 +20,15 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>Original text</p>
+<section><p id=af64 class=summary>Original text</p>
 </section>
 
 <section>
-<h3 id=t01>Second topic</h3>
-<p id=x003 class=summary>Another inserted line</p>
-<p id=x004 class=summary>Inserted line</p>
-<p id=x005 class=summary>Original text</p>
-<p id=x007 class=summary>More text</p>
+<h3 id=0e3d>Second topic</h3>
+<p id=efaa class=summary>Another inserted line</p>
+<p id=ad63 class=summary>Inserted line</p>
+<p id=af65 class=summary>Original text</p>
+<p id=4cd8 class=summary>More text</p>
 </section>
 </main>
 EOF

@@ -19,11 +19,11 @@ EOF
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 # New actions must be in the action summary.
-grep '<li><a href="#a01">adam, eve_$ to do this</a></li>' $TMP2 || exit 1
-grep '<li><a href="#a02">ali, cyril, and dd8: do the same</a></li>' $TMP2 || exit 1
-grep '<li><a href="#a03">bar,bar2 do this, too</a></li>' $TMP2 || exit 1
-grep '<li><a href="#a04">foo and bar-50% to stop giving actions</a></li>' $TMP2 || exit 1
-grep '<li><a href="#a05">foo,,bar,baz: allow redundant commas</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">adam, eve_\$ to do this</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">ali, cyril, and dd8: do the same</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">bar,bar2 do this, too</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">foo and bar-50% to stop giving actions</a></li>' $TMP2 || exit 1
+grep -E '<li><a href="#[^"]+">foo,,bar,baz: allow redundant commas</a></li>' $TMP2 || exit 1
 
 # action-20 is *not* a new action
 grep 'class=summary>action-20: look at the documentation.' $TMP2 || exit 1

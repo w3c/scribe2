@@ -28,21 +28,26 @@ sed -n -e '/<div id=IssueSummary/,/<\/div/p' $TMP2 >$TMP3
 # Extract the body of the minutes:
 sed -n -e '/id=meeting/,/<\/div/p' $TMP2 >$TMP4
 
-#cat $TMP4
+cat $TMP4
 
 # Two new issues in the summary:
-grep '<a href="#i01">Use 1 or 2?</a>' $TMP3 || ok=false
-grep '<a href="#i02">Is issue-1 OK?</a>' $TMP3 || ok=false
+issue1="Use 1 or 2?"
+id1=`grep -E -m 1 "<a.*>$issue1</a>" $TMP3` || ok=false
+id1=${id1#*#}; id2=${id1%%"*}
+
+issue2="Is issue-1 OK?"
+id2=`grep -E -m 1 "<a.*>$issue2</a>" $TMP3` || ok=false
+id2=${id2#*#}; id2=${id2%%"*}
 
 # But not the numbered issues:
 grep 'Or: 3' $TMP3 && ok=false
 grep 'Need rewording.' $TMP3 && ok=false
 
 # Two new issues marked-up:
-grep '<p id=i01 class=issue><strong>ISSUE:</strong> Use 1 or 2?</p>' \
-     $TMP4 || ok=false
-grep '<p id=i02 class=issue><strong>ISSUE:</strong> Is issue-1 OK?</p>' \
-     $TMP4 || ok=false
+grep "<p id=$id1 class=issue><strong>ISSUE:</strong> $issue1</p>" $TMP4 ||
+  ok=false
+grep "<p id=$id2 class=issue><strong>ISSUE:</strong> $issue2</p>" $TMP4 ||
+  ok=false
 
 # Two annotations on numbered issues are not marked specially:
 egrep '<p.* class=irc><cite>&lt;bar&gt;</cite> ISSUE-1: Or: 3.</p>' $TMP4 || ok=false

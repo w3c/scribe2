@@ -30,18 +30,18 @@ cat >$TMP4 <<EOF
 <section></section>
 
 <section>
-<h3 id=t01>Test <a href="http://www.example.com/">http://<wbr>www.example.com/</a></h3>
-<p id=x003 class="phone s01"><cite>baz:</cite> Hi</p>
-<p id=x004 class="phone s02"><cite>bar:</cite> See &lt;<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>&gt;</p>
-<p id=x005 class="phone s02"><cite>bar:</cite> And &quot;<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>&quot;</p>
-<p id=x006 class="phone s02"><cite>bar:</cite> Or ‘<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>’</p>
-<p id=x007 class="phone s02"><cite>bar:</cite> Or “<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>”</p>
-<p id=x008 class="phone s02"><cite>bar:</cite> Or «<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>»</p>
-<p id=x009 class="phone s02"><cite>bar:</cite> Or (<a href="https://www.example.org/ends/at/paren">https://<wbr>www.example.org/<wbr>ends/<wbr>at/<wbr>paren</a>)</p>
-<p id=x010 class="phone s02"><cite>bar:</cite> Or <a href="https://www.example.org/includes/(parens)/also">https://<wbr>www.example.org/<wbr>includes/(parens)/<wbr>also</a></p>
-<p id=x011 class="phone s02"><cite>bar:</cite> Also ›<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>‹ and</p>
-<p id=x012 class="phone s02"><cite>bar:</cite> Finally ‹<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>›</p>
-<p id=x013 class=summary><a href="ftp://example.org/includes(parens)/too">ftp://<wbr>example.org/<wbr>includes(parens)/<wbr>too</a></p>
+<h3 id=2ef2>Test <a href="http://www.example.com/">http://<wbr>www.example.com/</a></h3>
+<p id=f114 class="phone s01"><cite>baz:</cite> Hi</p>
+<p id=e8b2 class="phone s02"><cite>bar:</cite> See &lt;<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>&gt;</p>
+<p id=9bae class="phone s02"><cite>bar:</cite> And &quot;<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>&quot;</p>
+<p id=888f class="phone s02"><cite>bar:</cite> Or ‘<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>’</p>
+<p id=79a1 class="phone s02"><cite>bar:</cite> Or “<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>”</p>
+<p id=6395 class="phone s02"><cite>bar:</cite> Or «<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>»</p>
+<p id=1db5 class="phone s02"><cite>bar:</cite> Or (<a href="https://www.example.org/ends/at/paren">https://<wbr>www.example.org/<wbr>ends/<wbr>at/<wbr>paren</a>)</p>
+<p id=6a0a class="phone s02"><cite>bar:</cite> Or <a href="https://www.example.org/includes/(parens)/also">https://<wbr>www.example.org/<wbr>includes/(parens)/<wbr>also</a></p>
+<p id=bbd8 class="phone s02"><cite>bar:</cite> Also ›<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>‹ and</p>
+<p id=752c class="phone s02"><cite>bar:</cite> Finally ‹<a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a>›</p>
+<p id=8e5e class=summary><a href="ftp://example.org/includes(parens)/too">ftp://<wbr>example.org/<wbr>includes(parens)/<wbr>too</a></p>
 </section>
 </main>
 EOF

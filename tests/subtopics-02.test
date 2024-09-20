@@ -27,14 +27,14 @@ cat >$TMP4 <<EOF
 <ol>
 <li>
 <ol>
-<li><a href="#t01">This is a subtopic (it really is)</a></li>
+<li><a href="#24ec">This is a subtopic (it really is)</a></li>
 </ol>
 </li>
-<li><a href="#t02">First topic</a></li>
-<li><a href="#t03">Second one</a>
+<li><a href="#206f">First topic</a></li>
+<li><a href="#4b7c">Second one</a>
 <ol>
-<li><a href="#t04">This is 2.1</a></li>
-<li><a href="#t05">This is 2.2</a></li>
+<li><a href="#484a">This is 2.1</a></li>
+<li><a href="#cfb4">This is 2.2</a></li>
 </ol>
 </li>
 <li class=app><a href="#ActionSummary">Summary of action items</a></li>

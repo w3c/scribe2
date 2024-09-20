@@ -17,9 +17,9 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x002 class="phone s01"><cite>Mike:</cite> Feature X would benefit users.<br>
-<span id=x003>… and implementation would be easy.</span></p>
-<p id=x004 class=irc><cite>&lt;ericn&gt;</cite> I agree.</p>
+<section><p id=938d class="phone s01"><cite>Mike:</cite> Feature X would benefit users.<br>
+<span id=e3ca>… and implementation would be easy.</span></p>
+<p id=6c51 class=irc><cite>&lt;ericn&gt;</cite> I agree.</p>
 </section>
 </main>
 EOF

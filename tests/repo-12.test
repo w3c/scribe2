@@ -28,18 +28,18 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class="phone s01"><cite>Anssi:</cite> I consider #302 v2 feature</p>
-<p id=x002 class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/302">Issue 302</a></strong> API simplification: context types, context options, createContext() (zolkis)</p>
-<h4 id=t01>Open PRs</h4>
-<p id=x005 class=summary>Repository: webmachinelearning/webnn</p>
-<p id=x008 class="phone s02"><cite>anssik:</cite> we have two minor open PRs that emerged from Chromium implementation experience:<br>
-<span id=x009>… <a href="https://github.com/webmachinelearning/webnn/issues/294">#294</a> Use unsigned long for size related options of conv2d, convTranspose2d and pooling operations</span></p>
-<p id=x010 class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/294">Pull Request 294</a></strong> Use unsigned long for size related options of conv2d, convTranspose2d and pooling operations (huningxin)</p>
-<p id=x011 class="phone s02"><cite>anssik:</cite> <a href="https://github.com/webmachinelearning/webnn/issues/306">#306</a> Use unsigned long type for sizes option of resample2d</p>
-<p id=x012 class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/306">Pull Request 306</a></strong> Use unsigned long type for sizes option of resample2d (huningxin)</p>
-<p id=x013 class="phone s02"><cite>anssik:</cite> these PRs are pending Chai's review, can you PTAL?</p>
-<p id=x014 class="phone s03"><cite>Chai:</cite> I'll take a look</p>
-<p id=x015 class="phone s01"><cite>Anssi:</cite> Thanks!</p>
+<section><p id=b1d6 class="phone s01"><cite>Anssi:</cite> I consider #302 v2 feature</p>
+<p id=cedb class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/302">Issue 302</a></strong> API simplification: context types, context options, createContext() (zolkis)</p>
+<h4 id=d2fd>Open PRs</h4>
+<p id=555d class=summary>Repository: webmachinelearning/webnn</p>
+<p id=29bb class="phone s02"><cite>anssik:</cite> we have two minor open PRs that emerged from Chromium implementation experience:<br>
+<span id=88dc>… <a href="https://github.com/webmachinelearning/webnn/issues/294">#294</a> Use unsigned long for size related options of conv2d, convTranspose2d and pooling operations</span></p>
+<p id=2cad class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/294">Pull Request 294</a></strong> Use unsigned long for size related options of conv2d, convTranspose2d and pooling operations (huningxin)</p>
+<p id=f4f7 class="phone s02"><cite>anssik:</cite> <a href="https://github.com/webmachinelearning/webnn/issues/306">#306</a> Use unsigned long type for sizes option of resample2d</p>
+<p id=0d58 class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/306">Pull Request 306</a></strong> Use unsigned long type for sizes option of resample2d (huningxin)</p>
+<p id=b4cf class="phone s02"><cite>anssik:</cite> these PRs are pending Chai's review, can you PTAL?</p>
+<p id=0df4 class="phone s03"><cite>Chai:</cite> I'll take a look</p>
+<p id=7e10 class="phone s01"><cite>Anssi:</cite> Thanks!</p>
 </section>
 </main>
 EOF

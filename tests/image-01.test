@@ -11,7 +11,7 @@ TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
 url="https://www.w3.org/Icons/w3c_48x48.png"
 
 # Expected line:
-echo "<section><p id=x002 class=irc><cite>&lt;foo&gt;</cite> <a href=\"$url\"><img src=\"$url\" alt=\"\"></a></p>" >$TMP1
+echo "<section><p id=3715 class=irc><cite>&lt;foo&gt;</cite> <a href=\"https://www.w3.org/Icons/w3c_48x48.png\"><img src=\"https://www.w3.org/Icons/w3c_48x48.png\" alt=\"\"></a></p>" >$TMP1
 
 # Get the generated line:
 echo -e "<foo> scribenick:bar\n<foo> --> $url" | perl scribe.perl >$TMP3

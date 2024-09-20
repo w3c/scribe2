@@ -8,11 +8,15 @@ TMP2=`mktemp /tmp/id-XXXXXX` || exit 1
 
 cat >$TMP1 <<EOF
 <foo> Line 1.
+<foo> Also line 1.
+<foo> Also line 1.
 <foo> ... Line 2.
 <bar> Line 3.
 <foo> scribe+
 <bar> Line 4
 <foo> ... Line 5.
+<foo> Line 3.
+<foo> scribe+
 EOF
 
 perl scribe.perl --nokeeplines $TMP1 | sed -n '/<main/,/<\/main/p' >$TMP2

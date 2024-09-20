@@ -21,7 +21,7 @@ EOF
 cat >$TMP5 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>Et si on écrivait en français ?</p>
+<section><p id=5401 class=summary>Et si on écrivait en français ?</p>
 </section>
 </main>
 EOF

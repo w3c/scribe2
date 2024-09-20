@@ -42,7 +42,7 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x017 class=summary>This line is not ignored.</p>
+<section><p id=2ecb class=summary>This line is not ignored.</p>
 </section>
 </main>
 EOF

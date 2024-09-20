@@ -12,7 +12,7 @@ echo -e "<foo> scribenick:bar\n<foo> Topic: --> Image $url" | \
   perl scribe.perl -embed >$TMP1
 
 # See if the expected H3 (with an image) is in the minutes:
-fgrep "<h3 id=t01><a href=\"$url\"><img src=\"$url\" alt=\"Image\"></a></h3>" $TMP1 || exit 1
+grep -E "<h3.*><a href=\"$url\"><img src=\"$url\" alt=\"Image\"></a></h3>" $TMP1 || exit 1
 
 # See if the expected line (without the image) is in the ToC:
-fgrep "<li><a href=\"#t01\">Image</a></li>" $TMP1
+grep -E "<li><a.*>Image</a></li>" $TMP1

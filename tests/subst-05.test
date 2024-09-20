@@ -19,9 +19,9 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=x001 class=summary>Changed text</p>
-<p id=x002 class=summary>Anchor text</p>
-<p id=x004 class=irc><cite>&lt;foo&gt;</cite> s/Non-existent/Changed/</p>
+<section><p id=9cb3 class=summary>Changed text</p>
+<p id=de9d class=summary>Anchor text</p>
+<p id=5aa0 class=irc><cite>&lt;foo&gt;</cite> s/Non-existent/Changed/</p>
 </section>
 </main>
 EOF

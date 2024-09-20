@@ -26,13 +26,13 @@ cat >$TMP2 <<EOF
 <section></section>
 
 <section>
-<h3 id=t01>Test</h3>
-<p id=x003 class=summary>First scribe line</p>
-<p id=x004 class=summary>Second scribe line</p>
-<p id=x005 class=summary>Third scribe line</p>
-<p id=x006 class=irc><cite>&lt;bar&gt;</cite> Hi, it's me</p>
-<p id=x007 class=irc><cite>&lt;bar_&gt;</cite> Still me</p>
-<p id=x009 class=summary>That wasn't needed</p>
+<h3 id=dde5>Test</h3>
+<p id=fccf class=summary>First scribe line</p>
+<p id=771c class=summary>Second scribe line</p>
+<p id=4efa class=summary>Third scribe line</p>
+<p id=ef13 class=irc><cite>&lt;bar&gt;</cite> Hi, it's me</p>
+<p id=e8f0 class=irc><cite>&lt;bar_&gt;</cite> Still me</p>
+<p id=674f class=summary>That wasn't needed</p>
 </section>
 </main>
 EOF

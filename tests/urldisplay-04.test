@@ -15,12 +15,11 @@ cat >$TMP1 <<EOF
 EOF
 
 cat >$TMP4 <<EOF
-<p id=x002 class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a></p>
+<p id=dda1 class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/a/long/path">https://<wbr>www.example.org/<wbr>a/<wbr>long/<wbr>path</a></p>
 EOF
 
 perl scribe.perl --urlDisplay=break <$TMP1 >$TMP2 || exit 1
-cat $TMP2
 grep -F '<cite>bar:</cite>' $TMP2 >$TMP3
 
 
-diff -u $TMP3 $TMP4
+diff -u $TMP4 $TMP3
