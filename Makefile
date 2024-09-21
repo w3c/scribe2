@@ -30,7 +30,6 @@ check: $(TESTS:.test=)
 	@$(ECHO) "$(OK)  " `grep OK $(RESULTS) | wc -l`
 	@$(ECHO) "$(FAIL)" `grep FAIL $(RESULTS) | wc -l`
 	@$(ECHO) "$(NA) " `grep N/A $(RESULTS) | wc -l`
-	cat tests/actions-01.log
 	@test `grep FAIL $(RESULTS) | wc -l` -eq 0
 
 # SAMPLES
