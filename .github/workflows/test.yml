@@ -14,6 +14,4 @@ jobs:
       - name: Install latexml
         run: sudo apt-get install latexml
       - name: run tests
-        run: |
-          make check
-          cat tests/actions-01.log
+        run: make check; cat tests/actions-01.log
