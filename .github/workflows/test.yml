@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: shogo82148/actions-setup-perl@v1
-      - name: Install latexml and libwww-perl
-        run: sudo apt-get install latexml libwww-perl
+#     - uses: shogo82148/actions-setup-perl@v1
+      - name: Install latexml and perl
+        run: sudo apt-get install latexml perl
       - name: run tests
         run: make check
