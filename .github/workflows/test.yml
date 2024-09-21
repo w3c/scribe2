@@ -9,7 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: shogo82148/actions-setup-perl@v1
       - name: Install latexml
         run: sudo apt-get install latexml
