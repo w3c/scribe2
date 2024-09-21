@@ -20,8 +20,10 @@ NA := $(shell tput setaf 4)N/A$(shell tput op)
 %: %.test scribe.perl
 	@$< >$*.log 2>&1; \
 	 case $$? in \
-	 0) $(ECHO) -n "$< $(OK)$(CLR_EOL)"; $(ECHO) OK >$*.result;; \
-	 2) $(ECHO) -n "$< $(NA)$(CLR_EOL)"; $(ECHO) N/A >$*.result;; \
+	 0) $(ECHO) -n "$< $(OK)$(CLR_EOL)
+"; $(ECHO) OK >$*.result;; \
+	 2) $(ECHO) -n "$< $(NA)$(CLR_EOL)
+"; $(ECHO) N/A >$*.result;; \
 	 *) $(ECHO) "$< $(FAIL)$(CLR_EOL)"; $(ECHO) FAIL >$*.result;; \
 	 esac
 
@@ -30,6 +32,7 @@ check: $(TESTS:.test=)
 	@$(ECHO) "$(OK)  " `grep OK $(RESULTS) | wc -l`
 	@$(ECHO) "$(FAIL)" `grep FAIL $(RESULTS) | wc -l`
 	@$(ECHO) "$(NA) " `grep N/A $(RESULTS) | wc -l`
+	cat tests/actions-01.log
 	@test `grep FAIL $(RESULTS) | wc -l` -eq 0
 
 # SAMPLES
