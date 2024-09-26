@@ -838,7 +838,7 @@ sub remove_repositories($)
 }
 
 
-# make_id -- make a unique ID based using a hash of a given text
+# make_id -- make a unique ID based on a hash of a text
 sub make_id($)
 {
   my $hash = 0;
@@ -851,10 +851,10 @@ sub make_id($)
 
 
 # Main body
-my $revision = '$Revision: hash-ids-233 $'
+my $revision = '$Revision: 235 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Sep 19 19:33:56 2024 UTC $'
+my $versiondate = '$Date: Thu Sep 26 22:53:03 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1441,7 +1441,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore if --noghurlbot was set
 
   } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
-	   /^($urlpat) -> ((?:Issue |Action |Pull Request |\#)[0-9]+) ?(.*)$/i) {
+	   /^($urlpat) -> ((?:CLOSED )?(?:Issue |Action |Pull Request |Discussion |\#)[0-9]+) ?(.*)$/i) {
     $records[$i]->{type} = 'B';		# A structured response from ghurlbot
     $records[$i]->{data} = $3;
     $records[$i]->{text} = "->$1 $2";
@@ -1999,3 +1999,4 @@ You can use single dash (-) or double (--). Options are
 case-insensitive and can be abbreviated. Some options can be negated
 with `no' (e.g., --nokeeplines). For the full manual see
 L<https://w3c.github.io/scribe2/scribedoc.html>
+oc.html>
