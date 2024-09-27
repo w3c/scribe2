@@ -1,61 +1,57 @@
 #!/bin/bash
 
-# Test if issues are recognized
+# Test if issues are recognized and other text is not recognized as an issue.
 
-trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
 TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
 TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
 TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
 
-issue1="Use 1 or 2?"
-issue2="Is issue-1 OK?"
-
+# Input
 cat >$TMP1 <<EOF
 <foo> Not a topic
-<foo>  Issue: $issue1
+<foo>  Issue: Use 1 or 2?
 <bar> ISSUE-1: Or: 3.
-<baz> issue : $issue2
+<baz> issue : Is issue-1 OK?
 <foo>   issue-1 : Needs rewording.
+EOF
+
+# Expcted text of issue summary.
+cat >$TMP4 <<EOF
+<div id=IssueSummary>
+<h2>Summary of issues</h2>
+<ol>
+<li><a href="#bd51">Use 1 or 2?</a></li>
+<li><a href="#e7be">Is issue-1 OK?</a></li>
+</ol>
+</div>
+EOF
+
+# Expected text of minutes.
+cat >$TMP5 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=ac74 class=summary>Not a topic</p>
+<p id=bd51 class=issue><strong>ISSUE:</strong> Use 1 or 2?</p>
+<p id=0cbb class=irc><cite>&lt;bar&gt;</cite> ISSUE-1: Or: 3.</p>
+<p id=e7be class=issue><strong>ISSUE:</strong> Is issue-1 OK?</p>
+<p id=99bd class=summary>  issue-1 : Needs rewording.</p>
+</section>
+</main>
 EOF
 
 perl scribe.perl $TMP1 >$TMP2 || exit 1
 
 ok=true
 
-# Extract the issue summary:
+# Extract the issue summary and compare to expected text:
 sed -n -e '/<div id=IssueSummary/,/<\/div/p' $TMP2 >$TMP3
+diff -u $TMP4 $TMP3 || ok=false
 
-cat $TMP3
-echo "============="
-
-# Extract the body of the minutes:
-sed -n -e '/id=meeting/,/<\/div/p' $TMP2 >$TMP4
-
-cat $TMP4
-echo "============="
-
-# Two new issues in the summary:
-id1=`grep -F "$issue1" $TMP3 | grep -F -m 1 "</a>"` || ok=false
-id1=${id1#*#}; id1=${id1%%\"*}
-echo id1=$id1
-
-id2=`grep -F "$issue2" $TMP3 | grep -F -m 1 "</a>"` || ok=false
-id2=${id2#*#}; id2=${id2%%\"*}
-echo id2=$id2
-
-# But not the numbered issues:
-grep 'Or: 3' $TMP3 && ok=false
-grep 'Need rewording.' $TMP3 && ok=false
-
-# Two new issues marked-up:
-grep "<p id=$id1 class=issue><strong>ISSUE:</strong> $issue1</p>" $TMP4 ||
-  ok=false
-grep "<p id=$id2 class=issue><strong>ISSUE:</strong> $issue2</p>" $TMP4 ||
-  ok=false
-
-# Two annotations on numbered issues are not marked specially:
-grep ' class=irc><cite>&lt;bar&gt;</cite> ISSUE-1: Or: 3.</p>' $TMP4 || ok=false
-grep ' class=summary>  issue-1 : Needs rewording.</p>' $TMP4 || ok=false
+# Extract the body of the minutes and compare to expected text:
+sed -n -e '/<main/,/<\/main/p' $TMP2 >$TMP3
+diff -u $TMP5 $TMP3 || ok=false
 
 $ok
