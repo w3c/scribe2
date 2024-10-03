@@ -1618,7 +1618,7 @@ my %linepat = (
   I => [$scribeonly ? '' : "<p id=%2\$s class=irc><cite>&lt;%1\$s&gt;</cite> <code>%3\$s</code></p>\n", 0],
   c => [$scribeonly ? '' : "<p id=%2\$s class=irc><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
   o => ['', 0],
-  r => ["<p id=%5\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",, 1],
+  r => ["<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",, 1],
   s => ["<p id=%2\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
   n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%5\$s\">⚓</a></p>\n", 0],
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
