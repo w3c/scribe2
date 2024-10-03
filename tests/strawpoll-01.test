@@ -37,7 +37,7 @@ cat >$TMP2 <<EOF
 <p id=f30b class=irc><cite>&lt;marjan&gt;</cite> +100</p>
 <p id=d884 class=irc><cite>&lt;foo&gt;</cite> +1</p>
 <p id=85fd class=irc><cite>&lt;foo&gt;</cite> +100! if I get to choose the color :-)</p>
-<p id= class=resolution><strong>RESOLUTION:</strong> proposal is adopted</p>
+<p id=bde3 class=resolution><strong>RESOLUTION:</strong> proposal is adopted</p>
 <p id=5139 class=irc><cite>&lt;foo&gt;</cite> Phew!</p>
 <p id=2cba class="phone s01"><cite>Pete:</cite> Shall we vote again?</p>
 <p id=5883 class=irc><cite>&lt;foo&gt;</cite> -1</p>
