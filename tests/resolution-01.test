@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Test that resolutions are recognized and listed separately.
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5 $TMP6' 0
+TMP1=`mktemp /tmp/reolution-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/reolution-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/reolution-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/reolution-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/reolution-XXXXXX` || exit 1
+TMP6=`mktemp /tmp/reolution-XXXXXX` || exit 1
+
+# The input.
+cat >$TMP1 <<EOF
+<foo> Pete: Hi!
+<foo> Resolved: Publish this.
+<foo> Resolved: Publish that.
+<foo> Pete: Bye!
+EOF
+
+# The expected minutes.
+cat >$TMP2 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=6931 class="phone s01"><cite>Pete:</cite> Hi!</p>
+<p id=1f6b class=resolution><strong>RESOLUTION:</strong> Publish this.</p>
+<p id=5eab class=resolution><strong>RESOLUTION:</strong> Publish that.</p>
+<p id=7d91 class="phone s01"><cite>Pete:</cite> Bye!</p>
+</section>
+</main>
+EOF
+
+# The expected list of resolutions.
+cat >$TMP3 <<EOF
+<div id=ResolutionSummary>
+<h2>Summary of resolutions</h2>
+<ol>
+<li><a href="#1f6b">Publish this.</a></li>
+<li><a href="#5eab">Publish that.</a></li>
+</ol>
+</div>
+EOF
+
+perl scribe.perl $TMP1 >$TMP4 || exit 1
+
+# Extract the <main> element.
+sed -n -e '/<main/,/<\/main/p' $TMP4 >$TMP5
+
+# Extract the resolutions.
+sed -n -e '/id=ResolutionSummary/,/<\/div/p' $TMP4 >$TMP6
+
+# Compare to expected.
+diff -u $TMP2 $TMP5 || exit 1
+diff -u $TMP3 $TMP6 || exit 1
