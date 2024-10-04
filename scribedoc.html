@@ -1360,7 +1360,8 @@ Previous meeting: http://example.org/20180228/mins</pre>
   <h2 id="slides">Embedding slides</h2>
 
   <p>You can embed slides in the minutes if they are in a supported format.
-  The list of supported formats depends on the <a href="https://github.com/w3c/i-slide#supported-slide-formats">i-slide library</a>, and includes PDF, and the HTML-based <a href="https://shwr.me/">Shower</a> and <a href="https://www.w3.org/Talks/Tools/b6plus/">b6+</a>.</p>
+  The list of supported formats depends on the <a href="https://github.com/w3c/i-slide#supported-slide-formats">i-slide library</a>, and includes PDF, and the HTML-based <a href="https://shwr.me/">Shower</a> and <a href="https://www.w3.org/Talks/Tools/b6plus/">b6+</a>.
+  Google Slides are also supported.</p>
   <p>To use this, the slideset from which the slides will be embedded
   needs to be set with a <code>slideset</code> command and a URL,
   e.g.:</p>
@@ -1375,6 +1376,12 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;dbooth&gt; [Slide 2]
 &lt;dbooth&gt; Dom: as this slide illustrates, scribing is awesome
 </pre>
+
+  <p id="google-slides">Note: In the case of Google Slides,
+  scribe.perl makes a snapshot in PDF. It is that snapshot that is
+  shown in the minutes. For other slides, the minutes display the live
+  version. Security rules (‘CORS’) may restrict the display of slides
+  that reside on remote servers.</p>
 
   <h2 id="recording">Embedding Video Recording</h2>
 
