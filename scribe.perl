@@ -185,6 +185,7 @@ my $recordingstart;         	# Time of recording start secs since midnight)
 my $recordingend;         	# Time of recording end (secs since midnight)
 my @repositories = ();		# List of repo URLs for expanding issue refs
 my %ids;			# All IDs (used to ensure unique IDs)
+# my $clashes = 0;		# For statistics: # of hash conflicts
 
 # Used to download slideset when necessary
 my $ua = LWP::UserAgent->new(timeout => 10);
@@ -838,12 +839,13 @@ sub remove_repositories($)
 }
 
 
-# make_id -- make a unique ID based on a hash of a text
-sub make_id($)
+# make_id -- make a unique ID based on a seed value and a hash of a text
+sub make_id($$)
 {
-  my $hash = 0;
-  $hash = (($hash + $_) << 7) + ($hash >> 11) foreach unpack('c*', $_[0]);
+  my $hash = $_[0];
+  $hash = (($hash + $_) << 7) + ($hash >> 11) for unpack('U0C*', $_[1]);
   $hash &= 0xFFFF;
+  # $clashes++, $hash++ while exists $ids{$hash};
   $hash++ while exists $ids{$hash};
   $ids{$hash} = 1;
   return sprintf "%04x", $hash;
@@ -851,10 +853,10 @@ sub make_id($)
 
 
 # Main body
-my $revision = '$Revision: 235 $'
+my $revision = '$Revision: 237 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Sep 26 22:53:03 2024 UTC $'
+my $versiondate = '$Date: Fri Oct  4 02:31:45 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1087,7 +1089,6 @@ add_scribes($scribenick, \%curscribes, \@scribes, \%scribenames);
 for (my $i = 0; $i < @records; $i++) {
   my $is_scribe = is_cur_scribe($records[$i]->{speaker}, \%curscribes);
   $_ = $records[$i]->{text};
-  $records[$i]->{id} = make_id($_);
 
   if ($records[$i]->{type} eq 'o') {
     # This record was already processed
@@ -1632,6 +1633,7 @@ my %linepat = (
 
 my $minutes = '';
 foreach my $p (@records) {
+  next if $p->{type} eq 'o';
   if ($github) {
     if ($p->{type} eq 'repo' && $p->{text} eq '') {
       # An empty repo line resets the list of repositories.
@@ -1647,6 +1649,7 @@ foreach my $p (@records) {
       remove_repositories($p->{text});
     }
   }
+  $p->{id} = make_id($p->{time} // 0, $p->{text});
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s%7$.0s',
       esc($p->{speaker}),						    # %1
@@ -1659,12 +1662,15 @@ foreach my $p (@records) {
   if (!$keeplines) {
     $line =~ tr/\t/ /;
   } elsif ($line =~ /\t/) {
-    $line =~ s|\t([^\t]*)|"<br>\n<span id=" . make_id($1) . ">… $1"|e; # 1st \t
-    $line =~ s|\t([^\t]*)|"</span><br>\n<span id=" . make_id($1) . ">… $1"|ge;
+    $line =~ s|\t([^\t]*)|"<br>\n<span id=".make_id(0, $1).">… $1"|e; # 1st \t
+    $line =~ s|\t([^\t]*)|"</span><br>\n<span id=".make_id(0, $1).">… $1"|ge;
     $line =~ s|</p>|</span></p>|; # Last line
   }
   $minutes .= $line;
 }
+
+# push @diagnostics, "Resolved ID (hash) conflicts: $clashes out of " .
+#     scalar(%ids) . " IDs.";
 
 # @stylesheets is an array of triples [alt, title, url], where alt = 0
 # means this is the default style, not 0 means an "alternate" style.
