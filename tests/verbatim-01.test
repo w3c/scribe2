@@ -42,7 +42,7 @@ cat >$TMP4 <<'EOF'
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=b2f8 class=summary>Here is an example:</p>
-<pre id=ed85 class=summary>
+<pre id=7d3c class=summary>
 Line 1   three spaces
          and some quotes ```
 present+
@@ -52,11 +52,11 @@ scribe:  bar
 <p id=3236 class=irc><cite>&lt;bar&gt;</cite> Here is mine:</p>
 <p id=0ddf class=irc><cite>&lt;bar&gt;</cite> <code>First line</code></p>
 <p id=eb53 class=irc><cite>&lt;bar&gt;</cite> <code>  Indented line</code></p>
-<p id=75d7 class="phone s01"><cite>bar:</cite> See example ^^</p>
+<p id=0993 class="phone s01"><cite>bar:</cite> See example ^^</p>
 <p id=c027 class=irc><cite>&lt;baz&gt;</cite> Here is another:</p>
 <p id=3983 class=irc><cite>&lt;baz&gt;</cite> <code>1 2  3    4</code></p>
 <p id=e1e3 class=irc><cite>&lt;baz&gt;</cite> <code>4 5  6    8</code></p>
-<pre id=360a class=summary>
+<pre id=97fc class=summary>
 4 5  6    8
 </pre>
 <p id=7d16 class=irc><cite>&lt;baz&gt;</cite> Like this</p>

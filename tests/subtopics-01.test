@@ -23,19 +23,19 @@ cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=ac74 class=summary>Not a topic</p>
-<h4 id=24ec>This is a subtopic</h4>
+<h4 id=3cf4>This is a subtopic</h4>
 <p id=f088 class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
 </section>
 
 <section>
-<h3 id=206f>First topic</h3>
+<h3 id=3eba>First topic</h3>
 </section>
 
 <section>
-<h3 id=4b7c>Second one</h3>
-<h4 id=cbeb>This is 2.1</h4>
+<h3 id=e39c>Second one</h3>
+<h4 id=c023>This is 2.1</h4>
 <p id=f089 class=irc><cite>&lt;baz&gt;</cite> Just a line</p>
-<h4 id=cfb4>This is 2.2</h4>
+<h4 id=c0a3>This is 2.2</h4>
 </section>
 </main>
 EOF

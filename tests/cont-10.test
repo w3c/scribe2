@@ -33,21 +33,21 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=3ef0 class=summary>Slideset: <a href="https://example.org/slides">https://<wbr>example.org/<wbr>slides</a></p>
-<p id=322f class=summary>this continues nothing<br>
+<section><p id=716d class=summary>Slideset: <a href="https://example.org/slides">https://<wbr>example.org/<wbr>slides</a></p>
+<p id=8402 class=summary>this continues nothing<br>
 <span id=a613>… this continues the previous line</span></p>
-<p id=a852 class="phone s01"><cite>Ben:</cite> a link:<br>
+<p id=4b29 class="phone s01"><cite>Ben:</cite> a link:<br>
 <span id=e2fa>… <a href="http://example.org/example">Example</a></span></p>
-<p id=f067 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#4">[Slide 4]</a></p>
-<p id=3c6d class="phone s01"><cite>Ben:</cite> this continues Ben's text</p>
+<p id=1a00 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#4">[Slide 4]</a></p>
+<p id=28e4 class="phone s01"><cite>Ben:</cite> this continues Ben's text</p>
 <p id=8842 class=summary>Everybody claps</p>
-<p id=3067 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#5">[Slide 5]</a></p>
-<p id=3cb6 class=summary>This does not continue anything</p>
-<p id=1a92 class=summary>Repository: w3c/test</p>
-<p id=a232 class=summary>Not a continuation.</p>
+<p id=1a80 class=summary><a class=islide data-islide-srcref="" href="https://example.org/slides#5">[Slide 5]</a></p>
+<p id=d5b1 class=summary>This does not continue anything</p>
+<p id=d73e class=summary>Repository: w3c/test</p>
+<p id=f97d class=summary>Not a continuation.</p>
 <p id=5b9b class=summary><a href="https://github.com/w3c/test/issues/13">#13</a></p>
-<p id=1993 class=summary>Repository- w3c/test</p>
-<p id=5b9a class=summary>Not a continuation either.<br>
+<p id=d73f class=summary>Repository- w3c/test</p>
+<p id=954c class=summary>Not a continuation either.<br>
 <span id=766c>… This continues the previous line.</span></p>
 </section>
 </main>

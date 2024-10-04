@@ -22,10 +22,10 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=f2c2 class="phone s01"><cite>Joe:</cite> I agree.</p>
-<p id=feee class="phone s02"><cite>Ben:</cite> Hmm,</p>
-<p id=9b41 class="phone s01"><cite>Joe:</cite> With everything.</p>
-<p id=bb02 class="phone s02"><cite>Ben:</cite> OK, I agree.</p>
+<section><p id=6c51 class="phone s01"><cite>Joe:</cite> I agree.</p>
+<p id=9c6f class="phone s02"><cite>Ben:</cite> Hmm,</p>
+<p id=ffdd class="phone s01"><cite>Joe:</cite> With everything.</p>
+<p id=6220 class="phone s02"><cite>Ben:</cite> OK, I agree.</p>
 <p id=5da9 class=summary>Joe and Ben agree.</p>
 </section>
 </main>

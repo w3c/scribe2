@@ -26,7 +26,7 @@ cat >$TMP2 <<EOF
 <section></section>
 
 <section>
-<h3 id=dde5>Test</h3>
+<h3 id=e02f>Test</h3>
 <p id=fccf class=summary>First scribe line</p>
 <p id=771c class=summary>Second scribe line</p>
 <p id=4efa class=summary>Third scribe line</p>

@@ -139,9 +139,9 @@ cat >$TMP3 <<EOF
 <nav id=toc>
 <h2>Contents</h2>
 <ol>
-<li><a href="#5f93">Reminder of good teleconferences</a></li>
-<li><a href="#4d1a">Agenda</a></li>
-<li><a href="#a0ee">Two minutes round the table</a></li>
+<li><a href="#dbb8">Reminder of good teleconferences</a></li>
+<li><a href="#169b">Agenda</a></li>
+<li><a href="#8657">Two minutes round the table</a></li>
 </ol>
 </nav>
 </div>
@@ -151,42 +151,42 @@ cat >$TMP3 <<EOF
 <section></section>
 
 <section>
-<h3 id=5f93>Reminder of good teleconferences</h3>
-<p id=3744 class="phone s01"><cite>Steve:</cite> Zoom?</p>
-<p id=6c36 class="phone s02"><cite>Bert:</cite> We use it for our european project</p>
+<h3 id=dbb8>Reminder of good teleconferences</h3>
+<p id=0c69 class="phone s01"><cite>Steve:</cite> Zoom?</p>
+<p id=f458 class="phone s02"><cite>Bert:</cite> We use it for our european project</p>
 </section>
 
 <section>
-<h3 id=4d1a>Agenda</h3>
-<p id=8d25 class=summary>[no new agendum]</p>
+<h3 id=169b>Agenda</h3>
+<p id=74f7 class=summary>[no new agendum]</p>
 </section>
 
 <section>
-<h3 id=a0ee>Two minutes round the table</h3>
-<p id=978e class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0001.html">CM's two minutes</a></p>
-<p id=f442 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD">Daniel's 2 minutes</a></p>
-<p id=b6f3 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html">Josh's 2 minutes</a></p>
-<p id=d656 class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
+<h3 id=8657>Two minutes round the table</h3>
+<p id=8922 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0001.html">CM's two minutes</a></p>
+<p id=ab56 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD">Daniel's 2 minutes</a></p>
+<p id=85ed class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html">Josh's 2 minutes</a></p>
+<p id=79e8 class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
 <span id=18ee>… someone joined the Arabic TF recently</span><br>
 <span id=8df7>… if anybody knows an expert in language systems, let me know</span><br>
 <span id=ef51>… in order to deal with the people on expert networks, I've been reassessing how we edit the gap analysis document</span><br>
 <span id=3127>… one approach as people are scared of doing PRs on Github</span><br>
 <span id=b0fd>… I put together a system where you can edit the gap analysis document</span><br>
 <span id=8312>… by writing text in a GH issue</span></p>
-<p id=eec2 class=irc><cite>&lt;RealJoshue108_&gt;</cite> +1 to GH related fear, it is a problem</p>
-<p id=7e87 class="phone s03"><cite>Richard:</cite> example:</p>
-<p id=32a1 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/</a></p>
-<p id=ff9c class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/#direction</a></p>
-<p id=6608 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
+<p id=e037 class=irc><cite>&lt;RealJoshue108_&gt;</cite> +1 to GH related fear, it is a problem</p>
+<p id=7c2a class="phone s03"><cite>Richard:</cite> example:</p>
+<p id=a286 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/</a></p>
+<p id=ffff class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/#direction</a></p>
+<p id=cd53 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
 <span id=b76e>… and numbers of issues that deal with a particular topic</span></p>
-<p id=49ea class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">w3c/<wbr>jlreq#171</a></p>
-<p id=b0a9 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>
-<p id=7c68 class=irc><cite>&lt;RealJoshue108_&gt;</cite> It's helpful to disuss!</p>
-<p id=6a55 class=irc><cite>&lt;RealJoshue108_&gt;</cite> discuss even..</p>
-<p id=09ec class=summary>====</p>
-<p id=ce24 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0003.html">Bert's 2 minutes</a></p>
-<p id=037a class=irc><cite>&lt;r12a&gt;</cite> s/reassessing the matrix document/reassessing how to edit the gap-analysis documents/</p>
-<p id=dc87 class=irc><cite>&lt;r12a&gt;</cite> s/in respect/in Respec/</p>
+<p id=30ab class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">w3c/<wbr>jlreq#171</a></p>
+<p id=2246 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>
+<p id=49e2 class=irc><cite>&lt;RealJoshue108_&gt;</cite> It's helpful to disuss!</p>
+<p id=a38a class=irc><cite>&lt;RealJoshue108_&gt;</cite> discuss even..</p>
+<p id=ad28 class=summary>====</p>
+<p id=92f8 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0003.html">Bert's 2 minutes</a></p>
+<p id=5b72 class=irc><cite>&lt;r12a&gt;</cite> s/reassessing the matrix document/reassessing how to edit the gap-analysis documents/</p>
+<p id=71b6 class=irc><cite>&lt;r12a&gt;</cite> s/in respect/in Respec/</p>
 </section>
 </main>
 

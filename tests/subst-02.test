@@ -24,7 +24,7 @@ cat >$TMP4 <<EOF
 </section>
 
 <section>
-<h3 id=0e3d>Second topic</h3>
+<h3 id=e80f>Second topic</h3>
 <p id=efaa class=summary>Another inserted line</p>
 <p id=ad63 class=summary>Inserted line</p>
 <p id=af65 class=summary>Original text</p>

@@ -23,8 +23,8 @@ cat >$TMP4 <<EOF
 <div id=IssueSummary>
 <h2>Summary of issues</h2>
 <ol>
-<li><a href="#bd51">Use 1 or 2?</a></li>
-<li><a href="#e7be">Is issue-1 OK?</a></li>
+<li><a href="#0b3b">Use 1 or 2?</a></li>
+<li><a href="#963d">Is issue-1 OK?</a></li>
 </ol>
 </div>
 EOF
@@ -34,9 +34,9 @@ cat >$TMP5 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=ac74 class=summary>Not a topic</p>
-<p id=bd51 class=issue><strong>ISSUE:</strong> Use 1 or 2?</p>
+<p id=0b3b class=issue><strong>ISSUE:</strong> Use 1 or 2?</p>
 <p id=0cbb class=irc><cite>&lt;bar&gt;</cite> ISSUE-1: Or: 3.</p>
-<p id=e7be class=issue><strong>ISSUE:</strong> Is issue-1 OK?</p>
+<p id=963d class=issue><strong>ISSUE:</strong> Is issue-1 OK?</p>
 <p id=99bd class=summary>  issue-1 : Needs rewording.</p>
 </section>
 </main>

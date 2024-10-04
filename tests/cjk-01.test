@@ -35,12 +35,12 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=8411 class="phone s01"><cite>Alex:</cite> TPAC budget finalization<br>
+<section><p id=0095 class="phone s01"><cite>Alex:</cite> TPAC budget finalization<br>
 <span id=c784>… still wait for Susan's data from MIT</span><br>
 <span id=bdc1>… 58 USD in total, will not change a lot</span><br>
 <span id=254a>… will be more than 58 USD, but not too much</span><br>
 <span id=5de0>… will report this tomorrow</span></p>
-<p id=d02c class="phone s02"><cite>Naomi:</cite> will be great if we can pay by the end of the Dec, 22 Dec</p>
+<p id=3fc9 class="phone s02"><cite>Naomi:</cite> will be great if we can pay by the end of the Dec, 22 Dec</p>
 </section>
 </main>
 EOF

@@ -64,11 +64,11 @@ cat >$TMP3 <<EOF
 
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=86e7 class="phone s01"><cite>bar:</cite> I just say<br>
+<section><p id=08e3 class="phone s01"><cite>bar:</cite> I just say<br>
 <span id=733f>… I say nothing</span></p>
-<p id=205f class=irc><cite>&lt;bar&gt;</cite>  Better: I say nada</p>
-<p id=f27d class="phone s02"><cite>baz:</cite> you say</p>
-<p id=a184 class="phone s01"><cite>bar:</cite> OK</p>
+<p id=91fd class=irc><cite>&lt;bar&gt;</cite>  Better: I say nada</p>
+<p id=e740 class="phone s02"><cite>baz:</cite> you say</p>
+<p id=fcdf class="phone s01"><cite>bar:</cite> OK</p>
 </section>
 </main>
 

@@ -22,10 +22,10 @@ EOF
 cat >$TMP2 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=6931 class="phone s01"><cite>Pete:</cite> Hi!</p>
-<p id=1f6b class=resolution><strong>RESOLUTION:</strong> Publish this.</p>
-<p id=5eab class=resolution><strong>RESOLUTION:</strong> Publish that.</p>
-<p id=7d91 class="phone s01"><cite>Pete:</cite> Bye!</p>
+<section><p id=54c6 class="phone s01"><cite>Pete:</cite> Hi!</p>
+<p id=1a2f class=resolution><strong>RESOLUTION:</strong> Publish this.</p>
+<p id=5970 class=resolution><strong>RESOLUTION:</strong> Publish that.</p>
+<p id=67ce class="phone s01"><cite>Pete:</cite> Bye!</p>
 </section>
 </main>
 EOF
@@ -35,8 +35,8 @@ cat >$TMP3 <<EOF
 <div id=ResolutionSummary>
 <h2>Summary of resolutions</h2>
 <ol>
-<li><a href="#1f6b">Publish this.</a></li>
-<li><a href="#5eab">Publish that.</a></li>
+<li><a href="#1a2f">Publish this.</a></li>
+<li><a href="#5970">Publish that.</a></li>
 </ol>
 </div>
 EOF

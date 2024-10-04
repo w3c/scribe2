@@ -28,13 +28,13 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=0151 class=resolution><strong>RESOLUTION:</strong> We do as<br>
+<section><p id=6fee class=resolution><strong>RESOLUTION:</strong> We do as<br>
 <span id=f93f>… I wanted to say.</span><br>
 <span id=f378>… Very important</span><br>
 <span id=9a9b>… This is part of it.</span></p>
-<p id=8b4a class=action><strong>ACTION:</strong> Pete: Write an action<br>
+<p id=c2eb class=action><strong>ACTION:</strong> Pete: Write an action<br>
 <span id=7f0c>… over two lines.</span></p>
-<p id=633a class=issue><strong>ISSUE:</strong> This is an issue<br>
+<p id=462f class=issue><strong>ISSUE:</strong> This is an issue<br>
 <span id=484b>… which is very important.</span></p>
 <p id=f8dd class=irc><cite>&lt;foo&gt;</cite> s/hmmm/hmm/</p>
 </section>

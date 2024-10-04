@@ -24,12 +24,12 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=51fc class="phone s01"><cite>Pete:</cite> Something else</p>
+<section><p id=51fe class="phone s01"><cite>Pete:</cite> Something else</p>
 <p class=anchor id="bf0b"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
-<p id=2192 class="phone s01"><cite>Pete:</cite> I wanted to say.<br>
+<p id=8985 class="phone s01"><cite>Pete:</cite> I wanted to say.<br>
 <span id=ba85>… Very important</span></p>
 <p id=9083 class=irc><cite>&lt;foo&gt;</cite> namedanchorhere:  x10  </p>
-<p id=4d2b class="phone s01"><cite>Pete:</cite> at least to me.</p>
+<p id=e990 class="phone s01"><cite>Pete:</cite> at least to me.</p>
 </section>
 </main>
 EOF

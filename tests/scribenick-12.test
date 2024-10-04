@@ -21,7 +21,7 @@ cat >$REFERENCE <<EOF
 <h2>Meeting minutes</h2>
 <section><p id=5aad class=irc><cite>&lt;foo&gt;</cite> I'm not scribe.</p>
 <p id=f31b class=irc><cite>&lt;foo&gt;</cite> I'm really not scribe.</p>
-<p id=f238 class="phone s01"><cite>foo:</cite> I'm not scribe.</p>
+<p id=5aae class="phone s01"><cite>foo:</cite> I'm not scribe.</p>
 </section>
 </main>
 EOF

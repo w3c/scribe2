@@ -28,7 +28,7 @@ cat >$TMP4 <<EOF
 <section><p id=0a0c class=summary>A line without emphasis.</p>
 <p id=1852 class=summary>A line with <em>italic before the period</em>.</p>
 <p id=1932 class=summary>A line with a <em>italic</em> not at the end.</p>
-<p id=07f6 class=summary>A line with <strong>bold</strong>…</p>
+<p id=9c21 class=summary>A line with <strong>bold</strong>…</p>
 <p id=eaca class=summary>A line with <strong>bold</strong>, not at the end.</p>
 <p id=a5c2 class=summary>A line with <u>underline at the end</u>.</p>
 <p id=5889 class=summary>A line with <u>underline</u>, not at the end.</p>

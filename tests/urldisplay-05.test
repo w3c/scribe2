@@ -18,8 +18,8 @@ EOF
 # The "&" is escaped as "&amp;" but still counts as one character.
 
 cat >$TMP4 <<EOF
-<p id=dda1 class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/a/long/path">https…g/path</a></p>
-<p id=87eb class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/ànöther/?long&amp;path">https…g&amp;path</a></p>
+<p id=5f5d class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/a/long/path">https…g/path</a></p>
+<p id=4c04 class="phone s02"><cite>bar:</cite> <a href="https://www.example.org/ànöther/?long&amp;path">https…g&amp;path</a></p>
 EOF
 
 perl scribe.perl --urlDisplay=shorten <$TMP1 >$TMP2 || exit 1

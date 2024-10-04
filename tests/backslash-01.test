@@ -35,21 +35,21 @@ cat >$TMP4 <<EOF
 <section></section>
 
 <section>
-<h3 id=11e5>Test</h3>
-<p id=7168 class=summary>Topic: This is not a topic.</p>
-<p id=cab0 class="phone s01"><cite>Ben:</cite> Indeed!</p>
-<p id=185e class=summary>Ben: the man who says &quot;indeed!&quot;</p>
-<p id=e152 class=summary>Or: This is not a speaker named &quot;Or&quot;.</p>
-<p id=9a89 class=summary>Subtopic: This is not a subtopic.</p>
-<p id=e317 class=summary>Scribe: the magic word!</p>
-<p id=fca6 class=summary>  Scribe: the magic word!</p>
+<h3 id=e02f>Test</h3>
+<p id=6ddc class=summary>Topic: This is not a topic.</p>
+<p id=d952 class="phone s01"><cite>Ben:</cite> Indeed!</p>
+<p id=77f8 class=summary>Ben: the man who says &quot;indeed!&quot;</p>
+<p id=f6d7 class=summary>Or: This is not a speaker named &quot;Or&quot;.</p>
+<p id=2c1e class=summary>Subtopic: This is not a subtopic.</p>
+<p id=11ee class=summary>Scribe: the magic word!</p>
+<p id=8648 class=summary>  Scribe: the magic word!</p>
 <p id=4fd6 class=summary>  A fairly normal line.</p>
-<p id=e638 class=summary>Chair: I said it.</p>
+<p id=5515 class=summary>Chair: I said it.</p>
 <p id=3049 class=summary>This is right.</p>
-<p id=90fc class=summary>s/This/isn't a substitution/</p>
-<p id=324b class=summary>Action: none</p>
-<p id=f01b class=summary>scribe+ bar</p>
-<p id=75b7 class=summary>\n starts with \n</p>
+<p id=b68f class=summary>s/This/isn't a substitution/</p>
+<p id=4ceb class=summary>Action: none</p>
+<p id=9d6a class=summary>scribe+ bar</p>
+<p id=c670 class=summary>\n starts with \n</p>
 </section>
 </main>
 EOF

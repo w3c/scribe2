@@ -26,13 +26,13 @@ EOF
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=73f7 class=summary>Repository: is w3c/transitions</p>
-<p id=e40c class=summary>Repository: w3c/scribe2</p>
-<p id=4d2b class="phone s01"><cite>Pete:</cite> Something else in <a href="https://github.com/w3c/scribe2/issues/7">#7</a> and <a href="https://github.com/w3c/scribe2/issues/8">#8</a>.<br>
+<section><p id=921a class=summary>Repository: is w3c/transitions</p>
+<p id=de75 class=summary>Repository: w3c/scribe2</p>
+<p id=39fd class="phone s01"><cite>Pete:</cite> Something else in <a href="https://github.com/w3c/scribe2/issues/7">#7</a> and <a href="https://github.com/w3c/scribe2/issues/8">#8</a>.<br>
 <span id=f93f>… I wanted to say.</span><br>
 <span id=f378>… Very important</span><br>
 <span id=7b08>… at least to me.</span></p>
-<p id=59d6 class=summary>Repository- w3c/scribe2</p>
+<p id=de76 class=summary>Repository- w3c/scribe2</p>
 <p id=a3ec class=summary>Discussions of transition <a href="https://github.com/w3c/transitions/issues/1">#1</a>.</p>
 </section>
 </main>

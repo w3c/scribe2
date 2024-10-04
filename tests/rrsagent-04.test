@@ -92,18 +92,18 @@ cat >$TMP2 <<EOF
 
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=10fc class=summary>oops, /me forgot to scribe :-(</p>
-<p id=61d3 class=summary>For UT at TPAC, static image of home page ideas</p>
-<p id=d65a class=summary>informal UT - ask &quot;What do you knwo about accessibility?&quot; and then &quot;What do you want to know about accessibility?&quot; and then let them try to find their answers</p>
-<p id=50a1 class=summary>goodies to lure them and thank them</p>
-<p id=c1a3 class="phone s01"><cite>Charlotte:</cite> W3C Developer site work well there because less stuff and just one audience.<br>
+<section><p id=1bd1 class=summary>oops, /me forgot to scribe :-(</p>
+<p id=3723 class=summary>For UT at TPAC, static image of home page ideas</p>
+<p id=bba4 class=summary>informal UT - ask &quot;What do you knwo about accessibility?&quot; and then &quot;What do you want to know about accessibility?&quot; and then let them try to find their answers</p>
+<p id=f097 class=summary>goodies to lure them and thank them</p>
+<p id=8870 class="phone s01"><cite>Charlotte:</cite> W3C Developer site work well there because less stuff and just one audience.<br>
 <span id=6462>… good visual treatment of the site map</span></p>
-<p id=90c0 class=irc><cite>&lt;shawn&gt;</cite> +1 to we have lots of different audiences</p>
-<p id=939f class="phone s02"><cite>Eric:</cite> from last meeting, not just the learning resources, also clear that we are doing the standards work</p>
-<p id=ffff class=summary><a href="https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page">https://<wbr>www.w3.org/<wbr>WAI/<wbr>EO/<wbr>wiki/<wbr>Redesign_-_October_Revisions#Home_page</a></p>
-<p id=a3d3 class=irc><cite>&lt;Zakim&gt;</cite> yatil, you wanted to say tagging and to say good direction</p>
-<p id=adff class=summary><a href="https://www.nngroup.com/articles/audience-based-navigation/">https://<wbr>www.nngroup.com/<wbr>articles/<wbr>audience-based-navigation/</a></p>
-<p id=4846 class=summary>ah, but that is navigation, not alt info in home page</p>
+<p id=4cc8 class=irc><cite>&lt;shawn&gt;</cite> +1 to we have lots of different audiences</p>
+<p id=1b80 class="phone s02"><cite>Eric:</cite> from last meeting, not just the learning resources, also clear that we are doing the standards work</p>
+<p id=bd61 class=summary><a href="https://www.w3.org/WAI/EO/wiki/Redesign_-_October_Revisions#Home_page">https://<wbr>www.w3.org/<wbr>WAI/<wbr>EO/<wbr>wiki/<wbr>Redesign_-_October_Revisions#Home_page</a></p>
+<p id=6ab7 class=irc><cite>&lt;Zakim&gt;</cite> yatil, you wanted to say tagging and to say good direction</p>
+<p id=b1f1 class=summary><a href="https://www.nngroup.com/articles/audience-based-navigation/">https://<wbr>www.nngroup.com/<wbr>articles/<wbr>audience-based-navigation/</a></p>
+<p id=0d18 class=summary>ah, but that is navigation, not alt info in home page</p>
 </section>
 </main>
 

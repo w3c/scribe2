@@ -25,7 +25,7 @@ EOF
 cat >$TMP2 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=9c5f class="phone s01"><cite>Nigel:</cite> I am not suggesting a normative change.</p>
+<section><p id=7ac7 class="phone s01"><cite>Nigel:</cite> I am not suggesting a normative change.</p>
 </section>
 </main>
 EOF
