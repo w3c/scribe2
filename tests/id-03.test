@@ -1,0 +1,211 @@
+#!/bin/bash
+
+# Test that all ID attributes are non-empty and unique.
+
+trap 'rm -f $TMP1 $TMP2 $TMP3' 0
+TMP1=`mktemp /tmp/ids-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/ids-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/ids-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> ワールド・ワイド・ウェブ・コンソーシアム、最高開発責任者にシルビア・カ
+<foo> デナを迎える言語切り替え：
+<foo>     中文（简体）English
+<foo> 著者と公開日
+<foo> 出版日: 2024年9月2日
+<foo> Sylvia Cadena, W3C Chief Development Officer
+<foo> https://www.w3.org/ – 2024年9月2日 – ワールド・ワイド・ウェブの技術開
+<foo> 発を主導するワールド・ワイド・ウェブ・コンソーシアム（W3C）は、初代チー
+<foo> フ・ディベロップメント・オフィサーの選考を終了しました。シルビア・カデ
+<foo> ナは、9月中旬からフルタイムでチームに参加し、オーストラリアのブリスベ
+<foo> ンからリモートで勤務します。
+<foo> シルヴィア・カデナは、ウェブとインターネットのコミュニティに深く溶け込
+<foo> んでおり、過去16年間、APNICで技術コミュニティに貢献し、過去8年間は
+<foo> APNIC財団の設立をプログラムおよびパートナーシップの責任者として支援し、
+<foo> 移行期間中はCEO代理を務めました。約30年にわたり、アジア太平洋地域とラ
+<foo> テンアメリカでインターネット業界の共同イニシアチブを率いており、資金調
+<foo> 達、プログラムの設計と管理、運営、コンプライアンスと報告、移行と変更管
+<foo> 理の分野で豊富な経験を有しています。
+<foo> 「私のキャリアは、ウェブが切り開いてくれた機会のおかげで始まりました。
+<foo> 自分の文化、言語、多様性がオンライン上で表現されるのを見て、学び、成長
+<foo> する力を与えてくれました。インターネットがどのように成長し、発展してき
+<foo> たかを知ることができたのは幸運でしたし、ウェブが変革するさまざまなビジ
+<foo> ネス・エコシステムに今も魅了されています。私は、ウェブが提供するすべて
+<foo> のものを人類が体験できるようにすることに全力を尽くし、アクセシビリティ、
+<foo> 国際化、プライバシー、セキュリティの原則に忠実なウェブを構築する人々の
+<foo> ために私のスキルと経験を役立てるために、情熱的なチームに加わることを楽
+<foo> しみにしています。もしあなたもこの使命に熱意をお持ちなら、ぜひ寄付をご
+<foo> 検討ください。」
+<foo> W3Cは、1994年に4つの学術機関の協力により設立されて以来、極めて重要な進
+<foo> 化を遂げ、2023年に公益法人格を取得しました。シルヴィアはこの重要な時期
+<foo> に当財団に加わり、財務の安定と発展のためのビジョンを明確にし、寄付者、
+<foo> 助成金、寄付金を確保するための戦略を立案・実行し、当財団の博愛主義的価
+<foo> 値提案を効果的に伝え、開発ポートフォリオの成長と成功を加速させることで、
+<foo> 当財団が方向性を定め、長寿を確保できるよう支援してくれます。
+<foo> W3Cの会長兼CEOのセス･ドブスの言葉です｡「シルビア・カデナがW3Cの専門家
+<foo> チーム、メンバー組織の国際的ネットワーク、そして貢献者の幅広いコミュニ
+<foo> ティに加わり、私と共にワールド・ワイド・ウェブ・コンソーシアムの将来を
+<foo> 支えてくれることを大変嬉しく思います。｣「ウェブコンソーシアムは、ウェ
+<foo> ブと、現在および将来において社会が直面する課題に対処するプラットフォー
+<foo> ムとしてのその継続的な可能性に情熱を注ぐ、必要なリーダーを見つけました。
+<foo> W3Cは30年にわたり、何十億もの私たちの生活、仕事、遊びを一変させ、世界
+<foo> が依存する、オープンで共有された重要なインフラであるウェブを実現する技
+<foo> 術標準の中心的存在であり、今回の任命は私たちの未来を確かなものにするで
+<foo> しょう。」W3C (World Wide Web Consortium)について
+<foo> W3C (World Wide Web Consortium)の使命は、世界中全ての人がウェブをオー
+<foo> プンな環境でアクセシブルに利用し、相互運用するための標準技術とガイドラ
+<foo> インを策定してウェブを最大限に活用することです。今や多くの人が知るHTML
+<foo> とCSSは、ウェブサイトが構築される基盤技術として広く認識されています。
+<foo> 私たちはウェブアクセシビリティや国際化、セキュリティ、またプライバシー
+<foo> の領域で社会のニーズを満たすべく、W3Cが策定する全てののウェブテクノロ
+<foo> ジーの議論と開発を日々行なっています。またW3Cは、ウェブが使用されてい
+<foo> るエンターテインメント、通信、デジタル出版、金融サービスなどの分野でも、
+<foo> ビジネスのためのインフラとして世界標準の技術を提供しています。それらの
+<foo> 技術はオープンに製作され、無償で提供され、W3C独自の特許方針の下で全て
+<foo> の人に公開されています。
+<foo> 数百もの会員と各産業の数千もの技術者が、W3Cのビジョンである「One Web」
+<foo> を創り上げています。W3Cはアメリカ合衆国に設立された公益法人であり、取
+<foo> 締役会が主導し、全世界にスタッフを要する非営利組織です。詳細はこちらを
+<foo> ご覧ください。 https://www.w3.org/
+<foo> プレスリリースはここまで
+<foo> World Wide Web Consortium welcomes Sylvia Cadena as Chief Development
+<foo> Officer Read this page in:
+<foo>     中文（简体）日本語
+<foo> Author(s) and publish date
+<foo> Published: 2 September 2024
+<foo> Sylvia Cadena, W3C Chief Development Officer
+<foo> https://www.w3.org/ – 2 September 2024 – The World Wide Web Consortium
+<foo> (W3C), the leader for the technical development of the World Wide Web,
+<foo> has concluded the search for the inaugural Chief Development Officer.
+<foo> Sylvia Cadena joins the Team full-time mid-September, working remotely
+<foo> from Brisbane, Australia.
+<foo> Sylvia Cadena is deeply embedded in the Web and Internet community,
+<foo> coming to us from APNIC where she served the technical community for
+<foo> the last 16 years, the last eight supporting the establishment of the
+<foo> APNIC Foundation as the Head of Programs and Partnerships as well as
+<foo> Acting CEO during a transition period. For around 30 years she has led
+<foo> collaborative Internet industry initiatives across the Asia Pacific
+<foo> region and Latin America and brings extensive experience in
+<foo> fundraising, program design and management, operations, compliance and
+<foo> reporting, transition and change management.
+<foo> “My career started thanks to the opportunities that the Web opened. It
+<foo> empowered me to learn and grow, to see my culture, language and
+<foo> diversity represented online. I have been lucky to be part of how the
+<foo> Internet grew and developed, and I am still fascinated by the range of
+<foo> business ecosystems that the Web transforms. I am looking forward to
+<foo> joining a passionate team, fully committed to making it possible for
+<foo> humanity to experience all that the web has to offer, and to put my
+<foo> skills and experience to serve those that build the Web to really live
+<foo> up to the principles of accessibility, internationalization, privacy
+<foo> and security. If you’re passionate about this mission as well, please
+<foo> consider making a donation and get involved.”
+<foo> W3C became a public-interest incorporated not-for-profit organization
+<foo> in 2023, a pivotal evolution since our establishment in 1994 as a
+<foo> cooperation between four academic institutions, compelling us to adopt
+<foo> a new structure, diversify funding to be in a better position to
+<foo> succeed in our mission. Sylvia joins us at this decisive time to help
+<foo> us set direction and ensure the longevity of our organization by
+<foo> defining our vision for financial security and development, by
+<foo> planning and implementing strategies to secure donors, grants, and
+<foo> contributions in support of the organization, and by communicating
+<foo> effectively the organization’s philanthropic value proposition, thus
+<foo> accelerating growth and success of our development portfolio.
+<foo> “I am excited that Sylvia Cadena joins the W3C’s expert team, our
+<foo> international network of member organizations, and a broad community
+<foo> of contributors, to partner with me to help steward the World Wide Web
+<foo> Consortium into its future,” said Seth Dobbs, W3C President & CEO.
+<foo> “The Web Consortium found a leader it needed, who is passionate about
+<foo> the Web and its continuing potential to be a platform that addresses
+<foo> the challenges faced by society now and in the future. A leader who is
+<foo> resourceful, driven and creative to bolster the strength of our
+<foo> organization’s fundraising capabilities W3C has now for 30 years been
+<foo> at the heart of the technical standards that make the Web the open,
+<foo> shared, and critical infrastructure that has transformed the way
+<foo> billions of us live, work, and play and that the world relies on, and
+<foo> this appointment will help secure our future.” About the World Wide
+<foo> Web Consortium
+<foo> The mission of the World Wide Web Consortium (W3C) is to lead the Web
+<foo> to its full potential by creating technical standards and guidelines
+<foo> to ensure that the Web remains open, accessible, and interoperable for
+<foo> everyone around the globe. W3C well-known standards HTML and CSS are
+<foo> the foundational technologies upon which websites are built. W3C works
+<foo> on ensuring that all foundational Web technologies meet the needs of
+<foo> civil society, in areas such as accessibility, internationalization,
+<foo> security, and privacy. W3C also provides the standards that undergird
+<foo> the infrastructure for modern businesses leveraging the Web, in areas
+<foo> such as entertainment, communications, digital publishing, and
+<foo> financial services. That work is created in the open, provided for
+<foo> free and under the groundbreaking W3C Patent Policy.
+<foo> W3C's vision for "One Web" brings together thousands of dedicated
+<foo> technologists representing hundreds of member organizations and dozens
+<foo> of industry sectors. W3C is a public-interest non-profit organization
+<foo> incorporated in the United States of America, led by a Board of
+<foo> Directors and employing a global staff across the globe. For more
+<foo> information see https://www.w3.org/
+<foo> End Press Release
+<foo> 欢迎 Sylvia Cadena 出任万维网联盟首席发展官（CDO）切换语言：
+<foo>     English日本語
+<foo> 作者及发布日期
+<foo> 发布: 2024年9月2日
+<foo> Sylvia Cadena, W3C Chief Development Officer
+<foo> https://www.w3.org/ – 2024年9月2日 – 万维网技术标准的领导者—万维网联盟
+<foo> （W3C） 宣布 Sylvia Cadena 将于今年九月中旬全职加入 W3C 出任联盟的首席
+<foo> 发展官（Chief Development Officer 即 CDO），并将在澳大利亚布里斯班开展
+<foo> 远程工作。
+<foo> Sylvia Cadena 深耕 Web 和互联网社区。她之前就职于亚太网络信息中心
+<foo> （APNIC），十六年来一直服务于技术社区。过去八年里，她作为项目与合作关
+<foo> 系负责人为 APNIC 基金会的成立提供支持，并在过渡期担任代理 CEO。 约三十
+<foo> 年的时间里，她在亚太地区和拉丁美洲领导了多个互联网行业合作项目，拥有丰
+<foo> 富的筹款、项目设计和管理、运营、合规与报告、过渡与变革管理经验。
+<foo> “我的职业生涯始于 Web 所带来的机会。它让我学习和成长，并且看到我们的文
+<foo> 化、语言和多元化在网上得以呈现。能够参与网络的发展进程让我倍感幸运，我
+<foo> 对 Web 所影响的一系列商业生态感到着迷。我非常期待加入这样一个充满激情
+<foo> 的团队，致力于让全人类体验到 Web 的无限潜能，并用我的技能和经验服务于
+<foo> 那些构建Web的人，真正实现无障碍、国际化、隐私和安全的原则。如果你也认
+<foo> 同这样的使命，请考虑通过捐赠来提供支持并参与其中。”
+<foo> W3C 于2023年转型成为一个公益性非营利组织，这是自1994年成立并依托全球四
+<foo> 家学术机构联合运营以来的一个关键变革。这一转变促使我们采用新的管理架构
+<foo> 和多样化的资金来源，从而更好达成联盟使命。Sylvia 在此关键时刻加入我们，
+<foo> 帮助我们明确方向，通过定义财务安全和发展愿景，规划并实现相关战略，为联
+<foo> 盟寻求资金支持以确保联盟的长期稳定，有效地传递联盟价值主张，从而加速我
+<foo> 们的成长和发展。
+<foo> W3C 董事长兼首席执行官 Seth Dobbs 表示：“我很高兴看到 Sylvia Cadena 加
+<foo> 入 W3C 的专家团队，成为我们全球会员网络和广大贡献者社区的一员，跟我们
+<foo> 一起努力携手推动万维网联盟的未来。Sylvia 正是我们所需要的领导者，她对
+<foo> Web 充满热情，认为 Web 平台拥有应对当今及未来社会所面临挑战的持续潜力。
+<foo> 她是一位智慧、充满动力和创造力的领导者。期待她能够加强我们组织的筹款能
+<foo> 力。三十年来，W3C 一直处于技术标准的核心，让 Web 成为开放、共享、关键
+<foo> 的基础设施。这个世界所依赖的 Web 改变了数十亿人的生活、工作和娱乐方式。
+<foo> 希望这次任命能够进一步保障我们的未来。”关于万维网联盟（World Wide Web
+<foo> Consortium）
+<foo> 万维网联盟 （World Wide Web Consortium，简称 W3C）的使命是通过开发技术
+<foo> 标准及实施指南，确保万维网的全球开放性、可访问性以及互操作性，从而尽展
+<foo> 万维网无限潜能。W3C 众所周知的 HTML 与 CSS 标准是构建网站的核心技术。
+<foo> W3C 致力于确保所有基础 Web 技术，尤其在无障碍、国际化、安全与隐私领域，
+<foo> 可以满足社会大众的需求。与此同时，在娱乐、通信、数字出版以及金融服务等
+<foo> 领域，W3C 提供相应标准助力当代各行业利用 Web 加强基础建设。W3C 工作对
+<foo> 公众开放，所有标准均依据 W3C 专利政策免费供公众使用。
+<foo> W3C “同一个万维网（One Web）”的理念汇集了全球数十个行业领域数百家成员
+<foo> 单位及数千名专业技术人员。W3C 是一个公益性非营利组织，实体在美国注册、
+<foo> 由董事会监管、在全球拥有雇员。更多信息请见 https://www.w3.org/。
+<foo> 新闻稿正文结束
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+# Get all ID attributes. It's an error if there are none.
+echo "Get IDs"
+grep -E -o ' id=[^"> ]*' $TMP2 >$TMP3 || exit 1
+wc -l <$TMP3
+
+# Sort, count, remove unique IDs. It's an error if there are any left.
+echo "Find duplicates"
+cut -c5- $TMP3 | sort | uniq -c | grep -v -E '^ *1 ' && exit 1
+echo "None found"
+
+# Check that no IDs is empty.
+echo "Find empty IDs"
+cut -c5- $TMP3 | grep -F -x '' && exit 1
+echo "None found"
+
+
