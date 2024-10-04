@@ -39,12 +39,12 @@
 <nav id=toc>
 <h2>Contents</h2>
 <ol>
-<li><a href="#1030">Announcements etc</a></li>
-<li><a href="#bb2f">Inconsistent description of attributes on &lt;label&gt; etc.</a></li>
-<li><a href="#b1dd">@label, @help, @hint, @alert</a></li>
-<li><a href="#9d43">ACTION-1970 - Propose list of page access functions [on Erik</a></li>
-<li><a href="#9c23">XML =&gt; XPath Data Model</a></li>
-<li><a href="#cbf6">error-type</a></li>
+<li><a href="#e73c">Announcements etc</a></li>
+<li><a href="#dcc7">Inconsistent description of attributes on &lt;label&gt; etc.</a></li>
+<li><a href="#894c">@label, @help, @hint, @alert</a></li>
+<li><a href="#9b20">ACTION-1970 - Propose list of page access functions [on Erik</a></li>
+<li><a href="#2869">XML =&gt; XPath Data Model</a></li>
+<li><a href="#d275">error-type</a></li>
 <li class=app><a href="#ActionSummary">Summary of action items</a></li>
 </ol>
 </nav>
@@ -52,14 +52,14 @@
 
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=30ce class=summary>Let's get that right...</p>
+<section><p id=f308 class=summary>Let's get that right...</p>
 </section>
 
 <section>
-<h3 id=1030>Announcements etc</h3>
-<p id=72be class="phone s01"><cite>Steven:</cite> Congratulations Erik, on Orbeon 4.5<br>
+<h3 id=e73c>Announcements etc</h3>
+<p id=db55 class="phone s01"><cite>Steven:</cite> Congratulations Erik, on Orbeon 4.5<br>
 <span id=a953>… anything of interest for us?</span></p>
-<p id=24be class="phone s02"><cite>Erik:</cite> Apart from what I mentioned in the email, we do have &lt;hint&gt; on individual items (such as check boxes)<br>
+<p id=80d3 class="phone s02"><cite>Erik:</cite> Apart from what I mentioned in the email, we do have &lt;hint&gt; on individual items (such as check boxes)<br>
 <span id=0ba1>… which the spec doesn't support (yet)</span><br>
 <span id=d8fe>… which I raised in another mail</span><br>
 <span id=c732>… It is easy to do with radio buttons, but harder with drop downs.</span><br>
@@ -67,75 +67,75 @@
 </section>
 
 <section>
-<h3 id=bb2f>Inconsistent description of attributes on &lt;label&gt; etc.</h3>
-<p id=28af class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0009.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0009.html</a></p>
-<p id=78e9 class="phone s02"><cite>Erik:</cite> I just replied; UI Common is the right one.\</p>
-<p id=2cad class="phone s01"><cite>Steven:</cite> I'll fix.</p>
-<p id=a583 class=action><strong>ACTION:</strong> Steven to fix inconsistent text on attributes for &lt;label&gt; etc.</p>
-<p id=415d class=bot><cite>&lt;trackbot&gt;</cite> Created ACTION-1971 - Fix inconsistent text on attributes for &lt;label&gt; etc. [on Steven Pemberton - due 2014-04-16].</p>
+<h3 id=dcc7>Inconsistent description of attributes on &lt;label&gt; etc.</h3>
+<p id=6e67 class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0009.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0009.html</a></p>
+<p id=16f1 class="phone s02"><cite>Erik:</cite> I just replied; UI Common is the right one.\</p>
+<p id=98ae class="phone s01"><cite>Steven:</cite> I'll fix.</p>
+<p id=3c4d class=action><strong>ACTION:</strong> Steven to fix inconsistent text on attributes for &lt;label&gt; etc.</p>
+<p id=78c0 class=bot><cite>&lt;trackbot&gt;</cite> Created ACTION-1971 - Fix inconsistent text on attributes for &lt;label&gt; etc. [on Steven Pemberton - due 2014-04-16].</p>
 </section>
 
 <section>
-<h3 id=b1dd>@label, @help, @hint, @alert</h3>
-<p id=23af class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0005.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0005.html</a></p>
-<p id=0a9f class="phone s01"><cite>Steven:</cite> In the absence of objections, I plan to implement.</p>
-<p id=ff89 class="phone s02"><cite>Erik:</cite> &lt;select1 ref=&quot;...&quot; label=&quot;Gender&quot;&gt;</p>
-<p id=71f1 class=summary>    &lt;item label=&quot;male&quot;&gt;m&lt;/item&gt;</p>
-<p id=c60e class=summary>    &lt;item label=&quot;female&quot;&gt;f&lt;/item&gt;</p>
-<p id=913b class=summary>&lt;/select&gt;</p>
-<p id=e6c5 class="phone s01"><cite>Steven:</cite> Looks like a big change compared with the others.</p>
-<p id=ab87 class="phone s03"><cite>Alain:</cite> Not difficult to implement.</p>
-<p id=4f06 class="phone s02"><cite>Erik:</cite> It is a bit of a departure. But it's just a syntax issue. But it is more light weight.</p>
-<p id=8cb4 class=irc><cite>&lt;ebruchez&gt;</cite> &lt;item label=&quot;male&quot; value=&quot;'m'&quot;/&gt;</p>
-<p id=631f class="phone s02"><cite>Erik:</cite> &lt;item label=&quot;male&quot; value=&quot;'m'&quot;/&gt;<br>
+<h3 id=894c>@label, @help, @hint, @alert</h3>
+<p id=0519 class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0005.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0005.html</a></p>
+<p id=7c82 class="phone s01"><cite>Steven:</cite> In the absence of objections, I plan to implement.</p>
+<p id=06cd class="phone s02"><cite>Erik:</cite> &lt;select1 ref=&quot;...&quot; label=&quot;Gender&quot;&gt;</p>
+<p id=ac17 class=summary>    &lt;item label=&quot;male&quot;&gt;m&lt;/item&gt;</p>
+<p id=4552 class=summary>    &lt;item label=&quot;female&quot;&gt;f&lt;/item&gt;</p>
+<p id=1797 class=summary>&lt;/select&gt;</p>
+<p id=82a4 class="phone s01"><cite>Steven:</cite> Looks like a big change compared with the others.</p>
+<p id=21c1 class="phone s03"><cite>Alain:</cite> Not difficult to implement.</p>
+<p id=f897 class="phone s02"><cite>Erik:</cite> It is a bit of a departure. But it's just a syntax issue. But it is more light weight.</p>
+<p id=dbf4 class=irc><cite>&lt;ebruchez&gt;</cite> &lt;item label=&quot;male&quot; value=&quot;'m'&quot;/&gt;</p>
+<p id=c76e class="phone s02"><cite>Erik:</cite> &lt;item label=&quot;male&quot; value=&quot;'m'&quot;/&gt;<br>
 <span id=3958>… it's not difficult to specify. But do we like it?</span></p>
-<p id=c487 class="phone s01"><cite>Steven:</cite> The only thing is that it allows this: &lt;item&gt;&lt;label&gt;male&lt;/label&gt;m&lt;/item&gt;</p>
-<p id=19a3 class="phone s02"><cite>Erik:</cite> That wouldn't be allowed.</p>
-<p id=4718 class="phone s01"><cite>Steven:</cite> Then I don't think we should do it.</p>
-<p id=60e2 class=irc><cite>&lt;ebruchez&gt;</cite> &lt;item&gt;foo&lt;label&gt;…&lt;/label&gt;bar&lt;/item.</p>
-<p id=d697 class="phone s01"><cite>Steven:</cite> Then I propose we don't do the 'value-less' &lt;item&gt;</p>
+<p id=d56a class="phone s01"><cite>Steven:</cite> The only thing is that it allows this: &lt;item&gt;&lt;label&gt;male&lt;/label&gt;m&lt;/item&gt;</p>
+<p id=5e33 class="phone s02"><cite>Erik:</cite> That wouldn't be allowed.</p>
+<p id=ffff class="phone s01"><cite>Steven:</cite> Then I don't think we should do it.</p>
+<p id=3742 class=irc><cite>&lt;ebruchez&gt;</cite> &lt;item&gt;foo&lt;label&gt;…&lt;/label&gt;bar&lt;/item.</p>
+<p id=3f0c class="phone s01"><cite>Steven:</cite> Then I propose we don't do the 'value-less' &lt;item&gt;</p>
 </section>
 
 <section>
-<h3 id=9d43>ACTION-1970 - Propose list of page access functions [on Erik</h3>
-<p id=4e05 class=summary>Bruchez - due 2014-04-09].</p>
-<p id=156f class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0000.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0000.html</a></p>
-<p id=eec0 class=summary><a href="http://www.w3.org/2014/04/02-forms-minutes.html#action01]">http://<wbr>www.w3.org/<wbr>2014/<wbr>04/<wbr>02-forms-minutes.html#action01]</a></p>
-<p id=b7c9 class="phone s02"><cite>Erik:</cite> I still have to do that</p>
+<h3 id=9b20>ACTION-1970 - Propose list of page access functions [on Erik</h3>
+<p id=08fb class=summary>Bruchez - due 2014-04-09].</p>
+<p id=0b47 class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0000.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0000.html</a></p>
+<p id=3038 class=summary><a href="http://www.w3.org/2014/04/02-forms-minutes.html#action01]">http://<wbr>www.w3.org/<wbr>2014/<wbr>04/<wbr>02-forms-minutes.html#action01]</a></p>
+<p id=2fb8 class="phone s02"><cite>Erik:</cite> I still have to do that</p>
 </section>
 
 <section>
-<h3 id=9c23>XML =&gt; XPath Data Model</h3>
-<p id=3ff0 class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0012.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0012.html</a></p>
-<p id=6e6d class="phone s01"><cite>Steven:</cite> Earlier we say &quot;Otherwise the body is parsed to give an XPath Data Model according to Creating instance data from external resources. &quot;</p>
-<p id=6cc1 class="phone s02"><cite>Erik:</cite> Your new text is probably fine.</p>
-<p id=5c84 class=action><strong>ACTION:</strong> Steven to make submission XML =&gt; XPath Data model change</p>
-<p id=6968 class=bot><cite>&lt;trackbot&gt;</cite> Created ACTION-1972 - Make submission xml =&gt; xpath data model change [on Steven Pemberton - due 2014-04-16].</p>
+<h3 id=2869>XML =&gt; XPath Data Model</h3>
+<p id=c01f class=summary><a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0012.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0012.html</a></p>
+<p id=ee30 class="phone s01"><cite>Steven:</cite> Earlier we say &quot;Otherwise the body is parsed to give an XPath Data Model according to Creating instance data from external resources. &quot;</p>
+<p id=41b3 class="phone s02"><cite>Erik:</cite> Your new text is probably fine.</p>
+<p id=2cd1 class=action><strong>ACTION:</strong> Steven to make submission XML =&gt; XPath Data model change</p>
+<p id=5aae class=bot><cite>&lt;trackbot&gt;</cite> Created ACTION-1972 - Make submission xml =&gt; xpath data model change [on Steven Pemberton - due 2014-04-16].</p>
 </section>
 
 <section>
-<h3 id=cbf6>error-type</h3>
-<p id=5e87 class="phone s01"><cite>Steven:</cite> I made the changes as agreed on last week, the diff is available here: <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0013.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0013.html</a><br>
+<h3 id=d275>error-type</h3>
+<p id=7e67 class="phone s01"><cite>Steven:</cite> I made the changes as agreed on last week, the diff is available here: <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0013.html">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0013.html</a><br>
 <span id=856b>… please check to see you are OK with it.\</span></p>
-<p id=6dc2 class=summary>[ADJOURN]</p>
-<p id=275f class="phone s04"><cite>s;Agenda:</cite> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011;Agenda:">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011;Agenda:</a> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011</a></p>
-<p id=2e24 class="phone s04"><cite>s;Agenda:</cite> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011;Agenda:">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011;Agenda:</a> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011;">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011;</a></p>
-<p id=503e class=irc><cite>&lt;Steven_&gt;</cite> s/Agenda: http:\/\/lists.w3.org\/Archives\/Public\/public-forms\/2014Apr\/0004/Agenda: http:\/\/lists.w3.org\/Archives\/Public\/public-forms\/2014Apr\/0011/</p>
+<p id=e3ab class=summary>[ADJOURN]</p>
+<p id=a889 class="phone s04"><cite>s;Agenda:</cite> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011;Agenda:">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011;Agenda:</a> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011</a></p>
+<p id=687d class="phone s04"><cite>s;Agenda:</cite> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011;Agenda:">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011;Agenda:</a> <a href="http://lists.w3.org/Archives/Public/public-forms/2014Apr/0011;">http://<wbr>lists.w3.org/<wbr>Archives/<wbr>Public/<wbr>public-forms/<wbr>2014Apr/<wbr>0011;</a></p>
+<p id=dddd class=irc><cite>&lt;Steven_&gt;</cite> s/Agenda: http:\/\/lists.w3.org\/Archives\/Public\/public-forms\/2014Apr\/0004/Agenda: http:\/\/lists.w3.org\/Archives\/Public\/public-forms\/2014Apr\/0011/</p>
 </section>
 </main>
 
 <div id=ActionSummary>
 <h2>Summary of action items</h2>
 <ol>
-<li><a href="#a583">Steven to fix inconsistent text on attributes for &lt;label&gt; etc.</a></li>
-<li><a href="#5c84">Steven to make submission XML =&gt; XPath Data model change</a></li>
+<li><a href="#3c4d">Steven to fix inconsistent text on attributes for &lt;label&gt; etc.</a></li>
+<li><a href="#2cd1">Steven to make submission XML =&gt; XPath Data model change</a></li>
 </ol>
 </div>
 
 
 <address>Minutes manually created (not a transcript), formatted by <a
 href="https://w3c.github.io/scribe2/scribedoc.html"
->scribe.perl</a> version 235 (Thu Sep 26 22:53:03 2024 UTC).</address>
+>scribe.perl</a> version 237 (Fri Oct  4 02:31:45 2024 UTC).</address>
 
 <div class=diagnostics>
 <h2>Diagnostics</h2>
