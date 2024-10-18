@@ -166,7 +166,7 @@ cat >$TMP3 <<EOF
 <p id=8922 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0001.html">CM's two minutes</a></p>
 <p id=ab56 class=summary><a href="https://lists.w3.org/Archives/Team/team-2minutes/2020Feb/0000.htmlD">Daniel's 2 minutes</a></p>
 <p id=85ed class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0005.html">Josh's 2 minutes</a></p>
-<p id=79e8 class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
+<p id=692d class="phone s03"><cite>Richard:</cite> Looked at Thai requirements<br>
 <span id=18ee>… someone joined the Arabic TF recently</span><br>
 <span id=8df7>… if anybody knows an expert in language systems, let me know</span><br>
 <span id=ef51>… in order to deal with the people on expert networks, I've been reassessing how we edit the gap analysis document</span><br>
@@ -177,7 +177,7 @@ cat >$TMP3 <<EOF
 <p id=7c2a class="phone s03"><cite>Richard:</cite> example:</p>
 <p id=a286 class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/</a></p>
 <p id=ffff class=irc><cite>&lt;r12a&gt;</cite> <a href="https://w3c.github.io/jlreq/gap-analysis/#direction">https://<wbr>w3c.github.io/<wbr>jlreq/<wbr>gap-analysis/#direction</a></p>
-<p id=cd53 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
+<p id=9413 class="phone s03"><cite>Richard:</cite> there's a section you jump to<br>
 <span id=b76e>… and numbers of issues that deal with a particular topic</span></p>
 <p id=30ab class=irc><cite>&lt;r12a&gt;</cite> <a href="https://github.com/w3c/jlreq/issues/171">w3c/<wbr>jlreq#171</a></p>
 <p id=2246 class=summary><a href="https://lists.w3.org/Archives/Team/w3t-europe/2020Feb/0006.html">Steve's 2 minutes</a></p>

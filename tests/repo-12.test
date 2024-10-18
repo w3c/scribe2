@@ -32,7 +32,7 @@ cat >$TMP4 <<EOF
 <p id=834d class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/302">Issue 302</a></strong> API simplification: context types, context options, createContext() (zolkis)</p>
 <h4 id=1c2f>Open PRs</h4>
 <p id=bc9c class=summary>Repository: webmachinelearning/webnn</p>
-<p id=327d class="phone s02"><cite>anssik:</cite> we have two minor open PRs that emerged from Chromium implementation experience:<br>
+<p id=3dd4 class="phone s02"><cite>anssik:</cite> we have two minor open PRs that emerged from Chromium implementation experience:<br>
 <span id=88dc>… <a href="https://github.com/webmachinelearning/webnn/issues/294">#294</a> Use unsigned long for size related options of conv2d, convTranspose2d and pooling operations</span></p>
 <p id=f3b5 class=bot><cite>&lt;ghurlbot&gt;</cite> <strong><a href="https://github.com/webmachinelearning/webnn/issues/294">Pull Request 294</a></strong> Use unsigned long for size related options of conv2d, convTranspose2d and pooling operations (huningxin)</p>
 <p id=2c3e class="phone s02"><cite>anssik:</cite> <a href="https://github.com/webmachinelearning/webnn/issues/306">#306</a> Use unsigned long type for sizes option of resample2d</p>

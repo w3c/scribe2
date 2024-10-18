@@ -392,32 +392,32 @@ Internationalization Working Group Teleconference</h1>
 <p id=bccb class=summary><a href="https://github.com/w3c/i18n-activity/projects/1">https://<wbr>github.com/<wbr>w3c/<wbr>i18n-activity/<wbr>projects/<wbr>1</a></p>
 <p id=bac7 class=summary>(addison introduces)</p>
 <p id=8fab class=irc><cite>&lt;kaz&gt;</cite> <a href="https://lists.w3.org/Archives/Public/www-international/2019AprJun/0026.html">kaz's write up</a></p>
-<p id=43ac class="phone s01"><cite>kaz:</cite> our main purpose is first doc, WoT Thing Description<br>
+<p id=7bb8 class="phone s01"><cite>kaz:</cite> our main purpose is first doc, WoT Thing Description<br>
 <span id=52ce>… other is kind of basic concepts</span><br>
 <span id=a481>… our schedule, we'd like to bring to CR at end of the month</span><br>
 <span id=3e2f>… already has some i18n features</span><br>
 <span id=a32b>… like to know if this is okay</span></p>
-<p id=de3e class="phone s02"><cite>richard:</cite> doc I'm looking at is not in a w3c repo<br>
+<p id=f1d6 class="phone s02"><cite>richard:</cite> doc I'm looking at is not in a w3c repo<br>
 <span id=5ea1>… would prefer if it were in w3c repo before we review</span></p>
-<p id=0d5c class="phone s01"><cite>kaz:</cite> updating the draft daily, but generated fixed version using branch<br>
+<p id=cd7c class="phone s01"><cite>kaz:</cite> updating the draft daily, but generated fixed version using branch<br>
 <span id=899c>… if needed, I can copy the fixed HTML to the www.w3.org server.</span></p>
 <p id=03d7 class=irc><cite>&lt;mkovatsc_&gt;</cite> W3C repo: <a href="https://github.com/w3c/wot-thing-description/">w3c/<wbr>wot-thing-description</a></p>
 <p id=98f6 class="phone s03"><cite>mathias:</cite> our doc is on github</p>
 <p id=7172 class="phone s04"><cite>sebastian:</cite> would having  a meeting to guide you helpful?</p>
-<p id=a5cf class="phone s02"><cite>richard:</cite> if you can review our checklist, that will help you guide us<br>
+<p id=2b6b class="phone s02"><cite>richard:</cite> if you can review our checklist, that will help you guide us<br>
 <span id=43b3>… think it is a good idea for you to look through and identify things important for us to review</span><br>
 <span id=d1a4>… we will likely look other places too, but it will still help</span><br>
 <span id=1c73>… <a href="https://www.w3.org/International/techniques/shortchecklist.html">https://<wbr>www.w3.org/<wbr>International/<wbr>techniques/<wbr>shortchecklist.html</a></span><br>
 <span id=6808>… points to more detailed checklist also</span></p>
 <p id=f344 class=irc><cite>&lt;kaz&gt;</cite> <a href="https://www.w3.org/International/techniques/developing-specs">detailed checklist</a></p>
-<p id=012c class="phone s02"><cite>richard:</cite> if you go through and see if there are things to pay attention to while doing review<br>
+<p id=e4a7 class="phone s02"><cite>richard:</cite> if you go through and see if there are things to pay attention to while doing review<br>
 <span id=f617>… we have to understand your document in just a few days</span></p>
 <p id=5902 class="phone s05"><cite>addison:</cite> anything you want to call attention to?</p>
-<p id=6cd6 class="phone s03"><cite>mathias:</cite> we will send you links to paths of doc<br>
+<p id=fe7d class="phone s03"><cite>mathias:</cite> we will send you links to paths of doc<br>
 <span id=2224>… and double check guidelines</span></p>
 <p id=2e0c class=irc><cite>&lt;kaz&gt;</cite> s/matthias:/sebastian:/</p>
 <p id=e59d class="phone s02"><cite>richard:</cite> can you give a brief overview of docs?</p>
-<p id=3416 class="phone s04"><cite>sebastian:</cite> easiest way to explain is<br>
+<p id=31fa class="phone s04"><cite>sebastian:</cite> easiest way to explain is<br>
 <span id=d898>… everyone knows html</span><br>
 <span id=42c2>… thing description is for devices</span><br>
 <span id=dd77>… index html for things</span><br>
@@ -433,30 +433,30 @@ Internationalization Working Group Teleconference</h1>
 <p id=c133 class="phone s04"><cite>Sebastian:</cite> multiple language support</p>
 <p id=c2c5 class="phone s07"><cite>r12a:</cite> is there some kind of markup involved? how is information stored</p>
 <p id=9fd1 class="phone s04"><cite>sebastian:</cite> thing description can be stored in different ways</p>
-<p id=8455 class="phone s08"><cite>matthias:</cite> json based interchange format<br>
+<p id=f2b6 class="phone s08"><cite>matthias:</cite> json based interchange format<br>
 <span id=7ce3>… aligned with JSON-LD</span><br>
 <span id=3f01>… so JSON 1.1 could be used</span><br>
 <span id=0c4f>… model for json structure so can be machine read</span><br>
 <span id=3530>… have a few human-readable fields</span></p>
-<p id=a5ec class="phone s02"><cite>richard:</cite> put a link to string-meta, should read carefully<br>
-<span id=6cd7>… anticipating comments, since we have identified problems with RDF and LD</span><br>
+<p id=47a6 class="phone s02"><cite>richard:</cite> put a link to string-meta, should read carefully<br>
+<span id=6cd6>… anticipating comments, since we have identified problems with RDF and LD</span><br>
 <span id=7042>… involving base direction</span></p>
 <p id=1b36 class="phone s08"><cite>Matthias:</cite> not a format for display</p>
-<p id=353a class="phone s01"><cite>kaz:</cite> have discussion with ld group, including Ivan Herman<br>
+<p id=f948 class="phone s01"><cite>kaz:</cite> have discussion with ld group, including Ivan Herman<br>
 <span id=3bb9>… model describes device properties and how to control using actions and events</span><br>
 <span id=ddb9>… concentrating on how to deal with devices properties</span></p>
 <p id=589a class=irc><cite>&lt;r12a&gt;</cite> Requester provides target URL to initiate T2T</p>
 <p id=10d3 class="phone s01"><cite>kaz:</cite> will look into detailed checklist</p>
 <p id=4d6e class="phone s05"><cite>addison:</cite> only one telecon before end of month</p>
-<p id=24be class="phone s07"><cite>r12a:</cite> would like to understand why you didn't come forward sooner<br>
+<p id=2098 class="phone s07"><cite>r12a:</cite> would like to understand why you didn't come forward sooner<br>
 <span id=6f08>… were you unaware?</span></p>
 <p id=7429 class="phone s08"><cite>matthias:</cite> didn't understand process</p>
-<p id=5178 class="phone s02"><cite>richard:</cite> need to find way to understand process earlier on<br>
+<p id=10a1 class="phone s02"><cite>richard:</cite> need to find way to understand process earlier on<br>
 <span id=f9e5>… also maybe having an i18n champion in WG</span></p>
-<p id=402f class="phone s01"><cite>kaz:</cite> first of all, very sorry as the team contact that we couldn't bring this earlier. there were important technical problems<br>
+<p id=327b class="phone s01"><cite>kaz:</cite> first of all, very sorry as the team contact that we couldn't bring this earlier. there were important technical problems<br>
 <span id=44b7>… took longer than we expect</span></p>
 <p id=2956 class="phone s05"><cite>addison:</cite> used to reviewing very raw specs</p>
-<p id=03c3 class="phone s08"><cite>matthias:</cite> reached out in tpac<br>
+<p id=91f7 class="phone s08"><cite>matthias:</cite> reached out in tpac<br>
 <span id=e09c>… something fell between lines</span><br>
 <span id=5030>… good if some kind of early registration mechanism</span></p>
 <p id=f77d class="phone s02"><cite>richard:</cite> would having a champion in your WG be helpful?</p>
@@ -492,7 +492,7 @@ Internationalization Working Group Teleconference</h1>
 <section>
 <h3 id=9993>Info Share</h3>
 <p id=26c3 class=summary>regrets next week from addison</p>
-<p id=08f5 class="phone s02"><cite>richard:</cite> LTR/RTL doc being reworked<br>
+<p id=5685 class="phone s02"><cite>richard:</cite> LTR/RTL doc being reworked<br>
 <span id=dcf2>… have a look at new version</span></p>
 <p id=81e4 class=irc><cite>&lt;r12a&gt;</cite> <a href="http://w3c.github.io/i18n-drafts/questions/qa-ltr-scripts-in-rtl.en.html">http://<wbr>w3c.github.io/<wbr>i18n-drafts/<wbr>questions/<wbr>qa-ltr-scripts-in-rtl.en.html</a></p>
 </section>

@@ -162,7 +162,7 @@ Accessibility Conformance Testing Teleconference</h1>
 
 <section>
 <h3 id=271d>Results of CFC</h3>
-<p id=6e07 class="phone s01"><cite>MJM:</cite> only positive responses<br>
+<p id=75a7 class="phone s01"><cite>MJM:</cite> only positive responses<br>
 <span id=d1f8>… will be added to the Queue, have 3 rules now</span></p>
 <p id=38ce class="phone s02"><cite>WF:</cite> 3 need PRs, 2 other ones</p>
 <p id=b675 class="phone s01"><cite>MJM:</cite> Getting close to enough for AG</p>
@@ -172,16 +172,16 @@ Accessibility Conformance Testing Teleconference</h1>
 
 <section>
 <h3 id=69b4>aria-* attribute is defined in WAI-ARIA: <a href="https://www.w3.org/2002/09/wbs/93339/ACTARIAAttribute2/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTARIAAttribute2/<wbr>results</a> -</h3>
-<p id=bbdf class="phone s01"><cite>MJM:</cite> 6 responses, only comment is on implementation data<br>
+<p id=9198 class="phone s01"><cite>MJM:</cite> 6 responses, only comment is on implementation data<br>
 <span id=1427>… Charu said rule does not check if the attributes are valid.</span></p>
-<p id=899f class="phone s02"><cite>WF:</cite> Handled in another rule. We can link between rules. There is an open issue for this in the CG.<br>
+<p id=3dc6 class="phone s02"><cite>WF:</cite> Handled in another rule. We can link between rules. There is an open issue for this in the CG.<br>
 <span id=721e>… no composite rule for this needed, IMO</span><br>
 <span id=67c3>… Open PR / issue has been closed.</span></p>
-<p id=1f26 class="phone s01"><cite>MJM:</cite> There are no other concerns. It is done. I don't think the link between rules should block this rule publication.<br>
+<p id=d18e class="phone s01"><cite>MJM:</cite> There are no other concerns. It is done. I don't think the link between rules should block this rule publication.<br>
 <span id=9449>… We can send this out for CFC.</span></p>
-<p id=3447 class="phone s02"><cite>WF:</cite> This doesn't map to WCAG, we may not want to include this rule for AG.<br>
+<p id=6990 class="phone s02"><cite>WF:</cite> This doesn't map to WCAG, we may not want to include this rule for AG.<br>
 <span id=e699>… Suggest we acknowledge it is accepted and then park it</span></p>
-<p id=381a class="phone s01"><cite>MJM:</cite> Maybe we can make a tracking table for non-WCAG rules that are complete<br>
+<p id=a4f0 class="phone s01"><cite>MJM:</cite> Maybe we can make a tracking table for non-WCAG rules that are complete<br>
 <span id=169a>… I don't want it to muddy the water. I can create this table.</span></p>
 <p id=ffff class="phone s03"><cite>SAZ:</cite> I think that would be helpful. There are some talks with Matt King about integrating ARIA rules with some other thing they are working on.</p>
 <p id=97ee class="phone s01"><cite>MJM:</cite> Agreed, there will be a place to publish them associated with ARIA. We may have to come up with a proposal on how to do that.</p>
@@ -192,13 +192,13 @@ Accessibility Conformance Testing Teleconference</h1>
 <h3 id=1827>iframe element has accessible name: <a href="https://www.w3.org/2002/09/wbs/93339/ACTiFrameName/results">https://<wbr>www.w3.org/<wbr>2002/<wbr>09/<wbr>wbs/<wbr>93339/<wbr>ACTiFrameName/<wbr>results</a> -</h3>
 <p id=923c class="phone s03"><cite>SAZ:</cite> Might be that these ARAI rules could go to the ARIA WG instead of AG</p>
 <p id=d59c class="phone s01"><cite>MJM:</cite> Might make sense for other specs like for EPUB</p>
-<p id=10000 class="phone s01"><cite>MJM:</cite> Next one is iframe. There are 4 responses. No new responses. Nothing new to talk about here.<br>
+<p id=132c class="phone s01"><cite>MJM:</cite> Next one is iframe. There are 4 responses. No new responses. Nothing new to talk about here.<br>
 <span id=0d8c>… Will have to prompt people to fill out the survey.</span></p>
 </section>
 
 <section>
 <h3 id=83bd>Rule tracking table - Revisit list, get status, and update: <a href="https://www.w3.org/WAI/GL/task-forces/conformance-testing/wiki/Rule_Publication_Tracking">https://<wbr>www.w3.org/<wbr>WAI/<wbr>GL/<wbr>task-forces/<wbr>conformance-testing/<wbr>wiki/<wbr>Rule_Publication_Tracking</a> - Wilco]</h3>
-<p id=cc0f class="phone s01"><cite>MJM:</cite> iframe survey is closed<br>
+<p id=56fa class="phone s01"><cite>MJM:</cite> iframe survey is closed<br>
 <span id=4ce5>… Will update this as we're talking</span></p>
 </section>
 </main>

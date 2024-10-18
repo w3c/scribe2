@@ -25,7 +25,7 @@ cat >$TMP4 <<EOF
 <h2>Meeting minutes</h2>
 <section><p id=73e2 class="phone s01"><cite>Anssi:</cite> I consider #302 v2 feature</p>
 <h4 id=1c2f>Open PRs</h4>
-<p id=1cea class="phone s02"><cite>anssik:</cite> we have two minor open PRs that emerged from Chromium implementation experience:<br>
+<p id=07b3 class="phone s02"><cite>anssik:</cite> we have two minor open PRs that emerged from Chromium implementation experience:<br>
 <span id=d94e>… <a href="https://github.com/webmachinelearning/webnn/issues/294">webmachinelearning/webnn#294</a> Use unsigned long for size related options of conv2d, convTranspose2d and pooling operations</span><br>
 <span id=1abe>… <a href="https://github.com/webmachinelearning/webnn/issues/306">webmachinelearning/webnn#306</a> Use unsigned long type for sizes option of resample2d</span><br>
 <span id=3def>… these PRs are pending Chai's review, can you PTAL?</span></p>
