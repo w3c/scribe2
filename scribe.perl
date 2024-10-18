@@ -853,10 +853,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 237 $'
+my $revision = '$Revision: 238 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Oct  4 02:31:45 2024 UTC $'
+my $versiondate = '$Date: Fri Oct 18 20:51:13 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1513,9 +1513,9 @@ for (my $i = 0; $i < @records; $i++) {
     my $j = $i - 1; $j-- while $j > 0 && $records[$j]->{type} eq 'o';
     if ($j >= 0 && $records[$j]->{type} eq 's' &&
 	$records[$j]->{speaker} eq $records[$i]->{speaker}) {
-      # Concatenate previous and current line and remove previous line
-      $records[$i]->{text} = $records[$j]->{text} . "\t" . $1;
-      $records[$j]->{type} = 'o';	# Omit previous line from output
+      # Concatenate this line's text to the previous line.
+      $records[$j]->{text} .= "\t" . $1;
+      $records[$i]->{type} = 'o';	# Omit this line from output
     } else {
       # Cannot concatenate with previous line, remove "..." instead.
       $records[$i]->{text} = $1;
