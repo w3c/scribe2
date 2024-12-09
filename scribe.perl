@@ -853,10 +853,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 238 $'
+my $revision = '$Revision: 239 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Oct 18 20:51:13 2024 UTC $'
+my $versiondate = '$Date: Mon Dec  9 17:59:40 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -993,6 +993,11 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
     my ($cmd, $delim, $old, $new, $global) = ($1, $2, $3, $4, $5);
     my $old2 = $old =~ s/\x{200C}//gr;		# Version without any U+200C
+
+    if ($old eq '') {
+      push(@diagnostics, 'Malformed: ' . $records[$i]->{text});
+      next;
+    }
 
     push(@diagnostics, "Warning: ‘$records[$i]->{text}’ interpreted as replacing ‘$old’ by ‘$new’")
 	if $cmd eq 's' && $new =~ /\Q$delim\E/;
@@ -1181,7 +1186,7 @@ for (my $i = 0; $i < @records; $i++) {
 	if ($response->is_success) {
 	    $embeddedslidesetcounter++;
 	    $embeddedslideset = "slideset-data-" . $embeddedslidesetcounter;
-	    $records[$i]->{archive} = " (<a id='" . $embeddedslideset ."' href='data:application/pdf;base64," . encode_base64($response->decoded_content) . "'>archived PDF copy</a>)";
+	    $records[$i]->{archive} = " and <a id='" . $embeddedslideset ."' href='data:application/pdf;base64," . encode_base64($response->decoded_content) . "'>archived PDF copy</a>";
 	}
     }
     $has_slides = 1;
