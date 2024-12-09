@@ -2,6 +2,7 @@
 <html lang=en>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta content="width=device-width" name="viewport">
   <title>Scribe.perl &ndash; Generate meeting minutes from an IRC log</title>
   <link rel=stylesheet type="text/css"
    href="https://www.w3.org/Guide/guide2006.css">
@@ -853,12 +854,15 @@ s|old|new</pre>
    processed in order, first to last. (I.e., each command works on the
    text that results after the previous command.)
 
-  <p><var>New</var> may contain slashes and vertical bars. E.g., this works:
+  <p><var>new</var> may contain slashes and vertical bars. E.g., this works:
    <code>s/@@/http://example.org/path/</code>. But note that the last
    slash is taken as part of the command, not of the new string. To
    include a final slash, double it
    (<code>s/@@/http://example.org/path//</code>) or use the alternative
    syntax: <code>s|@@|http://example.org/path/</code>.
+
+  <p><var>old</var> cannot be empty, but <var>new</var> can
+   be. E.g.: <code>s/some//</code>.
 
   <p>Unlike in Perl, backslashes are not special. E.g.,
    <code>s/and\/or/but</code> will try to replace ‘and\’ by ‘or/but’
