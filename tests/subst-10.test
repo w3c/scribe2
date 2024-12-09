@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Test s/../../ command where old text starts with "/"
+
+trap 'rm -f $TMP1 $TMP2 $TMP3 $TMP4 $TMP5 $TMP6' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP6=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Text with /slashes/
+<foo> s//none
+<foo> s//none/
+<foo> s///_/G
+<foo> s|/|<
+<foo> s|/|>
+EOF
+
+cat >$TMP2 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=7bc4 class=summary>Text with &lt;slashes&gt;</p>
+<p id=949f class=irc><cite>&lt;foo&gt;</cite> s//none</p>
+<p id=ebd2 class=irc><cite>&lt;foo&gt;</cite> s//none/</p>
+<p id=cc9b class=irc><cite>&lt;foo&gt;</cite> s///_/G</p>
+</section>
+</main>
+EOF
+
+cat >$TMP3 <<EOF
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>Malformed: s//none</p>
+<p class=warning>Malformed: s//none/</p>
+<p class=warning>Malformed: s///_/G</p>
+<p class=warning>Succeeded: s|/|&lt;</p>
+<p class=warning>Succeeded: s|/|&gt;</p>
+<p class=warning>No scribenick or scribe found. Guessed: foo</p>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>Active on IRC: foo</p>
+</div>
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP4 || exit 1
+
+sed -n -e '/<main/,/<\/main/p' $TMP4 >$TMP5
+sed -n -e '/class=diagnostics/,/<\/div/p' $TMP4 >$TMP6
+
+diff -u $TMP2 $TMP5 && diff -u $TMP3 $TMP6
