@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test that "namedAnchorHere" of the form "xNN" is ignored.
+# Test that "namedAnchorHere" of the form "hhhh" (4 hex digits) doesn't clash.
 
 trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
 TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
@@ -17,18 +17,19 @@ cat >$TMP1 <<EOF
 <foo> q+
 <bar> q+
 <baz> q?
-<foo> namedanchorhere:  x10  
+<foo> namedanchorhere:  51fe  
 <foo> ..at least to me.
 EOF
 
 cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
-<section><p id=51fe class="phone s01"><cite>Pete:</cite> Something else</p>
-<p class=anchor id="bf0b"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
+<section><p id=51ff class="phone s01"><cite>Pete:</cite> Something else</p>
+<p class=anchor id="Right_&quot;Here&quot;!"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
 <p id=8985 class="phone s01"><cite>Pete:</cite> I wanted to say.<br>
 <span id=ba85>… Very important</span></p>
 <p id=9083 class=irc><cite>&lt;foo&gt;</cite> namedanchorhere:  x10  </p>
+<p class=anchor id="51fe"><a href="#51fe">⚓</a></p>
 <p id=e990 class="phone s01"><cite>Pete:</cite> at least to me.</p>
 </section>
 </main>

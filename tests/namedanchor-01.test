@@ -24,7 +24,7 @@ cat >$TMP4 <<EOF
 <main id=meeting class=meeting>
 <h2>Meeting minutes</h2>
 <section><p id=51fe class="phone s01"><cite>Pete:</cite> Something else</p>
-<p class=anchor id="bf0b"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
+<p class=anchor id="Right_&quot;Here&quot;!"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
 <p id=d6df class="phone s01"><cite>Pete:</cite> I wanted to say.<br>
 <span id=f378>… Very important</span><br>
 <span id=7b08>… at least to me.</span></p>
