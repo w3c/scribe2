@@ -28,7 +28,6 @@ cat >$TMP4 <<EOF
 <p class=anchor id="Right_&quot;Here&quot;!"><a href="#Right_&quot;Here&quot;!">⚓</a></p>
 <p id=8985 class="phone s01"><cite>Pete:</cite> I wanted to say.<br>
 <span id=ba85>… Very important</span></p>
-<p id=9083 class=irc><cite>&lt;foo&gt;</cite> namedanchorhere:  x10  </p>
 <p class=anchor id="51fe"><a href="#51fe">⚓</a></p>
 <p id=e990 class="phone s01"><cite>Pete:</cite> at least to me.</p>
 </section>
