@@ -853,10 +853,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 239 $'
+my $revision = '$Revision: 240 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Mon Dec  9 17:59:40 2024 UTC $'
+my $versiondate = '$Date: Tue Dec 10 03:59:59 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1470,8 +1470,6 @@ for (my $i = 0; $i < @records; $i++) {
     my $a = $1 =~ s/ /_/gr;
     if ($a =~ /^$/) {
       push(@diagnostics, "Empty named anchor ignored.");
-    } elsif ($a =~ /^x[0-9][0-9]+$/) {
-      push(@diagnostics, "Named anchor \"$a\" ignored. (\"xNN\" is reserved.)");
     } elsif ($a =~ /^(?:(?:Action|Resolution)Summary|links|attendees|toc|meeting)$/) {
       push(@diagnostics, "Named anchor \"$a\" ignored. (The name is reserved.)");
     } elsif (exists $namedanchors{$a}) {
@@ -1479,6 +1477,7 @@ for (my $i = 0; $i < @records; $i++) {
     } else {
       $records[$i]->{type} = 'n';
       $records[$i]->{data} = esc($a);
+      $ids{hex($a)} = 1 if $a =~ /^[0-9a-f]{4}$/; # Avoid clashes with line IDs
       $namedanchors{$a} = 1;
     }
 
@@ -1626,7 +1625,7 @@ my %linepat = (
   o => ['', 0],
   r => ["<p id=%2\$s class=resolution><strong>RESOLUTION:</strong> %3\$s</p>\n",, 1],
   s => ["<p id=%2\$s class=\"phone %4\$s\"><cite>%1\$s:</cite> %3\$s</p>\n", 1],
-  n => ["<p class=anchor id=\"%2\$s\"><a href=\"#%5\$s\">⚓</a></p>\n", 0],
+  n => ["<p class=anchor id=\"%5\$s\"><a href=\"#%5\$s\">⚓</a></p>\n", 0],
   u => ["<p id=%2\$s class=issue><strong>ISSUE:</strong> %3\$s</p>\n", 1],
   T => ["<h4 id=%2\$s>%3\$s%6\$s</h4>\n", 1],
   t => ["</section>\n\n<section>\n<h3 id=%2\$s>%3\$s%6\$s</h3>\n", 1],
