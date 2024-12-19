@@ -1447,7 +1447,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore if --noghurlbot was set
 
   } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
-	   /^($urlpat) -> ((?:CLOSED )?(?:Issue |Action |Pull Request |Discussion |\#)[0-9]+) ?(.*)$/i) {
+	   /^($urlpat) -> ((?:CLOSED |MERGED )?(?:Issue |Action |Pull Request |Discussion |\#)[0-9]+) ?(.*)$/i) {
     $records[$i]->{type} = 'B';		# A structured response from ghurlbot
     $records[$i]->{data} = $3;
     $records[$i]->{text} = "->$1 $2";
