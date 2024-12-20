@@ -657,12 +657,12 @@ sub esc($;$$$$)
 	if ($post =~ /^ *"([^"\t]*)"/p || $post =~ /^ *'([^'\t]*)'/p ||
 	    $post =~ /^ *([^'" \t][^\t]*[^ \t]) */p ||
 	    $post =~ /^ *([^'" \t]) */p) { # Ralph link
-	  $replacement .= esc($pre, $emph, 0, 0, $github)
-	      . mklink($link, $type, $url, $1);
+	  $r = mklink($link, $type, $url, $1);
+	  $replacement .= esc($pre, $emph, 0, 0, $github) . $r;
 	  $s = $';
 	} elsif ($pre =~ / *([^ \t][^\t]*[^ \t]|[^ \t]) *$/p) {	# Xueyuan link
-	  $replacement .= esc($`, $emph, 0, 0, $github)
-	      . mklink($link, $type, $url,$1);
+	  $r = mklink($link, $type, $url, $1);
+	  $replacement .= esc($`, $emph, 0, 0, $github) . $r;
 	  $s = $post;
 	} else {		# Missing anchor text
 	  $replacement .= esc($pre, $emph, 0, 0, $github)
@@ -670,24 +670,24 @@ sub esc($;$$$$)
 	  $s = $post;
 	}
       } elsif ($pre =~ /(--?>) *(.+?) *$/p) { # Ivan link
-	$replacement .= esc($`, $emph, 0, 0, $github)
-	    . mklink($link, $1, $url, $2);
+	$r = mklink($link, $1, $url, $2);
+	$replacement .= esc($`, $emph, 0, 0, $github) . $r;
 	$s = $post;
       } elsif ($post =~ /^ *(--?>) *"([^"\t]*)"/p ||
 	       $post =~ /^ *(--?>) *'([^'\t]*)'/p ||
 	       $post =~ /^ *(--?>) *([^ \t][^\t]*[^ \t]) */p ||
 	       $post =~ /^ *(--?>) *([^ \t]) */p ||
 	       $post =~ /^ *(--?>) *()/p) { # Inverted Xueyuan link
-	$replacement  .= esc($pre, $emph, 0, 0, $github)
-	    . mklink($link, $1, $url, $2);
+	$r = mklink($link, $1, $url, $2);
+	$replacement .= esc($pre, $emph, 0, 0, $github) . $r;
 	$s = $';
       } elsif ($post =~ /^\)/ && $pre =~ /!\[([^\]]+)\]\($/p) { # Markdown image
-	$r = $1;
-        $replacement .= esc($`) . mklink($link, "-->", $url, $r);
+	$r = mklink($link, "-->", $url, $1);
+        $replacement .= esc($`) . $r;
     	$s = $post =~ s/^\)//r;
       } elsif ($post =~ /^\)/ && $pre =~ /\[([^\]]+)\]\($/p) { # Markdown link
-	$r = $1;
-        $replacement .= esc($`, $emph) . mklink($link, "->", $url, $r);
+	$r = mklink($link, "->", $url, $1);
+        $replacement .= esc($`, $emph) . $r;
     	$s = $post =~ s/^\)//r;
       } else {					# Bare URL.
     	$replacement .= esc($pre, $emph, 0, 0, $github)
@@ -853,10 +853,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 240 $'
+my $revision = '$Revision: 241 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Dec 10 03:59:59 2024 UTC $'
+my $versiondate = '$Date: Fri Dec 20 17:52:11 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1476,7 +1476,7 @@ for (my $i = 0; $i < @records; $i++) {
       push(@diagnostics, "Duplicate named anchor \"$a\" ignored.");
     } else {
       $records[$i]->{type} = 'n';
-      $records[$i]->{data} = esc($a);
+      $records[$i]->{data} = $a;
       $ids{hex($a)} = 1 if $a =~ /^[0-9a-f]{4}$/; # Avoid clashes with line IDs
       $namedanchors{$a} = 1;
     }
@@ -1612,7 +1612,7 @@ if (defined $recording) {
 
 # Formats for the different types of lines. 1 = speaker, 2 = ID of a
 # heading, action, etc. or a message by a bot, 3 = text, 4 = the ID of
-# the speaker, 5 = unique ID for the line, 6 = URL of recording
+# the speaker, 5 = unique ID for the line or other data, 6 = URL of recording
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
   b => ["<p id=%2\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],
@@ -1660,7 +1660,7 @@ foreach my $p (@records) {
       $p->{id},								    # %2
       esc($p->{text}, $emphasis && $linepat{$p->{type}}[1], 1, 1, $github), # %3
       $speakers{fc $p->{speaker}} // '',				    # %4
-      $p->{data} // '',							    # %5
+      esc($p->{data} // ''),						    # %5
       link_to_recording($canonical_recording, $p->{time}),		    # %6
       $p->{archive} // '';						    # %7
   if (!$keeplines) {
