@@ -853,10 +853,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 241 $'
+my $revision = '$Revision: 242 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Dec 20 17:52:11 2024 UTC $'
+my $versiondate = '$Date: Fri Dec 20 18:32:17 2024 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1447,7 +1447,7 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{type} = 'o';		# Ignore if --noghurlbot was set
 
   } elsif ($records[$i]->{speaker} =~ /^ghurlbot$|^gb$/ &&
-	   /^($urlpat) -> ((?:CLOSED )?(?:Issue |Action |Pull Request |Discussion |\#)[0-9]+) ?(.*)$/i) {
+	   /^($urlpat) -> ((?:CLOSED |MERGED )?(?:Issue |Action |Pull Request |Discussion |\#)[0-9]+) ?(.*)$/i) {
     $records[$i]->{type} = 'B';		# A structured response from ghurlbot
     $records[$i]->{data} = $3;
     $records[$i]->{text} = "->$1 $2";

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Test of a merged pull request reported by gb
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+[19:24] <Bert> https://github.com/w3c/scribe2/pull/30
+[19:24] <gb> https://github.com/w3c/scribe2/pull/30 -> MERGED Pull Request 30 Fix generation of id for resolution paragraphs (by dontcallmedom)
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=2bb1 class=summary><a href="https://github.com/w3c/scribe2/pull/30">w3c/<wbr>scribe2#30</a></p>
+<p id=a83a class=bot><cite>&lt;gb&gt;</cite> <strong><a href="https://github.com/w3c/scribe2/pull/30">MERGED Pull Request 30</a></strong> Fix generation of id for resolution paragraphs (by dontcallmedom)</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP2 || exit 1
+
+# Extract just the minutes
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
