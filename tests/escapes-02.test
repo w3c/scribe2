@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# Test if HTML is escaped in all parts of a 'bot response
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4 $TMP5' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP5=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+15:55:01 <Zakim> agendum 7 -- Plaintext guidance? -- taken up [from agendabot]
+15:55:09 <addison> https://github.com/whatwg/html/issues/10871
+15:55:10 <gb> https://github.com/whatwg/html/issues/10871 -> Issue 10871 Undeprecate <plaintext>, it is needed for portable text files (by safinaskar) [i18n-tracker]
+15:56:06 <Bert> addison: Somebody proposed to bring back the <plaintext> tag in HTML.
+15:59:40 <Bert> xfq: MIME type?
+EOF
+
+cat >$TMP3 <<EOF
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>(MEETING TITLE) &ndash; </title>
+<meta name=viewport content="width=device-width">
+<link rel="stylesheet" type="text/css" title="2018" href="https://www.w3.org/StyleSheets/scribe2/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/base.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/StyleSheets/public.css">
+<link rel="alternate stylesheet" type="text/css" title="2004" href="https://www.w3.org/2004/02/minutes-style.css">
+<link rel="alternate stylesheet" type="text/css" title="Fancy" href="https://www.w3.org/StyleSheets/scribe2/fancy.css">
+<link rel="alternate stylesheet" type="text/css" title="Typewriter" href="https://www.w3.org/StyleSheets/scribe2/tt-member.css">
+</head>
+
+<body>
+<header>
+<p><a href="https://www.w3.org/"><img src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a></p>
+
+<h1>&ndash; DRAFT &ndash;<br>
+(MEETING TITLE)</h1>
+<h2></h2>
+
+<nav id=links>
+</nav>
+</header>
+
+<div id=prelims>
+<div id=attendees>
+<h2>Attendees</h2>
+<dl class=intro>
+<dt>Present</dt><dd>-</dd>
+<dt>Regrets</dt><dd>-</dd>
+<dt>Chair</dt><dd>-</dd>
+<dt>Scribe</dt><dd>Bert</dd>
+</dl>
+</div>
+
+<nav id=toc>
+<h2>Contents</h2>
+<ol>
+<li><a href="#6b83">Plaintext guidance?</a></li>
+</ol>
+</nav>
+</div>
+
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section></section>
+
+<section>
+<h3 id=6b83>Plaintext guidance?</h3>
+<p id=ccdb class=irc><cite>&lt;addison&gt;</cite> <a href="https://github.com/whatwg/html/issues/10871">whatwg/<wbr>html#10871</a></p>
+<p id=09db class=bot><cite>&lt;gb&gt;</cite> <strong><a href="https://github.com/whatwg/html/issues/10871">Issue 10871</a></strong> Undeprecate &lt;plaintext&gt;, it is needed for portable text files (by safinaskar) [i18n-tracker]</p>
+<p id=90f1 class="phone s01"><cite>addison:</cite> Somebody proposed to bring back the &lt;plaintext&gt; tag in HTML.</p>
+<p id=b819 class="phone s02"><cite>xfq:</cite> MIME type?</p>
+</section>
+</main>
+
+
+<address>Minutes manually created (not a transcript), formatted by <a
+href="https://w3c.github.io/scribe2/scribedoc.html"
+>scribe.perl</a> version 240 (Tue Dec 10 03:59:59 2024 UTC).</address>
+
+<div class=diagnostics>
+<h2>Diagnostics</h2>
+<p class=warning>No scribenick or scribe found. Guessed: Bert</p>
+<p class=warning>Found no dated URLs. You may need to use 'Date:'.</p>
+<p class=warning>Maybe present: addison, xfq</p>
+<p class=warning>All speakers: addison, xfq</p>
+<p class=warning>Active on IRC: addison, Bert</p>
+</div>
+</body>
+</html>
+EOF
+
+perl scribe.perl --embed $TMP1 >$TMP2 || exit 1
+
+cp $TMP2 tmp.html
+
+# Omit version number:
+grep -v version $TMP2 >$TMP4
+grep -v version $TMP3 >$TMP5
+
+diff -u $TMP5 $TMP4
