@@ -847,10 +847,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 243 $'
+my $revision = '$Revision: new-logo-244 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Feb 27 00:32:23 2025 UTC $'
+my $versiondate = '$Date: Thu Feb 27 00:59:54 2025 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -889,7 +889,8 @@ my $previous_icon = '<img alt="Previous meeting." title="Previous meeting" ' .
 my $next_icon = '<img alt="Next meeting." title="Next meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-next.png">';
 my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/' .
-  'StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a>';
+  'assets/logos/w3c-2025/svg/w3c-white.svg" alt=W3C border=0 height=60 ' .
+  'width=60></a>';
 
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
