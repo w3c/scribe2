@@ -65,6 +65,8 @@
 #
 # TODO: Recognize the bots if they joined under another nick name.
 #
+# TODO: Allow text pasted from The Lounge as input format.
+#
 # Copyright © 2017-2025 World Wide Web Consortium. This work is
 # distributed under the W3C® Software License:
 # https://www.w3.org/copyright/software-license-2023/
@@ -847,10 +849,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 243 $'
+my $revision = '$Revision: 244 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Feb 27 00:32:23 2025 UTC $'
+my $versiondate = '$Date: Thu Feb 27 01:23:09 2025 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
