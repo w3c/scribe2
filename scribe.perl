@@ -65,15 +65,9 @@
 #
 # TODO: Recognize the bots if they joined under another nick name.
 #
-# Copyright © 2017-2023 World Wide Web Consortium, (Massachusetts Institute
-# of Technology, European Research Consortium for Informatics and
-# Mathematics, Keio University, Beihang). All Rights Reserved. This
-# work is distributed under the W3C® Software License[1] in the hope
-# that it will be useful, but WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-# PURPOSE.
-#
-# [1] http://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+# Copyright © 2017-2025 World Wide Web Consortium. This work is
+# distributed under the W3C® Software License:
+# https://www.w3.org/copyright/software-license-2023/
 # or see the file COPYING included in this distribution.
 #
 # Created: 3 Feb 2017
@@ -853,10 +847,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 242 $'
+my $revision = '$Revision: 243 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Fri Dec 20 18:32:17 2024 UTC $'
+my $versiondate = '$Date: Thu Feb 27 00:32:23 2025 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1187,6 +1181,8 @@ for (my $i = 0; $i < @records; $i++) {
 	    $embeddedslidesetcounter++;
 	    $embeddedslideset = "slideset-data-" . $embeddedslidesetcounter;
 	    $records[$i]->{archive} = " and <a id='" . $embeddedslideset ."' href='data:application/pdf;base64," . encode_base64($response->decoded_content) . "'>archived PDF copy</a>";
+	} else {
+	  push(@diagnostics, "Failed to download slides (code ".$response->code.") from $pdfexport");
 	}
     }
     $has_slides = 1;
