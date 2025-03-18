@@ -65,6 +65,8 @@
 #
 # TODO: Recognize the bots if they joined under another nick name.
 #
+# TODO: Allow text pasted from The Lounge as input format.
+#
 # Copyright © 2017-2025 World Wide Web Consortium. This work is
 # distributed under the W3C® Software License:
 # https://www.w3.org/copyright/software-license-2023/
