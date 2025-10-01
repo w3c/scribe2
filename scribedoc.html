@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!DOCTYPE html>
 
 <html lang=en>
  <head>
@@ -30,6 +30,8 @@
 	padding-left: 1em;}
    dd > p:first-child {margin-top: 0}
    */
+   .command {}
+   blockquote pre {border-left: none}
   </style>
   <script async id=MathJax-script
    src="https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js"></script>
@@ -263,14 +265,14 @@
 
      <tbody>
       <tr>
-       <td class=command>/invite zakim
+       <td class=command><code>/invite zakim</code>
 
        <td class=help>calls Zakim to your IRC channel
 
        <td>anybody
 
       <tr>
-       <td class=command>zakim, start meeting
+       <td class=command><code>zakim, start meeting</code>
 
        <td class=help>this makes Zakim invite RRSAgent and set up other
         things, depending on the channel
@@ -292,7 +294,7 @@
 
      <tbody>
       <tr>
-       <td class=command>Scribe: dbooth
+       <td class=command><code>Scribe: dbooth</code>
 
        <td class=help>dbooth is the IRC nickname of the scribe. If you
         don't give this command scribe.perl will guess the scribe. Use
@@ -303,7 +305,7 @@
        <td>anybody
 
       <tr>
-       <td class=command>Meeting: WS Arch Teleconference
+       <td class=command><code>Meeting: WS Arch Teleconference</code>
 
        <td class=help>Record meeting title. (On some channels, Zakim
         does this for you.)
@@ -311,14 +313,14 @@
        <td>anybody
 
       <tr>
-       <td class=command>Chair: Mike
+       <td class=command><code>Chair: Mike</code>
 
        <td class=help>Record who chairs
 
        <td>anybody
 
       <tr>
-       <td class=command>Previous meeting: http://example.org/20180918
+       <td class=command><code>Previous meeting: http://example.org/20180918</code>
 
        <td class=help>If you want a link to the previous meeting at the
         top of the minutes.
@@ -326,14 +328,14 @@
        <td>anybody
 
       <tr>
-       <td class=command>Next meeting: http://example.org/20181002
+       <td class=command><code>Next meeting: http://example.org/20181002</code>
 
        <td class=help>Ditto for the next meeting.
 
        <td>anybody
 
       <tr>
-       <td class=command>Agenda: http://example.org/agenda
+       <td class=command><code>Agenda: http://example.org/agenda</code>
 
        <td class=help>If you want a link to the agenda at the top of the
         minutes.
@@ -341,7 +343,7 @@
        <td>anybody
 
       <tr>
-       <td class=command>rrsagent, make logs public
+       <td class=command><code>rrsagent, make logs public</code>
 
        <td class=help>(For public minutes and logs) Change the
         permissions on the IRC logs. (On some channels, Zakim does this
@@ -365,7 +367,7 @@
 
      <tbody>
       <tr>
-       <td class=command>Topic: Debate on Feature X
+       <td class=command><code>Topic: Debate on Feature X</code>
 
        <td class=help>Use "Topic: …" at the start of each agenda topic.
         Alternatively, you can use <a
@@ -377,21 +379,21 @@
        <td>anybody
 
       <tr>
-       <td class=command>Subtopic: Intro to feature X
+       <td class=command><code>Subtopic: Intro to feature X</code>
 
        <td class=help>Use "Subtopic: …" for a subtopic.
 
        <td>anybody
 
       <tr>
-       <td class=command>Mike: Feature X is great
+       <td class=command><code>Mike: Feature X is great</code>
 
        <td class=help>Record what Mike said.
 
        <td>scribe
 
       <tr>
-       <td class=command>… and easy to implement.
+       <td class=command><code>… and easy to implement.</code>
 
        <td class=help>Mike's statement continues. Use either three
         periods or the ellipsis character ‘…’. (Some IRC clients
@@ -400,7 +402,7 @@
        <td>scribe
 
       <tr>
-       <td class=command>General agreement.
+       <td class=command><code>General agreement.</code>
 
        <td class=help>A description or summary, not attributed to a
         particular speaker. Only works when the scribe writes this.
@@ -408,21 +410,21 @@
        <td>scribe
 
       <tr>
-       <td class=command>ACTION: Frank to order lunch
+       <td class=command><code>ACTION: Frank to order lunch</code>
 
        <td class=help>Record new action.
 
        <td>anybody
 
       <tr>
-       <td class=command>Issue: Is it proven that 1+1=2?
+       <td class=command><code>Issue: Is it proven that 1+1=2?</code>
 
        <td class=help>Record new issue.
 
        <td>anybody
 
       <tr>
-       <td class=command>RESOLUTION: Accept Frank's proposal
+       <td class=command><code>RESOLUTION: Accept Frank's proposal</code>
 
        <td class=help>Indicate how an issue or topic was resolved.
         ‘RESOLVED’ is an alias for ‘RESOLUTION’.
@@ -430,7 +432,7 @@
        <td>anybody
 
       <tr>
-       <td class=command>… with Pete's modified text
+       <td class=command><code>… with Pete's modified text</code>
 
        <td class=help>Resolutions can be more than one line long. This
         line is added to the resolution in the previous line. (Such
@@ -439,7 +441,7 @@
        <td>anybody
 
       <tr>
-       <td class=command>s/Mary/Marie/
+       <td class=command><code>s/Mary/Marie/</code>
 
        <td class=help>Change most recent occurrence of ‘Mary’ to
         ‘Marie’. The old string is a literal string, not a regex.
@@ -448,7 +450,7 @@
        <td>anybody
 
       <tr>
-       <td class=command>s/Mary/Marie/g
+       <td class=command><code>s/Mary/Marie/g</code>
 
        <td class=help>Change all previous occurrences of "Mary" to
         "Marie".
@@ -456,7 +458,7 @@
        <td>anybody
 
       <tr>
-       <td class=command>s/Mary/Marie/G
+       <td class=command><code>s/Mary/Marie/G</code>
 
        <td class=help>Change all previous and future occurrences of
         ‘Mary’ to ‘Marie’ (within this document).
@@ -464,7 +466,7 @@
        <td>anybody
 
       <tr>
-       <td class=command>i/Time to vote/Topic: Vote on Feature Y
+       <td class=command><code>i/Time to vote/Topic: Vote on Feature Y</code>
 
        <td class=help>Insert a ‘Topic: Vote on Feature Y’ line before
         the line containing the literal string ‘Time to vote’ (not a
@@ -474,7 +476,7 @@
        <td>anybody
 
       <tr id=scribeirc>
-       <td class=command>&lt;dbooth&gt; :-)
+       <td class=command><code>&lt;dbooth&gt; :-)</code>
 
        <td class=help>When dbooth is scribe and wants to add a remark on
         IRC as himself, rather than in his role of scribe, he can start
@@ -499,7 +501,7 @@
 
      <tbody>
       <tr>
-       <td class=command>zakim, end meeting
+       <td class=command><code>zakim, end meeting</code>
 
        <td class=help>Dismiss zakim bot, which will generate a list of
         attendees and instruct RRSAgent to generate minutes. Use <a
@@ -509,14 +511,14 @@
        <td>anybody
 
       <tr>
-       <td class=command>rrsagent, bye
+       <td class=command><code>rrsagent, bye</code>
 
        <td class=help>Dismiss RRSAgent (if used).
 
        <td>anybody
 
       <tr>
-       <td class=command>(Download and edit the generated minutes)
+       <td class=command><code>(Download and edit the generated minutes)</code>
 
        <td class=help>If you're using RRSAgent, then just edit the
         generated minutes and you are done.
@@ -556,7 +558,7 @@
         href="http://www.perl.com/download.csp">perl</a>.
 
       <tr>
-       <td class=command>perl scribe.perl log.txt &gt; minutes.html
+       <td class=command><code>perl scribe.perl log.txt &gt; minutes.html</code>
 
        <td class=help>Generate minutes.
 
