@@ -4,7 +4,7 @@
     <meta charset=utf-8>
     <title>Making minutes without RRSAgent</title>
     <link rel=stylesheet type="text/css"
-	  href="https://www.w3.org/Guide/guide2006.css">
+	  href="https://www.w3.org/OldGuide/guide2006.css">
     <link rel="shortcut icon"
 	  href="https://www.w3.org/Icons/WWW/Literature.gif">
   </head>
@@ -12,12 +12,12 @@
   <body>
     <header class=header>
       <span class=logo><a href="https://www.w3.org/"><img
-      src="https://www.w3.org/Icons/WWW/w3c_home_nb" alt="W3C"
+      src="https://www.w3.org/assets/logos/w3c/w3c-no-bars.svg" alt="W3C"
       height=48 width=72></a></span>
 
       <div class=breadcrumb>
 	<a href="https://www.w3.org/Member/">Member</a> &#x2192; <a
-	href="https://www.w3.org/Guide/">The Art of Consensus</a>
+	href="https://www.w3.org/guide/">The Art of Consensus</a>
 	&#x2192;
 
 	<h1>Making minutes without RRSAgent</h1>
@@ -42,17 +42,11 @@
     <aside class="toolbox box" style="margin: 0 0 1em 1em">
       <h4>Nearby</h4>
       <ul>
-	<li><a href="https://www.w3.org/2001/12/zakim-irc-bot.html"
+	<li><a href="https://www.w3.org/guide/meetings/zakim.html"
 	>Zakim IRC teleconference agent</a>
 
-	<li><a href="http://www.w3.org/2002/03/RRSAgent">RRSAgent
+	<li><a href="https://www.w3.org/guide/meetings/rrsagent.html">RRSAgent
 	record-keeping bot</a>
-
-	<li><a href="https://www.w3.org/2006/tools/wiki/WebExBestPractices"
-	>WebEx Best Practices</a></li>
-
-	<li><a href="https://www.w3.org/2006/tools/wiki/WebExFAQ"
-	>WebEx FAQ</a></li>
       </ul>
     </aside>
 
@@ -159,29 +153,7 @@
 
     <p>Then there are several ways to upload a file.
 
-    <p>You can use <strong>BlueGriffon</strong>. Load the minutes into
-      BlueGriffon and use the PUTter command from the Tools
-      menu. BlueGriffon will ask you for the URL and then for your
-      username and password. (There are also some other editors that
-      know how to do HTTP PUT, such as Kate.)
-
-    <p>If you have the <strong>curl</strong> program, you can use it
-      from a command line. Assuming you put the formatted minutes in
-      minutes.html, the command is:
-
-      <pre class=command>curl --location-trusted -u <var>myusername</var> -T minutes.html https://www.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</pre>
-
-    <p>Where <var>myusername</var> is your username. Curl will prompt
-      for your password.
-
-    <p>(The --location-trusted option tells curl to follow
-      redirects. In fact, the www.w3.org server doesn't handle the
-      upload itself, but redirects to edit.w3.org. That means you
-      could also use this shorter command: <code>curl
-      -u <var>myusername</var> -T minutes.html
-      https://edit.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</code>)
-
-    <p>A third way is to use <strong>CVS</strong> to upload the minutes.
+    <p>A first way is to use <strong>CVS</strong> to upload the minutes.
 
     <p>Assuming you have already checked out some part of the W3C web
       site somewhere, first make sure you have the
@@ -203,7 +175,25 @@
       <var>DD</var>-<var>xxx</var>-minutes.html</code> from the
       command line (or the equivalent in your graphical client).
 
-    <p>A fourth way is to use <strong>WebDav</strong>. If your
+    <p>If you have the <strong>curl</strong> program, a second way is to use it
+    from a command line.</p>
+
+    <p>Assuming you put the formatted minutes in minutes.html, the command is:
+
+      <pre class=command>curl --location-trusted -u <var>myusername</var> -T minutes.html https://www.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</pre>
+
+    <p>Where <var>myusername</var> is your username. Curl will prompt
+      for your password.
+
+    <p>(The --location-trusted option tells curl to follow
+      redirects. In fact, the www.w3.org server doesn't handle the
+      upload itself, but redirects to edit.w3.org. That means you
+      could also use this shorter command: <code>curl
+      -u <var>myusername</var> -T minutes.html
+      https://edit.w3.org/<var>YYYY</var>/<var>MM</var>/<var>DD</var>-<var>xxx</var>-minutes.html</code>)
+
+
+    <p>A third way is to use <strong>WebDav</strong>. If your
       operating system supports the WebDav protocol, or you have a
       WebDav program, you can connect to edit.w3.org and use it almost
       as if it were a directory on your local system. Under Debian and
@@ -231,7 +221,10 @@
       usually that the directory has no access defined. Use
       the <a href="https://www.w3.org/Systems/Acl/UserDoc" >,access
       tool</a> to set the directory to Team-only (or some other
-      access, as appropriate).
+      access, as appropriate).</p>
+
+    <p>If you cannot use any of these ways, please send the minutes
+    file to <a href="mailto:sysreq@w3.org">sysreq</a></p>
 
     <hr>
 

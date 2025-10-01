@@ -98,24 +98,25 @@
 # fragment, together with the collected topics, actions, etc. are
 # inserted into an HTML template and printed.
 #
-# Each record has four fields: {type, speaker, id, text}
+# Each record has five fields: {type, speaker, id, text, data}
+# <id> is a unique ID, usually generated just before generating the HTML.
 # If type is 'i' (irc), <speaker> is the person who typed <text>.
 # If type is 'I' (irc), <speaker> is the person who typed verbatim <text>.
 # If type is 's' (scribe), <speaker> is the person who said <text> on the phone.
 # If type is 'd' (description) <text> is a summary by the scribe.
 # If type is 'D' (description) <text> is verbatim text by the scribe.
 # If type is 'slideset', <text> is the IRC-formatted link to the slideset
-# If type is 'slide', <text> is the number of the slide in the slideset and <id> is the link to the individual slide
+# If type is 'slide', <text> is the number of the slide in the slideset and <data> is the link to the individual slide
 # If type is 't' (topic), <text> is the title for a new topic.
 # If type is 'T' (subtopic), <text> is the title for a new subtopic.
-# If type is 'a' (action), <text> is an action and <id> is a unique ID.
-# If type is 'r' (resolution), <text> is a resolution and <id> is a unique ID.
-# if type is 'u' (issue), <text> is an issue, <id> a unique ID.
+# If type is 'a' (action), <text> is an action.
+# If type is 'r' (resolution), <text> is a resolution.
+# if type is 'u' (issue), <text> is an issue.
 # If type is 'c' (change), the record is a s/// or i/// not (yet) successful
 # If type is 'o' (omit), the record is to be ignored.
 # If type is 'n' (named anchor), the record is a target anchor.
 # If type is 'b' ('bot), the record is info from trackbot.
-# If type is 'B' ('bot), <text> is info from trackbot about an issue <id>.
+# If type is 'B' ('bot), <text> is info from trackbot about an issue <data>.
 # If type is 'repo', <text> is a list of GitHub repositories.
 # If type is 'drop', <text> is a list of GitHub repositories to remove.
 
@@ -849,10 +850,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: new-logo-244 $'
+my $revision = '$Revision: 246 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Thu Feb 27 00:59:54 2025 UTC $'
+my $versiondate = '$Date: Wed Oct  1 15:02:24 2025 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1652,7 +1653,7 @@ foreach my $p (@records) {
       remove_repositories($p->{text});
     }
   }
-  $p->{id} = make_id($p->{time} // 0, $p->{text});
+  $p->{id} //= make_id($p->{time} // 0, $p->{text});
   # The last part generates nothing, but avoids warnings for unused args.
   my $line = sprintf $linepat{$p->{type}}[0] . '%1$.0s%2$.0s%3$.0s%4$.0s%5$.0s%6$.0s%7$.0s',
       esc($p->{speaker}),						    # %1
