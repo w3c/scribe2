@@ -850,10 +850,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 245 $'
+my $revision = '$Revision: 246 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Oct  1 13:43:29 2025 UTC $'
+my $versiondate = '$Date: Wed Oct  1 15:02:24 2025 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
