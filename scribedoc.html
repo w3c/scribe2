@@ -1,17 +1,22 @@
-<!doctype html public '-//W3C//DTD HTML 4.01//EN'>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
 <html lang=en>
  <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta content="width=device-width" name="viewport">
-  <title>Scribe.perl &ndash; Generate meeting minutes from an IRC log</title>
-  <link rel=stylesheet type="text/css"
-   href="https://www.w3.org/Guide/guide2006.css">
-  <link rel="shortcut icon" href="https://www.w3.org/Icons/WWW/Literature.gif">
-  <style type="text/css" media="screen">
+  <meta content="text/html; charset=utf-8" http-equiv=Content-Type>
+  <meta content="width=device-width" name=viewport>
+  <title>Scribe.perl &ndash; Generate meeting minutes from an IRC log</title
+  >
+
+  <link href="https://www.w3.org/StyleSheets/w3c-2023.css"
+   rel=stylesheet type="text/css">
+  <link href="https://www.w3.org/Icons/WWW/Literature.gif"
+   rel="shortcut icon">
+  <style media=screen type="text/css">
    table {width: 100%; table-layout: fixed}
    col {width: 50%}
    col + col {width: 50%}
    col + col + col {width: 5em}
+   /*
    th, td {
 	border-bottom: 1px solid #999;}
    td.command {
@@ -24,557 +29,738 @@
 	background: #efefef;
 	padding-left: 1em;}
    dd > p:first-child {margin-top: 0}
+   */
   </style>
-  <script src="https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js"
-   id=MathJax-script async></script>
- </head>
+  <script async id=MathJax-script
+   src="https://www.w3.org/scripts/MathJax/3/es5/mml-chtml.js"></script>
 
- <body>
-  <div id=header>
-   <span class=logo><a href="https://www.w3.org/"><img
-      src="https://www.w3.org/Icons/WWW/w3c_home_nb" alt="W3C"
-      height=48 width=72></a></span>
+ <body> <a class=skip-link href="#main">Skip to content</a>
+  <header>
+   <!-- https://www.w3.org/2023/10/geek-week-style-project/top-menu-abs.html -->
+   <script src="https://www.w3.org/2019/09/TPAC-template/menubar.js"
+	   async=""></script>
 
-   <div class=breadcrumb>
-    <a href="https://www.w3.org/Member/">Member</a> &#x2192; <a
-    href="https://www.w3.org/Guide/">The Art of Consensus</a> &#x2192;
+   <nav id="lang-nav" aria-label="Language options" lang="en" dir="ltr">
+    <a href="https://www.w3.org/ja/" hreflang="ja" lang="ja" >日本語ホー
+    ムページ<span class="visuallyhidden" lang="en" > Japanese
+    website</span></a>
+    <a href="https://www.w3.org/zh-hans/" hreflang="zh-hans"
+    lang="zh-hans" >简体中文首页<span class="visuallyhidden" lang="en"
+    > Chinese website</span></a><br/>
+   </nav>
 
-    <h1>Generate Meeting Minutes from an IRC Log</h1>
-   </div>
-
-   <p class=baseline>This <strong>Guidebook</strong> is the collected
-    wisdom of the W3C Group Chairs and other collaborators.
-  </div>
-
-  <div class=toc>
-   <h4>On this page &#x2192; </h4>
-   <ul>
-    <li><a href="#Quick_Start_Guide">Quick Start Guide</a>
-     &nbsp;&bull;&nbsp;
-
-    <li><a href="#Pros_and_Cons_of_Using_Scribe.perl">Pros and
-      Cons</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#running">Running it</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#options">Options</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#one_time_commands">Commands</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#links">Embedding links</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#images">Embedding images</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#slides">Embedding slides</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#recording">Embedding video recording</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#editing_the_log">Editing the Log</a>
-     &nbsp;&bull;&nbsp;
-
-    <li><a href="#input_formats">Input Formats</a> &nbsp;&bull;&nbsp;
-
-    <li><a href="#Environment_Variables">Environment Variables</a>
-     &nbsp;&bull;&nbsp;
-
-    <li><a href="#changes" >Changes</a>
-   </ul>
-  </div>
-
-
-  <h2 id=intro>Introduction</h2>
-
-  <div class="toolbox box" style="margin: 0 0 1em 1em">
-    <h4>Nearby</h4>
+   <nav id="global-nav" aria-label="Main" lang="en" dir="ltr">
+    <a href="https://www.w3.org/" hreflang="en"
+    ><picture ><source media="(prefers-color-scheme: dark)"
+    srcset="https://www.w3.org/assets/logos/w3c-2025/svg/w3c-white.svg"
+    /><source media="not (prefers-color-scheme: dark)"
+    srcset="https://www.w3.org/assets/logos/w3c-2025/svg/w3c.svg"
+    /><img src="https://www.w3.org/assets/logos/w3c-2025/w3c.svg"
+    alt="W3C" /></picture></a><br/>
+    <details name="global-nav">
+     <summary>Standards</summary>
+     <ul>
+      <li><a href="https://www.w3.org/standards/" >Explore web standards</a></li>
+      <li><a href="https://www.w3.org/standards/about/" >About W3C web standards</a></li>
+      <li><a href="https://www.w3.org/TR/" >W3C standards &amp; drafts</a></li>
+      <li><a href="https://www.w3.org/standards/types/" >Types of documents W3C publishes</a></li>
+      <li><a href="https://www.w3.org/translations/" >Translations of W3C standards &amp; drafts</a></li>
+      <li><a href="https://www.w3.org/standards/review/" >Reviews &amp; public feedback</a></li>
+      <li><a href="https://www.w3.org/liaisons/" >Liaisons</a></li>
+      <li><a href="https://www.w3.org/get-involved/promote/" >Promote web standards</a></li>
+     </ul>
+    </details>
+    <details name="global-nav">
+     <summary>Groups</summary>
+     <ul>
+      <li><a href="https://www.w3.org/groups/" >About W3C groups</a></li>
+      <li><a href="https://www.w3.org/groups/wg/" >Working Groups</a></li>
+      <li><a href="https://www.w3.org/groups/ig/" >Interest Groups</a></li>
+      <li><a href="https://www.w3.org/groups/cg/" >Community Groups</a></li>
+      <li><a href="https://www.w3.org/groups/bg/" >Business Groups</a></li>
+      <li><a href="https://www.w3.org/groups/other/tag/" >Technical Architecture Group</a></li>
+      <li><a href="https://www.w3.org/invited-experts/" >Invited Experts</a></li>
+      <li><a href="https://www.w3.org/guide/" >Participant guidebook</a></li>
+      <li><a href="https://www.w3.org/about/positive-work-environment/" >Positive work environment</a></li>
+     </ul>
+    </details>
+    <details name="global-nav">
+     <summary>Get involved</summary>
+     <ul>
+      <li><a href="https://www.w3.org/get-involved/" >Find ways to get involved</a></li>
+      <li><a href="https://www.w3.org/ecosystems/" >Browse our work by industry</a></li>
+      <li><a href="https://www.w3.org/membership/" >Become a Member</a></li>
+      <li><a href="https://www.w3.org/Member/" >Member Home (restricted)</a></li>
+      <li><a href="https://www.w3.org/email/" >Mailing lists</a></li>
+      <li><a href="https://www.w3.org/donate/" >Make a donation</a></li>
+      <li><a href="https://www.w3.org/sponsor/" >Sponsor an event</a></li>
+     </ul>
+    </details>
+    <details name="global-nav">
+     <summary>Resources</summary>
     <ul>
-      <li><a href="https://www.w3.org/2001/12/zakim-irc-bot.html"
-      >Zakim IRC teleconference agent</a>
+      <li><a href="https://www.w3.org/resources/" >Learn from W3C resources</a></li>
+      <li><a href="https://www.w3.org/developers/" >Developers</a></li>
+      <li><a href="https://www.w3.org/developers/tools/" >Validators &amp; tools</a></li>
+      <li><a href="https://www.w3.org/WAI/fundamentals/" >Accessibility fundamentals</a></li>
+      <li><a href="https://www.w3.org/International/i18n-drafts/nav/about" >Internationalization</a></li>
+      <li><a href="https://www.w3.org/translations/" >Translations of W3C standards and drafts</a></li>
+      <li><a href="https://www.w3.org/policies/code-of-conduct/" >Code of conduct</a></li>
+      <li><a href="https://www.w3.org/reports/">Reports</a></li>
+    </ul>
+    </details>
+    <details name="global-nav">
+     <summary>News &amp; events</summary>
+     <ul>
+      <li><a href="https://www.w3.org/news-events/" >Follow news &amp; events</a></li>
+      <li><a href="https://www.w3.org/news/" >News</a></li>
+      <li><a href="https://www.w3.org/blog/" >Blog</a></li>
+      <li><a href="https://www.w3.org/press-releases/" >Press releases</a></li>
+      <li><a href="https://www.w3.org/about/press-media/" >Press &amp; media</a></li>
+      <li><a href="https://www.w3.org/events/" >Events</a></li>
+      <li><a href="https://www.w3.org/news-events/w3c-tpac/" >Annual W3C Conference (TPAC)</a></li>
+      <li><a href="https://www.w3.org/policies/code-of-conduct/" >Code of conduct</a></li>
+     </ul>
+    </details>
+    <details name="global-nav">
+     <summary>About</summary>
+     <ul>
+      <li><a href="https://www.w3.org/about/" >Find out more about us</a></li>
+      <li><a href="https://www.w3.org/mission/" >Our mission</a></li>
+      <li><a href="https://www.w3.org/about/leadership/" >Leadership</a></li>
+      <li><a href="https://www.w3.org/staff/" >Staff</a></li>
+      <li><a href="https://www.w3.org/evangelists/" >Evangelists</a></li>
+      <li><a href="https://www.w3.org/careers/" >Careers</a></li>
+      <li><a href="https://www.w3.org/about/diversity/" >Diversity</a></li>
+      <li><a href="https://www.w3.org/about/corporation/">Corporation</a></li>
+      <li><a href="https://www.w3.org/sponsor/" >Sponsoring W3C</a></li>
+      <li><a href="https://www.w3.org/about/press-media/" >Media kit</a></li>
+      <li><a href="https://www.w3.org/contact/" >Contact</a></li>
+      <li><a href="https://www.w3.org/policies/" >Policies &amp; legal information</a></li>
+      <li><a href="https://www.w3.org/help/" >Help</a></li>
+     </ul>
+    </details>
+    <a href="https://www.w3.org/help/search/"
+    ><img src="https://www.w3.org/assets/website-2021/svg/search.svg"
+    class="icon can-invert" width="24" height="24" alt="Search"
+    /></a><br/>
+    <a href="https://www.w3.org/users/myprofile/"
+    id="account-login-link" >My account
+    <img src="https://www.w3.org/assets/website-2021/svg/avatar.svg"
+    width="24" height="24" class="icon can-invert" alt="" /></a><br/>
+   </nav>
+
+   <nav aria-label=Breadcrumb id=breadcrumb>
+    <a href="https://www.w3.org/">Home</a>
+    <a href="https://www.w3.org/guide/" >W3C Guidebook</a>
+    <a href="https://www.w3.org/guide/meetings/">Resources about W3C Meetings</a>
+    <a href="" aria-current="page">scribe.perl</a>
+   </nav>
+  </header>
+
+  <main id=main>
+   <section class=lead>
+    <nav class=related>
+     <h4>Nearby</h4>
+
+     <ul>
+      <li><a href="https://www.w3.org/2001/12/zakim-irc-bot.html">Zakim
+       IRC teleconference agent</a>
 
       <li><a href="http://www.w3.org/2002/03/RRSAgent ">RRSAgent
-      record-keeping bot</a>
+       record-keeping bot</a>
 
-      <li><a href="rescue">⚠ Rescue the minutes when RRSAgent is missing</a>
+      <li><a href=rescue>⚠ Rescue the minutes when RRSAgent is
+       missing</a>
 
-      <li><a href="https://w3c.github.io/GHURLBot/manual.html" >gb
-      (bot to manage issues &amp; action items on GitHub)</a>
+      <li><a href="https://w3c.github.io/GHURLBot/manual.html">gb (bot
+       to manage issues &amp; action items on GitHub)</a>
 
       <li><a href="https://w3c.github.io/AgendaBot/manual.html"
-      >AgendaBot</a>
+       >AgendaBot</a>
 
-      <li><a href="https://www.w3.org/Guide/meetings/zoom" >Zoom</a>
-      (video conferencing program)
+      <li><a href="https://www.w3.org/Guide/meetings/zoom">Zoom</a>
+       (video conferencing program)
+     </ul>
+    </nav>
+
+    <h1>Generate Meeting Minutes from an IRC Log</h1>
+
+    <p><a href="https://github.com/w3c/scribe2">Scribe.perl (link to the
+     source)</a> is a perl script for generating meeting minutes from an
+     IRC, IM or other log file that follows some simple minuting
+     conventions. It is easy to use and requires no installation. It was
+     primarily designed for use in and around W3C, but can also be used
+     in other environments. (For use in other environments, see the <a
+     href="#input_formats">Input Formats</a> section.)
+
+    <p>Scribe.perl supports <a href="#links">links</a>, <a
+     href="#images">images</a>, <a href="#slides">slides</a>, <a
+     href="#topic">subsections</a> and even <a href="#emphasis">math</a
+     >!
+
+    <p>Some sample outputs: <a href=sample-public.html>default style</a
+     >, <a href=sample-member.html>with option -member</a>, <a
+     href=sample-team.html>with option -team</a> and <a
+     href=sample-fancy.html>with option -fancy</a>.
+
+    <p>This manual documents scribe.perl version 2, revision 238 (dated
+     18 October 2024). See below for the <a href="#changes">differences
+     with version 1.</a>
+   </section>
+
+   <nav class=toc>
+    <h4>On this page</h4>
+
+    <ul>
+     <li><a href="#Quick_Start_Guide">Quick Start Guide</a>
+
+     <li><a href="#Pros_and_Cons_of_Using_Scribe.perl">Pros and Cons</a>
+
+     <li><a href="#running">Running it</a>
+
+     <li><a href="#options">Options</a>
+
+     <li><a href="#one_time_commands">Commands</a>
+
+     <li><a href="#links">Embedding links</a>
+
+     <li><a href="#images">Embedding images</a>
+
+     <li><a href="#slides">Embedding slides</a>
+
+     <li><a href="#recording">Embedding video recording</a>
+
+     <li><a href="#editing_the_log">Editing the Log</a>
+
+     <li><a href="#input_formats">Input Formats</a>
+
+     <li><a href="#Environment_Variables">Environment Variables</a>
+
+     <li><a href="#changes">Changes</a>
     </ul>
-  </div>
-
-  <p><a href="https://github.com/w3c/scribe2"
-  >Scribe.perl (link to the source)</a> is a perl script for
-  generating meeting minutes
-  from an IRC, IM or other log file that follows some simple minuting
-  conventions. It is easy to use and requires no installation. It was
-  primarily designed for use in and around W3C, but can also be used
-  in other environments. (For use in other environments, see the <a
-  href="#input_formats" >Input Formats</a> section.)
-
-  <p>Scribe.perl supports <a href="#links"
-   >links</a>, <a href="#images" >images</a>, <a href="#slides">slides</a>,
-   <a href="#topic">subsections</a> and even <a href="#emphasis" >math</a>!
-
-  <p>Some sample outputs: <a href="sample-public.html" >default
-  style</a>, <a href="sample-member.html" >with option -member</a>, <a
-  href="sample-team.html" >with option -team</a> and <a
-  href="sample-fancy.html" >with option -fancy</a>.
-
-  <p>This manual documents scribe.perl version 2, revision 238 (dated
-  18 October 2024). See below for the <a href="#changes" >differences
-  with version 1.</a>
-
-
-  <h2 id="Quick_Start_Guide">Quick Start Guide</h2>
-
-  <h3 id=invite>Step 1: Invite <a
-    href="https://www.w3.org/2002/03/RRSAgent" >RRSAgent</a> and <a
-    href="https://www.w3.org/2001/12/zakim-irc-bot.html" >Zakim
-    bot</a></h3>
-
-  <p>Skip this step if you're not using W3C's IRC.
-
-  <table>
-   <col><col><col>
-   <thead>
-    <tr>
-     <th>IRC Command
-     <th>Explanation
-     <th>Who?
-   <tbody>
-    <tr>
-     <td class=command>/invite zakim
-     <td class=help>calls Zakim to your IRC channel
-     <td>anybody
-    <tr>
-     <td class=command>zakim, start meeting
-     <td class=help>this makes Zakim invite RRSAgent and set up other things, depending on the channel
-     <td>anybody
-  </table>
-
-  <h3 id=start-meeting>Step 2: Describe the meeting:</h3>
-
-  <table>
-   <col><col><col>
-   <thead>
-    <tr>
-     <th>IRC Command
-     <th>Explanation
-     <th>Who?
-   <tbody>
-    <tr>
-     <td class=command>Scribe: dbooth
-
-     <td class=help>dbooth is the IRC nickname of the scribe. If you
-      don't give this command scribe.perl will guess the scribe. Use
-      the command again if the scribe changes. There are several
-      useful variants of this command, see the <a
-      href="#scribe">scribe command</a> below.
-
-     <td>anybody
-    <tr>
-     <td class=command>Meeting: WS Arch Teleconference
-     <td class=help>Record meeting title.
-     (On some channels, Zakim does this for you.)
-     <td>anybody
-    <tr>
-     <td class=command>Chair: Mike
-     <td class=help>Record who chairs
-     <td>anybody
-    <tr>
-     <td class=command>Previous meeting: http://example.org/20180918
-
-     <td class=help>If you want a link to the previous meeting at the
-     top of the minutes.
-
-     <td>anybody
-    <tr>
-     <td class=command>Next meeting: http://example.org/20181002
-     <td class=help>Ditto for the next meeting.
-     <td>anybody
-    <tr>
-     <td class=command>Agenda: http://example.org/agenda
-     <td class=help>If you want a link to the agenda at the top of the minutes.
-     <td>anybody
-   <tr>
-     <td class=command>rrsagent, make logs public
-     <td class="help">(For public minutes and logs) Change the
-     permissions on the IRC logs. (On some channels, Zakim does this
-     for you.) Note that the permission changes are queued and it may
-     be a minute or so before they take effect.
-     <td>anybody
-  </table>
-
-
-  <h3 id=notes>Step 3: Take notes in IRC:</h3>
-
-  <table>
-   <col><col><col>
-   <thead>
-    <tr>
-     <th>IRC Command
-     <th>Explanation
-     <th>Who?
-   <tbody>
-    <tr>
-     <td class=command>Topic: Debate on Feature X
-
-     <td class=help>Use "Topic: …" at the start of each agenda topic.
-      Alternatively, you can use <a
-      href="https://www.w3.org/2001/12/zakim-irc-bot.html#agenda"
-      >Zakim bot's agenda control</a>, which is recognized by default.
-      (See the <a href="#useZakimTopics">-useZakimTopics option</a> below.)
-
-     <td>anybody
-    <tr>
-     <td class=command>Subtopic: Intro to feature X
-
-     <td class=help>Use "Subtopic: …" for a subtopic.
-
-     <td>anybody
-    <tr>
-     <td class=command>Mike: Feature X is great
-
-     <td class=help>Record what Mike said.
-
-     <td>scribe
-    <tr>
-     <td class=command>… and easy to implement.
-
-     <td class=help>Mike's statement continues. Use either three
-      periods or the ellipsis character ‘…’. (Some IRC clients
-      automatically replace the former with the latter.)
-
-     <td>scribe
-    <tr>
-     <td class=command>General agreement.
-
-     <td class=help>A description or summary, not attributed to a
-      particular speaker.
-      Only works when the scribe writes this.
-
-     <td>scribe
-    <tr>
-     <td class=command>ACTION: Frank to order lunch
-     <td class=help>Record new action.
-     <td>anybody
-    <tr>
-     <td class=command>Issue: Is it proven that 1+1=2?
-     <td class=help>Record new issue.
-     <td>anybody
-    <tr>
-     <td class=command>RESOLUTION: Accept Frank's proposal
-
-     <td class=help>Indicate how an issue or topic was resolved.
-      ‘RESOLVED’ is an alias for ‘RESOLUTION’.
-
-     <td>anybody
-    <tr>
-     <td class=command>… with Pete's modified text
-
-     <td class=help>Resolutions can be more than one line long. This
-     line is added to the resolution in the previous line. (Such
-     continuation lines also work for topics, issues and actions.)
-
-     <td>anybody
-    <tr>
-     <td class=command>s/Mary/Marie/
-
-     <td class=help>Change most recent occurrence of ‘Mary’ to
-      ‘Marie’. The old string is a literal string, not a regex.
-      Alternate syntax: s|Mary|Marie|
-
-     <td>anybody
-    <tr>
-     <td class=command>s/Mary/Marie/g
-     <td class=help>Change all previous occurrences of "Mary" to "Marie".
-     <td>anybody
-    <tr>
-     <td class=command>s/Mary/Marie/G
-
-     <td class=help>Change all previous and future occurrences of
-      ‘Mary’ to ‘Marie’ (within this document).
-
-     <td>anybody
-    <tr>
-     <td class=command>i/Time to vote/Topic: Vote on Feature Y
-
-     <td class=help>Insert a ‘Topic: Vote on Feature Y’ line before
-      the line containing the literal string ‘Time to vote’ (not a
-      regex). Alternate syntax: i|Time to vote|Topic: Vote on Feature
-      Y
-
-     <td>anybody
-    <tr id=scribeirc>
-     <td class=command>&lt;dbooth&gt; :-)
-
-     <td class=help>When dbooth is scribe and wants to add a remark on
-      IRC as himself, rather than in his role of scribe, he can start
-      the remark with his nick in angle brackets.
-      (Hint: auto-completion in some IRC clients may reduce this to two
-      or three keystrokes.)
-
-     <td>scribe
-  </table>
-
-  <h3 id=finish-meeting>Step 4: Finish the meeting</h3>
-
-  <table>
-   <col><col><col>
-   <thead>
-    <tr>
-	<th>IRC Command</th>
-	<th>Explanation</th>
-	<th>Who?
-   <tbody>
-<tr>
-	<td class="command">zakim, end meeting</td>
-
-	<td class="help">Dismiss zakim bot, which will generate a list
-	of attendees and instruct RRSAgent to generate minutes.
-	Use <a href="#present">‘Present: ...’ (described
-	below)</a> instead if
-	you aren't using zakim bot.
-
-	<td>anybody
-<tr>
-	<td class="command">rrsagent, bye</td>
-	<td class="help">Dismiss RRSAgent (if used).</td>
-	<td>anybody
-</tr>
-<tr>
-	<td class="command">(Download and edit the generated minutes)</td>
-
-	<td class="help">If you're using RRSAgent, then just edit the
-	generated minutes and you are done.
-
-	<td>anybody
-</table>
-
-<h3 id="generate-minutes">Step 5: Generate minutes</h3>
-
-<p>This step is only needed if you are not using RRSAgent, or you
- forgot step 4 and its too late to run RRSAgent now, or if you want
- to make edits that are best done locally.
+   </nav>
 
-<table>
-<col><col><col>
-<thead>
-<tr>
-	<th>Shell Command</th>
-	<th>Explanation</th>
-<tbody>
-<tr>
-	<td class="command">(Save a copy of the IRC log, such as http://www.w3.org/2002/04/05-arch-irc.txt)</td>
-	<td class="help">(Hint: If RRSAgent wrote the minutes to http://...foo-minutes, then the IRC log will be at http://...foo-irc.txt.)</td>
-</tr>
-<tr>
-	<td class="command">(<a href="https://raw.githubusercontent.com/w3c/scribe2/master/scribe.perl">Download scribe.perl</a>)</td>
-	<td class="help">No installation is needed, but you must have <a href="http://www.perl.com/download.csp">perl</a>.</td>
-</tr>
-<tr>
-	<td class="command">perl scribe.perl log.txt &gt; minutes.html</td>
-	<td class="help">Generate minutes.</td>
-</tr>
-<tr>
-	<td class="command">(Review and make adjustments.)</td>
+   <section>
+    <h2 id="Quick_Start_Guide" ><a href="#Quick_Start_Guide"
+     class="here" ></a> Quick Start Guide</h2>
 
-	<td class="help">If the result isn't good enough, either: 1.
-	edit your copy of the log file and regenerate the HTML; or 2.
-	manually edit the resulting HTML. Option 1 is best if you
-	forgot to indicate who is scribe (‘Scribe: …’), or if you
-	forgot to mark a topic start (‘Topic: …’).
+    <h3 id=invite><a href="#invite" class="here" ></a> Step 1: Invite <a
+     href="https://www.w3.org/2002/03/RRSAgent">RRSAgent</a> and <a
+     href="https://www.w3.org/2001/12/zakim-irc-bot.html">Zakim bot</a></h3
+    >
 
-</table>
+    <p>Skip this step if you're not using W3C's IRC.
 
+    <table><col><col><col>
+     <thead>
+      <tr>
+       <th>IRC Command
 
-  <h2 id="Pros_and_Cons_of_Using_Scribe.perl">Pros and Cons of Using
-   Scribe.perl</h2>
+       <th>Explanation
 
-  <p id=pros>Pros:
+       <th>Who?
 
-  <ul>
-   <li>It's free, it's open source, and it usually works.
+     <tbody>
+      <tr>
+       <td class=command>/invite zakim
 
-   <li>It runs anywhere that perl is installed. (I hope! Please let me
-    know if it doesn't.)
+       <td class=help>calls Zakim to your IRC channel
 
-   <li>Easy to use. It uses conventions that are used in many W3C
-    working groups.
+       <td>anybody
 
-   <li>It recognizes several input and log formats.
-  </ul>
+      <tr>
+       <td class=command>zakim, start meeting
 
-  <p id=cons>Cons:
+       <td class=help>this makes Zakim invite RRSAgent and set up other
+        things, depending on the channel
 
-  <ul>
-   <li>You still need to do some manual clean-up.
+       <td>anybody
+    </table>
 
-   <li>It doesn't recognize all minuting conventions. (Suggestion:
-    Learn its conventions, they're simple.)
-  </ul>
+    <h3 id=start-meeting><a href="#start-meeting" class="here" ></a>
+    Step 2: Describe the meeting:</h3>
 
+    <table><col><col><col>
+     <thead>
+      <tr>
+       <th>IRC Command
 
-  <h2 id="running">Running scribe.perl</h2>
+       <th>Explanation
 
-  <p>Scribe.perl reads from the files given as arguments, or standard
-   input if there are none; and writes to standard output:
+       <th>Who?
 
-  <pre class="command">perl scribe.perl [options] &lt; log.txt &gt; minutes.html</pre>
+     <tbody>
+      <tr>
+       <td class=command>Scribe: dbooth
 
-  <p>It can also be <a
-    href="https://www.w3.org/2002/03/RRSAgent#minutes" >invoked by
-    RRSAgent</a> from IRC (provided you're using RRSAgent):</p>
+       <td class=help>dbooth is the IRC nickname of the scribe. If you
+        don't give this command scribe.perl will guess the scribe. Use
+        the command again if the scribe changes. There are several
+        useful variants of this command, see the <a href="#scribe"
+        >scribe command</a> below.
 
-  <pre class="command">rrsagent, draft minutes</pre>
+       <td>anybody
 
+      <tr>
+       <td class=command>Meeting: WS Arch Teleconference
 
-  <h2 id="options">Options</h2>
+       <td class=help>Record meeting title. (On some channels, Zakim
+        does this for you.)
 
-  <p>Options described below are grouped in several categories:</p>
+       <td>anybody
 
-  <ul>
-   <li><a href="#options_input_style" >Input Style Options</a>
+      <tr>
+       <td class=command>Chair: Mike
 
-   <li><a href="#options_output_format" >Output Format Options</a>
+       <td class=help>Record who chairs
 
-   <li><a href="#options_template" >Template Options</a>
+       <td>anybody
 
-   <li><a href="#options_scribe_identification" >Scribe Identification
-     Options</a>
+      <tr>
+       <td class=command>Previous meeting: http://example.org/20180918
 
-   <li><a href="#options_misc" >Miscellaneous Options</a>
-  </ul>
+       <td class=help>If you want a link to the previous meeting at the
+        top of the minutes.
 
-  <p>There are three ways to specify options, from highest to lowest
-   priority:
+       <td>anybody
 
-  <ul>
-   <li>Using the ‘<a href="#command_scribeoptions"
-    >ScribeOptions:</a>’ command in IRC
+      <tr>
+       <td class=command>Next meeting: http://example.org/20181002
 
-   <li>On the shell command line, when invoking scribe.perl
+       <td class=help>Ditto for the next meeting.
 
-   <li>Via the <a href="#Environment_Variables">SCRIBEOPTIONS</a>
-    environment variable
-  </ul>
+       <td>anybody
 
-  <p>Options can be written with two dashes (‘--final’) or a single
-   one (‘-final’) and they can be abbreviated as long as the
-   abbreviation is unambiguous (‘--embedDiagnostics’ can be written
-   ‘--embed’, but not ‘--em’, because that clashes with ‘--emphasis’).
-   Case doesn't matter: ‘--dashTopics’ is the same as ‘--dashtopics’.
+      <tr>
+       <td class=command>Agenda: http://example.org/agenda
 
-  <p>Options that require an argument can be separated from the
-   argument with either a space or an equals sign: ‘--scribenick jvm’
-   or ‘--scribenick=jvm’.
+       <td class=help>If you want a link to the agenda at the top of the
+        minutes.
 
-  <h3 id="options_input_style">Input Style Options</h3>
+       <td>anybody
 
-  <p>These options are used to accommodate the different input
-   syntaxes and scribing styles.
+      <tr>
+       <td class=command>rrsagent, make logs public
 
-  <dl>
-  <dt id="dashTopics">-dashTopics
+       <td class=help>(For public minutes and logs) Change the
+        permissions on the IRC logs. (On some channels, Zakim does this
+        for you.) Note that the permission changes are queued and it may
+        be a minute or so before they take effect.
 
-  <dd>
-  <p>Indicate that dash lines are used to indicate that the next line
-   is the start of a new topic, such as:
+       <td>anybody
+    </table>
 
-  <pre class="command">&lt;Philippe&gt; ---
+    <h3 id=notes><a href="#notes" class="here" ></a> Step 3: Take
+     notes in IRC:</h3>
+
+    <table><col><col><col>
+     <thead>
+      <tr>
+       <th>IRC Command
+
+       <th>Explanation
+
+       <th>Who?
+
+     <tbody>
+      <tr>
+       <td class=command>Topic: Debate on Feature X
+
+       <td class=help>Use "Topic: …" at the start of each agenda topic.
+        Alternatively, you can use <a
+        href="https://www.w3.org/2001/12/zakim-irc-bot.html#agenda"
+        >Zakim bot's agenda control</a>, which is recognized by default.
+        (See the <a href="#useZakimTopics">-useZakimTopics option</a>
+        below.)
+
+       <td>anybody
+
+      <tr>
+       <td class=command>Subtopic: Intro to feature X
+
+       <td class=help>Use "Subtopic: …" for a subtopic.
+
+       <td>anybody
+
+      <tr>
+       <td class=command>Mike: Feature X is great
+
+       <td class=help>Record what Mike said.
+
+       <td>scribe
+
+      <tr>
+       <td class=command>… and easy to implement.
+
+       <td class=help>Mike's statement continues. Use either three
+        periods or the ellipsis character ‘…’. (Some IRC clients
+        automatically replace the former with the latter.)
+
+       <td>scribe
+
+      <tr>
+       <td class=command>General agreement.
+
+       <td class=help>A description or summary, not attributed to a
+        particular speaker. Only works when the scribe writes this.
+
+       <td>scribe
+
+      <tr>
+       <td class=command>ACTION: Frank to order lunch
+
+       <td class=help>Record new action.
+
+       <td>anybody
+
+      <tr>
+       <td class=command>Issue: Is it proven that 1+1=2?
+
+       <td class=help>Record new issue.
+
+       <td>anybody
+
+      <tr>
+       <td class=command>RESOLUTION: Accept Frank's proposal
+
+       <td class=help>Indicate how an issue or topic was resolved.
+        ‘RESOLVED’ is an alias for ‘RESOLUTION’.
+
+       <td>anybody
+
+      <tr>
+       <td class=command>… with Pete's modified text
+
+       <td class=help>Resolutions can be more than one line long. This
+        line is added to the resolution in the previous line. (Such
+        continuation lines also work for topics, issues and actions.)
+
+       <td>anybody
+
+      <tr>
+       <td class=command>s/Mary/Marie/
+
+       <td class=help>Change most recent occurrence of ‘Mary’ to
+        ‘Marie’. The old string is a literal string, not a regex.
+        Alternate syntax: s|Mary|Marie|
+
+       <td>anybody
+
+      <tr>
+       <td class=command>s/Mary/Marie/g
+
+       <td class=help>Change all previous occurrences of "Mary" to
+        "Marie".
+
+       <td>anybody
+
+      <tr>
+       <td class=command>s/Mary/Marie/G
+
+       <td class=help>Change all previous and future occurrences of
+        ‘Mary’ to ‘Marie’ (within this document).
+
+       <td>anybody
+
+      <tr>
+       <td class=command>i/Time to vote/Topic: Vote on Feature Y
+
+       <td class=help>Insert a ‘Topic: Vote on Feature Y’ line before
+        the line containing the literal string ‘Time to vote’ (not a
+        regex). Alternate syntax: i|Time to vote|Topic: Vote on Feature
+        Y
+
+       <td>anybody
+
+      <tr id=scribeirc>
+       <td class=command>&lt;dbooth&gt; :-)
+
+       <td class=help>When dbooth is scribe and wants to add a remark on
+        IRC as himself, rather than in his role of scribe, he can start
+        the remark with his nick in angle brackets. (Hint:
+        auto-completion in some IRC clients may reduce this to two or
+        three keystrokes.)
+
+       <td>scribe
+    </table>
+
+    <h3 id=finish-meeting><a href="#finish-meeting" class="here" ></a>
+     Step 4: Finish the meeting</h3>
+
+    <table><col><col><col>
+     <thead>
+      <tr>
+       <th>IRC Command
+
+       <th>Explanation
+
+       <th>Who?
+
+     <tbody>
+      <tr>
+       <td class=command>zakim, end meeting
+
+       <td class=help>Dismiss zakim bot, which will generate a list of
+        attendees and instruct RRSAgent to generate minutes. Use <a
+        href="#present">‘Present: ...’ (described below)</a> instead if
+        you aren't using zakim bot.
+
+       <td>anybody
+
+      <tr>
+       <td class=command>rrsagent, bye
+
+       <td class=help>Dismiss RRSAgent (if used).
+
+       <td>anybody
+
+      <tr>
+       <td class=command>(Download and edit the generated minutes)
+
+       <td class=help>If you're using RRSAgent, then just edit the
+        generated minutes and you are done.
+
+       <td>anybody
+    </table>
+
+    <h3 id=generate-minutes><a href="generate-minutes" class="here" ></a>
+     Step 5: Generate minutes</h3>
+
+    <p>This step is only needed if you are not using RRSAgent, or you
+     forgot step 4 and its too late to run RRSAgent now, or if you want
+     to make edits that are best done locally.
+
+    <table><col><col><col>
+     <thead>
+      <tr>
+       <th>Shell Command
+
+       <th>Explanation
+
+     <tbody>
+      <tr>
+       <td class=command>(Save a copy of the IRC log, such as
+        http://www.w3.org/2002/04/05-arch-irc.txt)
+
+       <td class=help>(Hint: If RRSAgent wrote the minutes to
+        http://...foo-minutes, then the IRC log will be at
+        http://...foo-irc.txt.)
+
+      <tr>
+       <td class=command>(<a
+        href="https://raw.githubusercontent.com/w3c/scribe2/master/scribe.perl"
+        >Download scribe.perl</a>)
+
+       <td class=help>No installation is needed, but you must have <a
+        href="http://www.perl.com/download.csp">perl</a>.
+
+      <tr>
+       <td class=command>perl scribe.perl log.txt &gt; minutes.html
+
+       <td class=help>Generate minutes.
+
+      <tr>
+       <td class=command>(Review and make adjustments.)
+
+       <td class=help>If the result isn't good enough, either: 1. edit
+        your copy of the log file and regenerate the HTML; or 2.
+        manually edit the resulting HTML. Option 1 is best if you forgot
+        to indicate who is scribe (‘Scribe: …’), or if you forgot to
+        mark a topic start (‘Topic: …’).
+    </table>
+   </section>
+
+   <section>
+    <h2 id="Pros_and_Cons_of_Using_Scribe.perl"
+     ><a href="#Pros_and_Cons_of_Using_Scribe.perl" class="here" ></a> Pros
+     and Cons of Using Scribe.perl</h2>
+
+    <p id=pros>Pros:
+
+    <ul>
+     <li>It's free, it's open source, and it usually works.
+
+     <li>It runs anywhere that perl is installed. (I hope! Please let me
+      know if it doesn't.)
+
+     <li>Easy to use. It uses conventions that are used in many W3C
+      working groups.
+
+     <li>It recognizes several input and log formats.
+    </ul>
+
+    <p id=cons>Cons:
+
+    <ul>
+     <li>You still need to do some manual clean-up.
+
+     <li>It doesn't recognize all minuting conventions. (Suggestion:
+      Learn its conventions, they're simple.)
+    </ul>
+   </section>
+
+   <section>
+    <h2 id=running><a href="#running" class="here" ></a> Running scribe.perl</h2>
+
+    <p>Scribe.perl reads from the files given as arguments, or standard
+     input if there are none; and writes to standard output:
+
+    <pre class=command
+     >perl scribe.perl [options] &lt; log.txt &gt; minutes.html</pre>
+
+    <p>It can also be <a
+     href="https://www.w3.org/2002/03/RRSAgent#minutes">invoked by
+     RRSAgent</a> from IRC (provided you're using RRSAgent):
+
+    <pre class=command>rrsagent, draft minutes</pre>
+   </section>
+
+   <section>
+    <h2 id=options><a href="#options" class="here"></a> Options</h2>
+
+    <p>Options described below are grouped in several categories:
+
+    <ul>
+     <li><a href="#options_input_style">Input Style Options</a>
+
+     <li><a href="#options_output_format">Output Format Options</a>
+
+     <li><a href="#options_template">Template Options</a>
+
+     <li><a href="#options_scribe_identification">Scribe Identification
+      Options</a>
+
+     <li><a href="#options_misc">Miscellaneous Options</a>
+    </ul>
+
+    <p>There are three ways to specify options, from highest to lowest
+     priority:
+
+    <ul>
+     <li>Using the ‘<a href="#command_scribeoptions">ScribeOptions:</a>’
+      command in IRC
+
+     <li>On the shell command line, when invoking scribe.perl
+
+     <li>Via the <a href="#Environment_Variables">SCRIBEOPTIONS</a>
+      environment variable
+    </ul>
+
+    <p>Options can be written with two dashes (‘--final’) or a single
+     one (‘-final’) and they can be abbreviated as long as the
+     abbreviation is unambiguous (‘--embedDiagnostics’ can be written
+     ‘--embed’, but not ‘--em’, because that clashes with ‘--emphasis’).
+     Case doesn't matter: ‘--dashTopics’ is the same as ‘--dashtopics’.
+
+    <p>Options that require an argument can be separated from the
+     argument with either a space or an equals sign: ‘--scribenick jvm’
+     or ‘--scribenick=jvm’.
+
+    <h3 id="options_input_style"><a href="#options_input_style"
+     class="here"></a> Input Style Options</h3>
+
+    <p>These options are used to accommodate the different input
+     syntaxes and scribing styles.
+
+    <dl>
+     <dt id=dashTopics>-dashTopics
+
+     <dd>
+      <p>Indicate that dash lines are used to indicate that the next
+       line is the start of a new topic, such as:
+
+      <pre class=command>&lt;Philippe&gt; ---
 &lt;Philippe&gt; Review of Action Items</pre>
 
-  <p>instead of
+      <p>instead of
 
-  <pre class="command">&lt;Philippe&gt Topic: Review of Action Items</pre>
+      <pre class=command>&lt;Philippe&gt Topic: Review of Action Items</pre
+      >
 
+     <dt id=implicitContinuations>-implicitContinuations
 
-  <dt id="implicitContinuations">-implicitContinuations
+     <dd>
+      <p>Indicate that the scribe used implicit continuation lines like
+       this:
 
-  <dd>
-  <p>Indicate that the scribe used implicit continuation lines like
-   this:
-
-  <pre class="command">&lt;dbooth&gt; Mary: Now is the time
+      <pre class=command>&lt;dbooth&gt; Mary: Now is the time
 &lt;dbooth&gt; for all good men and women
 &lt;dbooth&gt; to come to the aid of their party.</pre>
 
-  <p>instead of this:
+      <p>instead of this:
 
-  <pre class="command">&lt;dbooth&gt; Mary: Now is the time
+      <pre class=command>&lt;dbooth&gt; Mary: Now is the time
 &lt;dbooth&gt; ... for all good men and women
 &lt;dbooth&gt; ... to come to the aid of their party.</pre>
 
-  <p>The scribe can still add descriptive lines (lines not attributed
-  to any speaker) by starting a line with a backslash
-  (see <a href="#escaped" >‘Escaped’</a> below). E.g.:
+      <p>The scribe can still add descriptive lines (lines not
+       attributed to any speaker) by starting a line with a backslash
+       (see <a href="#escaped">‘Escaped’</a> below). E.g.:
 
-<pre class="command">&lt;dbooth&gt; Mary: Now is the time
+      <pre class=command>&lt;dbooth&gt; Mary: Now is the time
 &lt;dbooth&gt; for all good men and women
 &lt;dbooth&gt; to come to the aid of their party.
 &lt;dbooth&gt; \Everybody agrees</pre>
 
-  <p>This option <em>only</em> applies to text assigned to a speaker.
-   To continue topics, resolutions, actions or issues on the next
-   line, you must still use ‘...’ or ‘…’.
+      <p>This option <em>only</em> applies to text assigned to a
+       speaker. To continue topics, resolutions, actions or issues on
+       the next line, you must still use ‘...’ or ‘…’.
 
-  <dt id=allowSpaceContinuations>-allowSpaceContinuations /
-  -noallowSpaceContinuations
+     <dt id=allowSpaceContinuations>-allowSpaceContinuations /
+      -noallowSpaceContinuations
 
-  <dd>
-  <p>By default, scribe.perl removes leading spaces on a line and
-   recognizes continuation lines because they start with three periods
-   (‘...’) or an ellipsis (‘…’). <code>-allowSpaceContinuations</code>
-   forces scribe.perl to treat lines that start with a space as
-   continuation lines (if there is a line to continue), even if they
-   don't start with ‘...’ For example, scribe.perl would normally
-   interpret this fragment
+     <dd>
+      <p>By default, scribe.perl removes leading spaces on a line and
+       recognizes continuation lines because they start with three
+       periods (‘...’) or an ellipsis (‘…’). <code
+       >-allowSpaceContinuations</code> forces scribe.perl to treat
+       lines that start with a space as continuation lines (if there is
+       a line to continue), even if they don't start with ‘...’ For
+       example, scribe.perl would normally interpret this fragment
 
-  <pre class=command>&lt;jim-scribe&gt; Anna: Is the 5th OK?
+      <pre class=command>&lt;jim-scribe&gt; Anna: Is the 5th OK?
 &lt;jim-scribe&gt;  Silence.
 &lt;jim-scribe&gt;  Jen: maybe</pre>
 
-  <p>as three separate items: Anna saying ‘Is the 5th OK?’, the scribe
-   giving a summary ‘Silence’ and Jen saying ‘maybe’. The extra spaces
-   are ignored. With <code>-allowSpaceContinuations</code>, the three
-   lines become a single statement attributed to Anna (‘Anna: Is the
-   5th OK? Silence. Jen: maybe’)
+      <p>as three separate items: Anna saying ‘Is the 5th OK?’, the
+       scribe giving a summary ‘Silence’ and Jen saying ‘maybe’. The
+       extra spaces are ignored. With <code
+       >-allowSpaceContinuations</code>, the three lines become a single
+       statement attributed to Anna (‘Anna: Is the 5th OK? Silence. Jen:
+       maybe’)
 
-  <p>The default is <code>-noallowSpaceContinuations</code>.
+      <p>The default is <code>-noallowSpaceContinuations</code>.
 
-  <p>This option <em>only</em> applies to text assigned to a speaker.
-   To continue topics, resolutions, actions or issues on the next
-   line, you must still use ‘...’ or ‘…’.
+      <p>This option <em>only</em> applies to text assigned to a
+       speaker. To continue topics, resolutions, actions or issues on
+       the next line, you must still use ‘...’ or ‘…’.
 
-  <dt id="useZakimTopics">-useZakimTopics
+     <dt id=useZakimTopics>-useZakimTopics
 
-  <dd>
-  <p>[Default] Recognize when Zakim bot is used to manage the agenda
-   and the list of attendees.
-   Specifically, treat Zakim statements like:
+     <dd>
+      <p>[Default] Recognize when Zakim bot is used to manage the agenda
+       and the list of attendees. Specifically, treat Zakim statements
+       like:
 
-  <pre class="command">&lt;Zakim&gt; agendum 2. &quot;UTF16 PR issue&quot; taken up [from MSMscribe]</pre>
+      <pre class=command
+       >&lt;Zakim&gt; agendum 2 -- UTF16 PR issue -- taken up [from MSMscribe]</pre
+      >
 
-  <p>as equivalent to the command:
+      <p>as equivalent to the command:
 
-  <pre class="command">&lt;scribe&gt; Topic: UTF16 PR issue</pre>
+      <pre class=command>&lt;scribe&gt; Topic: UTF16 PR issue</pre>
 
-  <p>and use Zakim's lines such as ‘As of this point the attendees
-  were…’ as an additional source of names for the presence list.
+      <p>and use Zakim's lines such as ‘As of this point the attendees
+       were…’ as an additional source of names for the presence list.
 
-  <dt id="noUseZakimTopics">-noUseZakimTopics
+     <dt id=noUseZakimTopics>-noUseZakimTopics
 
-  <dd>
-  <p>Turn off the -useZakimTopics option.
-  This also causes commands for Zakim (‘next agendum’, ‘q+’, ‘zakim,
-  list participants’, etc.) and Zakim's answers to be treated as
-  normal text for the minutes, rather than skipped.
-
-  <!--
+     <dd>
+      <p>Turn off the -useZakimTopics option. This also causes commands
+       for Zakim (‘next agendum’, ‘q+’, ‘zakim, list participants’,
+       etc.) and Zakim's answers to be treated as normal text for the
+       minutes, rather than skipped. <!--
   <dt id="inputFormat">-inputFormat NameOfFormat
 
   <dd>
@@ -583,110 +769,211 @@
   This option is not normally needed, as the input format will
   normally be guessed.
   -->
-  </dl>
+    </dl>
 
-  <h3 id="options_output_format">Output Format Options</h3>
+    <h3 id="options_output_format"><a href="#options_output_format"
+     class="here"></a> Output Format Options</h3>
 
-  <p>These options control the output format.</p>
+    <p>These options control the output format.
 
-  <dl>
-   <dt>-scribeOnly <dd>Only include what the scribe wrote. Discard any
-   statements made on IRC.
+    <dl>
+     <dt>-scribeOnly
 
-   <dt id=final>-final <dt>-nodraft <dd>By default, scribe.perl
-    includes a ‘- DRAFT -’ header in the formatted output, to remind
-    you that the generated minutes still need manual editing.
-    <code>-final</code> (or <code>-nodraft</code>) omits the "- DRAFT
-    -" header.
+     <dd>Only include what the scribe wrote. Discard any statements made
+      on IRC.
 
-   <dt>-nofinal <dt>-draft <dd>[DEFAULT] Include a ‘- DRAFT -’ header.
+     <dt id=final>-final
 
-   <dt>-embedDiagnostics <dd>Embed scribe.perl's
-    diagnostic output into the generated minutes. This is most useful
-    when scribe.perl is run as part of an automated process that
-    otherwise would not display the diagnostic output to the user.
+     <dt>-nodraft
 
-   <dt>-noEmbedDiagnostics <dd>[DEFAULT] Write diagnostic output to
-    the console (stderr).
+     <dd>By default, scribe.perl includes a ‘- DRAFT -’ header in the
+      formatted output, to remind you that the generated minutes still
+      need manual editing. <code>-final</code> (or <code>-nodraft</code
+      >) omits the "- DRAFT -" header.
 
-   <dt id=keeplines>-keeplines / -nokeepLines <dd><p>In the formatted
-     minutes, continuation lines are, by default, shown on a line of
-     their own, starting with ‘…’. (The HTML output contains a
-     &lt;br&gt; to force a new line to start.). E.g., input such as
+     <dt>-nofinal
 
-    <pre>&lt;pdh&gt; Camille: This works fine.
+     <dt>-draft
+
+     <dd>[DEFAULT] Include a ‘- DRAFT -’ header.
+
+     <dt>-embedDiagnostics
+
+     <dd>Embed scribe.perl's diagnostic output into the generated
+      minutes. This is most useful when scribe.perl is run as part of an
+      automated process that otherwise would not display the diagnostic
+      output to the user.
+
+     <dt>-noEmbedDiagnostics
+
+     <dd>[DEFAULT] Write diagnostic output to the console (stderr).
+
+     <dt id=keeplines>-keeplines / -nokeepLines
+
+     <dd>
+      <p>In the formatted minutes, continuation lines are, by default,
+       shown on a line of their own, starting with ‘…’. (The HTML output
+       contains a &lt;br&gt; to force a new line to start.). E.g., input
+       such as
+
+      <pre>&lt;pdh&gt; Camille: This works fine.
 &lt;pdh&gt; ... I tested it.
 &lt;pdh&gt; ... See the report.</pre>
 
-    <p>Will produce output similar to this:
+      <p>Will produce output similar to this:
 
-    <blockquote>
-     <p><strong>Camille:</strong> This works fine.<br>
-      … I tested it.<br>
-      … See the report.
-    </blockquote>
+      <blockquote>
+       <p><strong>Camille:</strong> This works fine.<br>
+        … I tested it.<br>
+        … See the report.
+      </blockquote>
 
-    <p>With <code>-nokeepLines</code>, the lines are instead shown as
-     a single paragraph, without any ‘…’:
+      <p>With <code>-nokeepLines</code>, the lines are instead shown as
+       a single paragraph, without any ‘…’:
 
-    <blockquote>
-     <p><strong>Camille:</strong> This works fine. I tested it. See
-      the report.
-    </blockquote>
+      <blockquote>
+       <p><strong>Camille:</strong> This works fine. I tested it. See
+        the report.
+      </blockquote>
 
-    <p>Default is <code>-keeplines</code>.
+      <p>Default is <code>-keeplines</code>.
 
-   <dt id=emphasis>-emphasis <dd><p>Cause scribe.perl to interpret
-    ‘ASCII highlighting’, arrows, smileys and mathematical formulas.
+     <dt id=emphasis>-emphasis
 
-    <p>ASCII highlighting gives underlined, italic, bold and monospaced text:
-    <table>
-     <thead>
-      <tr><th>Input <th>Output
-     <tbody>
-      <tr><td><code>_underlined_</code> <td><u>underlined</u>
-      <tr><td><code>/italic/</code> <td><i>italic</i>
-      <tr><td><code>*bold*</code> <td><b>bold</b>
-      <tr><td><code>`monospace`</code> <td><code>monospace</code>
-    </table>
+     <dd>
+      <p>Cause scribe.perl to interpret ‘ASCII highlighting’, arrows,
+       smileys and mathematical formulas.
 
-    <p>Highlighted phrases must be
-    surrounded by spaces to be recognized or be at the edge of the
-    line. They may be nested: <code> this is */bold italics/*.</code>
+      <p>ASCII highlighting gives underlined, italic, bold and
+       monospaced text:
 
-    <p>The option also causes the replacement of ASCII arrows
-     and ASCII smileys:
+      <table>
+       <thead>
+        <tr>
+         <th>Input
 
-    <table>
-     <thead>
-      <tr><th>Input <th>Output
-     <tbody>
-      <tr><td><code>&lt;-</code> <td>←
-      <tr><td><code>&lt;--</code> <td>⟵
-      <tr><td><code>&lt;=</code> <td>⇐
-      <tr><td><code>&lt;==</code> <td>⟸
-      <tr><td><code>==&gt;</code> <td>⟹
-      <tr><td><code>=&gt;</code> <td>⇒
-      <tr><td><code>--&gt;</code> <td>⟶
-      <tr><td><code><code>-&gt;</code> <td>→
-      <tr><td><code>:-)</code> <td>☺
-      <tr><td><code>;-)</code> <td>😉&#xFE0E;
-      <tr><td><code>:-(</code> <td>☹
-      <tr><td><code>:-/</code> <td>😕&#xFE0E;
-      <tr><td><code>,-)</code> <td>😜&#xFE0E;
-      <tr><td><code>\o/</code> <td>🙌&#xFE0E;
-    </table>
+         <th>Output
 
-    <p>Mathematical formulas use L<sup style="margin-left:
-    -0.2em">A</sup>T<sub>E</sub>X notation, either between single $
-    signs (for inline math) or double $$ signs (display math), e.g.:
+       <tbody>
+        <tr>
+         <td><code>_underlined_</code>
 
-    <pre class="command">Then calculate $\frac{1}{x}$ and $$\sum_1^\inf{\frac{1}{x}}$$</pre>
+         <td><u>underlined</u>
 
-    <p>yields:
+        <tr>
+         <td><code>/italic/</code>
 
-    <blockquote>
-      <p>Then calculate
+         <td><i>italic</i>
+
+        <tr>
+         <td><code>*bold*</code>
+
+         <td><b>bold</b>
+
+        <tr>
+         <td><code>`monospace`</code>
+
+         <td><code>monospace</code>
+      </table>
+
+      <p>Highlighted phrases must be surrounded by spaces to be
+       recognized or be at the edge of the line. They may be nested:
+       <code> this is */bold italics/*.</code>
+
+      <p>The option also causes the replacement of ASCII arrows and
+       ASCII smileys:
+
+      <table>
+       <thead>
+        <tr>
+         <th>Input
+
+         <th>Output
+
+       <tbody>
+        <tr>
+         <td><code>&lt;-</code>
+
+         <td>←
+
+        <tr>
+         <td><code>&lt;--</code>
+
+         <td>⟵
+
+        <tr>
+         <td><code>&lt;=</code>
+
+         <td>⇐
+
+        <tr>
+         <td><code>&lt;==</code>
+
+         <td>⟸
+
+        <tr>
+         <td><code>==&gt;</code>
+
+         <td>⟹
+
+        <tr>
+         <td><code>=&gt;</code>
+
+         <td>⇒
+
+        <tr>
+         <td><code>--&gt;</code>
+
+         <td>⟶
+
+        <tr>
+         <td><code>-&gt;</code>
+
+         <td>→
+
+        <tr>
+         <td><code>:-)</code>
+
+         <td>☺
+
+        <tr>
+         <td><code>;-)</code>
+
+         <td>😉&#xFE0E;
+
+        <tr>
+         <td><code>:-(</code>
+
+         <td>☹
+
+        <tr>
+         <td><code>:-/</code>
+
+         <td>😕&#xFE0E;
+
+        <tr>
+         <td><code>,-)</code>
+
+         <td>😜&#xFE0E;
+
+        <tr>
+         <td><code>\o/</code>
+
+         <td>🙌&#xFE0E;
+      </table>
+
+      <p>Mathematical formulas use L<sup style="margin-left: -0.2em"
+       >A</sup>T<sub>E</sub>X notation, either between single $ signs
+       (for inline math) or double $$ signs (display math), e.g.:
+
+      <pre class=command
+       >Then calculate $\frac{1}{x}$ and $$\sum_1^\inf{\frac{1}{x}}$$</pre
+      >
+
+      <p>yields:
+
+      <blockquote>
+       <p>Then calculate
 	<math xmlns="http://www.w3.org/1998/Math/MathML" alttext="\frac{1}{x}" display="inline">
 	  <mfrac>
 	    <mn>1</mn>
@@ -707,89 +994,112 @@
 	    </mfrac>
 	  </mrow>
 	</math>
-    </blockquote>
+      </blockquote>
 
-    <p>Put a backslash before the first $ to avoid starting math,
-     e.g.: <code> from \$2.50 to $2.99 is no math</code>.
+      <p>Put a backslash before the first $ to avoid starting math,
+       e.g.: <code> from \$2.50 to $2.99 is no math</code>.
 
-    <p>Math requires an external program called ‘latexmlmath’ (part of
-     a suite of programs called ‘latexml’). If you run scribe.perl and
-     do not have ‘latexmlmath’, the formulas will remain in
-     L<sup style="margin-left: -0.2em">A</sup>T<sub>E</sub>X notation.
+      <p>Math requires an external program called ‘latexmlmath’ (part of
+       a suite of programs called ‘latexml’). If you run scribe.perl and
+       do not have ‘latexmlmath’, the formulas will remain in L<sup
+       style="margin-left: -0.2em">A</sup>T<sub>E</sub>X notation.
 
-   <dt id=urldisplay>-urlDisplay break <dd>[DEFAULT] Scribe.perl will
-    ensure that
-    long URLs can be broken at the end of a line, even in browsers
-    that normally do not break URLs. This is done by inserting
-    HTML's &lt;wbr&gt; tags after most slashes (/).
+     <dt id=urldisplay>-urlDisplay break
 
-   <dt>-urlDisplay shorten <dd>Long URLs are shortened by displaying
-    just the first and the last few characters, like this:
-    ‘http:…c.html’.
+     <dd>[DEFAULT] Scribe.perl will ensure that long URLs can be broken
+      at the end of a line, even in browsers that normally do not break
+      URLs. This is done by inserting HTML's &lt;wbr&gt; tags after most
+      slashes (/).
 
-   <dt>-urlDisplay full <dd>Long URLs are displayed as they are.
+     <dt>-urlDisplay shorten
 
-   <dt id=collapseLimit>-collapseLimit <var>N</var> <dd>If there are
-    more participants or more regrets than <var>N</var>, the list of
-    participants or regrets is collapsed (with HTML's &lt;details&gt;
-    element). The reader needs to click on it to see the whole
-    list. The default is 30.
+     <dd>Long URLs are shortened by displaying just the first and the
+      last few characters, like this: ‘http:…c.html’.
 
-   <dt id=githubissues>-nogithubIssues <dd>Do not make links out of
-    text that looks like (GitHub) issues.
+     <dt>-urlDisplay full
 
-   <dt id=ghurlbot>-noghurlbot <dd>Omit messages from
-    <a href="https://w3c.github.io/GHURLBot/manual.html"
-    >gb (a.k.a. ghurlbot)</a>. Messages <em>to</em> gb are still
-    interpreted, but gb's responses, such as summaries of issues
-    and actions, are removed.
-  </dl>
+     <dd>Long URLs are displayed as they are.
 
-  <h3 id="options_template">Template Options</h3>
+     <dt id=collapseLimit>-collapseLimit <var>N</var>
 
-  <p>Scribe.perl can generate HTML with a couple of different styles:
+     <dd>If there are more participants or more regrets than <var>N</var
+      >, the list of participants or regrets is collapsed (with HTML's
+      &lt;details&gt; element). The reader needs to click on it to see
+      the whole list. The default is 30.
 
-  <dl>
-   <dt>-member <dd>Use the style sheet for member-only minutes, rather
-    than the style sheet for public minutes.
+     <dt id=githubissues>-nogithubIssues
 
-   <dt>-team <dd>Use the style sheet for team-only minutes, rather
-    than the style sheet for public minutes.
+     <dd>Do not make links out of text that looks like (GitHub) issues.
 
-   <dt id=fancy>-fancy <dd> Omit the W3C logo from the output and use
-    a style sheet that makes the output look very different.
+     <dt id=ghurlbot>-noghurlbot
 
-   <dt id=oldStyle>-oldStyle <dd>Use the 2004 style sheets for public
-    minutes. Or, if combined with <code>-team</code> or
-    <code>-member</code>, use the 2004 style for team, resp. member
-    minutes.
+     <dd>Omit messages from <a
+      href="https://w3c.github.io/GHURLBot/manual.html">gb (a.k.a.
+      ghurlbot)</a>. Messages <em>to</em> gb are still interpreted, but
+      gb's responses, such as summaries of issues and actions, are
+      removed.
+    </dl>
 
-   <dt id=style>-style <var>URL</var> <dd>Use the given style sheet. The usual
-    member, team or public styles become alternative styles instead.
+    <h3 id="options_template"><a href="#options_template"
+     class="here"></a> Template Options</h3>
 
-   <dt id=logo>-logo <var>markup</var> <dd>Replace the link to W3C and
-    the W3C logo by the given markup. I.e., the usual <code>&lt;a
-    href="https://www.w3.org/">&lt;img
-    src="https://www.w3.org/Icons/w3c_home\" alt=W3C border=0
-    height=48 width=72>&lt;/a></code> is replaced by
-    <var>markup</var>. To suppress the logo, use <code>-nologo</code>
-    (or <code>-logo=""</code>).
+    <p>Scribe.perl can generate HTML with a couple of different styles:
 
-   <dt id=mathjax>-mathjax <var>URL</var> <dd>Use the given URL to
-    load the MathJax script from, instead of the default. MathJax is a
-    script that improves the rendering of mathematical formulas. This
-    option only has effect in combination with <code>-emphasis</code>
-    and then only if there is any math in the minutes.
+    <dl>
+     <dt>-member
 
-   <dt id=islide>-islide <var>URL</var> <dd>Use the given URL to load
-    the i-slide script from, instead of the
-    default. (See <a href="#slides">'Embedding slides’</a>.)
-  </dl>
+     <dd>Use the style sheet for member-only minutes, rather than the
+      style sheet for public minutes.
 
-  <h3 id="options_scribe_identification">Scribe Identification Options</h3>
+     <dt>-team
 
-  <dl>
-   <!--
+     <dd>Use the style sheet for team-only minutes, rather than the
+      style sheet for public minutes.
+
+     <dt id=fancy>-fancy
+
+     <dd> Omit the W3C logo from the output and use a style sheet that
+      makes the output look very different.
+
+     <dt id=oldStyle>-oldStyle
+
+     <dd>Use the 2004 style sheets for public minutes. Or, if combined
+      with <code>-team</code> or <code>-member</code>, use the 2004
+      style for team, resp. member minutes.
+
+     <dt id=style>-style <var>URL</var>
+
+     <dd>Use the given style sheet. The usual member, team or public
+      styles become alternative styles instead.
+
+     <dt id=logo>-logo <var>markup</var>
+
+     <dd>Replace the link to W3C and the W3C logo by the given markup.
+      I.e., the usual <code>&lt;a href="https://www.w3.org/">&lt;img
+      src="https://www.w3.org/Icons/w3c_home\" alt=W3C border=0
+      height=48 width=72>&lt;/a></code> is replaced by <var>markup</var
+      >. To suppress the logo, use <code>-nologo</code> (or <code
+      >-logo=""</code>).
+
+     <dt id=mathjax>-mathjax <var>URL</var>
+
+     <dd>Use the given URL to load the MathJax script from, instead of
+      the default. MathJax is a script that improves the rendering of
+      mathematical formulas. This option only has effect in combination
+      with <code>-emphasis</code> and then only if there is any math in
+      the minutes.
+
+     <dt id=islide>-islide <var>URL</var>
+
+     <dd>Use the given URL to load the i-slide script from, instead of
+      the default. (See <a href="#slides">'Embedding slides’</a>.)
+    </dl>
+
+    <h3 id="options_scribe_identification"
+     ><a href="#options_scribe_identification" class="here"></a> Scribe
+     Identification Options</h3 >
+
+    <dl><!--
    <dt>-scribe Name <dd>Specify the name of the scribe, as it should
     appear in the generated minutes. If Name appears in the input as
     an IRC nickname, it will also be taken as the scribe's nickname,
@@ -797,269 +1107,284 @@
     be used multiple times to indicate multiple scribes.</dd>
    -->
 
-   <dt id=scribenick-option>-scribeNick <var>nickName</var>
-    <dd>Indicate the IRC nickname of the scribe, which is used to
-    figure out which lines were written by the scribe. This scribenick
-    will be used for the first lines of the log, until the first
-    ‘scribenick’ command in the log itself. (If this option is not
-    given, scribe.perl assumes that that first <code>scribe</code> or
-    <code>scribenick</code> command also applies to the lines before
-    that command.)
-  </dl>
+     <dt id=scribenick-option>-scribeNick <var>nickName</var>
 
-  <p>Underscores (‘_’) at the end of scribe nicks are ignored, because
-   many IRC clients add them automatically, often after a network
-   error when the original nickname still lingers on the server.
+     <dd>Indicate the IRC nickname of the scribe, which is used to
+      figure out which lines were written by the scribe. This scribenick
+      will be used for the first lines of the log, until the first
+      ‘scribenick’ command in the log itself. (If this option is not
+      given, scribe.perl assumes that that first <code>scribe</code> or
+      <code>scribenick</code> command also applies to the lines before
+      that command.)
+    </dl>
 
-  <p>However, occasionally ‘foo’ and ‘foo_’ may actually be different
-   people. So it is advisable to change your nickname back to one
-   without an underscore.
+    <p>Underscores (‘_’) at the end of scribe nicks are ignored, because
+     many IRC clients add them automatically, often after a network
+     error when the original nickname still lingers on the server.
 
-  <h3 id="options_misc">Miscellaneous Options</h3>
+    <p>However, occasionally ‘foo’ and ‘foo_’ may actually be different
+     people. So it is advisable to change your nickname back to one
+     without an underscore.
 
-  <dl>
-   <dt>-minutes http://example.org/2005/03/01-baking-club-minutes
-   <dd>Specify the URL where you will eventually publish the generated
-   minutes. This URL is not actually used anywhere except that
-   scribe.perl looks at it to guess the meeting date if it isn't given
-   explicitly. In particular, scribe.perl checks if the URL happens to
-   contain a pattern of the form yyyy/mm/dd.
+    <h3 id="options_misc"><a href="#options_misc" class="here"></a>
+     Miscellaneous Options</h3>
 
-   <dt>-help <dd>Show a brief summary of command line options.
+    <dl>
+     <dt>-minutes http://example.org/2005/03/01-baking-club-minutes
 
-   <dt>-version <dd>Show the version numbers of scribe.perl and of
-   perl itself.
-  </dl>
+     <dd>Specify the URL where you will eventually publish the generated
+      minutes. This URL is not actually used anywhere except that
+      scribe.perl looks at it to guess the meeting date if it isn't
+      given explicitly. In particular, scribe.perl checks if the URL
+      happens to contain a pattern of the form yyyy/mm/dd.
 
-  <h2 id="one_time_commands">Commands</h2>
+     <dt>-help
 
-  <p>Commands are interspersed with other minuted text in your IRC
-   log, except that each command must be on a line by itself. Commands
-   may be issued by anyone, not only the scribe. Syntax is shown below
-   by example, with italicized portions variable.
+     <dd>Show a brief summary of command line options.
 
-  <h3 id="correcting_mistakes">Editing Commands</h3>
+     <dt>-version
 
-  <p>These editing commands are usually the easiest way to correct
-   simple mistakes or add clarifications. (Of course, they don't take
-   effect until you run scribe.perl on your IRC log.)
+     <dd>Show the version numbers of scribe.perl and of perl itself.
+    </dl>
+   </section>
 
-<pre class="command">s/old/new/
+   <section>
+    <h2 id="one_time_commands"><a href="#one_time_commands"
+     class="here"></a> Commands</h2>
+
+    <p>Commands are interspersed with other minuted text in your IRC
+     log, except that each command must be on a line by itself. Commands
+     may be issued by anyone, not only the scribe. Syntax is shown below
+     by example, with italicized portions variable.
+
+    <h3 id="correcting_mistakes"><a href="#correcting_mistakes"
+     class="here"></a> Editing Commands</h3>
+
+    <p>These editing commands are usually the easiest way to correct
+     simple mistakes or add clarifications. (Of course, they don't take
+     effect until you run scribe.perl on your IRC log.)
+
+    <pre class=command>s/old/new/
 s/old/new
 s|old|new|
 s|old|new</pre>
 
-  <p>Replace the most recent occurrence of old with new. Old is a
-   literal string, not a regular expression. These commands are
-   processed in order, first to last. (I.e., each command works on the
-   text that results after the previous command.)
+    <p>Replace the most recent occurrence of old with new. Old is a
+     literal string, not a regular expression. These commands are
+     processed in order, first to last. (I.e., each command works on the
+     text that results after the previous command.)
 
-  <p><var>new</var> may contain slashes and vertical bars. E.g., this works:
-   <code>s/@@/http://example.org/path/</code>. But note that the last
-   slash is taken as part of the command, not of the new string. To
-   include a final slash, double it
-   (<code>s/@@/http://example.org/path//</code>) or use the alternative
-   syntax: <code>s|@@|http://example.org/path/</code>.
+    <p><var>new</var> may contain slashes and vertical bars. E.g., this
+     works: <code>s/@@/http://example.org/path/</code>. But note that
+     the last slash is taken as part of the command, not of the new
+     string. To include a final slash, double it (<code
+     >s/@@/http://example.org/path//</code>) or use the alternative
+     syntax: <code>s|@@|http://example.org/path/</code>.
 
-  <p><var>old</var> cannot be empty, but <var>new</var> can
-   be. E.g.: <code>s/some//</code>.
+    <p><var>old</var> cannot be empty, but <var>new</var> can be. E.g.:
+     <code>s/some//</code>.
 
-  <p>Unlike in Perl, backslashes are not special. E.g.,
-   <code>s/and\/or/but</code> will try to replace ‘and\’ by ‘or/but’
+    <p>Unlike in Perl, backslashes are not special. E.g., <code
+     >s/and\/or/but</code> will try to replace ‘and\’ by ‘or/but’
 
-  <p>Successful substitutions are removed from the minutes.
-   Unsuccessful ones are left in the minutes, so they can be manually
-   edited.
+    <p>Successful substitutions are removed from the minutes.
+     Unsuccessful ones are left in the minutes, so they can be manually
+     edited.
 
-  <pre class="command">s/old/new/g
+    <pre class=command>s/old/new/g
 s|old|new|g</pre>
 
-  <p>Replace globally from this point backward.
+    <p>Replace globally from this point backward.
 
-  <pre class="command">s/old/new/G
+    <pre class=command>s/old/new/G
 s|old|new|G</pre>
 
-  <p>Replace globally, both forward and backward.
+    <p>Replace globally, both forward and backward.
 
-<pre class="command">i/locationString/lineToInsert
+    <pre class=command>i/locationString/lineToInsert
 i/locationString/lineToInsert/
 i|locationString|lineToInsert
 i|locationString|lineToInsert|
 </pre>
 
-  <p>Insert lineToInsert before the line containing locationString,
-   which is a literal string, not a regular expression. This is most
-   helpful if you forgot to insert a ‘Topic: ’ command.
+    <p>Insert lineToInsert before the line containing locationString,
+     which is a literal string, not a regular expression. This is most
+     helpful if you forgot to insert a ‘Topic: ’ command.
 
-  <p>For example, the following use of the i// command:
+    <p>For example, the following use of the i// command:
 
-  <pre class="command">&lt;Arthur&gt; Finished with issue LC71; on to LC82.
+    <pre class=command
+     >&lt;Arthur&gt; Finished with issue LC71; on to LC82.
 &lt;Arthur&gt; Frank: This is about syntax
 &lt;Arthur&gt; ... Do we care about syntax?
 &lt;dbooth&gt; i/Frank: This is about/Topic: Issue LC82</pre>
 
-  <p>is converted to:
+    <p>is converted to:
 
-<pre class="command">&lt;Arthur&gt; Finished with issue LC71; on to LC82.
+    <pre class=command
+     >&lt;Arthur&gt; Finished with issue LC71; on to LC82.
 &lt;inserted&gt; Topic: Issue LC82
 &lt;Arthur&gt; Frank: This is about syntax
 &lt;Arthur&gt; ... Do we care about syntax?</pre>
 
-  <h3 id="commands_general">General Commands</h3>
 
-  <p>The following commands may be written with any mix of uppercase
-   and lowercase letters: ‘Meeting’, ‘MEETING’ and ‘mEeTiNg’ are all
-   the same thing.
+    <h3 id="commands_general"><a href="#commands_general"
+     class="here"></a> General Commands</h3>
 
-  <pre class="command">Meeting: Baking Club</pre>
+    <p>The following commands may be written with any mix of uppercase
+     and lowercase letters: ‘Meeting’, ‘MEETING’ and ‘mEeTiNg’ are all
+     the same thing.
 
-  <p>Use "Baking Club" as the title of the meeting minutes. If used
-   multiple times, only the last one has effect.
+    <pre class=command>Meeting: Baking Club</pre>
 
-  <pre class="command">Chair: Jonathan</pre>
+    <p>Use "Baking Club" as the title of the meeting minutes. If used
+     multiple times, only the last one has effect.
 
-  <p>Jonathan was the meeting chair. If used multiple times, only the
-   last one has effect.
+    <pre class=command>Chair: Jonathan</pre>
 
-  <pre class="command">chair: Jonathan, Louis
+    <p>Jonathan was the meeting chair. If used multiple times, only the
+     last one has effect.
+
+    <pre class=command>chair: Jonathan, Louis
 Chair+ Mia
 chair+ Zoe, Pete, Annabel</pre>
 
-  <p>If there are multiple chairs, you can separate their names with
-   commas, or use the ‘chair+’ command. The combined result of the
-   three lines above is that the meeting minutes will show that there
-   were <em>six</em> chairs.
+    <p>If there are multiple chairs, you can separate their names with
+     commas, or use the ‘chair+’ command. The combined result of the
+     three lines above is that the meeting minutes will show that there
+     were <em>six</em> chairs.
 
-  <pre class="command">chair- Louis, Pete</pre>
+    <pre class=command>chair- Louis, Pete</pre>
 
-  <p>If you made a mistake, you can remove individual names from the
-   list of chairs.
+    <p>If you made a mistake, you can remove individual names from the
+     list of chairs.
 
-  <pre class="command">chair+
+    <pre class=command>chair+
 chair-</pre>
 
-  <p>And if you use ‘chair+’ or ‘chair-’ without any names, it means
-   that you add, respectively remove, your own nickname from the list
-   of chairs.
+    <p>And if you use ‘chair+’ or ‘chair-’ without any names, it means
+     that you add, respectively remove, your own nickname from the list
+     of chairs.
 
-  <pre class="command" id="scribe">Scribe: MaryScr
+    <pre class=command id=scribe>Scribe: MaryScr
 ScribeNick: MaryScr</pre>
 
-  <p>Tells scribe.perl that the IRC name of the scribe is MaryScr. If
-   somebody else takes over as scribe, just give the command again,
-   with the nick name of the new scribe.
+    <p>Tells scribe.perl that the IRC name of the scribe is MaryScr. If
+     somebody else takes over as scribe, just give the command again,
+     with the nick name of the new scribe.
 
-  <p>‘Scribenick’ is an alternative spelling. Whenever you use
-   ‘scribe’, you can also use ‘scribenick’.
+    <p>‘Scribenick’ is an alternative spelling. Whenever you use
+     ‘scribe’, you can also use ‘scribenick’.
 
-  <pre class="command" id="real-name">Scribe: jon2 = John Smith
+    <pre class=command id=real-name>Scribe: jon2 = John Smith
 Scribe: jon2 / John Smith</pre>
 
-  <p>You can add the scribe's real name, separated from the IRC name
-   with a slash or an equals sign. This changes how the scribe will be
-   called in the summary at the top of the minutes. Useful if the IRC
-   name is cryptic.
+    <p>You can add the scribe's real name, separated from the IRC name
+     with a slash or an equals sign. This changes how the scribe will be
+     called in the summary at the top of the minutes. Useful if the IRC
+     name is cryptic.
 
-  <pre class="command" id="multiple">Scribe: Adam, Teo, Ana
+    <pre class=command id=multiple>Scribe: Adam, Teo, Ana
 Scribe:+ Adam/Adamsky, Teo, Ana=Jo-Ana</pre>
 
-  <p>Multiple scribes can be active at the same time. Separate their
-   names with commas. Of course, you can also add their real name
-   after the nick name.
+    <p>Multiple scribes can be active at the same time. Separate their
+     names with commas. Of course, you can also add their real name
+     after the nick name.
 
-  <pre class="command">Scribe+ jon2
+    <pre class=command>Scribe+ jon2
 Scribe+: jon2
 Scribe+ jon2/John Smith
 Scribe+ jon2, adam=Adamsky</pre>
 
-  <p>Use ‘scribe+’ (with or without a ‘:’) if one or more scribes
-   start taking minutes in addition to, rather than replacing, the
-   previous scribes.
+    <p>Use ‘scribe+’ (with or without a ‘:’) if one or more scribes
+     start taking minutes in addition to, rather than replacing, the
+     previous scribes.
 
-  <pre class="command">Scribe- adam
+    <pre class=command>Scribe- adam
 Scribe- adam,teo</pre>
 
-  <p>Indicates when some scribes stop taking minutes.
+    <p>Indicates when some scribes stop taking minutes.
 
-  <pre class="command">Scribe+
+    <pre class=command>Scribe+
 Scribe-</pre>
 
-  <p>If there are no names after the ‘+’ or ‘-’, it means the person
-   typing the command is adding or removing <em>himself</em> from the
-   current list of scribes.
+    <p>If there are no names after the ‘+’ or ‘-’, it means the person
+     typing the command is adding or removing <em>himself</em> from the
+     current list of scribes.
 
-  <p>A scribe can, e.g., temporarily stop taking minutes
-   (<code>scribe-</code>) and resume later (<code>scribe+</code>).
+    <p>A scribe can, e.g., temporarily stop taking minutes (<code
+     >scribe-</code>) and resume later (<code>scribe+</code>).
 
-  <pre class="command" id="noscribe">Scribe: *</pre>
+    <pre class=command id=noscribe>Scribe: *</pre>
 
-  <p>A ‘*’ as the scribenick means there is no designated
-   scribe, but everybody is taking notes together. This is useful,
-   e.g., when IRC is used for taking notes in a face-to-face meeting,
-   when IRC isn't needed as a second conversation channel. (But people
-   can still start their lines with their own nick, <code>&lt;nick&gt;
-   ...</code>, <a href="#scribeirc">see above,</a> to make remarks
-   outside the minutes.)
+    <p>A ‘*’ as the scribenick means there is no designated scribe, but
+     everybody is taking notes together. This is useful, e.g., when IRC
+     is used for taking notes in a face-to-face meeting, when IRC isn't
+     needed as a second conversation channel. (But people can still
+     start their lines with their own nick, <code>&lt;nick&gt; ...</code
+     >, <a href="#scribeirc">see above,</a> to make remarks outside the
+     minutes.)
 
-  <p>People cannot remove themselves from the scribe list with
-   <code>scribe-</code> after this command.
+    <p>People cannot remove themselves from the scribe list with <code
+     >scribe-</code> after this command.
 
-  <pre class="command">Agenda: http://www.example.com/agenda.html</pre>
+    <pre class=command>Agenda: http://www.example.com/agenda.html</pre>
 
-  <p>Specify the agenda URL (optional). If used multiple times, only
-   the last one has effect.
+    <p>Specify the agenda URL (optional). If used multiple times, only
+     the last one has effect.
 
-  <p>Hint: If the agenda has been posted to the W3C Group Calendar or
-    to a W3C mailing
-    list, <a href="https://w3c.github.io/AgendaBot/manual.html"
-    >AgendaBot</a> may be able to find the URL for you.
+    <p>Hint: If the agenda has been posted to the W3C Group Calendar or
+     to a W3C mailing list, <a
+     href="https://w3c.github.io/AgendaBot/manual.html">AgendaBot</a>
+     may be able to find the URL for you.
 
-  <pre class="command" id=present>Present: Jonathan, Mary, Barbara, Steve</pre>
+    <pre class=command id=present
+     >Present: Jonathan, Mary, Barbara, Steve</pre>
 
-  <p>Indicate who was present.
+    <p>Indicate who was present.
 
-  <pre class="command">Regrets: Nathan, Emma</pre>
+    <pre class=command>Regrets: Nathan, Emma</pre>
 
-  <p>Indicate who sent regrets (optional).
+    <p>Indicate who sent regrets (optional).
 
-  <pre class="command">&lt;frank> present+: Janine, Brian
+    <pre class=command>&lt;frank> present+: Janine, Brian
 &lt;frank> present- Nathan
 &lt;frank> regrets+ Marja, Leonard
 &lt;frank> Present+</pre>
 
-  <p>Add or remove names from the present/regrets lists. The colon is
-   optional after + or -. With no names, it adds or removes the
-   speaker himself, i.e., the last line adds "frank".
+    <p>Add or remove names from the present/regrets lists. The colon is
+     optional after + or -. With no names, it adds or removes the
+     speaker himself, i.e., the last line adds "frank".
 
-  <pre class="command">Date: 05 Dec 2002</pre>
+    <pre class=command>Date: 05 Dec 2002</pre>
 
-  <p>Specify the meeting date. Not usually needed, because the default
-   is guessed from the log URL reported by RRSAgent.
+    <p>Specify the meeting date. Not usually needed, because the default
+     is guessed from the log URL reported by RRSAgent.
 
-  <pre class="command">ACTION: Frank, Mary and Kate to propose solution for issue 42
+    <pre class=command
+     >ACTION: Frank, Mary and Kate to propose solution for issue 42
 action Ann: publish report 17
 Action Fred to do something</pre>
 
-  <p>Three ways to give an action item: ‘action:’, ‘action name:’ and
-   ‘action name to’. (Other bots, may require that
-   only one of these syntaxes is used.)
+    <p>Three ways to give an action item: ‘action:’, ‘action name:’ and
+     ‘action name to’. (Other bots, may require that only one of these
+     syntaxes is used.)
 
-  <pre class="command">RESOLUTION: Issue 42 closed as duplicate of issue 21
+    <pre class=command
+     >RESOLUTION: Issue 42 closed as duplicate of issue 21
 Resolved: next-object does not wrap</pre>
 
-  <p>Indicate a decision that the group has made. Both keywords may be
-   used interchangeably.
+    <p>Indicate a decision that the group has made. Both keywords may be
+     used interchangeably.
 
-  <pre id="topic" class="command">topic: Food and drink
+    <pre class=command id=topic>topic: Food and drink
 subtopic: Morning coffee</pre>
 
-  <p>The first starts a new section with the heading ‘Food and
-   drink’. The second starts a subsection with the heading ‘Morning
-   coffee’. (See also <a href="#dashTopics" >-dashtopics</a>
-   and <a href="useZakimTopics" >-useZakimTopics</a> for alternative
-   syntaxes.)
-
-  <!--
+    <p>The first starts a new section with the heading ‘Food and drink’.
+     The second starts a subsection with the heading ‘Morning coffee’.
+     (See also <a href="#dashTopics">-dashtopics</a> and <a
+     href=useZakimTopics>-useZakimTopics</a> for alternative syntaxes.)
+     <!--
   <pre class="command">Log: http://www.w3.org/2002/11/07-ws-arch-irc</pre>
 
   <p>Explicitly indicate the IRC log location. Not usually needed,
@@ -1069,79 +1394,79 @@ subtopic: Morning coffee</pre>
 &lt;RRSAgent&gt; See http://www.w3.org/2002/11/07-ws-arch-irc#T13-59-36</pre>
   -->
 
-  <pre class="command" id="command_scribeoptions">ScribeOptions: -dashTopics -embedDiagnostics</pre>
+    <pre class=command id="command_scribeoptions"
+     >ScribeOptions: -dashTopics -embedDiagnostics</pre>
 
-  <p>Specify options inline, as if they had been written on the
-  command line like:
+    <p>Specify options inline, as if they had been written on the
+     command line like: <code>perl scribe.perl -dashTopics
+     -embedDiagnostics</code>. Can be used multiple times and the
+     options are added to previous ones.
 
-  <code>perl scribe.perl -dashTopics -embedDiagnostics</code>. Can be
-  used multiple times and the options are added to previous ones.
+    <pre class=command>NamedAnchorHere: foo</pre>
 
-  <pre class="command">NamedAnchorHere: foo</pre>
+    <p>Cause a named anchor ‘foo’ to be generated at this point in the
+     minutes. Leading and trailing spaces are ignored and other spaces
+     are converted to underlines (‘_’). The name can be almost anything,
+     except ‘xNN’, where N is a digit, because those are reserved for
+     scribe.perl's internal use. A few other words (toc, meeting,
+     attendees, links, resolutionsummary, and actionsummary) are also
+     forbidden, because scribe.perl uses them itself.
 
-  <p>Cause a named anchor ‘foo’ to be generated at this point in the
-  minutes. Leading and trailing spaces are ignored and other spaces
-  are converted to underlines (‘_’). The name can be almost anything, except
-  ‘xNN’, where N is a digit, because those are reserved for
-  scribe.perl's internal use.
-  A few other words (toc, meeting, attendees, links,
-  resolutionsummary, and actionsummary) are also forbidden, because
-  scribe.perl uses them itself.
-
-  <pre class="command">Next meeting: http:///example.org/20180214/mins
+    <pre class=command>Next meeting: http:///example.org/20180214/mins
 Previous meeting: http://example.org/20180228/mins</pre>
 
-  <p>You can add a link to the previous and next meeting at the top of
-   the minutes.
+    <p>You can add a link to the previous and next meeting at the top of
+     the minutes.
 
-  <h3 id="escaped">Escapes</h3>
+    <h3 id=escaped><a href="#escaped" class="here"></a> Escapes</h3>
 
-  <p>If you <em>don't</em> want a line to be interpreted by
-  scribe.perl, start it with a backslash. E.g.:
+    <p>If you <em>don't</em> want a line to be interpreted by
+     scribe.perl, start it with a backslash. E.g.:
 
-  <pre class="command">&lt;gigi&gt; here are some words:
+    <pre class=command>&lt;gigi&gt; here are some words:
 &lt;gigi&gt; \Subject: a noun
 &lt;gigi&gt; \Topic: same as Subject
 &lt;gigi&gt; \Ben: a name
 &lt;gigi&gt; \Action: a noun</pre>
 
-  <p>Even if gigi is the scribe, the above will not be taken as lines
-  spoken by ‘Ben’ or by ‘Subject’ and will not create a new topic or a
-  new action. A few more examples:
+    <p>Even if gigi is the scribe, the above will not be taken as lines
+     spoken by ‘Ben’ or by ‘Subject’ and will not create a new topic or
+     a new action. A few more examples:
 
-  <pre class="command">&lt;jany&gt; \s/week/month/
+    <pre class=command>&lt;jany&gt; \s/week/month/
 &lt;jany&gt; \scribe+
 &lt;jany&gt; \present + Jan</pre>
 
-  <p>Such an initial backslash is omitted from the minutes. If you
-  happen to have a line that <em>should</em> start with a backslash,
-  double it:
+    <p>Such an initial backslash is omitted from the minutes. If you
+     happen to have a line that <em>should</em> start with a backslash,
+     double it:
 
-  <pre class="command">&lt;jany&gt; Here are some escapes used in C:
+    <pre class=command>&lt;jany&gt; Here are some escapes used in C:
 &lt;jany&gt; \\n = newline
 &lt;jany&gt; \\t = tab</pre>
 
-  <p>Backslashes elswhere than at the start are not special. E.g., you
-  could write the above like this:
+    <p>Backslashes elswhere than at the start are not special. E.g., you
+     could write the above like this:
 
-  <pre class="command">&lt;jany&gt; Here are some escapes used in C:
+    <pre class=command>&lt;jany&gt; Here are some escapes used in C:
 &lt;jany&gt; * \n = newline
 &lt;jany&gt; * \t = tab</pre>
 
-  <h3 id="verbatim">Verbatim or pasted text</h3>
+    <h3 id=verbatim><a href="#verbartim" class="here"></a> Verbatim or
+     pasted text</h3>
 
-  <p>To include several lines of verbatim text, e.g., to copy-paste
-  program code into the minutes, start with three single backquotes
-  (<code>```</code>) or two square brackets (<code>[[</code>) on a
-  line by themselves, paste the text and end with a line containing
-  another three backquotes, resp. two square brackets
-  (<code>]]</code>).
+    <p>To include several lines of verbatim text, e.g., to copy-paste
+     program code into the minutes, start with three single backquotes
+     (<code>```</code>) or two square brackets (<code>[[</code>) on a
+     line by themselves, paste the text and end with a line containing
+     another three backquotes, resp. two square brackets (<code>]]</code
+     >).
 
-  <p>No commands are recognized inside verbatim text: ‘action:’ does
-  not create an action, ‘present+’ does not record a participant. etc.
-  Here are two examples:
+    <p>No commands are recognized inside verbatim text: ‘action:’ does
+     not create an action, ‘present+’ does not record a participant.
+     etc. Here are two examples:
 
-  <pre class="command">&lt;dbooth&gt; ```
+    <pre class=command>&lt;dbooth&gt; ```
 &lt;dbooth&gt; function factorial(n) {
 &lt;dbooth&gt;   if (n == 1) return 1
 &lt;dbooth&gt;   else return n * factorial(n - 1)
@@ -1153,12 +1478,12 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;momo&gt; March       2
 &lt;momo&gt; ]]</pre>
 
-  <p>Everybody can use verbatim text, but the effect is slightly
-  different for scribes and for other participants. If the scribe
-  enters verbatim text and other text interrupts the verbatim text,
-  that other text is moved, to keep the scribe's text together. E.g.,
+    <p>Everybody can use verbatim text, but the effect is slightly
+     different for scribes and for other participants. If the scribe
+     enters verbatim text and other text interrupts the verbatim text,
+     that other text is moved, to keep the scribe's text together. E.g.,
 
-  <pre class="command">&lt;scribe&gt; [[
+    <pre class=command>&lt;scribe&gt; [[
 &lt;scribe&gt; sub add($$) {
 &lt;scribe&gt;    my ($a, $b) = @_;
 &lt;cecilia&gt; Me too!
@@ -1166,96 +1491,100 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;scribe&gt; }
 &lt;scribe&gt; ]]</pre>
 
-  <p>will yield:
-  <blockquote>
-<pre>sub add($$) {
+    <p>will yield:
+
+    <blockquote>
+     <pre>sub add($$) {
    my ($a, $b) = @_;
    return $a + $b;
 }</pre>
-&lt;cecilia&gt; Me too!
-  </blockquote>
 
-  <p>(The verbatim text feature was suggested by David Booth.)
+     <p>&lt;cecilia&gt; Me too!
+    </blockquote>
 
-  <h2 id="links">Embedding links</h2>
+    <p>(The verbatim text feature was suggested by David Booth.)
+   </section>
 
-  <p>Scribe.perl automatically recognizes most URLs
-  (<code>http://…</code>, <code>mailto:…</code>, etc.) and turns them
-  into links. See the command line option <a
-  href="#urldisplay"><code>-urlDisplay</code></a> for different ways
-  to format URLs.
+   <section>
+    <h2 id=links><a href="#links" class="here"></a> Embedding links</h2>
 
-  <p id="ralph-link">You can provide anchor text for a link with
-  <code>-&gt;</code>. This <code>-&gt;</code> must either come before
-  the URL and the anchor text or in between. (The idea to use
-  <code>-&gt;</code> is due to Ralph Swick.) More precisely, you can
-  use any of the following:
+    <p>Scribe.perl automatically recognizes most URLs (<code
+     >http://…</code>, <code>mailto:…</code>, etc.) and turns them into
+     links. See the command line option <a href="#urldisplay"><code
+     >-urlDisplay</code></a> for different ways to format URLs.
 
-  <p>A <strong>Ralph link</strong> has <code>-&gt;</code> followed by
-  a URL followed by anchor text, like this:
+    <p id=ralph-link>You can provide anchor text for a link with <code
+     >-&gt;</code>. This <code>-&gt;</code> must either come before the
+     URL and the anchor text or in between. (The idea to use <code
+     >-&gt;</code> is due to Ralph Swick.) More precisely, you can use
+     any of the following:
 
-<pre class=command>
+    <p>A <strong>Ralph link</strong> has <code>-&gt;</code> followed by
+     a URL followed by anchor text, like this:
+
+    <pre class=command>
 &lt;dbooth&gt; See -&gt; https://www.example.org/ns/w2 wall 2
 &lt;dbooth&gt; And -&gt; https://www.example.org/ns/w2 "wall 2", too.
 &lt;dbooth&gt; -&gt; https://www.example.org/ns/w2 'wall 2' also.
 </pre>
 
-  <p>If the anchor text is quoted (as in the second and third lines
-  above), scribe.perl uses only the quoted text as anchor, otherwise
-  it takes all the text until the end of the line. Thus, all three
-  lines contain the link <a href="https://www.example.org/ns/w2">wall
-  2</a>.
+    <p>If the anchor text is quoted (as in the second and third lines
+     above), scribe.perl uses only the quoted text as anchor, otherwise
+     it takes all the text until the end of the line. Thus, all three
+     lines contain the link <a href="https://www.example.org/ns/w2">wall
+     2</a>.
 
-  <p id="xueyuan-link">A <strong>Xueyuan link</strong> has
-  the <code>-&gt;</code> between the anchor text and the URL:
+    <p id=xueyuan-link>A <strong>Xueyuan link</strong> has the <code
+     >-&gt;</code> between the anchor text and the URL:
 
-<pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; wall 2 -&gt; https://www.example.org/ns/w2
 </pre>
 
-  <p>The anchor text is all the text leading up to the
-  <code>-&gt;</code>. You should not put quotes around it, unless you
-  actually want quotes in the anchor text.
+    <p>The anchor text is all the text leading up to the <code
+     >-&gt;</code>. You should not put quotes around it, unless you
+     actually want quotes in the anchor text.
 
-  <p>The anchor text and URL can also swap places. This is known as an
-  <strong>inverted Xueyuan link:</strong>
+    <p>The anchor text and URL can also swap places. This is known as an
+     <strong>inverted Xueyuan link:</strong>
 
-<pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; See https://www.example.org/ns/w2 -&gt; wall 2
 &lt;dbooth&gt; And https://www.example.org/ns/w2 -&gt; "wall 2", too.
 &lt;dbooth&gt; https://www.example.org/ns/w2 -&gt; 'wall 2' also.
 </pre>
 
-  <p>In this case, like with the Ralph links, you can use quotes to
-  limit what goes into the anchor text.
+    <p>In this case, like with the Ralph links, you can use quotes to
+     limit what goes into the anchor text.
 
-  <p id="ivan-link">An <strong>Ivan link</strong> is like
-  a Ralph link, but with the anchor text and the URL swapped:
+    <p id=ivan-link>An <strong>Ivan link</strong> is like a Ralph link,
+     but with the anchor text and the URL swapped:
 
-<pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; -&gt; wall 2 https://www.example.org/ns/w2
 &lt;dbooth&gt; And -&gt; wall 2 https://www.example.org/ns/w2 too.
 </pre>
 
-  <p>Like Xueyuan links, Ivan links should not have quotes around the
-  text (unless you actually want the anchor text to contain quotes).
+    <p>Like Xueyuan links, Ivan links should not have quotes around the
+     text (unless you actually want the anchor text to contain quotes).
 
-  <p id="md-link">And finally, a <strong>Markdown link</strong> uses
-  the popular markdown syntax to create links:
+    <p id=md-link>And finally, a <strong>Markdown link</strong> uses the
+     popular markdown syntax to create links:
 
-<pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Some text with [an embedded link](https://www.example.org/ns/w2) and more text
 </pre>
+   </section>
 
+   <section>
+    <h2 id=images><a href="#images" class="here"></a> Embedding images</h2>
 
-  <h2 id="images">Embedding images</h2>
+    <p>You can also embed images in the minutes by means of Ralph,
+     (inverted) Xueyuan or Ivan links. The only difference is that the
+     <code>-&gt;</code> must be replaced by <code>--&gt;</code>. Some
+     examples:
 
-  <p>You can also embed images in the minutes by means of Ralph,
-  (inverted) Xueyuan or Ivan links. The only difference is that
-  the <code>-&gt;</code> must be replaced by <code>--&gt;</code>. Some
-  examples:
-
-<pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; See --&gt; https://www.example.org/ns/w2.jpg wall 2
 &lt;dbooth&gt; And --&gt; https://www.example.org/ns/w2.jpg "wall 2", too.
 &lt;dbooth&gt; --&gt; https://www.example.org/ns/w2,jpg 'wall 2' also.
@@ -1267,189 +1596,208 @@ Previous meeting: http://example.org/20180228/mins</pre>
 &lt;dbooth&gt; And --&gt; wall 2 https://www.example.org/ns/w2.jpg too.
 </pre>
 
-  <p>The anchor text becomes the image's text alternative (‘alt
-  text’). There is no way to specify a caption.</p>
+    <p>The anchor text becomes the image's text alternative (‘alt
+     text’). There is no way to specify a caption.
 
-  <p>Markdown-style image links also work. They are like markdown
-  links, but prefixed with a ‘!':
+    <p>Markdown-style image links also work. They are like markdown
+     links, but prefixed with a ‘!':
 
-<pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Here it as an image: ![a tree](https://example.org/tree.jpg)
 </pre>
+   </section>
 
-  <h2 id="issue-links">Links to (GitHub) issues and pull requests</h2>
+   <section>
+    <h2 id=issue-links><a href="#issue-links" class="here"></a> Links to
+     (GitHub) issues and pull requests</h2>
 
-  <p>Unless disabled (see <a href="#githubissues">-nogithubIssues</a>),
-  text that looks like a reference to a GitHub issue is replaced by a
-  link to that issue:
+    <p>Unless disabled (see <a href="#githubissues">-nogithubIssues</a
+     >), text that looks like a reference to a GitHub issue is replaced
+     by a link to that issue:
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Let's talk about w3c/scribe#3
 &lt;dbooth&gt; And transitions#5
 </pre>
 
-  <p>If the owner part is omitted, ‘w3c’ is assumed (thus,
-  ‘transitions#5’ is the same as ‘w3c/transitions#5’). But you can
-  change that by explicitly listing the repositories to use, by means
-  of one or more <code>repo:</code>
-  (or <code>repos</code>, <code>repository</code>
-  or <code>repositories</code>) commands:
+    <p>If the owner part is omitted, ‘w3c’ is assumed (thus,
+     ‘transitions#5’ is the same as ‘w3c/transitions#5’). But you can
+     change that by explicitly listing the repositories to use, by means
+     of one or more <code>repo:</code> (or <code>repos</code>, <code
+     >repository</code> or <code>repositories</code>) commands:
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Repo: w3c/scribe, transitions, webn/drafts
 &lt;dbooth&gt; Repo: docs, w3c/scribe2
 ...
 &lt;dbooth&gt; Let talk about #3, drafts#7 and tests#1
 </pre>
 
-  <p>(A <code>+</code> instead of a <code>:</code> also works.) The
-  first line defines three repositories:
-  https://github.com/w3c/scribe (if no other web site is given,
-  github.com is assumed), https://github.com/w3c/transitions (the URL
-  and owner are copied from the preceding repository) and
-  https://github.com/webn/drafts (the URL is copied from the preceding
-  repo). The second line defines two additional repositories:
-  https://github.com/webn/docs (again, the initial part is copied from
-  the preceding repository) and https://github.com/w3c/scribe2.
+    <p>(A <code>+</code> instead of a <code>:</code> also works.) The
+     first line defines three repositories:
+     https://github.com/w3c/scribe (if no other web site is given,
+     github.com is assumed), https://github.com/w3c/transitions (the URL
+     and owner are copied from the preceding repository) and
+     https://github.com/webn/drafts (the URL is copied from the
+     preceding repo). The second line defines two additional
+     repositories: https://github.com/webn/docs (again, the initial part
+     is copied from the preceding repository) and
+     https://github.com/w3c/scribe2.
 
-  <p>The ‘#3’ is now a valid issue as well and refers to issue 3 in
-  the last defined repository, which is
-  https://github.com/w3c/scribe2; the ‘drafts#7’ refers to the most
-  recently defined repository called ‘drafts’, i.e.,
-  https://github.com/webn/webn/drafts’; and the ‘test#1’, which does
-  not match any defined repository, is assumed to have the same owner
-  as the last repository, i.e., https://github.com/w3c/tests.
+    <p>The ‘#3’ is now a valid issue as well and refers to issue 3 in
+     the last defined repository, which is
+     https://github.com/w3c/scribe2; the ‘drafts#7’ refers to the most
+     recently defined repository called ‘drafts’, i.e.,
+     https://github.com/webn/webn/drafts’; and the ‘test#1’, which does
+     not match any defined repository, is assumed to have the same owner
+     as the last repository, i.e., https://github.com/w3c/tests.
 
-  <p>You can also give full URLs (which is necessary to refer to
-  repositories that are not on GitHub):
+    <p>You can also give full URLs (which is necessary to refer to
+     repositories that are not on GitHub):
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Repo: https://gitlab.example.com/foo/bar, baz
 </pre>
 
-  <p>This defines the repositories https://gitlab.example.com/foo/bar
-  and https://gitlab.example.com/foo/baz.
+    <p>This defines the repositories https://gitlab.example.com/foo/bar
+     and https://gitlab.example.com/foo/baz.
 
-  <p>Repositories that are mentioned in topic lines are also added to
-  the defined repositories. This only works for repositories on
-  github.com:
+    <p>Repositories that are mentioned in topic lines are also added to
+     the defined repositories. This only works for repositories on
+     github.com:
 
-  <pre class=command>topic: Discuss https://github.com/w3c/scribe2</pre>
+    <pre class=command>topic: Discuss https://github.com/w3c/scribe2</pre
+    >
 
-  <p>Remove repositories from the list with <code>repo-</code>
-  (or <code>repos-</code>, <code>repository-</code>
-  or <code>repositories-</code>):
+    <p>Remove repositories from the list with <code>repo-</code> (or
+     <code>repos-</code>, <code>repository-</code> or <code
+     >repositories-</code>):
 
-  <pre class=command>Repo- w3c/scribe2</pre>
+    <pre class=command>Repo- w3c/scribe2</pre>
 
-  <p>To remove all repositories, give an empty list:
+    <p>To remove all repositories, give an empty list:
 
-  <pre class=command>&lt;dbooth&gt; Repo:</pre>
+    <pre class=command>&lt;dbooth&gt; Repo:</pre>
 
-  <p>Scribe.perl also interprets the commands for ghurlbot
-  that <a href="https://w3c.github.io/GHURLBot/manual.html#repo"
-  >add</a>
-  or <a href="https://w3c.github.io/GHURLBot/manual.html#remove"
-  >remove</a> repositories, e.g:
+    <p>Scribe.perl also interprets the commands for ghurlbot that <a
+     href="https://w3c.github.io/GHURLBot/manual.html#repo">add</a> or
+     <a href="https://w3c.github.io/GHURLBot/manual.html#remove"
+     >remove</a> repositories, e.g:
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; ghurlbot, this is https://gitlab.example.com/foo/bar
 &lt;dbooth&gt; ghurlbot, drop baz
 </pre>
+   </section>
 
-  <h2 id="slides">Embedding slides</h2>
+   <section>
+    <h2 id=slides><a href="#slides" class="here"></a> Embedding slides</h2>
 
-  <p>You can embed slides in the minutes if they are in a supported format.
-  The list of supported formats depends on the <a href="https://github.com/w3c/i-slide#supported-slide-formats">i-slide library</a>, and includes PDF, and the HTML-based <a href="https://shwr.me/">Shower</a> and <a href="https://www.w3.org/Talks/Tools/b6plus/">b6+</a>.
-  Google Slides are also supported.</p>
-  <p>To use this, the slideset from which the slides will be embedded
-  needs to be set with a <code>slideset</code> command and a URL,
-  e.g.:</p>
+    <p>You can embed slides in the minutes if they are in a supported
+     format. The list of supported formats depends on the <a
+     href="https://github.com/w3c/i-slide#supported-slide-formats"
+     >i-slide library</a>, and includes PDF, and the HTML-based <a
+     href="https://shwr.me/">Shower</a> and <a
+     href="https://www.w3.org/Talks/Tools/b6plus/">b6+</a>. Google
+     Slides are also supported.
 
-  <pre class=command>
+    <p>To use this, the slideset from which the slides will be embedded
+     needs to be set with a <code>slideset</code> command and a URL,
+     e.g.:
+
+    <pre class=command>
 &lt;dbooth&gt; Slideset: https://www.w3.org/Talks/Tools/b6plus/
 &lt;dbooth&gt; Slideset: -> my slides https://www.w3.org/Talks/Tools/b6plus/
 </pre>
 
-  <p>Then an individual slide can be embedded using the convention <code>[Slide <var>n</var>]</code> where <var>n</var> is the slide number in the slideset.</p>
-<pre class=command>
+    <p>Then an individual slide can be embedded using the convention
+     <code>[Slide <var>n</var>]</code> where <var>n</var> is the slide
+     number in the slideset.
+
+    <pre class=command>
 &lt;dbooth&gt; [Slide 2]
 &lt;dbooth&gt; Dom: as this slide illustrates, scribing is awesome
 </pre>
 
-  <p id="google-slides">Note: In the case of Google Slides,
-  scribe.perl makes a snapshot in PDF. It is that snapshot that is
-  shown in the minutes. For other slides, the minutes display the live
-  version. Security rules (‘CORS’) may restrict the display of slides
-  that reside on remote servers.</p>
+    <p id=google-slides>Note: In the case of Google Slides, scribe.perl
+     makes a snapshot in PDF. It is that snapshot that is shown in the
+     minutes. For other slides, the minutes display the live version.
+     Security rules (‘CORS’) may restrict the display of slides that
+     reside on remote servers.
+   </section>
 
-  <h2 id="recording">Embedding Video Recording</h2>
+   <section>
+    <h2 id=recording><a href="#recording" class="here"></a> Embedding
+     Video Recording</h2>
 
-  <p>You can link to the video record of a meeting in the minutes. The
-  video will be embedded at the top of the minutes and each topic and
-  subtopic of the meeting will link to the approximate time in the
-  video. (This only works for IRC logs that include time stamps, such
-  as RRSAgent's.)</p>
+    <p>You can link to the video record of a meeting in the minutes. The
+     video will be embedded at the top of the minutes and each topic and
+     subtopic of the meeting will link to the approximate time in the
+     video. (This only works for IRC logs that include time stamps, such
+     as RRSAgent's.)
 
-  <p>With JavaScript enabled, each topic and subtopic will also offer
-  a play button to launch the embedded video at the appropriate
-  offset. The video will float at the bottom of the page, if it is not
-  visible at the current scroll level. (Launching the video works for
-  video streaming services that use a
-  recognized <code>postMessage</code> API. This includes YouTube,
-  CloudFlare Stream and StreamFizz).</p>
+    <p>With JavaScript enabled, each topic and subtopic will also offer
+     a play button to launch the embedded video at the appropriate
+     offset. The video will float at the bottom of the page, if it is
+     not visible at the current scroll level. (Launching the video works
+     for video streaming services that use a recognized <code
+     >postMessage</code> API. This includes YouTube, CloudFlare Stream
+     and StreamFizz).
 
-  <p>To use this, the link to the recording needs to be set
-  with <code>recording</code> and a URL, e.g.:</p>
+    <p>To use this, the link to the recording needs to be set with <code
+     >recording</code> and a URL, e.g.:
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Recording: https://youtu.be/PjpACM_6IgM
 &lt;dbooth&gt; Recording: -> https://youtu.be/PjpACM_6IgM April meeting video
 </pre>
 
-  <p>The point at which the recording starts also needs to be
-  explicitly set. This can be done live, at the moment when recording
-  is started with:</p>
+    <p>The point at which the recording starts also needs to be
+     explicitly set. This can be done live, at the moment when recording
+     is started with:
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Recording is starting
-  </pre>
+</pre>
 
-  <p>It can also be documented after the fact, with:</p>
+    <p>It can also be documented after the fact, with:
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Recording started at :05
-  </pre>
+</pre>
 
-  <p>where <code>:05</code> means at 5 minutes from the top of the
-  hour.</p>
+    <p>where <code>:05</code> means at 5 minutes from the top of the
+     hour.
 
-  <p>If the recording ends before the end of the meeting, the end of
-  that recording can be documented similarly with:</p>
+    <p>If the recording ends before the end of the meeting, the end of
+     that recording can be documented similarly with:
 
-  <pre class=command>
+    <pre class=command>
 &lt;dbooth&gt; Recording ends
 &lt;dbooth&gt; Recording ended at :55
-  </pre>
+</pre>
 
-  <p>There can be only one recording. If the above commands are used
-  multiple times, the last one wins.</p>
+    <p>There can be only one recording. If the above commands are used
+     multiple times, the last one wins.
+   </section>
 
-  <h2 id="editing_the_log">Manually Editing the Log</h2>
+   <section>
+    <h2 id="editing_the_log"><a href="#editing_the_log" class="here"></a>
+     Manually Editing the Log</h2>
 
-  <p>In addition to the ‘realtime’ <a href="#correcting_mistakes"
-  >editing commands</a> above, you may manually edit your IRC log with
-  a text editor (by mimicking the log format) before running
-  scribe.perl. This is most useful for commands that have a broad
-  effect on the generated HTML. Scribe.perl also recognizes RRSAgent's
-  log format <em>without</em> time stamps, so you can leave those off,
-  rather than invent fake ones.
+    <p>In addition to the ‘realtime’ <a href="#correcting_mistakes"
+     >editing commands</a> above, you may manually edit your IRC log
+     with a text editor (by mimicking the log format) before running
+     scribe.perl. This is most useful for commands that have a broad
+     effect on the generated HTML. Scribe.perl also recognizes
+     RRSAgent's log format <em>without</em> time stamps, so you can
+     leave those off, rather than invent fake ones.
 
-  <p>Here is an example snippet of an IRC log in which the commands
-   ‘ScribeNick: tw’ and ‘Topic: Fire Alarms’ have been inserted using
-   a text editor.</p>
+    <p>Here is an example snippet of an IRC log in which the commands
+     ‘ScribeNick: tw’ and ‘Topic: Fire Alarms’ have been inserted using
+     a text editor.
 
-<pre class="command">20:11:21 &lt;tw&gt; Scribe: TedWilliams
+    <pre class=command>20:11:21 &lt;tw&gt; Scribe: TedWilliams
 &lt;tw&gt; ScribeNick: tw
 20:11:34 &lt;tw&gt; Topic: Printers
 20:11:49 &lt;tw&gt; alan: Printers are working now
@@ -1457,87 +1805,93 @@ Previous meeting: http://example.org/20180228/mins</pre>
 20:12:27 &lt;tw&gt; ralph: Fire marshall assured us that the system is working.
 </pre>
 
-  <p>Note that the IRC name &lt;tw&gt; <i>is</i> required, though for
-   most commands it does not matter what IRC name is specified.</p>
+    <p>Note that the IRC name &lt;tw&gt; <i>is</i> required, though for
+     most commands it does not matter what IRC name is specified.
+   </section>
 
+   <section>
+    <h2 id="input_formats"><a href="#input_formats" class="here"></a>
+     Input Formats</h2>
 
-  <h2 id="input_formats">Input Formats</h2>
+    <p>Several log formats are recognized, and are described below:
 
-  <p>Several log formats are recognized, and are described below:
+    <ul>
+     <li><a href="#RRSAgent_Text_Format">RRSAgent text format</a>
+      (RECOMMENDED)
 
-  <ul>
-   <li><a href="#RRSAgent_Text_Format" >RRSAgent text format</a>
-    (RECOMMENDED)
+     <li><a href="scribedoc.htm#Mirc_Timestamped_Log_Format"
+      >Mirc_Timestamped_Log_Format</a>
 
-   <li><a href="scribedoc.htm#Mirc_Timestamped_Log_Format"
-     >Mirc_Timestamped_Log_Format</a>
+     <li><a href="#Mirc_Text_Format">Mirc text format</a>
+      <!--<li><a href="#XChat_Timestamped_Log_Format"
+	   >XChat_Timestamped_Log_Format</a>-->
 
-   <li><a href="#Mirc_Text_Format" >Mirc text format</a>
+     <li><a href="#Irssi_Format">Irssi format</a>
 
-   <!--<li><a href="#XChat_Timestamped_Log_Format"
-     >XChat_Timestamped_Log_Format</a>-->
+     <li><a href="#Bip_Format">Bip format</a>
 
-   <li><a href="#Irssi_Format" >Irssi format</a>
+     <li><a href="#Yahoo_IM_Format">Yahoo IM format</a>
 
-   <li><a href="#Bip_Format" >Bip format</a>
+     <li><a href="#Plain_Text_Format">Plain-text format</a>
 
-   <li><a href="#Yahoo_IM_Format" >Yahoo IM format</a>
+     <li><a href="#Qwebirc_Paste_Format">Qwebirc paste format</a>
 
-   <li><a href="#Plain_Text_Format" >Plain-text format</a>
+     <li><a href="#Quassel_Paste_Format">Quassel paste format</a>
 
-   <li><a href="#Qwebirc_Paste_Format" >Qwebirc paste format</a>
+     <li><a href="#Bert_IRSSI_Format">Bert IRSSI format</a>
 
-   <li><a href="#Quassel_Paste_Format" >Quassel paste format</a>
+     <li><a href="#IRCCloud_format">IRCCloud format</a>
+    </ul>
 
-   <li><a href="#Bert_IRSSI_Format" >Bert IRSSI format</a>
+    <p>Scribe.perl guesses which format you have used by trying each in
+     turn until it finds one one that matches.
 
-   <li><a href="#IRCCloud_format" >IRCCloud format</a>
-  </ul>
+    <p>If you have a log format that is not recognized:
 
-  <p>Scribe.perl guesses which format you have used by trying each in
-   turn until it finds one one that matches.
+    <ol>
+     <li>Try doing global search/replace in a text editor, to convert it
+      into a recognized format, such as <a href="#Mirc_Text_Format"
+      >Mirc_Text_Format</a>; or
 
-  <p>If you have a log format that is not recognized:
+     <li>Write a parser for it and add it to scribe.perl.
+    </ol>
 
-  <ol>
-   <li>Try doing global search/replace in a text editor, to convert it
-    into a recognized format, such as <a
-    href="#Mirc_Text_Format" >Mirc_Text_Format</a>; or
+    <h3 id="RRSAgent_Text_Format" ><a href="#RRSAgent_Text_Format"
+     class="here"></a> RRSAgent text format (recommended)</h3 >
 
-   <li>Write a parser for it and add it to scribe.perl.
-  </ol>
+    <p>The plain text format (*.txt) produced by RRSAgent. Hint: add
+     ".txt" to the RRSAgent log URL to get the text version, such as:
+     http://www.w3.org/2002/11/07-ws-arch-irc.txt . The timestamps are
+     ignored, so you can safely edit the log and add lines without
+     having to fake timestamps. <a
+     href="https://www.w3.org/2003/03/03-ws-desc-irc.txt">Example:</a>
 
-  <h3 id="RRSAgent_Text_Format">RRSAgent text format (recommended)</h3>
-
-  <p>The plain text format (*.txt) produced by RRSAgent.  Hint: add
-   ".txt" to the RRSAgent log URL to get the text version, such as:
-   http://www.w3.org/2002/11/07-ws-arch-irc.txt .  The timestamps are
-   ignored, so you can safely edit the log and add lines without
-   having to fake
-   timestamps. <a href="https://www.w3.org/2003/03/03-ws-desc-irc.txt"
-   >Example:</a></p>
-
-<pre class="command">20:41:27 &lt;dbooth&gt; Mike: Feature X would benefit users.
+    <pre class=command
+     >20:41:27 &lt;dbooth&gt; Mike: Feature X would benefit users.
 20:41:37 &lt;dbooth&gt; ... and implementation would be easy.
 20:41:47 &lt;ericn&gt; I agree.
 </pre>
 
-  <h3 id="Mirc_Timestamped_Log_Format">Mirc timestamped log format</h3>
+    <h3 id="Mirc_Timestamped_Log_Format"
+     ><a href="#Mirc_Timestamped_Log_Format" class="here"></a> Mirc
+     timestamped log format</h3 >
 
-	<p>Timestamped log format produced by mIRC.  Example:
-	</p>
-<pre class="command">
+    <p>Timestamped log format produced by mIRC. Example:
+
+    <pre class=command>
 [19:35] &lt;Zakim&gt; Steven should now be muted
 [19:36] &lt;ph&gt; http://lists.w3.org/Archives/Member/w3c-html-cg/2004JanMar/0038.html
 [19:36] * Zakim hears Steven's hand up
 [19:36] * Zakim sees Steven on the speaker queue
 </pre>
 
-  <h3 id="Mirc_Text_Format">Mirc text format</h3>
+    <h3 id="Mirc_Text_Format" ><a href="#Mirc_Text_Format"
+     class="here"></a> Mirc text format</h3>
 
-<p>	The format produced by mIRC when you do Buffer&rarr;Save As.  Example:
-</p>
-<pre class="command">
+    <p>The format produced by mIRC when you do Buffer&rarr;Save As.
+     Example:
+
+    <pre class=command>
 &lt;dbooth&gt; Mike: Feature X would benefit users.
 &lt;dbooth&gt; ... and implementation would be easy.
 &lt;dbooth&gt; This is pretending to be a long
@@ -1545,7 +1899,6 @@ Previous meeting: http://example.org/20180228/mins</pre>
  but scribe.perl will re-join into a single line.
 &lt;ericn&gt; I agree.
 </pre>
-
 <!--
 	<h3 id="XChat_Timestamped_Log_Format">XChat_Timestamped_Log_Format</h3>
 	<p>Timestamped log format produced by X-Chat.  <a href="https://lists.w3.org/Archives/Public/www-archive/2005Feb/0026.html">Example</a>:</p>
@@ -1563,65 +1916,76 @@ Feb 14 11:02:26 *    Yves This is an off-the-record comment
 **** ENDING LOGGING AT Mon Feb 14 10:22:09 2005
 </pre>
 -->
+    <h3 id="Irssi_Format"><a href="#Irssi_Format" class="here"></a> Irssi
+     format</h3>
 
-  <h3 id="Irssi_Format">Irssi format</h3>
+    <p>The format produced by Irssi logging with <a
+     href="https://www.w3.org/TR/NOTE-datetime">ISO8601 timestamp</a>
+     prefixes. Example:
 
-	<p>The format produced by Irssi logging with <a href="https://www.w3.org/TR/NOTE-datetime">ISO8601 timestamp</a> prefixes.  Example:</p>
-
-<pre class="command">2003-12-18T15:27:21-0500Z &lt;dbooth&gt; Mike: Feature X would benefit users.
+    <pre class=command
+     >2003-12-18T15:27:21-0500Z &lt;dbooth&gt; Mike: Feature X would benefit users.
 2003-12-18T15:27:36-0500Z &lt;dbooth&gt; ... and implementation would be easy.
 2003-12-18T15:27:36-0500Z &lt;ericn&gt; I agree.
 2003-12-18T16:02:59Z -!- koalie [coralie@team.cloak] has joined &amp;weum
 2003-12-18T16:38:58Z  * koalie hears Steve
 </pre>
 
-<p>The date, seconds and timezone are optional, so the following is also recognized:
-</p>
-<pre class="command">15:27 &lt;dbooth&gt; Mike: Feature X would benefit users.
+    <p>The date, seconds and timezone are optional, so the following is
+     also recognized:
+
+    <pre class=command
+     >15:27 &lt;dbooth&gt; Mike: Feature X would benefit users.
 15:27 &lt;dbooth&gt; ... and implementation would be easy.
 15:27 &lt;ericn&gt; I agree.
 </pre>
 
-  <h3 id="Bip_Format">Bip format</h3>
+    <h3 id="Bip_Format"><a href="#Bip_Format" class="here"></a> Bip
+     format</h3>
 
-  <p>Bip is an IRC proxy. Its logs look like this:
+    <p>Bip is an IRC proxy. Its logs look like this:
 
-<pre class="command">
-27-02-2020 15:04:33 < addison!~addison@team.cloak: zakim, take up agendum 1
-27-02-2020 15:04:33 < Zakim!zakim@team.cloak: agendum 1. "Agenda and Minutes" taken up [from agendabot]
+    <pre class=command>
+27-02-2020 15:04:33 &lt; addison!~addison@team.cloak: zakim, take up agendum 1
+27-02-2020 15:04:33 &lt; Zakim!zakim@team.cloak: agendum 1 -- Agenda and Minutes -- taken up [from agendabot]
 27-02-2020 15:04:54 -!- JcK!~JcK@team.cloak has joined #i18n
-27-02-2020 15:04:54 < addison!~addison@team.cloak: zakim, take up agendum 2
-27-02-2020 15:04:54 < Zakim!zakim@team.cloak: agendum 2. "Action Items" taken up [from agendabot]
-27-02-2020 15:05:04 < addison!~addison@team.cloak: https://www.w3.org/International/track/actions/open
-27-02-2020 15:05:22 < addison!~addison@team.cloak: action-856?
-27-02-2020 15:05:22 < * trackbot!trackbot@team.cloak is looking up action-856.
-27-02-2020 15:05:22 < trackbot!trackbot@team.cloak: action-856 -- Richard Ishida to Check the time planner -- due 2020-02-27 -- OPEN
+27-02-2020 15:04:54 &lt; addison!~addison@team.cloak: zakim, take up agendum 2
+27-02-2020 15:04:54 &lt; Zakim!zakim@team.cloak: agendum 2 -- "Action Items -- taken up [from agendabot]
+27-02-2020 15:05:04 &lt; addison!~addison@team.cloak: https://www.w3.org/International/track/actions/open
+27-02-2020 15:05:22 &lt; addison!~addison@team.cloak: action-856?
+27-02-2020 15:05:22 &lt; * trackbot!trackbot@team.cloak is looking up action-856.
+27-02-2020 15:05:22 &lt; trackbot!trackbot@team.cloak: action-856 -- Richard Ishida to Check the time planner -- due 2020-02-27 -- OPEN
 </pre>
 
-  <h3 id="Yahoo_IM_Format">Yahoo IM format</h3>
+    <h3 id="Yahoo_IM_Format"><a href="#Yahoo_IM_Format" class="here"></a>
+     Yahoo IM format</h3>
 
-	<p>The format produced when you save a Yahoo IM session.  Example:</p>
-<pre class="command">dbooth: Mike: Feature X would benefit users.
+    <p>The format produced when you save a Yahoo IM session. Example:
+
+    <pre class=command>dbooth: Mike: Feature X would benefit users.
 dbooth: ... and implementation would be easy.
 ericn: I agree.
 </pre>
 
-  <h3 id="Plain_Text_Format">Plain-text format</h3>
+    <h3 id="Plain_Text_Format"><a href="#Plain_Text_Format"
+     class="here"></a> Plain-text format</h3>
 
-	<p>Line-oriented plain text format.  This format is intended for occasions when the scribe doesn't have access to IRC, and simply takes notes in a text editor.  Example:
-	</p>
-<pre class="command">
+    <p>Line-oriented plain text format. This format is intended for
+     occasions when the scribe doesn't have access to IRC, and simply
+     takes notes in a text editor. Example:
+
+    <pre class=command>
 	Mike: Feature X would benefit users.... and implementation would be easy.
 Eric agrees.
 </pre>
 
-  <h3 id="Qwebirc_Paste_Format">Qwebirc paste format</h3>
+    <h3 id="Qwebirc_Paste_Format" ><a href="#Qwebirc_Paste_Format"
+     class="here"></a> Qwebirc paste format</h3>
 
-  <p>Qwebirc is a web-based IRC client.
-  Copy-pasting from the browser window gives a log that looks like
-  this:
+    <p>Qwebirc is a web-based IRC client. Copy-pasting from the browser
+     window gives a log that looks like this:
 
-  <pre class="command">
+    <pre class=command>
 [09:59] == Wilco [~Wilco@4a714a7c.public.cloak] has joined #act-r
 [10:00] &lt;Wilco> agenda+ Update from the ACT Task Force
 [10:00] * Zakim notes agendum 1 added
@@ -1629,18 +1993,19 @@ Eric agrees.
 [10:05] &lt;CarlosD> Wilco: provides update on the TF
 </pre>
 
-  <h3 id="Quassel_Paste_Format">Quassel paste format</h3>
+    <h3 id="Quassel_Paste_Format" ><a href="#Quassel_Paste_Format"
+     class="here"></a> Quassel paste format</h3>
 
-  <p>The format of text that is copy-pasted from a Quassel chat
-  window. The line starts with a date &amp; time in square brackets.
+    <p>The format of text that is copy-pasted from a Quassel chat
+     window. The line starts with a date &amp; time in square brackets.
 
-  <p>The format of the date &amp; time can actually be configured by
-  the user, but scribe.perl only accepts dates and times that consists
-  of <strong>digits, dots, dashes and spaces, optionally with am and
-  pm.</strong> Here is an example where the date &amp; time is just
-  hours and minutes:
+    <p>The format of the date &amp; time can actually be configured by
+     the user, but scribe.perl only accepts dates and times that
+     consists of <strong>digits, dots, dashes and spaces, optionally
+     with am and pm.</strong> Here is an example where the date &amp;
+     time is just hours and minutes:
 
-  <pre class="command">
+    <pre class=command>
 [01:09] &lt;-- borisjohn (borisjohn@899c7108.team.cloak) has quit (Ping timeout: 180 seconds)
 [08:50] --> raul (raul@899c7108.team.cloak) has joined &amp;fleague
 [09:02] --> borisjohn (borisjohn@899c7108.team.cloak) has joined &amp;fleague
@@ -1656,15 +2021,16 @@ Eric agrees.
 [11:02] &lt;Zakim> RRSAgent, make logs Team
 </pre>
 
-  <h3 id="Bert_IRSSI_Format">Bert IRSSI format</h3>
+    <h3 id="Bert_IRSSI_Format" ><a href="#Bert_IRSSI_Format"
+     class="here"></a> Bert IRSSI format</h3>
 
-	<p>The style of IRSSI logs as used by Bert Bos, characterized
-	by a date &amp; time at the start and a vertical bar
-	separating the nick name and the message. This is almost
-	identical to the <strong>elho theme</strong> for IRSSI, which
-	should work here as well. Here is an example:</p>
+    <p>The style of IRSSI logs as used by Bert Bos, characterized by a
+     date &amp; time at the start and a vertical bar separating the nick
+     name and the message. This is almost identical to the <strong>elho
+     theme</strong> for IRSSI, which should work here as well. Here is
+     an example:
 
-	<pre class="command">--- Log opened Thu Mar 19 12:57:23 2015
+    <pre class=command>--- Log opened Thu Mar 19 12:57:23 2015
 12:57       «Users» | 23 nicks (0 ops, 0 halfops, 0 voices, 23 normal
 12:57        «Mode» | Channel &amp;global was created on Fri Apr 11 21:35:25 2014
 13:08             * | koalie veronica :D
@@ -1674,146 +2040,156 @@ Eric agrees.
 13:13        «Quit» | naomi (naomi@team.cloak) has signed off (Ping timeout: 180 seconds)
 13:14      veronica | q?
 13:15             * | Zakim sees no one on the speaker queue
-13:15        scribe | Veronica: Please everyone update the FTMS records.</pre>
+13:15        scribe | Veronica: Please everyone update the FTMS records.</pre
+    >
 
-  <h3 id="IRCCloud_format">IRCCloud format</h3>
+    <h3 id="IRCCloud_format" ><a href="#IRCCloud_Format" class="here"></a>
+     IRCCloud format</h3>
 
-  <p>Downloading a log from the IRCCloud server yields a file similar
-   to this:
+    <p>Downloading a log from the IRCCloud server yields a file similar
+     to this:
 
-   <pre class="command">#wcag-act
+    <pre class=command>#wcag-act
 [2020-07-21 17:28:44] → Joined channel #wcag-act
 [2020-07-21 18:21:09] ⇐ shadi quit (shadi@815ad96c.team.cloak): "Leaving"
 [2020-07-23 14:57:43] → Wilco joined (~Wilco@ef89345d.public.cloak)
 [2020-07-23 14:57:51] → Zakim joined (zakim@815ad96c.team.cloak)
-[2020-07-23 14:57:56] <Wilco> zakim, start meeting
+[2020-07-23 14:57:56] &lt;Wilco> zakim, start meeting
 [2020-07-23 14:58:28] — Zakim notes agendum 1 added
 [2020-07-27 16:55:24] * shadi_ → shadi
-[2020-07-30 14:53:38] <Wilco> Meeting: Accessibility Conformance Testing</pre>
+[2020-07-30 14:53:38] &lt;Wilco> Meeting: Accessibility Conformance Testing</pre
+    >
+   </section>
 
+   <section>
+    <h2 id="Environment_Variables" ><a href="#Environment_Variables"
+     class="here"></a> Environment Variables</h2>
 
-  <h2 id="Environment_Variables">Environment Variables</h2>
+    <p>The SCRIBEOPTIONS environment variable holds the default options
+     that one wants to use. It is not required. Example for a
+     Bourne-style shell:
 
-  <p>The SCRIBEOPTIONS environment variable holds the default options
-   that one wants to use. It is not required. Example for a
-   Bourne-style shell:
+    <pre>export SCRIBEOPTIONS="-team"</pre>
+   </section>
 
-  <pre>export SCRIBEOPTIONS="-team"</pre>
+   <section>
+    <h2 id=changes><a href="#changes" class="here"></a> Differences from
+     scribe.perl version 1</h2>
 
-  <h2 id=changes>Differences from scribe.perl version 1</h2>
+    <p>Scribe.perl version 2 accepts most of the same options as <a
+     href="https://github.com/w3c/scribe">version 1</a> and recognizes
+     most of the same commands in the input. The following are
+     different:
 
-  <p>Scribe.perl version 2 accepts most of the same options as
-   <a href="https://github.com/w3c/scribe"
-   >version 1</a> and recognizes most of the same commands in the input.
-   The following are different:
+    <ul>
+     <li>
+      <p>Status codes for actions are not supported. An action preceded
+       by a status code, such as ‘<code>[PENDING] ACTION: Joe to write
+       text</code>’, is <em>not</em> recognized as an action. It will be
+       a simple text. A status cade after the action, such as ‘<code
+       >ACTION: Joe to write text [PENDING]</code>’, is simply part of
+       the action description.
 
-  <ul>
-   <li>
-    <p>Status codes for actions are not supported. An action preceded
-     by a status code, such as ‘<code>[PENDING] ACTION: Joe to write
-     text</code>’, is <em>not</em> recognized as an action. It will be
-     a simple text. A status cade after the action, such as
-     ‘<code>ACTION: Joe to write text [PENDING]</code>’, is simply
-     part of the action description.
+     <li>
+      <p>There is no <code>-template</code> option. Scribe.perl
+       version 2 does not accept external HTML templates.
 
-   <li>
-    <p>There is no <code>-template</code> option. Scribe.perl
-     version 2 does not accept external HTML templates.
+     <li>
+      <p>A ‘scribeOptions’ command takes priority over command line
+       options, instead of the other way round.
 
-   <li>
-    <p>A ‘scribeOptions’ command takes priority over command line
-     options, instead of the other way round.
+     <li>
+      <p>The ‘-inputFormat’ option is not supported. It is not possible
+       to override the automatic selection of the input format.
 
-   <li>
-    <p>The ‘-inputFormat’ option is not supported. It is not possible
-     to override the automatic selection of the input format.
+     <li>
+      <p>The ‘-tidy’ option is not supported. Scribe.perl version 2
+       always generates valid HTML (HTML5, currently).
 
-   <li>
-    <p>The ‘-tidy’ option is not supported. Scribe.perl version 2
-     always generates valid HTML (HTML5, currently).
+     <li>
+      <p>The ‘-trustRRSAgent’ option is not supported. When RSSAgent is
+       dismissed, it summarizes the actions and resolutions it has seen,
+       but scribe.perl version 2 does not use them.
 
-   <li>
-    <p>The ‘-trustRRSAgent’ option is not supported. When RSSAgent is
-     dismissed, it summarizes the actions and resolutions it has
-     seen, but scribe.perl version 2 does not use them.
+     <li>
+      <p>The ‘-plain’, ‘-public’ and ‘-mit’ options are not supported.
+       Scribe.perl version 2 does not currently have style sheets for
+       ‘-plain’ and ‘-mit’. Note that the public style is the default.
 
-   <li>
-    <p>The ‘-plain’, ‘-public’ and ‘-mit’ options are not supported.
-     Scribe.perl version 2 does not currently have style sheets for
-     ‘-plain’ and ‘-mit’. Note that the public style is the default.
+     <li>
+      <p>The ‘-scribe’ option is not supported.
 
-   <li>
-    <p>The ‘-scribe’ option is not supported.
+     <li>
+      <p>The ‘-sampleInput’ and ‘-sampleOutput’ options are not
+       supported.
 
-   <li>
-    <p>The ‘-sampleInput’ and ‘-sampleOutput’ options are not
-     supported.
+     <li>
+      <p>The ‘Log:’ command is not supported. It was rarely needed,
+       because the URL of the IRC log, if any, can usually be inferred
+       from the messages by RRSAgent.
 
-   <li>
-    <p>The ‘Log:’ command is not supported. It was rarely needed,
-     because the URL of the IRC log, if any, can usually be inferred
-     from the messages by RRSAgent.
+     <li>
+      <p>The scribe can make IRC statements as himself by prefixing his
+       text with his own nick in angle brackets (see <a
+       href="#scribeirc">example above</a>).
 
-   <li>
-    <p>The scribe can make IRC statements as himself by prefixing his
-     text with his own nick in angle brackets (see <a
-     href="#scribeirc" >example above</a>).
+     <li>
+      <p>The <code>scribe</code> and <code>scribenick</code> commands no
+       longer have different functions. Both of them set the IRC name
+       <em>and</em> the real name of the scribes. In order to set a real
+       name that is different from the IRC name, use the <a
+       href="#real-name">syntax with ‘/’ or ‘=’</a>.
 
-   <li>
-    <p>The <code>scribe</code> and <code>scribenick</code> commands no
-     longer have different functions. Both of them set the IRC name
-     <em>and</em> the real name of the scribes. In order to set a real
-     name that is different from the IRC name, use the <a
-     href="#real-name">syntax with ‘/’ or ‘=’</a>.
+     <li>
+      <p>The ScribeNick command accepts <a href="#multiple">multiple
+       names</a> (separated by commas), and also accepts <a
+       href="#noscribe">‘*’</a>
 
-   <li>
-    <p>The ScribeNick command accepts <a href="#multiple">multiple
-    names</a> (separated by commas), and also accepts <a
-    href="#noscribe">‘*’</a>
+     <li>
+      <p>The '-philippe' and '-plh' options are not supported. Use
+       '-dashTopics' instead.
 
-   <li>
-    <p>The '-philippe' and '-plh' options are not supported. Use
-    '-dashTopics' instead.
+     <li>
+      <p>The option <a href="#oldStyle">‘-oldStyle’</a>, <a
+       href="#fancy">‘-fancy’</a>, <a href="#style">‘-style’</a>, <a
+       href="#logo">‘-logo’</a>, <a href="#keeplines"
+       >‘-keeplines’/‘-nokeeplines’</a> <a href="#collapseLimit"
+       >‘-collapseLimit’</a>, <a href="#emphasis">‘-emphasis’</a> and <a
+       href="#mathjax">‘-mathjax’</a> are new.
 
-   <li>
-    <p>The option <a href="#oldStyle"
-    >‘-oldStyle’</a>, <a href="#fancy"
-    >‘-fancy’</a>, <a href="#style">‘-style’</a>, <a href="#logo"
-    >‘-logo’</a>, <a href="#keeplines"
-    >‘-keeplines’/‘-nokeeplines’</a> <a href="#collapseLimit"
-    >‘-collapseLimit’</a>, <a href="#emphasis" >‘-emphasis’</a>
-    and <a href="#mathjax" >‘-mathjax’</a> are
-    new.
+     <li>
+      <p>Some new text patterns are recognized and marked up with
+       special classes: <a href="#ralph-link">Ralph</a>/<a
+       href="#xueyuan-link">Xueyuan</a>/<a href="#ivan-link">Ivan
+       links</a> (for links with anchor text and images with text
+       alternatives), messages from <a
+       href="https://www.w3.org/2005/06/tracker/irc">trackbot</a> and
+       the ‘slideset’ and ‘[slide N]’ commands.
 
-   <li>
-    <p>Some new text patterns are recognized and marked up with
-     special classes: <a href="#ralph-link" >Ralph</a>/<a
-     href="#xueyuan-link" >Xueyuan</a>/<a href="#ivan-link" >Ivan
-     links</a> (for links with anchor text and images with text
-     alternatives), messages
-     from <a href="https://www.w3.org/2005/06/tracker/irc"
-     >trackbot</a> and the ‘slideset’ and ‘[slide N]’ commands.
+     <li>
+      <p>The ability to escape a command with a backslash to remove its
+       special meaning, and the ability to include verbatim text are
+       new.
 
-   <li>
-    <p>The ability to escape a command with a backslash to remove its
-    special meaning, and the ability to include verbatim text are new.
+     <li>
+      <p>The XChat log format is not (yet) supported.
 
-   <li>
-    <p>The XChat log format is not (yet) supported.
+     <li>
+      <p>Support for embedded slides and embedded video is new.
+    </ul>
+<!--    No addition of [recorded in ....] after an action. --></section>
+  </main>
 
-   <li>
-    <p>Support for embedded slides and embedded video is new.
-  </ul>
-
-  <!--    No addition of [recorded in ....] after an action. -->
-
-  <hr>
-
-  <address><a href="mailto:bert@w3.org" >Bert Bos</a>, adapted from
-   <a href="https://w3c.github.io/scribe/scribedoc.htm"
-   >original documentation</a> by David Booth. Scribe.perl is available for
-   use under the <a
-   href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
-   >W3C Software License</a>. $Date: Sat Jan  8 20:22:22 2022 UTC $</address>
- </body>
-</html>
+  <footer>
+   <address><a href="mailto:bert@w3.org">Bert Bos</a>, adapted from <a
+    href="https://w3c.github.io/scribe/scribedoc.htm">original
+    documentation</a> by David Booth. Scribe.perl is available for use
+    under the <a
+    href="https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
+    >W3C Software License</a>.
+    $Date: Sat Jan 8 20:22:22 2022 UTC$</address>
+  </footer>
+<!-- Local Variables: -->
+<!-- mode: mhtml -->
+<!-- sgml-basic-offset: 1 -->
+<!-- End: -->
