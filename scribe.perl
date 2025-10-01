@@ -892,7 +892,8 @@ my $previous_icon = '<img alt="Previous meeting." title="Previous meeting" ' .
 my $next_icon = '<img alt="Next meeting." title="Next meeting" ' .
   'src="https://www.w3.org/StyleSheets/scribe2/go-next.png">';
 my $w3clogo = '<a href="https://www.w3.org/"><img src="https://www.w3.org/' .
-  'StyleSheets/TR/2016/logos/W3C" alt=W3C border=0 height=48 width=72></a>';
+  'assets/logos/w3c-2025/svg/w3c-white.svg" alt=W3C border=0 height=60 ' .
+  'width=60></a>';
 
 my %bots = (fc('RRSAgent') => 1, # Nicks that probably aren't scribe
 	    fc('trackbot') => 1,
