@@ -138,9 +138,11 @@ use MIME::Base64;
 # The pattern consists of two alternatives. The first one matches a
 # URL that is not preceded by a "(" and it allows ")" in the URL. The
 # second does not allow ")". This is needed to allow markdown-style
-# links, which use "(" and ")" to delimit the URL.
+# links, which use "(" and ")" to delimit the URL. The first type may
+# not end in punctuation (.,:!?), as a heuristic to avoid punctuation
+# after the URL to be considered part of the URL.
 my $urlpat =
-  '(?:(?<!\()(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]+|(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›)]+)';
+  '(?:(?<!\()(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›]*[^\s<>"‘’“”«»‹›.,:!?]|(?:[a-z]+://|mailto:[^\s<@]+\@|geo:[0-9.]|urn:[a-z0-9-]+:)[^\s<>"‘’“”«»‹›)]+)';
 # $scribepat is something like "foo" or "foo = John Smith" or "foo/John Smith".
 my $scribepat = '([^ ,/=]+) *(?:[=\/] *([^ ,](?:[^,]*[^ ,])?) *)?';
 # A speaker name doesn't contain [ ":：>] and doesn't start with "..".
@@ -850,10 +852,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 246 $'
+my $revision = '$Revision: 248 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Wed Oct  1 15:02:24 2025 UTC $'
+my $versiondate = '$Date: Mon Oct 27 20:04:16 2025 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -1175,11 +1177,13 @@ for (my $i = 0; $i < @records; $i++) {
     $records[$i]->{text} = $1;
     $lastslideset = $2;
     $records[$i]->{archive} = "";
+    $lastslideset =~ s/#.*//;
     # For Google slides, we download a PDF export of the slideset
     # and store it as base64 data URL
     if ($lastslideset =~ /https:\/\/docs\.google\.com\/presentation\/d\/[^\/]+\//) {
 	my $pdfexport = $lastslideset;
 	$pdfexport =~ s/(https:\/\/docs\.google\.com\/presentation\/d\/[^\/]+)\/.*$/$1\/export?format=pdf/;
+	$lastslideset =~ s/\?.*//;
 	my $response = $ua->get($pdfexport);
 	if ($response->is_success) {
 	    $embeddedslidesetcounter++;
