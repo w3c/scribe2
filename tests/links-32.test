@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Check that URLs end before punctuation
+
+echo "<foo> ftp://example.org/1,2,3,test, or how to make URLs." | \
+  perl scribe.perl --urldisplay=full | \
+  grep '<a href="ftp://example.org/1,2,3,test">ftp://example.org/1,2,3,test</a>'
