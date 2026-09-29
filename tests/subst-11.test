@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Test s/../../ command
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Original text
+<foo> s/Original/Final/g
+<foo> s/Final/Original/g
+<foo> Original text
+EOF
+
+cat >$TMP4 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=af64 class=summary>Original text</p>
+<p id=af65 class=summary>Original text</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl -embed $TMP1 >$TMP2 || exit 1
+
+# cat $TMP2
+
+# Extract just the minutes
+sed -n -e '/<main/,/<\/main>/p' $TMP2 >$TMP3
+
+diff -u $TMP4 $TMP3
