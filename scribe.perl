@@ -67,6 +67,13 @@
 #
 # TODO: Allow text pasted from The Lounge as input format.
 #
+# TODO: Add a predicatable ID to lines by gb that create an issue or
+# add a comment to an issue, e.g., based on the URL of the issue or
+# comment.
+#
+# TODO: Warn when a misformed command ("v/http://example.org/") with
+# embedded delimiters is found.
+#
 # Copyright © 2017-2025 World Wide Web Consortium. This work is
 # distributed under the W3C® Software License:
 # https://www.w3.org/copyright/software-license-2023/
@@ -852,10 +859,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 248 $'
+my $revision = '$Revision: 249 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Mon Oct 27 20:04:16 2025 UTC $'
+my $versiondate = '$Date: Tue Sep 29 16:09:09 2026 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
@@ -971,7 +978,7 @@ do {
       if !@records && $nlines;
 };
 
-# Step 2: Process s/old/new/ and i/where/what/ commands.
+# Step 2: Process s/old/new/, i/where/what/ and v/what/ commands.
 #
 # First mark all s/// and i/// lines as 'c', so that they don't get
 # changed by other s/// lines. Then loop over all lines again and
@@ -984,13 +991,15 @@ do {
 #
 foreach (@records) {
   $_->{type} = 'c' if
-      $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/;
+      $_->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/ ||
+      $_->{text} =~ /^ *(v)(\/|\|)(.*?)(\2 *)?$/;
 }
 
 for (my $i = 0; $i < @records; $i++) {
 
   if ($records[$i]->{type} eq 'c' &&
-      $records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/) {
+    ($records[$i]->{text} =~ /^ *(s|i)(\/|\|)(.*?)\2(.*?)(?:\2([gG])? *)?$/ ||
+      $records[$i]->{text} =~ /^ *(v)(\/|\|)(.*?)(\2 *)?$/)) {
     my ($cmd, $delim, $old, $new, $global) = ($1, $2, $3, $4, $5);
     my $old2 = $old =~ s/\x{200C}//gr;		# Version without any U+200C
 
@@ -1004,7 +1013,25 @@ for (my $i = 0; $i < @records; $i++) {
     push(@diagnostics, "Warning: ‘$records[$i]->{text}’ interpreted as inserting ‘$new’ before ‘$old’")
 	if $cmd eq 'i' && $new =~ /\Q$delim\E/;
 
-    if ($cmd eq 'i') {				# i/where/what/
+    if ($cmd eq 'v') {				# v/what/
+      my $j = $i;				# Find the line $j to move
+      $j-- until $j < 0 || ($records[$j]->{type} eq 'i' &&
+	($records[$j]->{text} =~ /\Q$old\E/ ||
+	  $records[$j]->{text} =~ /\Q$old2\E/));
+      my $k = $j + 1;				# Find the line $k to swap with
+      $k++ until $k >= $i || $records[$k]->{type} eq 'i';
+      if ($j < 0) {
+	push(@diagnostics, 'Failed: ' . $records[$i]->{text});
+      } elsif ($k >= $i) {
+	push(@diagnostics, 'Cannot move: ' . $records[$i]->{text});
+      } else {
+	my $s = $records[$j];
+	$records[$j] = $records[$k];
+	$records[$k] = $s;
+	$records[$i]->{type} = 'o';		# Omit successful command
+      }
+
+    } elsif ($cmd eq 'i') {			# i/where/what/
       my $j = $i - 1;
       $j-- until $j < 0 || ($records[$j]->{type} eq 'i' &&
 			    ($records[$j]->{text} =~ /\Q$old\E/ ||
@@ -1101,9 +1128,9 @@ for (my $i = 0; $i < @records; $i++) {
   } elsif (/^ *$/) {
     $records[$i]->{type} = 'o';		# Omit empty line
 
-  } elsif (/^ *(```|\[\[) *$/ &&	# Start preformatted text
+  } elsif (/^ *(```|\[\[\[?) *$/ &&	# Start preformatted text
       !exists $verbatim{$records[$i]->{speaker}}) {
-    $verbatim{$records[$i]->{speaker}} = $1 eq "```" ? "```" : "]]";
+    $verbatim{$records[$i]->{speaker}} = ($1 =~ y/[/]/r);
     if ($is_scribe) {
       $records[$i]->{text} = "";	# Next lines will be appended
       $records[$i]->{type} = 'D';	# Preformatted text by scribe
@@ -1111,9 +1138,15 @@ for (my $i = 0; $i < @records; $i++) {
       $records[$i]->{type} = 'o';	# Omit this record
     }
 
-  } elsif (/ *(```|\]\]) *$/ &&		# End of preformatted text
+  } elsif (/^ *(```|\]\]\]?) *$/ &&	# End of preformatted text
       ($verbatim{$records[$i]->{speaker}} // "") eq $1) {
     $records[$i]->{type} = 'o';			# Omit this record
+    delete $verbatim{$records[$i]->{speaker}};	# Remove verbatim mode
+
+  } elsif (/^ *(?:(```)[^`]|(\]\]\]?)[^]])/ &&	# End of preformatted text
+    ($verbatim{$records[$i]->{speaker}} // "") eq ($1 ? $1 : $2)) {
+    $records[$i]->{text} =~ s/^ *(?:```|\]\]\]?) *//; # Remove the ``` or ]]
+    $records[$i]->{type} = 'd' if $is_scribe;	# Mark as descriptive text
     delete $verbatim{$records[$i]->{speaker}};	# Remove verbatim mode
 
   } elsif (exists $verbatim{$records[$i]->{speaker}}) { # Preformatted text
@@ -1614,9 +1647,9 @@ if (defined $recording) {
   }
 }
 
-# Formats for the different types of lines. 1 = speaker, 2 = ID of a
-# heading, action, etc. or a message by a bot, 3 = text, 4 = the ID of
-# the speaker, 5 = unique ID for the line or other data, 6 = URL of recording
+# Formats for the different types of lines. 1 = speaker, 2 = unique ID
+# for the line, 3 = text, 4 = the ID of the speaker, 5 = extra data
+# (slide URL, issue number, anchor...), 6 = URL of recording
 my %linepat = (
   a => ["<p id=%2\$s class=action><strong>ACTION:</strong> %3\$s</p>\n", 1],
   b => ["<p id=%2\$s class=bot><cite>&lt;%1\$s&gt;</cite> %3\$s</p>\n", 0],

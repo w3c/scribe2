@@ -1160,7 +1160,7 @@
      by example, with italicized portions variable.
 
     <h3 id="correcting_mistakes"><a href="#correcting_mistakes"
-     class="here"></a> Editing Commands</h3>
+     class="here"></a> Editing Commands: s///, i///, v//</h3>
 
     <p>These editing commands are usually the easiest way to correct
      simple mistakes or add clarifications. (Of course, they don't take
@@ -1228,6 +1228,32 @@ i|locationString|lineToInsert|
 &lt;inserted&gt; Topic: Issue LC82
 &lt;Arthur&gt; Frank: This is about syntax
 &lt;Arthur&gt; ... Do we care about syntax?</pre>
+
+    <p>Reordering lines can be done with the v// command.
+
+    <pre class=command>v/locationString/
+v/locationString
+v|locationString|
+v|locationString
+</pre>
+
+    <p>Move the most recent line containing locationString down by one
+     line. locationString is a literal string. Typical use is when
+     lines were typed out of order. For example, in the following, the
+     topic was inserted too early and needs to move down by one line:
+
+     <pre class=command>&lt;scribe&gt; Frank: I'm doing this now,
+&lt;chair&gt; Topic: next meeting
+&lt;scribe&gt; ... and will finish tonight.
+&lt;chair&gt; v/Topic:/
+</pre>
+
+     <p>The result will be as if the input had been:
+
+     <pre class=command>&lt;scribe&gt; Frank: I'm doing this now,
+&lt;scribe&gt; ... and will finish tonight.
+&lt;chair&gt; Topic: next meeting
+</pre>
 
 
     <h3 id="commands_general"><a href="#commands_general"
@@ -1459,10 +1485,11 @@ Previous meeting: http://example.org/20180228/mins</pre>
 
     <p>To include several lines of verbatim text, e.g., to copy-paste
      program code into the minutes, start with three single backquotes
-     (<code>```</code>) or two square brackets (<code>[[</code>) on a
-     line by themselves, paste the text and end with a line containing
-     another three backquotes, resp. two square brackets (<code>]]</code
-     >).
+     (<code >```</code>) or two or three square brackets
+     (<code >[[</code> or <code >[[[</code>) on a line by themselves,
+     paste the text and end with a line starting with another three
+     backquotes, resp. two or three square brackets (<code >]]</code>
+     or <code >]]]</code>).
 
     <p>No commands are recognized inside verbatim text: ‘action:’ does
      not create an action, ‘present+’ does not record a participant.

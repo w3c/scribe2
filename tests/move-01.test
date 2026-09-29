@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Test v/../ command
+
+trap 'rm $TMP1 $TMP2 $TMP3 $TMP4' 0
+TMP1=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP2=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP3=`mktemp /tmp/topics-XXXXXX` || exit 1
+TMP4=`mktemp /tmp/topics-XXXXXX` || exit 1
+
+cat >$TMP1 <<EOF
+<foo> Joe: I do that
+<bar> topic: Another topic
+<foo> ... and the other thing, too.
+<foo> Some summary
+<foo> v/topic:/
+EOF
+
+cat >$TMP2 <<EOF
+<main id=meeting class=meeting>
+<h2>Meeting minutes</h2>
+<section><p id=66fd class="phone s01"><cite>Joe:</cite> I do that<br>
+<span id=0fdb>… and the other thing, too.</span></p>
+</section>
+
+<section>
+<h3 id=0a0f>Another topic</h3>
+<p id=cbc1 class=summary>Some summary</p>
+</section>
+</main>
+EOF
+
+perl scribe.perl $TMP1 >$TMP3 || exit 1
+sed -n -e '/<main/,/<\/main/p' $TMP3 >$TMP4
+diff -u $TMP2 $TMP4
