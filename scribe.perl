@@ -736,6 +736,8 @@ sub esc($;$$$$)
       $s =~ s/&lt;-(?!-)/←/g;
       $s =~ s/&lt;==(?!=)/⟸/g;
       $s =~ s/&lt;=(?!=)/⇐/g;
+      $s =~ s/(?:^|[^-])\K--([^-]|$)/–$1/g;
+      $s =~ s/(?:^|[^-])\K---([^-]|$)/—$1/g;
       $s = to_emph($s);		# Italics, bold, underline, monospace, math
     }
   }
@@ -859,10 +861,10 @@ sub make_id($$)
 
 
 # Main body
-my $revision = '$Revision: 249 $'
+my $revision = '$Revision: 250 $'
   =~ s/\$Revision: //r
   =~ s/ \$//r;
-my $versiondate = '$Date: Tue Sep 29 16:09:09 2026 UTC $'
+my $versiondate = '$Date: Wed Oct 21 13:34:09 2026 UTC $'
   =~ s/\$Date: //r
   =~ s/ \$//r;
 
