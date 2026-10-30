@@ -528,26 +528,71 @@
      forgot step 4 and its too late to run RRSAgent now, or if you want
      to make edits that are best done locally.
 
+    <p><em>If RRSAgent is not
+     running, <a href="https://w3c.github.io/scribe2/rescue" >‘Rescue
+     the minutes when RRSAgent is missing’</a> has some hints for
+     other ways to make minutes.</em>
+
+    <h4 id=online>Alternative 5a: Online minutes generator</h4>
+
     <table><col><col>
      <thead>
       <tr>
-       <th>Shell Command
+       <th>Instruction
 
        <th>Explanation
 
      <tbody>
       <tr>
-       <td class=command>(Save a copy of the IRC log, such as
-        http://www.w3.org/2002/04/05-arch-irc.txt)
+       <td class=command>Locate the IRC log.
 
-       <td class=help>(Hint: If RRSAgent wrote the minutes to
-        http://...foo-minutes, then the IRC log will be at
-        http://...foo-irc.txt.)
+       <td class=help>Hint: If RRSAgent wrote a log on IRC channel
+	‘forms’ on April 1, 2022, you can find it at
+	https://www.w3.org/2022/04/01-forms-irc.txt
 
       <tr>
-       <td class=command>(<a
+       <td class=command>Go to
+	the <a href="https://www.w3.org/2005/02/minutes" >Online
+	Minutes Generator</a>
+
+       <td class=help>Fill in either line <b>1</b> or line <b>2</b> or
+	line <b>3</b> of the form. <em>Shortcut:</em> If RRSAgent made
+	the log, then just add ‘,minutes’ to the URL, e.g.:
+	<a href="https://www.w3.org/2022/04/01-forms-irc.txt,minutes"
+	>https://www.w3.org/2022/04/01-forms-irc.txt<b>,minutes</b></a>
+
+      <tr>
+       <td class=command>Review and make adjustments.
+
+       <td class=help>If the result isn't good enough, either: 1. edit
+        your copy of the log file and regenerate the HTML; or 2.
+        manually edit the resulting HTML. Option 1 is best if you forgot
+        to indicate who is scribe (‘Scribe: …’), or if you forgot to
+        mark a topic start (‘Topic: …’).
+    </table>
+
+    <h4 id=offline>Alternative 5b: Using a local Perl</h4>
+
+    <table><col><col>
+     <thead>
+      <tr>
+       <th>Instruction
+
+       <th>Explanation
+
+     <tbody>
+      <tr>
+       <td class=command>Save a copy of the IRC log, such as
+        http://www.w3.org/2002/04/05-arch-irc.txt
+
+       <td class=help>Hint: If RRSAgent wrote the minutes to
+        http://...foo-minutes, then the IRC log will be at
+        http://...foo-irc.txt.
+
+      <tr>
+       <td class=command><a
         href="https://raw.githubusercontent.com/w3c/scribe2/master/scribe.perl"
-        >Download scribe.perl</a>)
+        >Download scribe.perl</a>
 
        <td class=help>No installation is needed, but you must have <a
         href="http://www.perl.com/download.csp">perl</a>.
@@ -555,10 +600,10 @@
       <tr>
        <td class=command><code>perl scribe.perl log.txt &gt; minutes.html</code>
 
-       <td class=help>Generate minutes.
+       <td class=help>Run this on a command line to generate minutes.
 
       <tr>
-       <td class=command>(Review and make adjustments.)
+       <td class=command>Review and make adjustments.
 
        <td class=help>If the result isn't good enough, either: 1. edit
         your copy of the log file and regenerate the HTML; or 2.
