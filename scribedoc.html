@@ -611,6 +611,15 @@
         to indicate who is scribe (‘Scribe: …’), or if you forgot to
         mark a topic start (‘Topic: …’).
     </table>
+
+    <p>Note: If you get an error ‘501’, your perl is probably missing
+     a library. This can happen when the minutes contain references
+     to <a href="#google-slides">Google Slides</a> and your system
+     only has a minimal perl installation. E.g., on Fedora, try
+     installing the library with ‘<code>sudo dnf install
+     perl-LWP-Protocol-https</code>’ or get it from CPAN with a
+     command like ‘<code>sudo cpan install
+     LWP::Protocol::https</code>’.</p>
    </section>
 
    <section>
